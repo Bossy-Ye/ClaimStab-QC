@@ -26,6 +26,7 @@ examples/out/
 artifacts/
 output/
 outputs/
+site/
 
 # OS cruft
 .DS_Store
