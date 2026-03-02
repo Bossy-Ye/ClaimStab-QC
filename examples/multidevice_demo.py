@@ -387,6 +387,35 @@ def main() -> None:
 
     global_device_summary: list[dict[str, object]] = []
 
+    def write_skipped_batch_summary(*, batch_mode: str, requested_devices: list[str], reason: str) -> None:
+        batch_dir = out_root / batch_mode
+        batch_dir.mkdir(parents=True, exist_ok=True)
+        summary_payload = {
+            "meta": {
+                "suite": suite_name,
+                "batch_mode": batch_mode,
+                "generated_by": "examples/multidevice_demo.py",
+                "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
+            },
+            "batch": {
+                "mode": batch_mode,
+                "devices_requested": requested_devices,
+                "devices_completed": [],
+                "devices_skipped": [{"device_name": d, "reason": reason} for d in requested_devices],
+            },
+            "experiments": [],
+            "device_summary": [],
+            "comparative": {"space_claim_delta": []},
+        }
+        out_json = batch_dir / f"{batch_mode}_summary.json"
+        out_json.write_text(json.dumps(summary_payload, indent=2), encoding="utf-8")
+        out_csv = batch_dir / f"{batch_mode}_summary.csv"
+        out_csv.write_text("", encoding="utf-8")
+        print("[WARN]", reason)
+        print("Wrote:")
+        print(" ", out_json.resolve())
+        print(" ", out_csv.resolve())
+
     def run_batch(*, batch_mode: str, device_names: list[str], space_name: str, metric_names: list[str], claim_pairs: list[tuple[str, str]], direction: HigherIsBetter, noise_model_mode: str):
         batch_dir = out_root / batch_mode
         batch_dir.mkdir(parents=True, exist_ok=True)
@@ -416,11 +445,41 @@ def main() -> None:
                 skipped.append({"device_name": device_name, "reason": str(exc)})
                 continue
 
+            device_num_qubits_raw = getattr(resolved.backend, "num_qubits", None) if resolved.backend is not None else None
+            device_num_qubits = int(device_num_qubits_raw) if device_num_qubits_raw is not None else None
+            compatible_suite = []
+            skipped_instances: list[dict[str, object]] = []
+            for inst in suite:
+                graph = getattr(inst, "payload", None)
+                graph_qubits = getattr(graph, "num_nodes", None)
+                if device_num_qubits is not None and graph_qubits is not None and int(graph_qubits) > device_num_qubits:
+                    skipped_instances.append(
+                        {
+                            "instance_id": getattr(inst, "instance_id", "unknown"),
+                            "required_qubits": int(graph_qubits),
+                            "device_qubits": device_num_qubits,
+                        }
+                    )
+                    continue
+                compatible_suite.append(inst)
+
+            if not compatible_suite:
+                skipped.append(
+                    {
+                        "device_name": device_name,
+                        "reason": (
+                            f"No compatible instances for this device "
+                            f"(device_qubits={device_num_qubits}, suite={suite_name})."
+                        ),
+                    }
+                )
+                continue
+
             runner = MatrixRunner(backend=QiskitAerRunner(engine=args.backend_engine))
             for metric_name in metric_names:
                 rows_by_graph: dict[str, list[ScoreRow]] = {}
                 all_rows: list[ScoreRow] = []
-                for inst in suite:
+                for inst in compatible_suite:
                     task = MaxCutTask(instance=inst)
                     rows = runner.run(
                         task=task,
@@ -513,6 +572,11 @@ def main() -> None:
                     "generated_by": "examples/multidevice_demo.py",
                     "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
                 },
+                "device_compatibility": {
+                    "device_qubits": device_num_qubits,
+                    "included_instances": [getattr(inst, "instance_id", "unknown") for inst in compatible_suite],
+                    "skipped_instances": skipped_instances,
+                },
                 "experiments": [e for e in batch_experiments if f":{device_name}:" in str(e["experiment_id"])],
             }
             device_json.write_text(json.dumps(device_payload, indent=2), encoding="utf-8")
@@ -567,17 +631,25 @@ def main() -> None:
         )
 
     if run_noisy:
-        backend_cfg = spec_payload.get("backend", {}) if isinstance(spec_payload, dict) else {}
-        noise_model_mode = parse_noise_model_mode(backend_cfg)
-        run_batch(
-            batch_mode="noisy_sim",
-            device_names=parse_csv_tokens(args.noisy_devices),
-            space_name=noisy_space,
-            metric_names=["objective"],
-            claim_pairs=parse_claim_pairs(args.noisy_claim_pairs),
-            direction=HigherIsBetter.YES,
-            noise_model_mode=noise_model_mode,
-        )
+        noisy_devices = parse_csv_tokens(args.noisy_devices)
+        if sys.version_info >= (3, 13):
+            write_skipped_batch_summary(
+                batch_mode="noisy_sim",
+                requested_devices=noisy_devices,
+                reason="noisy_sim skipped on Python 3.13 due known native qiskit-aer runtime instability in this environment.",
+            )
+        else:
+            backend_cfg = spec_payload.get("backend", {}) if isinstance(spec_payload, dict) else {}
+            noise_model_mode = parse_noise_model_mode(backend_cfg)
+            run_batch(
+                batch_mode="noisy_sim",
+                device_names=noisy_devices,
+                space_name=noisy_space,
+                metric_names=["objective"],
+                claim_pairs=parse_claim_pairs(args.noisy_claim_pairs),
+                direction=HigherIsBetter.YES,
+                noise_model_mode=noise_model_mode,
+            )
 
     if global_device_summary:
         final_summary = {

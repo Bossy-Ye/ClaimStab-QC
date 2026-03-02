@@ -1,15 +1,31 @@
-# Python caches
+# Python build/cache artifacts
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.eggs/
+build/
+dist/
 
 # Virtual envs
 .venv/
 venv/
 
-# IDE files
+# IDE/editor files
 .idea/
+.vscode/
 
-# Local outputs
+# Local experiment outputs
 out/
+out_*/
 examples/out/
+artifacts/
+output/
+outputs/
+
+# OS cruft
+.DS_Store

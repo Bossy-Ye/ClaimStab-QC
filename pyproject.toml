@@ -9,6 +9,18 @@ description = "Claim-centric stability harness for quantum software experiments"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
+keywords = ["quantum-computing", "reproducibility", "stability", "benchmarking", "qiskit"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
+]
 authors = [
   { name = "ClaimStab-QC Contributors" }
 ]
@@ -16,7 +28,8 @@ dependencies = [
   "qiskit>=1.0",
   "numpy>=1.24",
   "pandas>=2.0",
-  "matplotlib>=3.7"
+  "matplotlib>=3.7",
+  "pyyaml>=6.0"
 ]
 
 [project.optional-dependencies]
@@ -28,6 +41,13 @@ aer = [
 ]
 ibm = [
   "qiskit-ibm-runtime>=0.30"
+]
+docs = [
+  "mkdocs>=1.6",
+  "mkdocs-material>=9.5",
+  "mkdocs-awesome-pages-plugin>=2.9",
+  "pymdown-extensions>=10.0",
+  "mkdocs-git-revision-date-localized-plugin>=1.2"
 ]
 
 [tool.setuptools.packages.find]
