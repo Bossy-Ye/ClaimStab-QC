@@ -2,8 +2,15 @@
   font-weight: 700;
 }
 
-.md-typeset table:not([class]) th {
-  white-space: nowrap;
+.md-typeset table:not([class]) {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.md-typeset table:not([class]) th,
+.md-typeset table:not([class]) td {
+  vertical-align: top;
+  word-wrap: break-word;
 }
 
 .md-typeset img {
@@ -41,6 +48,8 @@
   border-radius: 6px;
   padding: 6px 8px;
   font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .cs-output p {

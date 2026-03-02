@@ -103,16 +103,56 @@
     ids.forEach((id) => {
       const el = document.getElementById(id);
       if (el) {
+        if (el.dataset.csBound === "1") return;
         el.addEventListener("input", fn);
         el.addEventListener("change", fn);
+        el.dataset.csBound = "1";
       }
     });
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
+  function rankingHolds(a, b, delta, direction) {
+    if (direction === "lower_is_better") {
+      return a <= b - delta;
+    }
+    return a >= b + delta;
+  }
+
+  function updateRankingWidget() {
+    const ids = ["rk-base-a", "rk-base-b", "rk-pert-a", "rk-pert-b", "rk-delta", "rk-direction"];
+    if (!ids.every((id) => document.getElementById(id))) return;
+    const baseA = parseFloat(document.getElementById("rk-base-a").value || "0");
+    const baseB = parseFloat(document.getElementById("rk-base-b").value || "0");
+    const pertA = parseFloat(document.getElementById("rk-pert-a").value || "0");
+    const pertB = parseFloat(document.getElementById("rk-pert-b").value || "0");
+    const delta = Math.max(0, parseFloat(document.getElementById("rk-delta").value || "0"));
+    const direction = document.getElementById("rk-direction").value || "higher_is_better";
+
+    const baseHolds = rankingHolds(baseA, baseB, delta, direction);
+    const pertHolds = rankingHolds(pertA, pertB, delta, direction);
+    const flip = baseHolds !== pertHolds;
+
+    const baseText = `${baseHolds ? "holds" : "does not hold"} (margin=${fmt(baseA - baseB, 4)})`;
+    const pertText = `${pertHolds ? "holds" : "does not hold"} (margin=${fmt(pertA - pertB, 4)})`;
+    document.getElementById("rk-base-state").textContent = baseText;
+    document.getElementById("rk-pert-state").textContent = pertText;
+    const flipEl = document.getElementById("rk-flip");
+    flipEl.textContent = flip ? "flip detected" : "no flip";
+    flipEl.classList.remove("stable", "unstable", "inconclusive");
+    flipEl.classList.add(flip ? "unstable" : "stable");
+  }
+
+  function initWidgets() {
     bind(["cs-successes", "cs-total", "cs-confidence", "cs-threshold"], updateClaimWidget);
     bind(["ps-seed-t", "ps-opt", "ps-layout", "ps-shots", "ps-seed-s", "ps-instances", "ps-k", "ps-sec"], updateSpaceWidget);
+    bind(["rk-base-a", "rk-base-b", "rk-pert-a", "rk-pert-b", "rk-delta", "rk-direction"], updateRankingWidget);
     updateClaimWidget();
     updateSpaceWidget();
-  });
+    updateRankingWidget();
+  }
+
+  document.addEventListener("DOMContentLoaded", initWidgets);
+  if (typeof window.document$ !== "undefined" && typeof window.document$.subscribe === "function") {
+    window.document$.subscribe(initWidgets);
+  }
 })();

@@ -73,3 +73,38 @@ Decision rule implemented:
 </div>
 
 This mirrors ClaimStab’s practical strategy: exhaustive calibration for smaller settings, random-k for broad-scale evaluation.
+
+## 3) Ranking Flip Simulator
+
+Try a single baseline vs perturbed comparison and see whether a rank flip occurs.
+
+<div class="cs-widget">
+  <div class="cs-grid">
+    <label>Direction
+      <select id="rk-direction">
+        <option value="higher_is_better" selected>higher_is_better</option>
+        <option value="lower_is_better">lower_is_better</option>
+      </select>
+    </label>
+    <label>Delta (δ)
+      <input id="rk-delta" type="number" min="0" step="0.001" value="0.01" />
+    </label>
+    <label>Baseline score A
+      <input id="rk-base-a" type="number" step="0.0001" value="0.62" />
+    </label>
+    <label>Baseline score B
+      <input id="rk-base-b" type="number" step="0.0001" value="0.60" />
+    </label>
+    <label>Perturbed score A
+      <input id="rk-pert-a" type="number" step="0.0001" value="0.58" />
+    </label>
+    <label>Perturbed score B
+      <input id="rk-pert-b" type="number" step="0.0001" value="0.59" />
+    </label>
+  </div>
+  <div class="cs-output">
+    <p><b>Baseline claim state:</b> <span id="rk-base-state">-</span></p>
+    <p><b>Perturbed claim state:</b> <span id="rk-pert-state">-</span></p>
+    <p><b>Flip status:</b> <span id="rk-flip" class="cs-pill">-</span></p>
+  </div>
+</div>
