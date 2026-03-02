@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "suite": "day1",
+    "batch_mode": "transpile_only",
+    "generated_by": "examples/day3_multidevice_demo.py",
+    "reproduce_command": "PYTHONPATH=. ./venv/bin/python examples/day3_multidevice_demo.py --run transpile_only --suite day1 --sampling-mode random_k --sample-size 4 --sample-seed 1 --transpile-space compilation_only --transpile-devices FakeManilaV2 --out-dir artifacts/day3_smoke"
+  },
+  "batch": {
+    "mode": "transpile_only",
+    "devices_requested": [
+      "FakeManilaV2"
+    ],
+    "devices_completed": [],
+    "devices_skipped": [
+      {
+        "device_name": "FakeManilaV2",
+        "reason": "IBM fake backend support requires qiskit-ibm-runtime. Install with: pip install 'claimstab-qc[ibm]'"
+      }
+    ]
+  },
+  "experiments": [],
+  "device_summary": [],
+  "comparative": {
+    "space_claim_delta": []
+  }
+}

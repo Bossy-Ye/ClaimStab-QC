@@ -1,0 +1,2674 @@
+{
+  "claim": {
+    "type": "ranking",
+    "method_a": "QAOA_p2",
+    "method_b": "RandomBaseline",
+    "deltas": [
+      0.0,
+      0.01,
+      0.05
+    ]
+  },
+  "baseline": {
+    "seed_transpiler": 0,
+    "optimization_level": 1,
+    "layout_method": "sabre",
+    "shots": 16,
+    "seed_simulator": 0
+  },
+  "stability_rule": {
+    "threshold": 0.95,
+    "confidence_level": 0.95,
+    "decision": "stable iff CI lower bound >= threshold"
+  },
+  "sampling": {
+    "suite": "day2",
+    "space_preset": "sampling_only",
+    "mode": "full_factorial",
+    "sample_size": null,
+    "seed": 0,
+    "sampled_configurations_with_baseline": 100
+  },
+  "perturbation_space_size": 100,
+  "backend_engine": "basic",
+  "per_graph": {
+    "ring6": {
+      "sampled_configurations": 100,
+      "delta_sweep": [
+        {
+          "delta": 0.0,
+          "total": 99,
+          "flips": 20,
+          "flip_rate": 0.20202020202020202,
+          "stability_rate": 0.797979797979798,
+          "ci_low": 0.7084558888292174,
+          "ci_high": 0.8652427019586431,
+          "decision": "unstable",
+          "stability_state": "unstable",
+          "baseline_holds": true,
+          "claim_holds_count": 80,
+          "claim_holds_rate": 0.8
+        },
+        {
+          "delta": 0.01,
+          "total": 99,
+          "flips": 70,
+          "flip_rate": 0.7070707070707071,
+          "stability_rate": 0.29292929292929293,
+          "ci_low": 0.21236632494510788,
+          "ci_high": 0.3889617729819721,
+          "decision": "unstable",
+          "stability_state": "unstable",
+          "baseline_holds": false,
+          "claim_holds_count": 70,
+          "claim_holds_rate": 0.7
+        },
+        {
+          "delta": 0.05,
+          "total": 99,
+          "flips": 61,
+          "flip_rate": 0.6161616161616161,
+          "stability_rate": 0.3838383838383838,
+          "ci_low": 0.29408646035611347,
+          "ci_high": 0.48226832628590705,
+          "decision": "unstable",
+          "stability_state": "unstable",
+          "baseline_holds": false,
+          "claim_holds_count": 61,
+          "claim_holds_rate": 0.61
+        }
+      ],
+      "factor_attribution": {
+        "0.0": {
+          "total": 99,
+          "flips": 20,
+          "flip_rate": 0.20202020202020202,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 20,
+                "flip_rate": 0.20202020202020202
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 20,
+                "flip_rate": 0.20202020202020202
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 20,
+                "flip_rate": 0.20202020202020202
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 1,
+                "flip_rate": 0.05
+              },
+              "16": {
+                "total": 19,
+                "flips": 6,
+                "flip_rate": 0.3157894736842105
+              },
+              "256": {
+                "total": 20,
+                "flips": 3,
+                "flip_rate": 0.15
+              },
+              "32": {
+                "total": 20,
+                "flips": 5,
+                "flip_rate": 0.25
+              },
+              "64": {
+                "total": 20,
+                "flips": 5,
+                "flip_rate": 0.25
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 1,
+                "flip_rate": 0.25
+              },
+              "1": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "10": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "11": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "12": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "13": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "14": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "15": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "16": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "17": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "18": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "19": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "2": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "3": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "4": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "5": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "6": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "7": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "8": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "9": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              }
+            }
+          }
+        },
+        "0.01": {
+          "total": 99,
+          "flips": 70,
+          "flip_rate": 0.7070707070707071,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 70,
+                "flip_rate": 0.7070707070707071
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 70,
+                "flip_rate": 0.7070707070707071
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 70,
+                "flip_rate": 0.7070707070707071
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 19,
+                "flip_rate": 0.95
+              },
+              "16": {
+                "total": 19,
+                "flips": 8,
+                "flip_rate": 0.42105263157894735
+              },
+              "256": {
+                "total": 20,
+                "flips": 16,
+                "flip_rate": 0.8
+              },
+              "32": {
+                "total": 20,
+                "flips": 12,
+                "flip_rate": 0.6
+              },
+              "64": {
+                "total": 20,
+                "flips": 15,
+                "flip_rate": 0.75
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 3,
+                "flip_rate": 0.75
+              },
+              "1": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "10": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "11": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "12": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "13": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "14": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "15": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "16": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "17": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "18": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "19": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "2": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "3": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "4": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "5": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "6": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "7": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "8": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "9": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              }
+            }
+          }
+        },
+        "0.05": {
+          "total": 99,
+          "flips": 61,
+          "flip_rate": 0.6161616161616161,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 61,
+                "flip_rate": 0.6161616161616161
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 61,
+                "flip_rate": 0.6161616161616161
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 61,
+                "flip_rate": 0.6161616161616161
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 17,
+                "flip_rate": 0.85
+              },
+              "16": {
+                "total": 19,
+                "flips": 8,
+                "flip_rate": 0.42105263157894735
+              },
+              "256": {
+                "total": 20,
+                "flips": 12,
+                "flip_rate": 0.6
+              },
+              "32": {
+                "total": 20,
+                "flips": 12,
+                "flip_rate": 0.6
+              },
+              "64": {
+                "total": 20,
+                "flips": 12,
+                "flip_rate": 0.6
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 3,
+                "flip_rate": 0.75
+              },
+              "1": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "10": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "11": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "12": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "13": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "14": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "15": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "16": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "17": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "18": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "19": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "2": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "3": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "4": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "5": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "6": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "7": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "8": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "9": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              }
+            }
+          }
+        }
+      }
+    },
+    "ring8": {
+      "sampled_configurations": 100,
+      "delta_sweep": [
+        {
+          "delta": 0.0,
+          "total": 99,
+          "flips": 42,
+          "flip_rate": 0.42424242424242425,
+          "stability_rate": 0.5757575757575758,
+          "ci_low": 0.47736664013853425,
+          "ci_high": 0.6684889337905829,
+          "decision": "unstable",
+          "stability_state": "unstable",
+          "baseline_holds": true,
+          "claim_holds_count": 58,
+          "claim_holds_rate": 0.58
+        },
+        {
+          "delta": 0.01,
+          "total": 99,
+          "flips": 45,
+          "flip_rate": 0.45454545454545453,
+          "stability_rate": 0.5454545454545454,
+          "ci_low": 0.44750694629535315,
+          "ci_high": 0.6400063980621171,
+          "decision": "unstable",
+          "stability_state": "unstable",
+          "baseline_holds": true,
+          "claim_holds_count": 55,
+          "claim_holds_rate": 0.55
+        },
+        {
+          "delta": 0.05,
+          "total": 99,
+          "flips": 57,
+          "flip_rate": 0.5757575757575758,
+          "stability_rate": 0.42424242424242425,
+          "ci_low": 0.33151106620941717,
+          "ci_high": 0.5226333598614659,
+          "decision": "unstable",
+          "stability_state": "unstable",
+          "baseline_holds": true,
+          "claim_holds_count": 43,
+          "claim_holds_rate": 0.43
+        }
+      ],
+      "factor_attribution": {
+        "0.0": {
+          "total": 99,
+          "flips": 42,
+          "flip_rate": 0.42424242424242425,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 42,
+                "flip_rate": 0.42424242424242425
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 42,
+                "flip_rate": 0.42424242424242425
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 42,
+                "flip_rate": 0.42424242424242425
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 1,
+                "flip_rate": 0.05
+              },
+              "16": {
+                "total": 19,
+                "flips": 11,
+                "flip_rate": 0.5789473684210527
+              },
+              "256": {
+                "total": 20,
+                "flips": 5,
+                "flip_rate": 0.25
+              },
+              "32": {
+                "total": 20,
+                "flips": 13,
+                "flip_rate": 0.65
+              },
+              "64": {
+                "total": 20,
+                "flips": 12,
+                "flip_rate": 0.6
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 1,
+                "flip_rate": 0.25
+              },
+              "1": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "10": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "11": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "12": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "13": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "14": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "15": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "16": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "17": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "18": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "19": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "2": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "3": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "4": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "5": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "6": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "7": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "8": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "9": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              }
+            }
+          }
+        },
+        "0.01": {
+          "total": 99,
+          "flips": 45,
+          "flip_rate": 0.45454545454545453,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 45,
+                "flip_rate": 0.45454545454545453
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 45,
+                "flip_rate": 0.45454545454545453
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 45,
+                "flip_rate": 0.45454545454545453
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 1,
+                "flip_rate": 0.05
+              },
+              "16": {
+                "total": 19,
+                "flips": 12,
+                "flip_rate": 0.631578947368421
+              },
+              "256": {
+                "total": 20,
+                "flips": 6,
+                "flip_rate": 0.3
+              },
+              "32": {
+                "total": 20,
+                "flips": 14,
+                "flip_rate": 0.7
+              },
+              "64": {
+                "total": 20,
+                "flips": 12,
+                "flip_rate": 0.6
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 1,
+                "flip_rate": 0.25
+              },
+              "1": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "10": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "11": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "12": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "13": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "14": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "15": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "16": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "17": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "18": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "19": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "2": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "3": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "4": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "5": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "6": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "7": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "8": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "9": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              }
+            }
+          }
+        },
+        "0.05": {
+          "total": 99,
+          "flips": 57,
+          "flip_rate": 0.5757575757575758,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 57,
+                "flip_rate": 0.5757575757575758
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 57,
+                "flip_rate": 0.5757575757575758
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 57,
+                "flip_rate": 0.5757575757575758
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 7,
+                "flip_rate": 0.35
+              },
+              "16": {
+                "total": 19,
+                "flips": 12,
+                "flip_rate": 0.631578947368421
+              },
+              "256": {
+                "total": 20,
+                "flips": 11,
+                "flip_rate": 0.55
+              },
+              "32": {
+                "total": 20,
+                "flips": 14,
+                "flip_rate": 0.7
+              },
+              "64": {
+                "total": 20,
+                "flips": 13,
+                "flip_rate": 0.65
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 2,
+                "flip_rate": 0.5
+              },
+              "1": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "10": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "11": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "12": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "13": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "14": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "15": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "16": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "17": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "18": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "19": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "2": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "3": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "4": {
+                "total": 5,
+                "flips": 2,
+                "flip_rate": 0.4
+              },
+              "5": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "6": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "7": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "8": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "9": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              }
+            }
+          }
+        }
+      }
+    },
+    "er_n8_p0.3_seed0": {
+      "sampled_configurations": 100,
+      "delta_sweep": [
+        {
+          "delta": 0.0,
+          "total": 99,
+          "flips": 0,
+          "flip_rate": 0.0,
+          "stability_rate": 1.0,
+          "ci_low": 0.9626467879321727,
+          "ci_high": 1.0,
+          "decision": "stable",
+          "stability_state": "stable_false",
+          "baseline_holds": false,
+          "claim_holds_count": 0,
+          "claim_holds_rate": 0.0
+        },
+        {
+          "delta": 0.01,
+          "total": 99,
+          "flips": 0,
+          "flip_rate": 0.0,
+          "stability_rate": 1.0,
+          "ci_low": 0.9626467879321727,
+          "ci_high": 1.0,
+          "decision": "stable",
+          "stability_state": "stable_false",
+          "baseline_holds": false,
+          "claim_holds_count": 0,
+          "claim_holds_rate": 0.0
+        },
+        {
+          "delta": 0.05,
+          "total": 99,
+          "flips": 0,
+          "flip_rate": 0.0,
+          "stability_rate": 1.0,
+          "ci_low": 0.9626467879321727,
+          "ci_high": 1.0,
+          "decision": "stable",
+          "stability_state": "stable_false",
+          "baseline_holds": false,
+          "claim_holds_count": 0,
+          "claim_holds_rate": 0.0
+        }
+      ],
+      "factor_attribution": {
+        "0.0": {
+          "total": 99,
+          "flips": 0,
+          "flip_rate": 0.0,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "16": {
+                "total": 19,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "256": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "32": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "64": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "1": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "10": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "11": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "12": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "13": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "14": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "15": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "16": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "17": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "18": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "19": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "2": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "3": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "4": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "5": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "6": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "7": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "8": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "9": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            }
+          }
+        },
+        "0.01": {
+          "total": 99,
+          "flips": 0,
+          "flip_rate": 0.0,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "16": {
+                "total": 19,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "256": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "32": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "64": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "1": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "10": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "11": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "12": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "13": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "14": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "15": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "16": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "17": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "18": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "19": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "2": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "3": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "4": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "5": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "6": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "7": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "8": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "9": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            }
+          }
+        },
+        "0.05": {
+          "total": 99,
+          "flips": 0,
+          "flip_rate": 0.0,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "16": {
+                "total": 19,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "256": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "32": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "64": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "1": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "10": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "11": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "12": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "13": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "14": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "15": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "16": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "17": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "18": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "19": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "2": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "3": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "4": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "5": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "6": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "7": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "8": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "9": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            }
+          }
+        }
+      }
+    },
+    "er_n8_p0.3_seed1": {
+      "sampled_configurations": 100,
+      "delta_sweep": [
+        {
+          "delta": 0.0,
+          "total": 99,
+          "flips": 85,
+          "flip_rate": 0.8585858585858586,
+          "stability_rate": 0.1414141414141414,
+          "ci_low": 0.0861448560744951,
+          "ci_high": 0.22347209399435078,
+          "decision": "unstable",
+          "stability_state": "unstable",
+          "baseline_holds": true,
+          "claim_holds_count": 15,
+          "claim_holds_rate": 0.15
+        },
+        {
+          "delta": 0.01,
+          "total": 99,
+          "flips": 88,
+          "flip_rate": 0.8888888888888888,
+          "stability_rate": 0.1111111111111111,
+          "ci_low": 0.06318563453857473,
+          "ci_high": 0.18808908595862434,
+          "decision": "unstable",
+          "stability_state": "unstable",
+          "baseline_holds": true,
+          "claim_holds_count": 12,
+          "claim_holds_rate": 0.12
+        },
+        {
+          "delta": 0.05,
+          "total": 99,
+          "flips": 89,
+          "flip_rate": 0.898989898989899,
+          "stability_rate": 0.10101010101010101,
+          "ci_low": 0.05579667502880501,
+          "ci_high": 0.17603063561117846,
+          "decision": "unstable",
+          "stability_state": "unstable",
+          "baseline_holds": true,
+          "claim_holds_count": 11,
+          "claim_holds_rate": 0.11
+        }
+      ],
+      "factor_attribution": {
+        "0.0": {
+          "total": 99,
+          "flips": 85,
+          "flip_rate": 0.8585858585858586,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 85,
+                "flip_rate": 0.8585858585858586
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 85,
+                "flip_rate": 0.8585858585858586
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 85,
+                "flip_rate": 0.8585858585858586
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 20,
+                "flip_rate": 1.0
+              },
+              "16": {
+                "total": 19,
+                "flips": 12,
+                "flip_rate": 0.631578947368421
+              },
+              "256": {
+                "total": 20,
+                "flips": 20,
+                "flip_rate": 1.0
+              },
+              "32": {
+                "total": 20,
+                "flips": 14,
+                "flip_rate": 0.7
+              },
+              "64": {
+                "total": 20,
+                "flips": 19,
+                "flip_rate": 0.95
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 3,
+                "flip_rate": 0.75
+              },
+              "1": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "10": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "11": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "12": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "13": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "14": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "15": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "16": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "17": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "18": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "19": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "2": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "3": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "4": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "5": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "6": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "7": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "8": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "9": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              }
+            }
+          }
+        },
+        "0.01": {
+          "total": 99,
+          "flips": 88,
+          "flip_rate": 0.8888888888888888,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 88,
+                "flip_rate": 0.8888888888888888
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 88,
+                "flip_rate": 0.8888888888888888
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 88,
+                "flip_rate": 0.8888888888888888
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 20,
+                "flip_rate": 1.0
+              },
+              "16": {
+                "total": 19,
+                "flips": 13,
+                "flip_rate": 0.6842105263157895
+              },
+              "256": {
+                "total": 20,
+                "flips": 20,
+                "flip_rate": 1.0
+              },
+              "32": {
+                "total": 20,
+                "flips": 16,
+                "flip_rate": 0.8
+              },
+              "64": {
+                "total": 20,
+                "flips": 19,
+                "flip_rate": 0.95
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 4,
+                "flip_rate": 1.0
+              },
+              "1": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "10": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "11": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "12": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "13": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "14": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "15": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "16": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "17": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "18": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "19": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "2": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "3": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "4": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "5": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "6": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "7": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "8": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "9": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              }
+            }
+          }
+        },
+        "0.05": {
+          "total": 99,
+          "flips": 89,
+          "flip_rate": 0.898989898989899,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 89,
+                "flip_rate": 0.898989898989899
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 89,
+                "flip_rate": 0.898989898989899
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 89,
+                "flip_rate": 0.898989898989899
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 20,
+                "flip_rate": 1.0
+              },
+              "16": {
+                "total": 19,
+                "flips": 13,
+                "flip_rate": 0.6842105263157895
+              },
+              "256": {
+                "total": 20,
+                "flips": 20,
+                "flip_rate": 1.0
+              },
+              "32": {
+                "total": 20,
+                "flips": 17,
+                "flip_rate": 0.85
+              },
+              "64": {
+                "total": 20,
+                "flips": 19,
+                "flip_rate": 0.95
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 4,
+                "flip_rate": 1.0
+              },
+              "1": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "10": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "11": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "12": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "13": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "14": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "15": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "16": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "17": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "18": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "19": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "2": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "3": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "4": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "5": {
+                "total": 5,
+                "flips": 3,
+                "flip_rate": 0.6
+              },
+              "6": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "7": {
+                "total": 5,
+                "flips": 5,
+                "flip_rate": 1.0
+              },
+              "8": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              },
+              "9": {
+                "total": 5,
+                "flips": 4,
+                "flip_rate": 0.8
+              }
+            }
+          }
+        }
+      }
+    },
+    "er_n10_p0.25_seed0": {
+      "sampled_configurations": 100,
+      "delta_sweep": [
+        {
+          "delta": 0.0,
+          "total": 99,
+          "flips": 2,
+          "flip_rate": 0.020202020202020204,
+          "stability_rate": 0.9797979797979798,
+          "ci_low": 0.9293096883284993,
+          "ci_high": 0.9944422798892423,
+          "decision": "inconclusive",
+          "stability_state": "inconclusive",
+          "baseline_holds": false,
+          "claim_holds_count": 2,
+          "claim_holds_rate": 0.02
+        },
+        {
+          "delta": 0.01,
+          "total": 99,
+          "flips": 1,
+          "flip_rate": 0.010101010101010102,
+          "stability_rate": 0.98989898989899,
+          "ci_low": 0.9449846853541274,
+          "ci_high": 0.9982146927208301,
+          "decision": "inconclusive",
+          "stability_state": "inconclusive",
+          "baseline_holds": false,
+          "claim_holds_count": 1,
+          "claim_holds_rate": 0.01
+        },
+        {
+          "delta": 0.05,
+          "total": 99,
+          "flips": 1,
+          "flip_rate": 0.010101010101010102,
+          "stability_rate": 0.98989898989899,
+          "ci_low": 0.9449846853541274,
+          "ci_high": 0.9982146927208301,
+          "decision": "inconclusive",
+          "stability_state": "inconclusive",
+          "baseline_holds": false,
+          "claim_holds_count": 1,
+          "claim_holds_rate": 0.01
+        }
+      ],
+      "factor_attribution": {
+        "0.0": {
+          "total": 99,
+          "flips": 2,
+          "flip_rate": 0.020202020202020204,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 2,
+                "flip_rate": 0.020202020202020204
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 2,
+                "flip_rate": 0.020202020202020204
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 2,
+                "flip_rate": 0.020202020202020204
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "16": {
+                "total": 19,
+                "flips": 2,
+                "flip_rate": 0.10526315789473684
+              },
+              "256": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "32": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "64": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "1": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "10": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "11": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "12": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "13": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "14": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "15": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "16": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "17": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "18": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "19": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "2": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "3": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "4": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "5": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "6": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "7": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "8": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "9": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            }
+          }
+        },
+        "0.01": {
+          "total": 99,
+          "flips": 1,
+          "flip_rate": 0.010101010101010102,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 1,
+                "flip_rate": 0.010101010101010102
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 1,
+                "flip_rate": 0.010101010101010102
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 1,
+                "flip_rate": 0.010101010101010102
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "16": {
+                "total": 19,
+                "flips": 1,
+                "flip_rate": 0.05263157894736842
+              },
+              "256": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "32": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "64": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "1": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "10": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "11": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "12": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "13": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "14": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "15": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "16": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "17": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "18": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "19": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "2": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "3": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "4": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "5": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "6": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "7": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "8": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "9": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            }
+          }
+        },
+        "0.05": {
+          "total": 99,
+          "flips": 1,
+          "flip_rate": 0.010101010101010102,
+          "by_dimension": {
+            "seed_transpiler": {
+              "0": {
+                "total": 99,
+                "flips": 1,
+                "flip_rate": 0.010101010101010102
+              }
+            },
+            "optimization_level": {
+              "1": {
+                "total": 99,
+                "flips": 1,
+                "flip_rate": 0.010101010101010102
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 99,
+                "flips": 1,
+                "flip_rate": 0.010101010101010102
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "16": {
+                "total": 19,
+                "flips": 1,
+                "flip_rate": 0.05263157894736842
+              },
+              "256": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "32": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "64": {
+                "total": 20,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 4,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "1": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "10": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "11": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "12": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "13": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "14": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "15": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "16": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "17": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "18": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "19": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "2": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "3": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "4": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "5": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "6": {
+                "total": 5,
+                "flips": 1,
+                "flip_rate": 0.2
+              },
+              "7": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "8": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "9": {
+                "total": 5,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "overall": {
+    "graphs": 5,
+    "delta_sweep": [
+      {
+        "delta": 0.0,
+        "flip_rate_mean": 0.301010101010101,
+        "flip_rate_max": 0.8585858585858586,
+        "flip_rate_min": 0.0,
+        "stable_count": 1,
+        "unstable_count": 3,
+        "inconclusive_count": 1,
+        "stable_true_count": 0,
+        "stable_false_count": 1
+      },
+      {
+        "delta": 0.01,
+        "flip_rate_mean": 0.4121212121212121,
+        "flip_rate_max": 0.8888888888888888,
+        "flip_rate_min": 0.0,
+        "stable_count": 1,
+        "unstable_count": 3,
+        "inconclusive_count": 1,
+        "stable_true_count": 0,
+        "stable_false_count": 1
+      },
+      {
+        "delta": 0.05,
+        "flip_rate_mean": 0.42020202020202024,
+        "flip_rate_max": 0.898989898989899,
+        "flip_rate_min": 0.0,
+        "stable_count": 1,
+        "unstable_count": 3,
+        "inconclusive_count": 1,
+        "stable_true_count": 0,
+        "stable_false_count": 1
+      }
+    ]
+  }
+}

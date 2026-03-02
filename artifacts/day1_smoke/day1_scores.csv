@@ -1,0 +1,16 @@
+suite,space_preset,instance_id,seed_transpiler,optimization_level,layout_method,seed_simulator,shots,method,score,transpiled_depth,transpiled_size,device_provider,device_name,device_mode,device_snapshot_fingerprint,circuit_depth,two_qubit_count,swap_count
+day1,day1_default,maxcut_test,0,0,trivial,0,1024,QAOA_p1,3.578125,41,75,,,,,41,23,0
+day1,day1_default,maxcut_test,2,0,sabre,0,1024,QAOA_p1,3.58203125,41,75,,,,,41,23,0
+day1,day1_default,maxcut_test,9,0,trivial,0,1024,QAOA_p1,3.578125,41,75,,,,,41,23,0
+day1,day1_default,maxcut_test,1,0,trivial,0,1024,QAOA_p1,3.578125,41,75,,,,,41,23,0
+day1,day1_default,maxcut_test,4,0,trivial,0,1024,QAOA_p1,3.578125,41,75,,,,,41,23,0
+day1,day1_default,maxcut_test,0,0,trivial,0,1024,QAOA_p2,3.1826171875,80,136,,,,,80,52,0
+day1,day1_default,maxcut_test,2,0,sabre,0,1024,QAOA_p2,3.240234375,72,133,,,,,72,49,0
+day1,day1_default,maxcut_test,9,0,trivial,0,1024,QAOA_p2,3.1826171875,78,136,,,,,78,52,0
+day1,day1_default,maxcut_test,1,0,trivial,0,1024,QAOA_p2,3.2548828125,80,136,,,,,80,52,0
+day1,day1_default,maxcut_test,4,0,trivial,0,1024,QAOA_p2,3.1826171875,77,136,,,,,77,52,0
+day1,day1_default,maxcut_test,0,0,trivial,0,1024,RandomBaseline,3.52734375,4,20,,,,,4,0,0
+day1,day1_default,maxcut_test,2,0,sabre,0,1024,RandomBaseline,3.4912109375,4,20,,,,,4,0,0
+day1,day1_default,maxcut_test,9,0,trivial,0,1024,RandomBaseline,3.52734375,4,20,,,,,4,0,0
+day1,day1_default,maxcut_test,1,0,trivial,0,1024,RandomBaseline,3.52734375,4,20,,,,,4,0,0
+day1,day1_default,maxcut_test,4,0,trivial,0,1024,RandomBaseline,3.52734375,4,20,,,,,4,0,0

@@ -1,0 +1,39 @@
+version: 1
+study_name: claimstab_maxcut_core
+
+perturbation_space:
+  optimization_level: [0, 1, 2, 3]
+  seed_transpiler: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  layout_method: [trivial, sabre]
+  shots: [256, 512, 1024]
+  repeats: [0, 1, 2, 3, 4]
+
+baseline:
+  optimization_level: 0
+  seed_transpiler: 0
+  layout_method: trivial
+  shots: 1024
+  repeats: 0
+
+sampling_policy:
+  small_scale:
+    mode: full_factorial
+    representative_instances: [ring6, ring8, er_n8_p0.3_seed0]
+
+  large_scale:
+    mode: random_k
+    sample_size: 100
+    seed: 0
+    include_baseline: true
+
+  stopping:
+    criterion: optional_ci_half_width
+    max_samples: 200
+    target_half_width: 0.03
+
+reporting:
+  always_report:
+    - sampled_configuration_count
+    - perturbation_space_size
+    - confidence_interval_per_claim
+    - conservative_decision_per_claim

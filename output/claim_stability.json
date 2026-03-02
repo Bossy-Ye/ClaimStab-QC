@@ -1,0 +1,2004 @@
+{
+  "meta": {
+    "suite": "core",
+    "deltas": [
+      0.0,
+      0.01,
+      0.05
+    ],
+    "methods_available": [
+      "QAOA_p1",
+      "QAOA_p2",
+      "RandomBaseline"
+    ],
+    "generated_by": "examples/claim_stability_demo.py",
+    "reproduce_command": "PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --suite core --sampling-mode random_k --sample-size 2 --sample-seed 1 --out-dir output"
+  },
+  "device_profile": {
+    "enabled": false,
+    "provider": "none",
+    "name": null,
+    "mode": "transpile_only",
+    "snapshot_fingerprint": null,
+    "snapshot": null
+  },
+  "batch": {
+    "space_presets": [
+      "baseline"
+    ],
+    "claim_pairs": [
+      "QAOA_p2>RandomBaseline"
+    ],
+    "num_experiments": 1
+  },
+  "experiments": [
+    {
+      "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+      "claim": {
+        "type": "ranking",
+        "method_a": "QAOA_p2",
+        "method_b": "RandomBaseline",
+        "deltas": [
+          0.0,
+          0.01,
+          0.05
+        ],
+        "delta_interpretation": "delta is a practical significance threshold; increasing delta makes the claim stricter and may change both holds rate and stability."
+      },
+      "baseline": {
+        "seed_transpiler": 0,
+        "optimization_level": 0,
+        "layout_method": "trivial",
+        "shots": 1024,
+        "seed_simulator": 0
+      },
+      "stability_rule": {
+        "threshold": 0.95,
+        "confidence_level": 0.95,
+        "decision": "stable iff CI lower bound >= threshold"
+      },
+      "sampling": {
+        "suite": "core",
+        "space_preset": "baseline",
+        "mode": "random_k",
+        "sample_size": 2,
+        "seed": 1,
+        "sampled_configurations_with_baseline": 3,
+        "perturbation_space_size": 80
+      },
+      "backend": {
+        "engine": "basic",
+        "noise_model": "none",
+        "spot_check_noise": false,
+        "one_qubit_error": null,
+        "two_qubit_error": null
+      },
+      "device_profile": {
+        "enabled": false,
+        "provider": "none",
+        "name": null,
+        "mode": "transpile_only",
+        "snapshot_fingerprint": null,
+        "snapshot": null
+      },
+      "per_graph": {
+        "maxcut_test": {
+          "sampled_configurations": 3,
+          "delta_sweep": [
+            {
+              "delta": 0.0,
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0,
+              "stability_hat": 1.0,
+              "stability_ci_low": 0.3423802275066532,
+              "stability_ci_high": 1.0,
+              "decision": "inconclusive",
+              "baseline_holds": false,
+              "claim_holds_count": 0,
+              "claim_total_count": 3,
+              "claim_holds_rate": 0.0
+            },
+            {
+              "delta": 0.01,
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0,
+              "stability_hat": 1.0,
+              "stability_ci_low": 0.3423802275066532,
+              "stability_ci_high": 1.0,
+              "decision": "inconclusive",
+              "baseline_holds": false,
+              "claim_holds_count": 0,
+              "claim_total_count": 3,
+              "claim_holds_rate": 0.0
+            },
+            {
+              "delta": 0.05,
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0,
+              "stability_hat": 1.0,
+              "stability_ci_low": 0.3423802275066532,
+              "stability_ci_high": 1.0,
+              "decision": "inconclusive",
+              "baseline_holds": false,
+              "claim_holds_count": 0,
+              "claim_total_count": 3,
+              "claim_holds_rate": 0.0
+            }
+          ],
+          "factor_attribution": {
+            "0.0": {
+              "baseline_holds": false,
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0,
+              "by_dimension": {
+                "seed_transpiler": {
+                  "2": {
+                    "total": 1,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  },
+                  "9": {
+                    "total": 1,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                },
+                "optimization_level": {
+                  "0": {
+                    "total": 2,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                },
+                "layout_method": {
+                  "sabre": {
+                    "total": 1,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  },
+                  "trivial": {
+                    "total": 1,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                },
+                "shots": {
+                  "1024": {
+                    "total": 2,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                },
+                "seed_simulator": {
+                  "0": {
+                    "total": 2,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                }
+              },
+              "top_flip_configs": []
+            },
+            "0.01": {
+              "baseline_holds": false,
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0,
+              "by_dimension": {
+                "seed_transpiler": {
+                  "2": {
+                    "total": 1,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  },
+                  "9": {
+                    "total": 1,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                },
+                "optimization_level": {
+                  "0": {
+                    "total": 2,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                },
+                "layout_method": {
+                  "sabre": {
+                    "total": 1,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  },
+                  "trivial": {
+                    "total": 1,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                },
+                "shots": {
+                  "1024": {
+                    "total": 2,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                },
+                "seed_simulator": {
+                  "0": {
+                    "total": 2,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                }
+              },
+              "top_flip_configs": []
+            },
+            "0.05": {
+              "baseline_holds": false,
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0,
+              "by_dimension": {
+                "seed_transpiler": {
+                  "2": {
+                    "total": 1,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  },
+                  "9": {
+                    "total": 1,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                },
+                "optimization_level": {
+                  "0": {
+                    "total": 2,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                },
+                "layout_method": {
+                  "sabre": {
+                    "total": 1,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  },
+                  "trivial": {
+                    "total": 1,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                },
+                "shots": {
+                  "1024": {
+                    "total": 2,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                },
+                "seed_simulator": {
+                  "0": {
+                    "total": 2,
+                    "flips": 0,
+                    "flip_rate": 0.0
+                  }
+                }
+              },
+              "top_flip_configs": []
+            }
+          },
+          "lockdown_recommendation": {
+            "0.0": {
+              "global_flip_rate": 0.0,
+              "top_recommendations": [
+                {
+                  "dimension": "optimization_level",
+                  "value": 0,
+                  "flip_rate_improvement": 0.0,
+                  "constraints": {
+                    "optimization_level": 0
+                  },
+                  "subset_size": 3,
+                  "baseline_key_used": {
+                    "seed_transpiler": 0,
+                    "optimization_level": 0,
+                    "layout_method": "trivial",
+                    "shots": 1024,
+                    "seed_simulator": 0
+                  },
+                  "baseline_margin": -0.3447265625,
+                  "baseline_holds": false,
+                  "total": 2,
+                  "flips": 0,
+                  "flip_rate": 0.0,
+                  "stability_hat": 1.0,
+                  "stability_ci_low": 0.3423802275066532,
+                  "stability_ci_high": 1.0,
+                  "decision": "inconclusive"
+                },
+                {
+                  "dimension": "layout_method",
+                  "value": "trivial",
+                  "flip_rate_improvement": 0.0,
+                  "constraints": {
+                    "layout_method": "trivial"
+                  },
+                  "subset_size": 2,
+                  "baseline_key_used": {
+                    "seed_transpiler": 0,
+                    "optimization_level": 0,
+                    "layout_method": "trivial",
+                    "shots": 1024,
+                    "seed_simulator": 0
+                  },
+                  "baseline_margin": -0.3447265625,
+                  "baseline_holds": false,
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0,
+                  "stability_hat": 1.0,
+                  "stability_ci_low": 0.2065493143772375,
+                  "stability_ci_high": 1.0,
+                  "decision": "inconclusive"
+                }
+              ],
+              "candidate_count": 4
+            },
+            "0.01": {
+              "global_flip_rate": 0.0,
+              "top_recommendations": [
+                {
+                  "dimension": "optimization_level",
+                  "value": 0,
+                  "flip_rate_improvement": 0.0,
+                  "constraints": {
+                    "optimization_level": 0
+                  },
+                  "subset_size": 3,
+                  "baseline_key_used": {
+                    "seed_transpiler": 0,
+                    "optimization_level": 0,
+                    "layout_method": "trivial",
+                    "shots": 1024,
+                    "seed_simulator": 0
+                  },
+                  "baseline_margin": -0.3447265625,
+                  "baseline_holds": false,
+                  "total": 2,
+                  "flips": 0,
+                  "flip_rate": 0.0,
+                  "stability_hat": 1.0,
+                  "stability_ci_low": 0.3423802275066532,
+                  "stability_ci_high": 1.0,
+                  "decision": "inconclusive"
+                },
+                {
+                  "dimension": "layout_method",
+                  "value": "trivial",
+                  "flip_rate_improvement": 0.0,
+                  "constraints": {
+                    "layout_method": "trivial"
+                  },
+                  "subset_size": 2,
+                  "baseline_key_used": {
+                    "seed_transpiler": 0,
+                    "optimization_level": 0,
+                    "layout_method": "trivial",
+                    "shots": 1024,
+                    "seed_simulator": 0
+                  },
+                  "baseline_margin": -0.3447265625,
+                  "baseline_holds": false,
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0,
+                  "stability_hat": 1.0,
+                  "stability_ci_low": 0.2065493143772375,
+                  "stability_ci_high": 1.0,
+                  "decision": "inconclusive"
+                }
+              ],
+              "candidate_count": 4
+            },
+            "0.05": {
+              "global_flip_rate": 0.0,
+              "top_recommendations": [
+                {
+                  "dimension": "optimization_level",
+                  "value": 0,
+                  "flip_rate_improvement": 0.0,
+                  "constraints": {
+                    "optimization_level": 0
+                  },
+                  "subset_size": 3,
+                  "baseline_key_used": {
+                    "seed_transpiler": 0,
+                    "optimization_level": 0,
+                    "layout_method": "trivial",
+                    "shots": 1024,
+                    "seed_simulator": 0
+                  },
+                  "baseline_margin": -0.3447265625,
+                  "baseline_holds": false,
+                  "total": 2,
+                  "flips": 0,
+                  "flip_rate": 0.0,
+                  "stability_hat": 1.0,
+                  "stability_ci_low": 0.3423802275066532,
+                  "stability_ci_high": 1.0,
+                  "decision": "inconclusive"
+                },
+                {
+                  "dimension": "layout_method",
+                  "value": "trivial",
+                  "flip_rate_improvement": 0.0,
+                  "constraints": {
+                    "layout_method": "trivial"
+                  },
+                  "subset_size": 2,
+                  "baseline_key_used": {
+                    "seed_transpiler": 0,
+                    "optimization_level": 0,
+                    "layout_method": "trivial",
+                    "shots": 1024,
+                    "seed_simulator": 0
+                  },
+                  "baseline_margin": -0.3447265625,
+                  "baseline_holds": false,
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0,
+                  "stability_hat": 1.0,
+                  "stability_ci_low": 0.2065493143772375,
+                  "stability_ci_high": 1.0,
+                  "decision": "inconclusive"
+                }
+              ],
+              "candidate_count": 4
+            }
+          },
+          "conditional_stability": {
+            "0.0": [
+              {
+                "constraints": {},
+                "subset_size": 3,
+                "baseline_key_used": {
+                  "seed_transpiler": 0,
+                  "optimization_level": 0,
+                  "layout_method": "trivial",
+                  "shots": 1024,
+                  "seed_simulator": 0
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_holds": false,
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0,
+                "stability_hat": 1.0,
+                "stability_ci_low": 0.3423802275066532,
+                "stability_ci_high": 1.0,
+                "decision": "inconclusive"
+              },
+              {
+                "constraints": {
+                  "shots": 1024
+                },
+                "subset_size": 3,
+                "baseline_key_used": {
+                  "seed_transpiler": 0,
+                  "optimization_level": 0,
+                  "layout_method": "trivial",
+                  "shots": 1024,
+                  "seed_simulator": 0
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_holds": false,
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0,
+                "stability_hat": 1.0,
+                "stability_ci_low": 0.3423802275066532,
+                "stability_ci_high": 1.0,
+                "decision": "inconclusive"
+              },
+              {
+                "constraints": {
+                  "shots": 1024,
+                  "seed_simulator": 0
+                },
+                "subset_size": 3,
+                "baseline_key_used": {
+                  "seed_transpiler": 0,
+                  "optimization_level": 0,
+                  "layout_method": "trivial",
+                  "shots": 1024,
+                  "seed_simulator": 0
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_holds": false,
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0,
+                "stability_hat": 1.0,
+                "stability_ci_low": 0.3423802275066532,
+                "stability_ci_high": 1.0,
+                "decision": "inconclusive"
+              }
+            ],
+            "0.01": [
+              {
+                "constraints": {},
+                "subset_size": 3,
+                "baseline_key_used": {
+                  "seed_transpiler": 0,
+                  "optimization_level": 0,
+                  "layout_method": "trivial",
+                  "shots": 1024,
+                  "seed_simulator": 0
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_holds": false,
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0,
+                "stability_hat": 1.0,
+                "stability_ci_low": 0.3423802275066532,
+                "stability_ci_high": 1.0,
+                "decision": "inconclusive"
+              },
+              {
+                "constraints": {
+                  "shots": 1024
+                },
+                "subset_size": 3,
+                "baseline_key_used": {
+                  "seed_transpiler": 0,
+                  "optimization_level": 0,
+                  "layout_method": "trivial",
+                  "shots": 1024,
+                  "seed_simulator": 0
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_holds": false,
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0,
+                "stability_hat": 1.0,
+                "stability_ci_low": 0.3423802275066532,
+                "stability_ci_high": 1.0,
+                "decision": "inconclusive"
+              },
+              {
+                "constraints": {
+                  "shots": 1024,
+                  "seed_simulator": 0
+                },
+                "subset_size": 3,
+                "baseline_key_used": {
+                  "seed_transpiler": 0,
+                  "optimization_level": 0,
+                  "layout_method": "trivial",
+                  "shots": 1024,
+                  "seed_simulator": 0
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_holds": false,
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0,
+                "stability_hat": 1.0,
+                "stability_ci_low": 0.3423802275066532,
+                "stability_ci_high": 1.0,
+                "decision": "inconclusive"
+              }
+            ],
+            "0.05": [
+              {
+                "constraints": {},
+                "subset_size": 3,
+                "baseline_key_used": {
+                  "seed_transpiler": 0,
+                  "optimization_level": 0,
+                  "layout_method": "trivial",
+                  "shots": 1024,
+                  "seed_simulator": 0
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_holds": false,
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0,
+                "stability_hat": 1.0,
+                "stability_ci_low": 0.3423802275066532,
+                "stability_ci_high": 1.0,
+                "decision": "inconclusive"
+              },
+              {
+                "constraints": {
+                  "shots": 1024
+                },
+                "subset_size": 3,
+                "baseline_key_used": {
+                  "seed_transpiler": 0,
+                  "optimization_level": 0,
+                  "layout_method": "trivial",
+                  "shots": 1024,
+                  "seed_simulator": 0
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_holds": false,
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0,
+                "stability_hat": 1.0,
+                "stability_ci_low": 0.3423802275066532,
+                "stability_ci_high": 1.0,
+                "decision": "inconclusive"
+              },
+              {
+                "constraints": {
+                  "shots": 1024,
+                  "seed_simulator": 0
+                },
+                "subset_size": 3,
+                "baseline_key_used": {
+                  "seed_transpiler": 0,
+                  "optimization_level": 0,
+                  "layout_method": "trivial",
+                  "shots": 1024,
+                  "seed_simulator": 0
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_holds": false,
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0,
+                "stability_hat": 1.0,
+                "stability_ci_low": 0.3423802275066532,
+                "stability_ci_high": 1.0,
+                "decision": "inconclusive"
+              }
+            ]
+          }
+        }
+      },
+      "overall": {
+        "graphs": 1,
+        "delta_sweep": [
+          {
+            "delta": 0.0,
+            "n_instances": 1,
+            "n_claim_evals": 2,
+            "flip_rate_mean": 0.0,
+            "flip_rate_max": 0.0,
+            "flip_rate_min": 0.0,
+            "holds_rate_mean": 0.0,
+            "holds_rate_ci_low": 0.0,
+            "holds_rate_ci_high": 0.5614970317550454,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive",
+            "decision_counts": {
+              "stable": 0,
+              "unstable": 0,
+              "inconclusive": 1
+            }
+          },
+          {
+            "delta": 0.01,
+            "n_instances": 1,
+            "n_claim_evals": 2,
+            "flip_rate_mean": 0.0,
+            "flip_rate_max": 0.0,
+            "flip_rate_min": 0.0,
+            "holds_rate_mean": 0.0,
+            "holds_rate_ci_low": 0.0,
+            "holds_rate_ci_high": 0.5614970317550454,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive",
+            "decision_counts": {
+              "stable": 0,
+              "unstable": 0,
+              "inconclusive": 1
+            }
+          },
+          {
+            "delta": 0.05,
+            "n_instances": 1,
+            "n_claim_evals": 2,
+            "flip_rate_mean": 0.0,
+            "flip_rate_max": 0.0,
+            "flip_rate_min": 0.0,
+            "holds_rate_mean": 0.0,
+            "holds_rate_ci_low": 0.0,
+            "holds_rate_ci_high": 0.5614970317550454,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive",
+            "decision_counts": {
+              "stable": 0,
+              "unstable": 0,
+              "inconclusive": 1
+            }
+          }
+        ],
+        "diagnostics": {
+          "by_delta_dimension": {
+            "0.0": {
+              "seed_transpiler": {
+                "2": {
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                },
+                "9": {
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              },
+              "optimization_level": {
+                "0": {
+                  "total": 2,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              },
+              "layout_method": {
+                "sabre": {
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                },
+                "trivial": {
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              },
+              "shots": {
+                "1024": {
+                  "total": 2,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              },
+              "seed_simulator": {
+                "0": {
+                  "total": 2,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              }
+            },
+            "0.01": {
+              "seed_transpiler": {
+                "2": {
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                },
+                "9": {
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              },
+              "optimization_level": {
+                "0": {
+                  "total": 2,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              },
+              "layout_method": {
+                "sabre": {
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                },
+                "trivial": {
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              },
+              "shots": {
+                "1024": {
+                  "total": 2,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              },
+              "seed_simulator": {
+                "0": {
+                  "total": 2,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              }
+            },
+            "0.05": {
+              "seed_transpiler": {
+                "2": {
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                },
+                "9": {
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              },
+              "optimization_level": {
+                "0": {
+                  "total": 2,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              },
+              "layout_method": {
+                "sabre": {
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                },
+                "trivial": {
+                  "total": 1,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              },
+              "shots": {
+                "1024": {
+                  "total": 2,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              },
+              "seed_simulator": {
+                "0": {
+                  "total": 2,
+                  "flips": 0,
+                  "flip_rate": 0.0
+                }
+              }
+            }
+          },
+          "top_unstable_configs_by_delta": {
+            "0.0": [],
+            "0.01": [],
+            "0.05": []
+          },
+          "top_lockdown_recommendations_by_delta": {
+            "0.0": [
+              {
+                "dimension": "optimization_level",
+                "value": 0,
+                "avg_flip_rate_improvement": 0.0,
+                "avg_flip_rate": 0.0,
+                "avg_stability_hat": 1.0,
+                "count": 1
+              },
+              {
+                "dimension": "layout_method",
+                "value": "trivial",
+                "avg_flip_rate_improvement": 0.0,
+                "avg_flip_rate": 0.0,
+                "avg_stability_hat": 1.0,
+                "count": 1
+              }
+            ],
+            "0.01": [
+              {
+                "dimension": "optimization_level",
+                "value": 0,
+                "avg_flip_rate_improvement": 0.0,
+                "avg_flip_rate": 0.0,
+                "avg_stability_hat": 1.0,
+                "count": 1
+              },
+              {
+                "dimension": "layout_method",
+                "value": "trivial",
+                "avg_flip_rate_improvement": 0.0,
+                "avg_flip_rate": 0.0,
+                "avg_stability_hat": 1.0,
+                "count": 1
+              }
+            ],
+            "0.05": [
+              {
+                "dimension": "optimization_level",
+                "value": 0,
+                "avg_flip_rate_improvement": 0.0,
+                "avg_flip_rate": 0.0,
+                "avg_stability_hat": 1.0,
+                "count": 1
+              },
+              {
+                "dimension": "layout_method",
+                "value": "trivial",
+                "avg_flip_rate_improvement": 0.0,
+                "avg_flip_rate": 0.0,
+                "avg_stability_hat": 1.0,
+                "count": 1
+              }
+            ]
+          }
+        },
+        "stability_vs_cost": {
+          "cost_metric": "shots",
+          "by_delta": {
+            "0.0": [
+              {
+                "shots": 1024,
+                "n_eval": 2,
+                "flip_rate": 0.0,
+                "stability_hat": 1.0,
+                "stability_ci_low": 0.3423802275066532,
+                "stability_ci_high": 1.0,
+                "decision": "inconclusive"
+              }
+            ],
+            "0.01": [
+              {
+                "shots": 1024,
+                "n_eval": 2,
+                "flip_rate": 0.0,
+                "stability_hat": 1.0,
+                "stability_ci_low": 0.3423802275066532,
+                "stability_ci_high": 1.0,
+                "decision": "inconclusive"
+              }
+            ],
+            "0.05": [
+              {
+                "shots": 1024,
+                "n_eval": 2,
+                "flip_rate": 0.0,
+                "stability_hat": 1.0,
+                "stability_ci_low": 0.3423802275066532,
+                "stability_ci_high": 1.0,
+                "decision": "inconclusive"
+              }
+            ]
+          },
+          "minimum_shots_for_stable": {
+            "0.0": null,
+            "0.01": null,
+            "0.05": null
+          }
+        }
+      },
+      "auxiliary_claims": {
+        "graph_id": "maxcut_test",
+        "decision_example": {
+          "selected_label": "QAOA_p1",
+          "rule": "selected baseline winner remains in top-2 under perturbation",
+          "accepted": 3,
+          "total": 3,
+          "acceptance_rate": 1.0,
+          "ci_low": 0.4385029682449546,
+          "ci_high": 1.0,
+          "decision": "inconclusive"
+        },
+        "distribution_example": {}
+      }
+    }
+  ],
+  "comparative": {
+    "space_claim_delta": [
+      {
+        "space_preset": "baseline",
+        "claim_pair": "QAOA_p2>RandomBaseline",
+        "delta": 0.0,
+        "n_instances": 1,
+        "n_claim_evals": 2,
+        "flip_rate_mean": 0.0,
+        "flip_rate_max": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_mean": 0.0,
+        "holds_rate_ci_low": 0.0,
+        "holds_rate_ci_high": 0.5614970317550454,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "decision_counts": {
+          "stable": 0,
+          "unstable": 0,
+          "inconclusive": 1
+        }
+      },
+      {
+        "space_preset": "baseline",
+        "claim_pair": "QAOA_p2>RandomBaseline",
+        "delta": 0.01,
+        "n_instances": 1,
+        "n_claim_evals": 2,
+        "flip_rate_mean": 0.0,
+        "flip_rate_max": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_mean": 0.0,
+        "holds_rate_ci_low": 0.0,
+        "holds_rate_ci_high": 0.5614970317550454,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "decision_counts": {
+          "stable": 0,
+          "unstable": 0,
+          "inconclusive": 1
+        }
+      },
+      {
+        "space_preset": "baseline",
+        "claim_pair": "QAOA_p2>RandomBaseline",
+        "delta": 0.05,
+        "n_instances": 1,
+        "n_claim_evals": 2,
+        "flip_rate_mean": 0.0,
+        "flip_rate_max": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_mean": 0.0,
+        "holds_rate_ci_low": 0.0,
+        "holds_rate_ci_high": 0.5614970317550454,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "decision_counts": {
+          "stable": 0,
+          "unstable": 0,
+          "inconclusive": 1
+        }
+      }
+    ]
+  },
+  "claim": {
+    "type": "ranking",
+    "method_a": "QAOA_p2",
+    "method_b": "RandomBaseline",
+    "deltas": [
+      0.0,
+      0.01,
+      0.05
+    ],
+    "delta_interpretation": "delta is a practical significance threshold; increasing delta makes the claim stricter and may change both holds rate and stability."
+  },
+  "baseline": {
+    "seed_transpiler": 0,
+    "optimization_level": 0,
+    "layout_method": "trivial",
+    "shots": 1024,
+    "seed_simulator": 0
+  },
+  "stability_rule": {
+    "threshold": 0.95,
+    "confidence_level": 0.95,
+    "decision": "stable iff CI lower bound >= threshold"
+  },
+  "sampling": {
+    "suite": "core",
+    "space_preset": "baseline",
+    "mode": "random_k",
+    "sample_size": 2,
+    "seed": 1,
+    "sampled_configurations_with_baseline": 3,
+    "perturbation_space_size": 80
+  },
+  "backend_engine": "basic",
+  "perturbation_space_size": 80,
+  "per_graph": {
+    "maxcut_test": {
+      "sampled_configurations": 3,
+      "delta_sweep": [
+        {
+          "delta": 0.0,
+          "total": 2,
+          "flips": 0,
+          "flip_rate": 0.0,
+          "stability_hat": 1.0,
+          "stability_ci_low": 0.3423802275066532,
+          "stability_ci_high": 1.0,
+          "decision": "inconclusive",
+          "baseline_holds": false,
+          "claim_holds_count": 0,
+          "claim_total_count": 3,
+          "claim_holds_rate": 0.0
+        },
+        {
+          "delta": 0.01,
+          "total": 2,
+          "flips": 0,
+          "flip_rate": 0.0,
+          "stability_hat": 1.0,
+          "stability_ci_low": 0.3423802275066532,
+          "stability_ci_high": 1.0,
+          "decision": "inconclusive",
+          "baseline_holds": false,
+          "claim_holds_count": 0,
+          "claim_total_count": 3,
+          "claim_holds_rate": 0.0
+        },
+        {
+          "delta": 0.05,
+          "total": 2,
+          "flips": 0,
+          "flip_rate": 0.0,
+          "stability_hat": 1.0,
+          "stability_ci_low": 0.3423802275066532,
+          "stability_ci_high": 1.0,
+          "decision": "inconclusive",
+          "baseline_holds": false,
+          "claim_holds_count": 0,
+          "claim_total_count": 3,
+          "claim_holds_rate": 0.0
+        }
+      ],
+      "factor_attribution": {
+        "0.0": {
+          "baseline_holds": false,
+          "total": 2,
+          "flips": 0,
+          "flip_rate": 0.0,
+          "by_dimension": {
+            "seed_transpiler": {
+              "2": {
+                "total": 1,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "9": {
+                "total": 1,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "optimization_level": {
+              "0": {
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 1,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "trivial": {
+                "total": 1,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            }
+          },
+          "top_flip_configs": []
+        },
+        "0.01": {
+          "baseline_holds": false,
+          "total": 2,
+          "flips": 0,
+          "flip_rate": 0.0,
+          "by_dimension": {
+            "seed_transpiler": {
+              "2": {
+                "total": 1,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "9": {
+                "total": 1,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "optimization_level": {
+              "0": {
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 1,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "trivial": {
+                "total": 1,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            }
+          },
+          "top_flip_configs": []
+        },
+        "0.05": {
+          "baseline_holds": false,
+          "total": 2,
+          "flips": 0,
+          "flip_rate": 0.0,
+          "by_dimension": {
+            "seed_transpiler": {
+              "2": {
+                "total": 1,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "9": {
+                "total": 1,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "optimization_level": {
+              "0": {
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "layout_method": {
+              "sabre": {
+                "total": 1,
+                "flips": 0,
+                "flip_rate": 0.0
+              },
+              "trivial": {
+                "total": 1,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "shots": {
+              "1024": {
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "total": 2,
+                "flips": 0,
+                "flip_rate": 0.0
+              }
+            }
+          },
+          "top_flip_configs": []
+        }
+      },
+      "lockdown_recommendation": {
+        "0.0": {
+          "global_flip_rate": 0.0,
+          "top_recommendations": [
+            {
+              "dimension": "optimization_level",
+              "value": 0,
+              "flip_rate_improvement": 0.0,
+              "constraints": {
+                "optimization_level": 0
+              },
+              "subset_size": 3,
+              "baseline_key_used": {
+                "seed_transpiler": 0,
+                "optimization_level": 0,
+                "layout_method": "trivial",
+                "shots": 1024,
+                "seed_simulator": 0
+              },
+              "baseline_margin": -0.3447265625,
+              "baseline_holds": false,
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0,
+              "stability_hat": 1.0,
+              "stability_ci_low": 0.3423802275066532,
+              "stability_ci_high": 1.0,
+              "decision": "inconclusive"
+            },
+            {
+              "dimension": "layout_method",
+              "value": "trivial",
+              "flip_rate_improvement": 0.0,
+              "constraints": {
+                "layout_method": "trivial"
+              },
+              "subset_size": 2,
+              "baseline_key_used": {
+                "seed_transpiler": 0,
+                "optimization_level": 0,
+                "layout_method": "trivial",
+                "shots": 1024,
+                "seed_simulator": 0
+              },
+              "baseline_margin": -0.3447265625,
+              "baseline_holds": false,
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0,
+              "stability_hat": 1.0,
+              "stability_ci_low": 0.2065493143772375,
+              "stability_ci_high": 1.0,
+              "decision": "inconclusive"
+            }
+          ],
+          "candidate_count": 4
+        },
+        "0.01": {
+          "global_flip_rate": 0.0,
+          "top_recommendations": [
+            {
+              "dimension": "optimization_level",
+              "value": 0,
+              "flip_rate_improvement": 0.0,
+              "constraints": {
+                "optimization_level": 0
+              },
+              "subset_size": 3,
+              "baseline_key_used": {
+                "seed_transpiler": 0,
+                "optimization_level": 0,
+                "layout_method": "trivial",
+                "shots": 1024,
+                "seed_simulator": 0
+              },
+              "baseline_margin": -0.3447265625,
+              "baseline_holds": false,
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0,
+              "stability_hat": 1.0,
+              "stability_ci_low": 0.3423802275066532,
+              "stability_ci_high": 1.0,
+              "decision": "inconclusive"
+            },
+            {
+              "dimension": "layout_method",
+              "value": "trivial",
+              "flip_rate_improvement": 0.0,
+              "constraints": {
+                "layout_method": "trivial"
+              },
+              "subset_size": 2,
+              "baseline_key_used": {
+                "seed_transpiler": 0,
+                "optimization_level": 0,
+                "layout_method": "trivial",
+                "shots": 1024,
+                "seed_simulator": 0
+              },
+              "baseline_margin": -0.3447265625,
+              "baseline_holds": false,
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0,
+              "stability_hat": 1.0,
+              "stability_ci_low": 0.2065493143772375,
+              "stability_ci_high": 1.0,
+              "decision": "inconclusive"
+            }
+          ],
+          "candidate_count": 4
+        },
+        "0.05": {
+          "global_flip_rate": 0.0,
+          "top_recommendations": [
+            {
+              "dimension": "optimization_level",
+              "value": 0,
+              "flip_rate_improvement": 0.0,
+              "constraints": {
+                "optimization_level": 0
+              },
+              "subset_size": 3,
+              "baseline_key_used": {
+                "seed_transpiler": 0,
+                "optimization_level": 0,
+                "layout_method": "trivial",
+                "shots": 1024,
+                "seed_simulator": 0
+              },
+              "baseline_margin": -0.3447265625,
+              "baseline_holds": false,
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0,
+              "stability_hat": 1.0,
+              "stability_ci_low": 0.3423802275066532,
+              "stability_ci_high": 1.0,
+              "decision": "inconclusive"
+            },
+            {
+              "dimension": "layout_method",
+              "value": "trivial",
+              "flip_rate_improvement": 0.0,
+              "constraints": {
+                "layout_method": "trivial"
+              },
+              "subset_size": 2,
+              "baseline_key_used": {
+                "seed_transpiler": 0,
+                "optimization_level": 0,
+                "layout_method": "trivial",
+                "shots": 1024,
+                "seed_simulator": 0
+              },
+              "baseline_margin": -0.3447265625,
+              "baseline_holds": false,
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0,
+              "stability_hat": 1.0,
+              "stability_ci_low": 0.2065493143772375,
+              "stability_ci_high": 1.0,
+              "decision": "inconclusive"
+            }
+          ],
+          "candidate_count": 4
+        }
+      },
+      "conditional_stability": {
+        "0.0": [
+          {
+            "constraints": {},
+            "subset_size": 3,
+            "baseline_key_used": {
+              "seed_transpiler": 0,
+              "optimization_level": 0,
+              "layout_method": "trivial",
+              "shots": 1024,
+              "seed_simulator": 0
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_holds": false,
+            "total": 2,
+            "flips": 0,
+            "flip_rate": 0.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive"
+          },
+          {
+            "constraints": {
+              "shots": 1024
+            },
+            "subset_size": 3,
+            "baseline_key_used": {
+              "seed_transpiler": 0,
+              "optimization_level": 0,
+              "layout_method": "trivial",
+              "shots": 1024,
+              "seed_simulator": 0
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_holds": false,
+            "total": 2,
+            "flips": 0,
+            "flip_rate": 0.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive"
+          },
+          {
+            "constraints": {
+              "shots": 1024,
+              "seed_simulator": 0
+            },
+            "subset_size": 3,
+            "baseline_key_used": {
+              "seed_transpiler": 0,
+              "optimization_level": 0,
+              "layout_method": "trivial",
+              "shots": 1024,
+              "seed_simulator": 0
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_holds": false,
+            "total": 2,
+            "flips": 0,
+            "flip_rate": 0.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive"
+          }
+        ],
+        "0.01": [
+          {
+            "constraints": {},
+            "subset_size": 3,
+            "baseline_key_used": {
+              "seed_transpiler": 0,
+              "optimization_level": 0,
+              "layout_method": "trivial",
+              "shots": 1024,
+              "seed_simulator": 0
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_holds": false,
+            "total": 2,
+            "flips": 0,
+            "flip_rate": 0.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive"
+          },
+          {
+            "constraints": {
+              "shots": 1024
+            },
+            "subset_size": 3,
+            "baseline_key_used": {
+              "seed_transpiler": 0,
+              "optimization_level": 0,
+              "layout_method": "trivial",
+              "shots": 1024,
+              "seed_simulator": 0
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_holds": false,
+            "total": 2,
+            "flips": 0,
+            "flip_rate": 0.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive"
+          },
+          {
+            "constraints": {
+              "shots": 1024,
+              "seed_simulator": 0
+            },
+            "subset_size": 3,
+            "baseline_key_used": {
+              "seed_transpiler": 0,
+              "optimization_level": 0,
+              "layout_method": "trivial",
+              "shots": 1024,
+              "seed_simulator": 0
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_holds": false,
+            "total": 2,
+            "flips": 0,
+            "flip_rate": 0.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive"
+          }
+        ],
+        "0.05": [
+          {
+            "constraints": {},
+            "subset_size": 3,
+            "baseline_key_used": {
+              "seed_transpiler": 0,
+              "optimization_level": 0,
+              "layout_method": "trivial",
+              "shots": 1024,
+              "seed_simulator": 0
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_holds": false,
+            "total": 2,
+            "flips": 0,
+            "flip_rate": 0.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive"
+          },
+          {
+            "constraints": {
+              "shots": 1024
+            },
+            "subset_size": 3,
+            "baseline_key_used": {
+              "seed_transpiler": 0,
+              "optimization_level": 0,
+              "layout_method": "trivial",
+              "shots": 1024,
+              "seed_simulator": 0
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_holds": false,
+            "total": 2,
+            "flips": 0,
+            "flip_rate": 0.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive"
+          },
+          {
+            "constraints": {
+              "shots": 1024,
+              "seed_simulator": 0
+            },
+            "subset_size": 3,
+            "baseline_key_used": {
+              "seed_transpiler": 0,
+              "optimization_level": 0,
+              "layout_method": "trivial",
+              "shots": 1024,
+              "seed_simulator": 0
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_holds": false,
+            "total": 2,
+            "flips": 0,
+            "flip_rate": 0.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive"
+          }
+        ]
+      }
+    }
+  },
+  "overall": {
+    "graphs": 1,
+    "delta_sweep": [
+      {
+        "delta": 0.0,
+        "n_instances": 1,
+        "n_claim_evals": 2,
+        "flip_rate_mean": 0.0,
+        "flip_rate_max": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_mean": 0.0,
+        "holds_rate_ci_low": 0.0,
+        "holds_rate_ci_high": 0.5614970317550454,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "decision_counts": {
+          "stable": 0,
+          "unstable": 0,
+          "inconclusive": 1
+        }
+      },
+      {
+        "delta": 0.01,
+        "n_instances": 1,
+        "n_claim_evals": 2,
+        "flip_rate_mean": 0.0,
+        "flip_rate_max": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_mean": 0.0,
+        "holds_rate_ci_low": 0.0,
+        "holds_rate_ci_high": 0.5614970317550454,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "decision_counts": {
+          "stable": 0,
+          "unstable": 0,
+          "inconclusive": 1
+        }
+      },
+      {
+        "delta": 0.05,
+        "n_instances": 1,
+        "n_claim_evals": 2,
+        "flip_rate_mean": 0.0,
+        "flip_rate_max": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_mean": 0.0,
+        "holds_rate_ci_low": 0.0,
+        "holds_rate_ci_high": 0.5614970317550454,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "decision_counts": {
+          "stable": 0,
+          "unstable": 0,
+          "inconclusive": 1
+        }
+      }
+    ],
+    "diagnostics": {
+      "by_delta_dimension": {
+        "0.0": {
+          "seed_transpiler": {
+            "2": {
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0
+            },
+            "9": {
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          },
+          "optimization_level": {
+            "0": {
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          },
+          "layout_method": {
+            "sabre": {
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0
+            },
+            "trivial": {
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          },
+          "shots": {
+            "1024": {
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          },
+          "seed_simulator": {
+            "0": {
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          }
+        },
+        "0.01": {
+          "seed_transpiler": {
+            "2": {
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0
+            },
+            "9": {
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          },
+          "optimization_level": {
+            "0": {
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          },
+          "layout_method": {
+            "sabre": {
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0
+            },
+            "trivial": {
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          },
+          "shots": {
+            "1024": {
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          },
+          "seed_simulator": {
+            "0": {
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          }
+        },
+        "0.05": {
+          "seed_transpiler": {
+            "2": {
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0
+            },
+            "9": {
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          },
+          "optimization_level": {
+            "0": {
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          },
+          "layout_method": {
+            "sabre": {
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0
+            },
+            "trivial": {
+              "total": 1,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          },
+          "shots": {
+            "1024": {
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          },
+          "seed_simulator": {
+            "0": {
+              "total": 2,
+              "flips": 0,
+              "flip_rate": 0.0
+            }
+          }
+        }
+      },
+      "top_unstable_configs_by_delta": {
+        "0.0": [],
+        "0.01": [],
+        "0.05": []
+      },
+      "top_lockdown_recommendations_by_delta": {
+        "0.0": [
+          {
+            "dimension": "optimization_level",
+            "value": 0,
+            "avg_flip_rate_improvement": 0.0,
+            "avg_flip_rate": 0.0,
+            "avg_stability_hat": 1.0,
+            "count": 1
+          },
+          {
+            "dimension": "layout_method",
+            "value": "trivial",
+            "avg_flip_rate_improvement": 0.0,
+            "avg_flip_rate": 0.0,
+            "avg_stability_hat": 1.0,
+            "count": 1
+          }
+        ],
+        "0.01": [
+          {
+            "dimension": "optimization_level",
+            "value": 0,
+            "avg_flip_rate_improvement": 0.0,
+            "avg_flip_rate": 0.0,
+            "avg_stability_hat": 1.0,
+            "count": 1
+          },
+          {
+            "dimension": "layout_method",
+            "value": "trivial",
+            "avg_flip_rate_improvement": 0.0,
+            "avg_flip_rate": 0.0,
+            "avg_stability_hat": 1.0,
+            "count": 1
+          }
+        ],
+        "0.05": [
+          {
+            "dimension": "optimization_level",
+            "value": 0,
+            "avg_flip_rate_improvement": 0.0,
+            "avg_flip_rate": 0.0,
+            "avg_stability_hat": 1.0,
+            "count": 1
+          },
+          {
+            "dimension": "layout_method",
+            "value": "trivial",
+            "avg_flip_rate_improvement": 0.0,
+            "avg_flip_rate": 0.0,
+            "avg_stability_hat": 1.0,
+            "count": 1
+          }
+        ]
+      }
+    },
+    "stability_vs_cost": {
+      "cost_metric": "shots",
+      "by_delta": {
+        "0.0": [
+          {
+            "shots": 1024,
+            "n_eval": 2,
+            "flip_rate": 0.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive"
+          }
+        ],
+        "0.01": [
+          {
+            "shots": 1024,
+            "n_eval": 2,
+            "flip_rate": 0.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive"
+          }
+        ],
+        "0.05": [
+          {
+            "shots": 1024,
+            "n_eval": 2,
+            "flip_rate": 0.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.3423802275066532,
+            "stability_ci_high": 1.0,
+            "decision": "inconclusive"
+          }
+        ]
+      },
+      "minimum_shots_for_stable": {
+        "0.0": null,
+        "0.01": null,
+        "0.05": null
+      }
+    }
+  }
+}

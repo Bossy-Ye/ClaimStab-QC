@@ -1,0 +1,37 @@
+version: 1
+study_name: claimstab_maxcut_core
+
+stability:
+  threshold: 0.95
+  confidence_level: 0.95
+  decision_rule: "stable iff CI_lower(stability_rate) >= threshold"
+  interval: wilson
+
+claims:
+  ranking:
+    metric: expected_cut
+    method_a: QAOA_p2
+    method_b: RandomBaseline
+    deltas: [0.0, 0.01, 0.05]
+    interpretation: "delta captures practical effect size; stability should improve as delta increases"
+
+  decision:
+    type: top_k
+    k: 3
+    objective: max
+    tie_break: lexicographic
+    deterministic: true
+    note: "acceptable set is algorithmic, not hand-picked"
+
+  distribution:
+    reference_distribution: empirical_baseline
+    primary_distance: tvd
+    epsilon: 0.05
+    sensitivity_check:
+      distances: [js]
+      requirement: "report whether conclusions agree with primary distance"
+
+scope:
+  include_software_visible_perturbations: true
+  include_hardware_noise_modeling: false
+  scope_statement: "Main study isolates controllable and reportable software-visible perturbations; hardware effects are supplementary only."

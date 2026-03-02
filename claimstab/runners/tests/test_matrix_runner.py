@@ -1,0 +1,115 @@
+import unittest
+from dataclasses import dataclass
+
+from claimstab.methods.spec import MethodSpec
+from claimstab.perturbations.space import PerturbationSpace
+from claimstab.runners.matrix_runner import MatrixRunner
+
+
+@dataclass(frozen=True)
+class _Details:
+    transpiled_depth: int
+    transpiled_size: int
+    two_qubit_count: int = 0
+    swap_count: int = 0
+    device_provider: str | None = None
+    device_name: str | None = None
+    device_mode: str | None = None
+    device_snapshot_fingerprint: str | None = None
+
+
+class _Backend:
+    def run_metric(self, circuit, cfg, metric_fn, *, return_details=False, **_kwargs):
+        details = _Details(transpiled_depth=7, transpiled_size=11)
+        score = float(cfg.seed_transpiler)
+        if return_details:
+            return score, details
+        return score
+
+
+class _Task:
+    instance_id = "dummy"
+
+    def build(self, method):
+        return object(), (lambda _counts: 0.0)
+
+
+class TestMatrixRunner(unittest.TestCase):
+    def test_runner_uses_provided_sampled_configs(self) -> None:
+        space = PerturbationSpace(
+            seeds_transpiler=[0, 1, 2],
+            opt_levels=[0],
+            layout_methods=["trivial"],
+            shots_list=[64],
+            seeds_simulator=[0],
+        )
+        sampled = list(space.iter_configs())[:1]
+
+        runner = MatrixRunner(backend=_Backend())
+        rows = runner.run(
+            task=_Task(),
+            methods=[
+                MethodSpec(name="M1", kind="random"),
+                MethodSpec(name="M2", kind="random"),
+            ],
+            space=space,
+            configs=sampled,
+            coupling_map=None,
+        )
+
+        self.assertEqual(len(rows), 2)
+        self.assertEqual({r.method for r in rows}, {"M1", "M2"})
+        for row in rows:
+            self.assertEqual(row.seed_transpiler, sampled[0].compilation.seed_transpiler)
+            self.assertEqual(row.optimization_level, 0)
+
+    def test_runner_supports_structural_metric_name(self) -> None:
+        space = PerturbationSpace(
+            seeds_transpiler=[0],
+            opt_levels=[0],
+            layout_methods=["trivial"],
+            shots_list=[64],
+            seeds_simulator=[0],
+        )
+        sampled = list(space.iter_configs())
+
+        runner = MatrixRunner(backend=_Backend())
+        rows = runner.run(
+            task=_Task(),
+            methods=[MethodSpec(name="M1", kind="random")],
+            space=space,
+            configs=sampled,
+            coupling_map=None,
+            metric_name="circuit_depth",
+        )
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0].score, 7.0)
+
+    def test_default_objective_path_is_device_neutral(self) -> None:
+        space = PerturbationSpace(
+            seeds_transpiler=[3],
+            opt_levels=[0],
+            layout_methods=["trivial"],
+            shots_list=[64],
+            seeds_simulator=[0],
+        )
+        sampled = list(space.iter_configs())
+
+        runner = MatrixRunner(backend=_Backend())
+        rows = runner.run(
+            task=_Task(),
+            methods=[MethodSpec(name="M1", kind="random")],
+            space=space,
+            configs=sampled,
+            coupling_map=None,
+            metric_name="objective",
+        )
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0].score, 3.0)
+        self.assertIsNone(rows[0].device_provider)
+        self.assertIsNone(rows[0].device_name)
+        self.assertIsNone(rows[0].device_mode)
+
+
+if __name__ == "__main__":
+    unittest.main()
