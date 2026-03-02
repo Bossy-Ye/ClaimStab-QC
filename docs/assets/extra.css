@@ -12,3 +12,59 @@
   padding: 4px;
   background: #fff;
 }
+
+.cs-widget {
+  border: 1px solid #d8dee9;
+  border-radius: 10px;
+  padding: 14px;
+  margin: 12px 0 18px;
+  background: #ffffff;
+}
+
+.cs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.cs-grid label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  gap: 5px;
+}
+
+.cs-grid input,
+.cs-grid select {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 14px;
+}
+
+.cs-output p {
+  margin: 4px 0;
+}
+
+.cs-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #94a3b8;
+}
+
+.cs-pill.stable {
+  background: #dcfce7;
+  border-color: #16a34a;
+}
+
+.cs-pill.unstable {
+  background: #fee2e2;
+  border-color: #dc2626;
+}
+
+.cs-pill.inconclusive {
+  background: #fef9c3;
+  border-color: #ca8a04;
+}

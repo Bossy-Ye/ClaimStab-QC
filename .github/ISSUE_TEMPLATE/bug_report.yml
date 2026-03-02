@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a reproducible bug.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. Please include enough detail to reproduce.
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and why it is incorrect.
+      placeholder: The expected claim decision was stable, but output was unstable...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Include exact command(s) and minimal input.
+      placeholder: |
+        1. PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py ...
+        2. Open output/claim_stability.json
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Python version, OS, and relevant package versions.
+      placeholder: Python 3.13, macOS 15.x, qiskit 2.x...
+    validations:
+      required: true

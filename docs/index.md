@@ -39,6 +39,8 @@ where \(\hat{s}\) is the estimated stability rate under sampled perturbation con
 ## Project Links
 - [GitHub Repository](https://github.com/Bossy-Ye/ClaimStab-QC)
 - [Quickstart](quickstart.md)
+- [Interactive Playground](playground.md)
+- [Examples & Outputs](examples.md)
 - [Reproduce](reproduce.md)
 - [Results](results/main_results.md)
 - [Cite](cite.md)

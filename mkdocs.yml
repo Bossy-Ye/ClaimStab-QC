@@ -21,6 +21,8 @@ theme:
 nav:
   - Home: index.md
   - Quickstart: quickstart.md
+  - Interactive Playground: playground.md
+  - Examples & Outputs: examples.md
   - Concepts:
       - Claims: concepts/claims.md
       - Perturbations: concepts/perturbations.md
@@ -44,6 +46,7 @@ markdown_extensions:
 
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - assets/interactive.js
 
 extra_css:
   - assets/extra.css

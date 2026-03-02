@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+title: "ClaimStab-QC"
+message: "If you use this project, please cite it using this metadata."
+type: software
+license: Apache-2.0
+authors:
+  - name: "ClaimStab-QC Contributors"
+abstract: "Claim-centric stability harness for evaluating whether paper-level experimental conclusions remain valid under software-visible perturbations."

@@ -1,0 +1,30 @@
+name: Feature request
+description: Suggest a new capability or UX improvement.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What limitation are you facing?
+      placeholder: It is hard to compare claim decisions across multiple experiments...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the desired behavior/API/CLI.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any workaround or alternate design considered.
+  - type: textarea
+    id: impact
+    attributes:
+      label: Expected impact
+      description: Reproducibility, usability, speed, or paper-readiness impact.
