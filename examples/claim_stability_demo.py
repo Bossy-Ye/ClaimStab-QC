@@ -15,7 +15,9 @@ from qiskit.transpiler import CouplingMap
 from claimstab.claims.decision import decision_in_top_k, evaluate_decision_claim
 from claimstab.claims.diagnostics import (
     aggregate_lockdown_recommendations,
+    compute_stability_vs_shots,
     conditional_rank_flip_summary,
+    minimum_shots_for_stable,
     rank_flip_root_cause_by_dimension,
     single_knob_lockdown_recommendation,
 )
@@ -29,8 +31,9 @@ from claimstab.perturbations.sampling import SamplingPolicy, ensure_config_inclu
 from claimstab.perturbations.space import CompilationPerturbation, ExecutionPerturbation, PerturbationConfig, PerturbationSpace
 from claimstab.runners.matrix_runner import MatrixRunner, ScoreRow
 from claimstab.runners.qiskit_aer import QiskitAerRunner
-from claimstab.tasks.graphs import core_suite, large_suite, standard_suite
-from claimstab.tasks.maxcut import MaxCutTask
+from claimstab.spec import load_spec
+from claimstab.tasks.base import BuiltWorkflow
+from claimstab.tasks.factory import make_task, parse_methods
 
 
 SUITE_ALIASES = {
@@ -115,15 +118,7 @@ def parse_csv_tokens(raw: str) -> list[str]:
 def try_load_spec(path: str | None) -> dict:
     if not path:
         return {}
-    p = Path(path)
-    text = p.read_text(encoding="utf-8")
-    if p.suffix.lower() == ".json":
-        return json.loads(text)
-    try:
-        import yaml  # type: ignore
-    except Exception as exc:  # pragma: no cover
-        raise RuntimeError("YAML spec parsing requires pyyaml. Install with: pip install pyyaml") from exc
-    return yaml.safe_load(text) or {}
+    return load_spec(path, validate=False)
 
 
 def parse_claim_pairs(raw: str, fallback_pair: tuple[str, str]) -> list[tuple[str, str]]:
@@ -237,7 +232,15 @@ def make_space(preset: str) -> PerturbationSpace:
     if preset == "sampling_only":
         return PerturbationSpace.sampling_only()
     if preset == "combined_light":
-        return PerturbationSpace.combined_light()
+        # Keep combined perturbations small but include multiple shot budgets so
+        # the stability-vs-cost section can estimate a trend instead of a single point.
+        return PerturbationSpace(
+            seeds_transpiler=list(range(10)),
+            opt_levels=[0, 1, 2, 3],
+            layout_methods=["trivial", "sabre"],
+            shots_list=[64, 256, 1024],
+            seeds_simulator=[0, 1, 2],
+        )
     raise ValueError(f"Unknown preset: {preset}")
 
 
@@ -271,14 +274,55 @@ def build_baseline_config(space: PerturbationSpace) -> tuple[dict[str, int | str
     return baseline_cfg, baseline_pc, baseline_key
 
 
-def get_suite(name: str):
-    if name == "core":
-        return core_suite()
-    if name == "standard":
-        return standard_suite()
-    if name == "large":
-        return large_suite()
-    raise ValueError(f"Unknown suite: {name}")
+def parse_claim_pairs_from_spec(spec_payload: dict) -> list[tuple[str, str]]:
+    claims = spec_payload.get("claims")
+    pairs: list[tuple[str, str]] = []
+    if isinstance(claims, list):
+        for item in claims:
+            if not isinstance(item, dict):
+                continue
+            if str(item.get("type", "ranking")) != "ranking":
+                continue
+            method_a = item.get("method_a")
+            method_b = item.get("method_b")
+            if isinstance(method_a, str) and isinstance(method_b, str) and method_a and method_b:
+                pairs.append((method_a, method_b))
+    elif isinstance(claims, dict):
+        ranking = claims.get("ranking")
+        if isinstance(ranking, dict):
+            method_a = ranking.get("method_a")
+            method_b = ranking.get("method_b")
+            if isinstance(method_a, str) and isinstance(method_b, str) and method_a and method_b:
+                pairs.append((method_a, method_b))
+    return pairs
+
+
+class BoundTask:
+    """MatrixRunner-compatible adapter for TaskPlugin(instance, method) API."""
+
+    def __init__(self, plugin, instance) -> None:
+        self.plugin = plugin
+        self.instance = instance
+        self.instance_id = instance.instance_id
+
+    def build(self, method):
+        built = self.plugin.build(self.instance, method)
+        if isinstance(built, BuiltWorkflow):
+            return built.circuit, built.metric_fn
+        return built
+
+    def infer_num_qubits(self, methods: list[MethodSpec]) -> int:
+        payload = getattr(self.instance, "payload", None)
+        graph_nodes = getattr(payload, "num_nodes", None)
+        if isinstance(graph_nodes, int) and graph_nodes > 0:
+            return graph_nodes
+        if not methods:
+            raise ValueError("Cannot infer qubit count without methods.")
+        circuit, _ = self.build(methods[0])
+        num_qubits = getattr(circuit, "num_qubits", None)
+        if not isinstance(num_qubits, int) or num_qubits <= 0:
+            raise ValueError(f"Cannot infer qubit count for instance '{self.instance_id}'.")
+        return num_qubits
 
 
 def build_coupling_map(num_qubits: int) -> CouplingMap:
@@ -570,23 +614,33 @@ def evaluate_claim_on_rows(
 
 def main() -> None:
     args = parse_args()
+    spec_payload = try_load_spec(args.spec)
     deltas = parse_deltas(args.deltas)
-    suite_name = canonical_suite_name(args.suite)
     selected_space_inputs = parse_csv_tokens(args.space_presets) if args.space_presets.strip() else [args.space_preset]
     selected_spaces = [canonical_space_name(name) for name in selected_space_inputs]
-    spec_payload = try_load_spec(args.spec)
+
+    task_plugin, task_suite = make_task(
+        spec_payload.get("task") if isinstance(spec_payload, dict) else None,
+        default_suite=args.suite,
+    )
+    suite_name = str(spec_payload.get("suite", task_suite)).strip() if isinstance(spec_payload, dict) else str(task_suite)
+    suite = task_plugin.instances(suite_name)
+    if not suite:
+        raise ValueError(f"Task '{getattr(task_plugin, 'name', 'unknown')}' returned an empty suite for '{suite_name}'.")
 
     out_dir = Path(args.out_dir)
     out_csv = out_dir / "scores.csv"
     out_json = out_dir / "claim_stability.json"
 
-    methods = [
-        MethodSpec(name="QAOA_p1", kind="qaoa", p=1),
-        MethodSpec(name="QAOA_p2", kind="qaoa", p=2),
-        MethodSpec(name="RandomBaseline", kind="random"),
-    ]
+    methods = parse_methods(spec_payload if isinstance(spec_payload, dict) else {})
     method_names = {m.name for m in methods}
-    claim_pairs = parse_claim_pairs(args.claim_pairs, (args.method_a, args.method_b))
+    spec_claim_pairs = parse_claim_pairs_from_spec(spec_payload if isinstance(spec_payload, dict) else {})
+    if args.claim_pairs.strip():
+        claim_pairs = parse_claim_pairs(args.claim_pairs, (args.method_a, args.method_b))
+    elif spec_claim_pairs:
+        claim_pairs = spec_claim_pairs
+    else:
+        claim_pairs = parse_claim_pairs(args.claim_pairs, (args.method_a, args.method_b))
     for method_a, method_b in claim_pairs:
         if method_a not in method_names or method_b not in method_names:
             raise ValueError(
@@ -603,8 +657,6 @@ def main() -> None:
     device_profile = parse_device_profile(spec_payload.get("device_profile") if isinstance(spec_payload, dict) else None)
     resolved_device = resolve_device_profile(device_profile)
     noise_model_mode = parse_noise_model_mode(spec_payload.get("backend") if isinstance(spec_payload, dict) else None)
-
-    suite = get_suite(suite_name)
     runner = MatrixRunner(
         backend=QiskitAerRunner(
             engine=args.backend_engine,
@@ -628,8 +680,8 @@ def main() -> None:
 
         rows_by_graph: dict[str, list[ScoreRow]] = {}
         for inst in suite:
-            task = MaxCutTask(instance=inst)
-            coupling_map = build_coupling_map(task.graph.num_nodes)
+            task = BoundTask(task_plugin, inst)
+            coupling_map = build_coupling_map(task.infer_num_qubits(methods))
             rows = runner.run(
                 task=task,
                 methods=methods,
@@ -642,7 +694,7 @@ def main() -> None:
                 device_snapshot_fingerprint=resolved_device.snapshot_fingerprint,
                 device_snapshot_summary=resolved_device.snapshot,
             )
-            rows_by_graph[task.graph.graph_id] = rows
+            rows_by_graph[inst.instance_id] = rows
             all_rows.extend((suite_name, space_name, row) for row in rows)
 
         rows_by_space_and_graph[space_name] = rows_by_graph
@@ -760,52 +812,24 @@ def main() -> None:
                 top_k=args.top_k_unstable,
             )
 
-            shots_values = sorted({int(k[3]) for paired in paired_scores_by_graph.values() for k in paired.keys()})
             stability_vs_cost_by_delta: dict[str, list[dict[str, object]]] = {}
-            minimum_shots_for_stable: dict[str, int | None] = {}
+            minimum_shots_by_delta: dict[str, int | None] = {}
+            all_space_rows = [row for graph_rows in space_rows.values() for row in graph_rows]
             for delta in deltas:
-                claim = RankingClaim(method_a=method_a, method_b=method_b, delta=delta)
-                shot_rows: list[dict[str, object]] = []
-                for shots in shots_values:
-                    agg_flips = 0
-                    agg_total = 0
-                    for graph_id, paired in paired_scores_by_graph.items():
-                        cond = conditional_rank_flip_summary(
-                            claim,
-                            paired_scores=paired,
-                            baseline_key=baseline_key,
-                            constraints={"shots": shots},
-                            stability_threshold=args.stability_threshold,
-                            confidence_level=args.confidence_level,
-                        )
-                        if cond is None:
-                            continue
-                        agg_flips += int(cond["flips"])
-                        agg_total += int(cond["total"])
-                    if agg_total == 0:
-                        continue
-                    stab_est = estimate_binomial_rate(
-                        successes=agg_total - agg_flips,
-                        total=agg_total,
-                        confidence=args.confidence_level,
-                    )
-                    shot_rows.append(
-                        {
-                            "shots": shots,
-                            "n_eval": agg_total,
-                            "flip_rate": agg_flips / agg_total,
-                            "stability_hat": stab_est.rate,
-                            "stability_ci_low": stab_est.ci_low,
-                            "stability_ci_high": stab_est.ci_high,
-                            "decision": conservative_stability_decision(
-                                estimate=stab_est,
-                                stability_threshold=args.stability_threshold,
-                            ).value,
-                        }
-                    )
+                shot_rows = compute_stability_vs_shots(
+                    all_space_rows,
+                    claim_spec={
+                        "method_a": method_a,
+                        "method_b": method_b,
+                        "delta": delta,
+                        "higher_is_better": True,
+                    },
+                    baseline_config=baseline_by_space[space_name],
+                    threshold=args.stability_threshold,
+                    confidence_level=args.confidence_level,
+                )
                 stability_vs_cost_by_delta[str(delta)] = shot_rows
-                stable_shots = [int(r["shots"]) for r in shot_rows if r["decision"] == "stable"]
-                minimum_shots_for_stable[str(delta)] = min(stable_shots) if stable_shots else None
+                minimum_shots_by_delta[str(delta)] = minimum_shots_for_stable(shot_rows)
 
             graph_for_aux = sorted(method_scores_by_graph.keys())[0] if method_scores_by_graph else None
             auxiliary_claims = {}
@@ -859,7 +883,7 @@ def main() -> None:
                     "stability_vs_cost": {
                         "cost_metric": "shots",
                         "by_delta": stability_vs_cost_by_delta,
-                        "minimum_shots_for_stable": minimum_shots_for_stable,
+                        "minimum_shots_for_stable": minimum_shots_by_delta,
                     },
                 },
                 "auxiliary_claims": auxiliary_claims,

@@ -15,8 +15,10 @@ from .claims import (
     estimate_binomial_rate,
     estimate_stability_from_outcomes,
     aggregate_lockdown_recommendations,
+    compute_stability_vs_shots,
     conditional_rank_flip_summary,
     js_distance,
+    minimum_shots_for_stable,
     normalize_counts,
     perturbation_key,
     rank_flip_root_cause_by_dimension,
@@ -51,4 +53,6 @@ __all__ = [
     "conditional_rank_flip_summary",
     "single_knob_lockdown_recommendation",
     "aggregate_lockdown_recommendations",
+    "compute_stability_vs_shots",
+    "minimum_shots_for_stable",
 ]

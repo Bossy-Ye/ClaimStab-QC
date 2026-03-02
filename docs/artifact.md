@@ -18,7 +18,17 @@ PYTHONPATH=. ./venv/bin/python -m pytest -q
 ```
 
 ## Run Experiments
-Core:
+Main paper track (calibration):
+```bash
+PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_calibration.py
+```
+
+Main paper track (large):
+```bash
+PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py
+```
+
+Legacy/core smoke:
 ```bash
 PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --suite core --out-dir output/core
 ```
@@ -35,7 +45,7 @@ PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
   --out-dir output/exp_large
 ```
 
-Device-aware:
+Device-aware extension:
 ```bash
 PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py --run all --suite standard --out-dir output/multidevice
 ```
@@ -47,3 +57,8 @@ Check these fields in JSON:
 - `overall.delta_sweep[]`
 - `decision_counts`
 - device metadata (for multi-device runs)
+
+Lightweight structural invariant check:
+```bash
+PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.check_expected --out-dir output/expected_check --keep
+```

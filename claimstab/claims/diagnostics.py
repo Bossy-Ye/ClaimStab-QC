@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from typing import Any, Dict, Mapping, Sequence
 
-from claimstab.claims.evaluation import PerturbationKey, ScorePair
-from claimstab.claims.ranking import RankingClaim
+from claimstab.claims.evaluation import PerturbationKey, ScorePair, collect_paired_scores
+from claimstab.claims.ranking import HigherIsBetter, RankingClaim
 from claimstab.claims.stability import conservative_stability_decision, estimate_binomial_rate
+from claimstab.runners.matrix_runner import ScoreRow
 
 DIMENSION_NAMES = [
     "seed_transpiler",
@@ -14,6 +16,60 @@ DIMENSION_NAMES = [
     "seed_simulator",
 ]
 DIMENSION_INDEX = {name: idx for idx, name in enumerate(DIMENSION_NAMES)}
+
+
+def _parse_ranking_claim(claim_spec: RankingClaim | Mapping[str, Any]) -> RankingClaim:
+    if isinstance(claim_spec, RankingClaim):
+        return claim_spec
+    if not isinstance(claim_spec, Mapping):
+        raise TypeError("claim_spec must be RankingClaim or mapping")
+
+    method_a = str(claim_spec.get("method_a", "")).strip()
+    method_b = str(claim_spec.get("method_b", "")).strip()
+    if not method_a or not method_b:
+        raise ValueError("claim_spec must include non-empty method_a and method_b")
+
+    delta = float(claim_spec.get("delta", 0.0))
+    direction = claim_spec.get("direction")
+    higher_is_better = claim_spec.get("higher_is_better")
+    if isinstance(direction, HigherIsBetter):
+        dir_enum = direction
+    elif isinstance(direction, str):
+        if direction.strip().lower() == "lower_is_better":
+            dir_enum = HigherIsBetter.NO
+        else:
+            dir_enum = HigherIsBetter.YES
+    elif higher_is_better is False:
+        dir_enum = HigherIsBetter.NO
+    else:
+        dir_enum = HigherIsBetter.YES
+
+    return RankingClaim(
+        method_a=method_a,
+        method_b=method_b,
+        delta=delta,
+        direction=dir_enum,
+    )
+
+
+def _parse_baseline_key(
+    baseline_config: PerturbationKey | Mapping[str, int | str | None] | None,
+) -> PerturbationKey | None:
+    if baseline_config is None:
+        return None
+    if isinstance(baseline_config, tuple) and len(baseline_config) == 5:
+        return baseline_config
+    if isinstance(baseline_config, Mapping):
+        if not all(dim in baseline_config for dim in DIMENSION_NAMES):
+            return None
+        return (
+            int(baseline_config["seed_transpiler"]),
+            int(baseline_config["optimization_level"]),
+            str(baseline_config["layout_method"]) if baseline_config["layout_method"] is not None else None,
+            int(baseline_config["shots"]),
+            int(baseline_config["seed_simulator"]) if baseline_config["seed_simulator"] is not None else None,
+        )
+    raise TypeError("baseline_config must be None, PerturbationKey tuple, or mapping")
 
 
 def _key_to_config(key: PerturbationKey) -> dict[str, int | str | None]:
@@ -199,6 +255,84 @@ def aggregate_lockdown_recommendations(
         reverse=True,
     )
     return rows[:max(0, top_k)]
+
+
+def compute_stability_vs_shots(
+    score_rows: Sequence[ScoreRow],
+    claim_spec: RankingClaim | Mapping[str, Any],
+    baseline_config: PerturbationKey | Mapping[str, int | str | None] | None,
+    threshold: float,
+    confidence_level: float,
+) -> list[dict[str, Any]]:
+    claim = _parse_ranking_claim(claim_spec)
+    baseline_key_target = _parse_baseline_key(baseline_config)
+
+    rows_by_instance: dict[str, list[ScoreRow]] = defaultdict(list)
+    for row in score_rows:
+        rows_by_instance[row.instance_id].append(row)
+
+    per_shots_counts: dict[int, dict[str, int]] = defaultdict(lambda: {"total": 0, "flips": 0})
+    for instance_rows in rows_by_instance.values():
+        paired_scores = collect_paired_scores(instance_rows, claim.method_a, claim.method_b)
+        shots_values = sorted({int(key[3]) for key in paired_scores})
+        for shots in shots_values:
+            subset_keys = [key for key in paired_scores if int(key[3]) == shots]
+            if len(subset_keys) < 2:
+                continue
+
+            if baseline_key_target in subset_keys:
+                chosen_baseline = baseline_key_target
+            else:
+                chosen_baseline = sorted(subset_keys)[0]
+
+            baseline_scores = paired_scores[chosen_baseline]
+            baseline_holds = claim.holds(*baseline_scores)
+
+            total = len(subset_keys) - 1
+            flips = 0
+            for key in subset_keys:
+                if key == chosen_baseline:
+                    continue
+                if claim.holds(*paired_scores[key]) != baseline_holds:
+                    flips += 1
+
+            per_shots_counts[shots]["total"] += total
+            per_shots_counts[shots]["flips"] += flips
+
+    rows: list[dict[str, Any]] = []
+    for shots in sorted(per_shots_counts):
+        total = int(per_shots_counts[shots]["total"])
+        if total <= 0:
+            continue
+        flips = int(per_shots_counts[shots]["flips"])
+        stability = estimate_binomial_rate(
+            successes=total - flips,
+            total=total,
+            confidence=confidence_level,
+        )
+        decision = conservative_stability_decision(
+            estimate=stability,
+            stability_threshold=threshold,
+        ).value
+        rows.append(
+            {
+                "shots": shots,
+                "n_eval": total,
+                "flip_rate": flips / total,
+                "stability_hat": stability.rate,
+                "stability_ci_low": stability.ci_low,
+                "stability_ci_high": stability.ci_high,
+                "ci_width": stability.ci_high - stability.ci_low,
+                "decision": decision,
+            }
+        )
+
+    return rows
+
+
+def minimum_shots_for_stable(shots_rows: Sequence[Mapping[str, Any]]) -> int | None:
+    stable_shots = [int(row["shots"]) for row in shots_rows if str(row.get("decision")) == "stable"]
+    return min(stable_shots) if stable_shots else None
 
 
 

@@ -4,10 +4,13 @@ from __future__ import annotations
 from typing import Callable, Dict, Tuple
 
 from qiskit import QuantumCircuit
-from qiskit.circuit import Parameter, ParameterVector
+from qiskit.circuit import ParameterVector
 
+from claimstab.methods.spec import MethodSpec
+from claimstab.tasks.base import BuiltWorkflow, TaskSpecError
 from claimstab.tasks.graphs import GraphInstance
 from claimstab.tasks.instances import ProblemInstance
+from claimstab.tasks.suites import load_suite
 
 Counts = Dict[str, int]
 
@@ -30,11 +33,14 @@ class MaxCutTask:
 
     def build(self, method) -> Tuple[QuantumCircuit, Callable[[Counts], float]]:
         if method.kind == "qaoa":
-            circuit = self._build_qaoa_circuit(p=method.p)
+            p = method.params.get("p", method.p)
+            if p is None:
+                raise TaskSpecError("MaxCutTask requires method.params.p for kind='qaoa'.")
+            circuit = self._build_qaoa_circuit(p=int(p))
             metric_fn = self._expectation_metric
             return circuit, metric_fn
 
-        if method.kind == "random":
+        if method.kind in {"random", "random_baseline"}:
             circuit = self._build_random_baseline()
             metric_fn = self._expectation_metric
             return circuit, metric_fn
@@ -103,3 +109,25 @@ class MaxCutTask:
             if bits[i] != bits[j]:
                 value += 1
         return value
+
+
+class MaxCutTaskPlugin:
+    """Built-in maxcut task plugin."""
+
+    name = "maxcut"
+
+    def __init__(self, **_params) -> None:
+        # Reserved for future task-level options.
+        self.params = dict(_params)
+
+    def instances(self, suite: str) -> list[ProblemInstance]:
+        return load_suite(suite)
+
+    def build(self, instance: ProblemInstance, method: MethodSpec) -> BuiltWorkflow:
+        circuit, metric_fn = MaxCutTask(instance).build(method)
+        return BuiltWorkflow(circuit=circuit, metric_fn=metric_fn)
+
+
+from claimstab.tasks.registry import register_task
+
+register_task("maxcut", MaxCutTaskPlugin)

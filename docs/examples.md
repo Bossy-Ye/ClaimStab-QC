@@ -94,3 +94,17 @@ In this environment (Python 3.13), noisy simulation is skipped with explicit rea
 - `claim_stability.json` or mode summary JSON
 - `stability_report.html`
 - `report_assets/*.png` (for plot-enabled reports)
+
+## Example D — External Task Plugin (module:Class)
+
+Command:
+```bash
+claimstab run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy
+```
+
+Spec entrypoint:
+```yaml
+task:
+  kind: external
+  entrypoint: examples.custom_task_demo.toy_task:ToyTask
+```

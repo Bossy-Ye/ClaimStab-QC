@@ -23,14 +23,20 @@ nav:
   - Quickstart: quickstart.md
   - Interactive Playground: playground.md
   - Examples & Outputs: examples.md
+  - Reproduction Contract: reproduction_contract.md
   - Concepts:
       - Claims: concepts/claims.md
       - Perturbations: concepts/perturbations.md
+      - Extending: concepts/extending.md
   - Results:
       - Main Results: results/main_results.md
       - Device-aware Results: results/device_aware.md
+      - Interactive Report: results/interactive_report.md
   - Reproduce: reproduce.md
   - Artifact: artifact.md
+  - Appendix:
+      - Architecture: ARCHITECTURE.md
+      - Experiment Playbook: EXPERIMENT_PLAYBOOK.md
   - Cite: cite.md
 
 plugins:

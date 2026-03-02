@@ -2,7 +2,9 @@
 from .decision import DecisionClaimResult, TieBreak, decision_in_top_k, evaluate_decision_claim, top_k_labels
 from .diagnostics import (
     aggregate_lockdown_recommendations,
+    compute_stability_vs_shots,
     conditional_rank_flip_summary,
+    minimum_shots_for_stable,
     rank_flip_root_cause_by_dimension,
     single_knob_lockdown_recommendation,
 )
@@ -50,4 +52,6 @@ __all__ = [
     "conditional_rank_flip_summary",
     "single_knob_lockdown_recommendation",
     "aggregate_lockdown_recommendations",
+    "compute_stability_vs_shots",
+    "minimum_shots_for_stable",
 ]

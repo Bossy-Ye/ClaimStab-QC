@@ -7,6 +7,11 @@ Core install:
 python -m pip install -e .
 ```
 
+CLI check:
+```bash
+claimstab --help
+```
+
 With optional extras:
 
 ```bash
@@ -28,6 +33,29 @@ PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
 Expected outputs:
 - `output/quickstart/scores.csv`
 - `output/quickstart/claim_stability.json`
+
+Equivalent CLI run from spec:
+```bash
+claimstab validate-spec --spec specs/paper_main.yml
+claimstab run --spec specs/paper_main.yml --out-dir output/paper_main --report
+```
+
+## Evaluation Tracks
+Main paper tracks:
+```bash
+PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_calibration.py
+PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py
+```
+
+Device-targeted extension:
+```bash
+PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py --run all --suite standard --out-dir output/multidevice_full
+```
+
+External task plugin demo:
+```bash
+claimstab run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy
+```
 
 ## Generate HTML Report
 ```bash

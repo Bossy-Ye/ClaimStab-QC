@@ -1,4 +1,5 @@
 version: 1
+spec_version: 1
 study_name: claimstab_maxcut_core
 
 stability:

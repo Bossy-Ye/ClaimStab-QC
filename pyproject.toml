@@ -25,11 +25,12 @@ authors = [
   { name = "ClaimStab-QC Contributors" }
 ]
 dependencies = [
-  "qiskit>=1.0",
+  "qiskit>=2.2.3",
   "numpy>=1.24",
   "pandas>=2.0",
   "matplotlib>=3.7",
-  "pyyaml>=6.0"
+  "pyyaml>=6.0",
+  "jsonschema>=4.0"
 ]
 
 [project.optional-dependencies]
@@ -37,10 +38,10 @@ dev = [
   "pytest>=7.4"
 ]
 aer = [
-  "qiskit-aer>=0.13"
+  "qiskit-aer>=0.17.2"
 ]
 ibm = [
-  "qiskit-ibm-runtime>=0.30"
+  "qiskit-ibm-runtime>=0.45.1"
 ]
 docs = [
   "mkdocs>=1.6",
@@ -50,5 +51,11 @@ docs = [
   "mkdocs-git-revision-date-localized-plugin>=1.2"
 ]
 
+[project.scripts]
+claimstab = "claimstab.cli:main"
+
 [tool.setuptools.packages.find]
 include = ["claimstab*"]
+
+[tool.setuptools.package-data]
+claimstab = ["spec/*.json", "templates/*.py"]

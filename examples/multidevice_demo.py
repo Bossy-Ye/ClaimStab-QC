@@ -19,8 +19,9 @@ from claimstab.perturbations.sampling import SamplingPolicy, ensure_config_inclu
 from claimstab.perturbations.space import CompilationPerturbation, ExecutionPerturbation, PerturbationConfig, PerturbationSpace
 from claimstab.runners.matrix_runner import MatrixRunner, ScoreRow
 from claimstab.runners.qiskit_aer import QiskitAerRunner
-from claimstab.tasks.graphs import core_suite, large_suite, standard_suite
-from claimstab.tasks.maxcut import MaxCutTask
+from claimstab.spec import load_spec
+from claimstab.tasks.base import BuiltWorkflow
+from claimstab.tasks.factory import make_task, parse_methods
 
 
 SUITE_ALIASES = {
@@ -67,7 +68,7 @@ def parse_args() -> argparse.Namespace:
     )
     ap.add_argument(
         "--transpile-claim-pairs",
-        default="QAOA_p1>QAOA_p2",
+        default="QAOA_p1>QAOA_p2,QAOA_p1>RandomBaseline,QAOA_p2>RandomBaseline",
         help="Comma-separated pairs for structural claims (lower is better).",
     )
     ap.add_argument(
@@ -145,14 +146,32 @@ def make_space(name: str) -> PerturbationSpace:
     raise ValueError(f"Unknown space '{name}'")
 
 
-def get_suite(name: str):
-    if name == "core":
-        return core_suite()
-    if name == "standard":
-        return standard_suite()
-    if name == "large":
-        return large_suite()
-    raise ValueError(f"Unknown suite '{name}'")
+class BoundTask:
+    """MatrixRunner-compatible adapter for TaskPlugin(instance, method) API."""
+
+    def __init__(self, plugin, instance) -> None:
+        self.plugin = plugin
+        self.instance = instance
+        self.instance_id = instance.instance_id
+
+    def build(self, method):
+        built = self.plugin.build(self.instance, method)
+        if isinstance(built, BuiltWorkflow):
+            return built.circuit, built.metric_fn
+        return built
+
+    def infer_num_qubits(self, methods: list[MethodSpec]) -> int:
+        payload = getattr(self.instance, "payload", None)
+        graph_nodes = getattr(payload, "num_nodes", None)
+        if isinstance(graph_nodes, int) and graph_nodes > 0:
+            return graph_nodes
+        if not methods:
+            raise ValueError("Cannot infer qubit count without methods.")
+        circuit, _ = self.build(methods[0])
+        num_qubits = getattr(circuit, "num_qubits", None)
+        if not isinstance(num_qubits, int) or num_qubits <= 0:
+            raise ValueError(f"Cannot infer qubit count for instance '{self.instance_id}'.")
+        return num_qubits
 
 
 def build_baseline(space: PerturbationSpace):
@@ -349,32 +368,29 @@ def write_rows_csv(rows: Iterable[ScoreRow], out_csv: Path) -> None:
 def try_load_spec(path: str | None) -> dict:
     if not path:
         return {}
-    p = Path(path)
-    text = p.read_text(encoding="utf-8")
-    if p.suffix.lower() == ".json":
-        return json.loads(text)
-    try:
-        import yaml  # type: ignore
-    except Exception as exc:  # pragma: no cover
-        raise RuntimeError("YAML spec parsing requires pyyaml. Install with: pip install pyyaml") from exc
-    return yaml.safe_load(text) or {}
+    return load_spec(path, validate=False)
 
 
 def main() -> None:
     args = parse_args()
     deltas = parse_deltas(args.deltas)
-    suite_name = canonical_suite_name(args.suite)
     transpile_space = canonical_space_name(args.transpile_space)
     noisy_space = canonical_space_name(args.noisy_space)
-    suite = get_suite(suite_name)
     spec_payload = try_load_spec(args.spec)
+    task_plugin, task_suite = make_task(
+        spec_payload.get("task") if isinstance(spec_payload, dict) else None,
+        default_suite=args.suite,
+    )
+    suite_name = str(spec_payload.get("suite", task_suite)).strip() if isinstance(spec_payload, dict) else str(task_suite)
+    suite = task_plugin.instances(suite_name)
+    if not suite:
+        raise ValueError(f"Task '{getattr(task_plugin, 'name', 'unknown')}' returned an empty suite for '{suite_name}'.")
 
-    methods = [
-        MethodSpec(name="QAOA_p1", kind="qaoa", p=1),
-        MethodSpec(name="QAOA_p2", kind="qaoa", p=2),
-        MethodSpec(name="RandomBaseline", kind="random"),
-    ]
+    methods = parse_methods(spec_payload if isinstance(spec_payload, dict) else {})
     method_names = {m.name for m in methods}
+    num_qubits_by_instance: dict[str, int] = {}
+    for inst in suite:
+        num_qubits_by_instance[inst.instance_id] = BoundTask(task_plugin, inst).infer_num_qubits(methods)
 
     out_root = Path(args.out_dir)
     out_root.mkdir(parents=True, exist_ok=True)
@@ -450,8 +466,7 @@ def main() -> None:
             compatible_suite = []
             skipped_instances: list[dict[str, object]] = []
             for inst in suite:
-                graph = getattr(inst, "payload", None)
-                graph_qubits = getattr(graph, "num_nodes", None)
+                graph_qubits = num_qubits_by_instance.get(inst.instance_id)
                 if device_num_qubits is not None and graph_qubits is not None and int(graph_qubits) > device_num_qubits:
                     skipped_instances.append(
                         {
@@ -480,7 +495,7 @@ def main() -> None:
                 rows_by_graph: dict[str, list[ScoreRow]] = {}
                 all_rows: list[ScoreRow] = []
                 for inst in compatible_suite:
-                    task = MaxCutTask(instance=inst)
+                    task = BoundTask(task_plugin, inst)
                     rows = runner.run(
                         task=task,
                         methods=methods,
@@ -494,7 +509,7 @@ def main() -> None:
                         device_snapshot_fingerprint=resolved.snapshot_fingerprint,
                         device_snapshot_summary=resolved.snapshot,
                     )
-                    rows_by_graph[task.graph.graph_id] = rows
+                    rows_by_graph[inst.instance_id] = rows
                     all_rows.extend(rows)
 
                 csv_name = f"{batch_mode}_{device_name}_{metric_name}.csv"

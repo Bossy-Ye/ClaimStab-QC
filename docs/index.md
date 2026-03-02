@@ -36,11 +36,37 @@ where \(\hat{s}\) is the estimated stability rate under sampled perturbation con
 
 ![ClaimStab Pipeline](assets/pipeline.svg)
 
+## Device-aware Snapshot
+
+| Track | Snapshot |
+|---|---|
+| `transpile_only` | multi-device structural claims run across IBM fake backend profiles |
+| `noisy_sim` | optional extension; environment dependent, does not block main-result reproducibility |
+
+Supporting note: current multi-device transpile-only outputs are often stable on structural metrics; main instability evidence comes from outcome metrics in `sampling_only` / `combined_light`.
+
+## Reproduce (Copy-Paste)
+
+Main paper tracks:
+
+```bash
+PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_calibration.py
+PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py
+```
+
+Device-aware extension:
+
+```bash
+PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py --run all --suite standard --out-dir output/multidevice_full
+```
+
 ## Project Links
 - [GitHub Repository](https://github.com/Bossy-Ye/ClaimStab-QC)
 - [Quickstart](quickstart.md)
 - [Interactive Playground](playground.md)
 - [Examples & Outputs](examples.md)
+- [Extending ClaimStab](concepts/extending.md)
+- [Reproduction Contract](reproduction_contract.md)
 - [Reproduce](reproduce.md)
 - [Results](results/main_results.md)
 - [Cite](cite.md)

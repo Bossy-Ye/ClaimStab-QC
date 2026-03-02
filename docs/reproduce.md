@@ -16,6 +16,14 @@ From `output/multidevice_full/transpile_only/transpile_only_summary.json`:
 PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py --run all --suite standard --out-dir output/multidevice_full
 ```
 
+## CLI equivalents
+```bash
+claimstab validate-spec --spec specs/paper_main.yml
+claimstab run --spec specs/paper_main.yml --out-dir output/paper_main --report
+claimstab run --spec specs/paper_device.yml --out-dir output/paper_device
+claimstab run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy
+```
+
 ## Expected Artifacts
 - `scores.csv`
 - `claim_stability.json` (or mode-specific summary JSON)

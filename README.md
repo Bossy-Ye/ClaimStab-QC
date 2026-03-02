@@ -6,6 +6,8 @@
 
 ClaimStab-QC is a claim-centric validation suite for testing whether paper-level conclusions remain true under software-visible perturbations in quantum toolchains.
 
+Project website (GitHub Pages): [https://bossy-ye.github.io/ClaimStab-QC/](https://bossy-ye.github.io/ClaimStab-QC/)
+
 ## Why ClaimStab
 Most experimental papers report point estimates. ClaimStab evaluates the paper claim itself under perturbation and returns:
 1. Stability estimate.
@@ -19,6 +21,7 @@ Most experimental papers report point estimates. ClaimStab evaluates the paper c
 - CI-based conservative decision rule (Wilson interval).
 - Failure diagnostics (root-cause by dimension, top unstable configs, lock-down recommendations).
 - Stability-vs-cost analysis.
+- Task plugin support via spec (`task.kind` built-in or `task.entrypoint` external `module:Class`).
 - Multi-device workflow:
   - Tier-1: transpile-only structural metrics.
   - Tier-2: IBM fake backend + Aer noisy simulation.
@@ -34,6 +37,8 @@ claimstab/
   scripts/        # report and plotting utilities
 examples/
   claim_stability_demo.py
+  exp_comprehensive_calibration.py
+  exp_comprehensive_large.py
   multidevice_demo.py
   specs/
 ```
@@ -48,6 +53,23 @@ Optional extras:
 python -m pip install -e ".[aer,ibm,docs,dev]"
 ```
 
+Validated Qiskit stack (current `venv`):
+- `qiskit==2.2.3`
+- `qiskit-aer==0.17.2`
+- `qiskit-ibm-runtime==0.45.1`
+
+CLI:
+```bash
+claimstab --help
+claimstab validate-spec --spec specs/paper_main.yml
+claimstab run --spec specs/paper_main.yml --out-dir output/paper_main --report
+claimstab run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy
+```
+
+Ready specs:
+- `specs/paper_main.yml` (main paper track)
+- `specs/paper_device.yml` (multi-device extension)
+
 Run a baseline experiment:
 ```bash
 PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
@@ -56,7 +78,13 @@ PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
   --out-dir output
 ```
 
-Run a comprehensive large benchmark:
+Run the main paper tracks (recommended for submission artifacts):
+```bash
+PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_calibration.py
+PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py
+```
+
+Run a comprehensive large benchmark directly:
 ```bash
 PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
   --suite large \
@@ -74,6 +102,10 @@ PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py \
   --suite standard \
   --out-dir output/multidevice
 ```
+
+Evaluation tracks:
+- Main paper evaluation: `examples/exp_comprehensive_calibration.py`, `examples/exp_comprehensive_large.py`
+- Device-targeted extension: `examples/multidevice_demo.py`
 
 ## Outputs
 - Main run:
@@ -121,6 +153,7 @@ Template specs:
 
 ## Community
 - Architecture overview: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
+- Extension guide: [`docs/concepts/extending.md`](./docs/concepts/extending.md)
 - Experiment playbook: [`docs/EXPERIMENT_PLAYBOOK.md`](./docs/EXPERIMENT_PLAYBOOK.md)
 - Contributing guide: [`CONTRIBUTING.md`](./CONTRIBUTING.md)
 - Code of conduct: [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md)

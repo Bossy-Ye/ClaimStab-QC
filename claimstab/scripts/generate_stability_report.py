@@ -7,6 +7,33 @@ from pathlib import Path
 from typing import Any
 
 
+def _as_float(value: Any, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return default
+
+
+def _numeric_sort_key(value: Any) -> tuple[int, float | str]:
+    text = str(value)
+    try:
+        return (0, float(text))
+    except Exception:
+        return (1, text)
+
+
+def _decision_badge(value: Any) -> str:
+    label = str(value)
+    css = "neutral"
+    if label == "stable":
+        css = "stable"
+    elif label == "unstable":
+        css = "unstable"
+    elif label == "inconclusive":
+        css = "inconclusive"
+    return f"<span class='badge {css}'>{html.escape(label)}</span>"
+
+
 def _decision_count(row: dict[str, Any], label: str) -> int:
     counts = row.get("decision_counts")
     if isinstance(counts, dict):
@@ -59,7 +86,7 @@ def _render_delta_table(delta_rows: list[dict[str, Any]]) -> str:
             f"<td>{row.get('stability_hat')}</td>"
             f"<td>{row.get('stability_ci_low')}</td>"
             f"<td>{row.get('stability_ci_high')}</td>"
-            f"<td>{row.get('decision')}</td>"
+            f"<td>{_decision_badge(row.get('decision'))}</td>"
             f"<td>{row.get('n_instances')}</td>"
             f"<td>{row.get('n_claim_evals')}</td>"
             f"<td>{_decision_count(row, 'stable')}</td>"
@@ -103,7 +130,7 @@ def _render_comparative_table(rows: list[dict[str, Any]]) -> str:
             f"<td>{row.get('stability_hat')}</td>"
             f"<td>{row.get('stability_ci_low')}</td>"
             f"<td>{row.get('stability_ci_high')}</td>"
-            f"<td>{row.get('decision')}</td>"
+            f"<td>{_decision_badge(row.get('decision'))}</td>"
             f"<td>{_decision_count(row, 'stable')}</td>"
             f"<td>{_decision_count(row, 'unstable')}</td>"
             f"<td>{_decision_count(row, 'inconclusive')}</td>"
@@ -145,7 +172,7 @@ def _render_device_summary_table(rows: list[dict[str, Any]]) -> str:
             f"<td>{row.get('stability_hat')}</td>"
             f"<td>{row.get('stability_ci_low')}</td>"
             f"<td>{row.get('stability_ci_high')}</td>"
-            f"<td>{row.get('decision')}</td>"
+            f"<td>{_decision_badge(row.get('decision'))}</td>"
             f"<td>{_decision_count(row, 'stable')}</td>"
             f"<td>{_decision_count(row, 'unstable')}</td>"
             f"<td>{_decision_count(row, 'inconclusive')}</td>"
@@ -241,6 +268,7 @@ def _render_shots_curve_table(rows: list[dict[str, Any]]) -> str:
         "<th>stability_hat</th>"
         "<th>stability_ci_low</th>"
         "<th>stability_ci_high</th>"
+        "<th>ci_width</th>"
         "<th>decision</th>"
         "</tr>"
     )
@@ -254,10 +282,44 @@ def _render_shots_curve_table(rows: list[dict[str, Any]]) -> str:
             f"<td>{row.get('stability_hat')}</td>"
             f"<td>{row.get('stability_ci_low')}</td>"
             f"<td>{row.get('stability_ci_high')}</td>"
-            f"<td>{row.get('decision')}</td>"
+            f"<td>{row.get('ci_width')}</td>"
+            f"<td>{_decision_badge(row.get('decision'))}</td>"
             "</tr>"
         )
     return f"<table>{header}{''.join(body)}</table>"
+
+
+def _shots_warning(rows: list[dict[str, Any]]) -> str | None:
+    if len(rows) == 1:
+        return "Only one shots value available; cannot infer trend. Add more shots levels to estimate minimum required shots."
+    return None
+
+
+def _shots_diagnostic_text(rows: list[dict[str, Any]], threshold: float) -> str:
+    if not rows:
+        return "No shots-by-stability data available."
+    widths = [_as_float(row.get("stability_ci_high"), 0.0) - _as_float(row.get("stability_ci_low"), 0.0) for row in rows]
+    max_width = max(widths) if widths else 0.0
+    any_stable = any(str(row.get("decision")) == "stable" for row in rows)
+    if not any_stable:
+        best = max(rows, key=lambda r: _as_float(r.get("stability_ci_low"), 0.0))
+        if max_width > 0.05:
+            return (
+                "CI is wide in this shots sweep (>0.05): increase n_eval (more perturbation samples or more instances) "
+                "before concluding stability cannot be reached."
+            )
+        if _as_float(best.get("stability_hat"), 0.0) < threshold:
+            return (
+                "CI is relatively narrow and stability_hat is below threshold: observed instability appears genuine; "
+                "increasing shots may or may not help without changing other perturbation controls."
+            )
+        return (
+            "CI is relatively narrow but CI lower bound stays below threshold: the conservative rule still rejects stability "
+            "for evaluated shot levels."
+        )
+    if max_width > 0.05:
+        return "Some shot levels are already stable, but CI is wide for others; increase n_eval for tighter uncertainty."
+    return "CI width is reasonably tight for most shot levels; decisions are likely driven by measured stability rather than sampling noise."
 
 
 def _render_auxiliary_claims(aux: dict[str, Any]) -> str:
@@ -330,47 +392,160 @@ def _executive_summary(experiments: list[dict[str, Any]], comparative_rows: list
 
 
 def _plot_delta_curve(delta_rows: list[dict[str, Any]], out_path: Path) -> None:
+    import numpy as np
     import matplotlib.pyplot as plt
 
-    xs = [float(r["delta"]) for r in delta_rows]
-    ys = [float(r["flip_rate_mean"]) for r in delta_rows]
+    ordered = sorted(delta_rows, key=lambda r: float(r.get("delta", 0.0)))
+    xs = [float(r["delta"]) for r in ordered]
+    ys = [float(r["flip_rate_mean"]) for r in ordered]
+    ymin = [float(r.get("flip_rate_min", y)) for r, y in zip(ordered, ys)]
+    ymax = [float(r.get("flip_rate_max", y)) for r, y in zip(ordered, ys)]
 
-    fig, ax = plt.subplots(figsize=(6.2, 3.8))
-    ax.plot(xs, ys, marker="o")
-    ax.set_xlabel("delta")
-    ax.set_ylabel("mean flip rate")
-    ax.set_title("Delta sweep: ranking flip rate")
-    ax.grid(alpha=0.3)
+    with plt.rc_context(
+        {
+            "figure.facecolor": "#fbfaf7",
+            "axes.facecolor": "#f7f5ef",
+            "font.family": "DejaVu Sans",
+            "axes.titleweight": "bold",
+            "axes.grid": True,
+            "grid.linestyle": (0, (1, 3)),
+            "grid.color": "#b2b2b2",
+            "grid.linewidth": 0.7,
+        }
+    ):
+        fig, ax = plt.subplots(figsize=(7.1, 4.25))
+        ax.plot(xs, ys, marker="o", markersize=6.8, color="#2f5f89", linewidth=2.2, label="mean flip rate")
+        band = ax.fill_between(xs, ymin, ymax, color="#7aa6c2", alpha=0.24)
+        band.set_hatch("////")
+        band.set_edgecolor("#4e718f")
+        band.set_linewidth(0.0)
+        ax.set_xlabel("delta", fontweight="semibold")
+        ax.set_ylabel("mean flip rate", fontweight="semibold")
+        ax.set_title("Delta Sweep: Ranking Flip Rate", fontfamily="DejaVu Serif")
+        y_min_data = float(np.nanmin(ymin))
+        y_max_data = float(np.nanmax(ymax))
+        y_span = y_max_data - y_min_data
+        if y_span < 1e-6:
+            pad = 0.03
+        else:
+            pad = max(0.02, 0.18 * y_span)
+        lo = max(0.0, y_min_data - pad)
+        hi = min(1.0, y_max_data + pad)
+        if hi - lo < 0.08:
+            hi = min(1.0, lo + 0.08)
+        ax.set_ylim(lo, hi)
+        if len(xs) == 1:
+            ax.set_xlim(xs[0] - 0.02, xs[0] + 0.02)
+        else:
+            xspan = max(xs) - min(xs)
+            xpad = max(0.002, 0.06 * xspan)
+            ax.set_xlim(min(xs) - xpad, max(xs) + xpad)
+        ax.legend(loc="upper left")
 
-    fig.tight_layout()
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_path, dpi=220, bbox_inches="tight")
-    plt.close(fig)
+        fig.tight_layout()
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(out_path, dpi=240, bbox_inches="tight")
+        plt.close(fig)
 
 
-def _plot_shots_curve(shots_rows: list[dict[str, Any]], out_path: Path) -> bool:
+def _plot_shots_curve(shots_rows: list[dict[str, Any]], out_path: Path, *, threshold: float = 0.95) -> bool:
     if not shots_rows:
         return False
+    import numpy as np
     import matplotlib.pyplot as plt
 
-    xs = [int(r["shots"]) for r in shots_rows]
-    ys = [float(r["stability_hat"]) for r in shots_rows]
-    lows = [float(r["stability_ci_low"]) for r in shots_rows]
-    highs = [float(r["stability_ci_high"]) for r in shots_rows]
-    yerr_low = [y - lo for y, lo in zip(ys, lows)]
-    yerr_high = [hi - y for y, hi in zip(ys, highs)]
+    ordered = sorted(shots_rows, key=lambda r: int(r.get("shots", 0)))
+    xs = [int(r["shots"]) for r in ordered]
+    ys = [float(r["stability_hat"]) for r in ordered]
+    lows = [float(r["stability_ci_low"]) for r in ordered]
+    highs = [float(r["stability_ci_high"]) for r in ordered]
+    decisions = [str(r.get("decision", "inconclusive")) for r in ordered]
+    eval_counts = [int(r.get("n_eval", 0)) for r in ordered]
 
-    fig, ax = plt.subplots(figsize=(6.2, 3.8))
-    ax.errorbar(xs, ys, yerr=[yerr_low, yerr_high], marker="o", capsize=3)
-    ax.set_xlabel("shots")
-    ax.set_ylabel("stability")
-    ax.set_title("Stability vs Cost (shots)")
-    ax.set_ylim(0.0, 1.0)
-    ax.grid(alpha=0.3)
-    fig.tight_layout()
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_path, dpi=220, bbox_inches="tight")
-    plt.close(fig)
+    with plt.rc_context(
+        {
+            "figure.facecolor": "#fbfaf7",
+            "axes.facecolor": "#f7f5ef",
+            "font.family": "DejaVu Sans",
+            "axes.titleweight": "bold",
+            "axes.grid": True,
+            "grid.linestyle": (0, (1, 3)),
+            "grid.color": "#b2b2b2",
+            "grid.linewidth": 0.7,
+        }
+    ):
+        fig, ax = plt.subplots(figsize=(7.1, 4.25))
+        band = ax.fill_between(xs, lows, highs, color="#8ab6d6", alpha=0.24)
+        band.set_hatch("\\\\\\\\")
+        band.set_edgecolor("#4b7090")
+        band.set_linewidth(0.0)
+        ax.plot(
+            xs,
+            lows,
+            color="#204d74",
+            linewidth=2.35,
+            linestyle="-",
+            marker="o",
+            markersize=6.8,
+            markerfacecolor="#204d74",
+            markeredgecolor="#2f2f2f",
+            markeredgewidth=0.35,
+            label="CI lower bound",
+        )
+        ax.plot(
+            xs,
+            ys,
+            color="#5f84a6",
+            linewidth=1.4,
+            linestyle=(0, (2, 2)),
+            marker="o",
+            markersize=4.6,
+            markerfacecolor="#5f84a6",
+            markeredgecolor="#415869",
+            markeredgewidth=0.3,
+            alpha=0.75,
+            label="stability_hat",
+        )
+        yerr_low = [max(0.0, y - lo) for y, lo in zip(ys, lows)]
+        yerr_high = [max(0.0, hi - y) for y, hi in zip(ys, highs)]
+        ax.errorbar(xs, ys, yerr=[yerr_low, yerr_high], fmt="none", ecolor="#6688a3", elinewidth=1.0, alpha=0.7, capsize=3)
+
+        ax.axhline(threshold, color="#6b6b6b", linewidth=1.2, linestyle=(0, (4, 3)), label="stability threshold")
+        ax.set_xlabel("shots", fontweight="semibold")
+        ax.set_ylabel("stability (CI)", fontweight="semibold")
+        ax.set_title("Stability vs Cost (Shots)", fontfamily="DejaVu Serif")
+        lo = max(0.0, float(np.nanmin(lows)) - 0.04)
+        hi = min(1.0, float(np.nanmax(highs)) + 0.03)
+        if hi - lo < 0.12:
+            lo = max(0.0, hi - 0.12)
+        ax.set_ylim(lo, hi)
+        ax.set_xticks(xs)
+        if len(xs) == 1:
+            x = xs[0]
+            pad = max(1.0, 0.06 * x)
+            ax.set_xlim(x - pad, x + pad)
+        else:
+            xspan = max(xs) - min(xs)
+            xpad = max(2.0, 0.05 * xspan)
+            ax.set_xlim(min(xs) - xpad, max(xs) + xpad)
+
+        y_annot_top = ax.get_ylim()[1]
+        for x, low, decision, n_eval in zip(xs, lows, decisions, eval_counts):
+            y = min(y_annot_top - 0.01, low + 0.012)
+            ax.text(
+                x,
+                y,
+                f"{decision}, n={n_eval}",
+                fontsize=7.3,
+                color="#2f2f2f",
+                ha="center",
+                va="bottom",
+            )
+        ax.legend(loc="lower right")
+        fig.tight_layout()
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(out_path, dpi=240, bbox_inches="tight")
+        plt.close(fig)
     return True
 
 
@@ -394,24 +569,64 @@ def _plot_factor_attribution(
     if not dimensions:
         return False
 
-    fig, axes = plt.subplots(len(dimensions), 1, figsize=(7.0, 2.6 * len(dimensions)))
-    if len(dimensions) == 1:
-        axes = [axes]
+    with plt.rc_context(
+        {
+            "figure.facecolor": "#fbfaf7",
+            "axes.facecolor": "#f7f5ef",
+            "font.family": "DejaVu Sans",
+            "axes.grid": True,
+            "grid.linestyle": (0, (1, 3)),
+            "grid.color": "#b2b2b2",
+            "grid.linewidth": 0.7,
+        }
+    ):
+        fig, axes = plt.subplots(len(dimensions), 1, figsize=(7.8, 2.9 * len(dimensions)))
+        if len(dimensions) == 1:
+            axes = [axes]
 
-    for ax, dim in zip(axes, dimensions):
-        values = dim_payload.get(dim, {})
-        labels = list(values.keys())
-        rates = [float(values[label].get("flip_rate", 0.0)) for label in labels]
-        ax.bar(labels, rates)
-        ax.set_ylim(0.0, 1.0)
-        ax.set_ylabel("flip rate")
-        ax.set_title(f"{graph_id}: {dim} (delta={selected_delta})")
+        stem_color = "#2f6690"
+        marker_style = "o"
 
-    axes[-1].set_xlabel("dimension value")
-    fig.tight_layout()
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_path, dpi=220, bbox_inches="tight")
-    plt.close(fig)
+        for ax, dim in zip(axes, dimensions):
+            values = dim_payload.get(dim, {})
+            labels = sorted(list(values.keys()), key=_numeric_sort_key)
+            rates = [float(values[label].get("flip_rate", 0.0)) for label in labels]
+            x = list(range(len(labels)))
+            # Uniform lollipop/stem style for readability (single metric, no category encoding).
+            for i, (xi, rate) in enumerate(zip(x, rates)):
+                ax.vlines(
+                    xi,
+                    0.0,
+                    rate,
+                    color=stem_color,
+                    linewidth=2.4,
+                    linestyles=(0, (4, 2)),
+                    alpha=0.95,
+                )
+                ax.scatter(
+                    [xi],
+                    [rate],
+                    s=80,
+                    marker=marker_style,
+                    facecolor=stem_color,
+                    edgecolor="#2f2f2f",
+                    linewidth=0.45,
+                    zorder=4,
+                )
+                ax.text(xi, rate + 0.01, f"{rate:.2f}", ha="center", va="bottom", fontsize=7.8, color="#2f2f2f")
+            max_rate = max(rates) if rates else 0.0
+            upper = 0.12 if max_rate == 0.0 else min(1.0, max(0.12, max_rate + 0.1))
+            ax.set_ylim(0.0, upper)
+            ax.set_xticks(x)
+            ax.set_xticklabels([str(v) for v in labels])
+            ax.set_ylabel("flip rate", fontweight="semibold")
+            ax.set_title(f"{graph_id}: {dim} (delta={selected_delta})", fontfamily="DejaVu Serif", fontsize=11.2)
+
+        axes[-1].set_xlabel("dimension value", fontweight="semibold")
+        fig.tight_layout()
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(out_path, dpi=240, bbox_inches="tight")
+        plt.close(fig)
     return True
 
 
@@ -459,7 +674,29 @@ def main() -> None:
 
     html_body = [
         "<html><head><meta charset='utf-8'><title>ClaimStab Report</title>",
-        "<style>body{font-family:Arial,sans-serif;margin:24px;}table{border-collapse:collapse;margin-bottom:14px;}th,td{border:1px solid #999;padding:6px 10px;}h1,h2,h3,h4{margin-bottom:8px;}code{background:#f3f3f3;padding:2px 4px;}p{margin:4px 0 10px 0;}</style>",
+        (
+            "<style>"
+            ":root{--bg:#f8f6f2;--panel:#fffdf8;--ink:#1e1f22;--line:#c8c2b6;--muted:#6a6a6a;"
+            "--stable:#2d7f5e;--unstable:#b0413e;--inconclusive:#8a6f2f;}"
+            "body{font-family:'Trebuchet MS',Verdana,sans-serif;margin:24px;color:var(--ink);"
+            "background:radial-gradient(circle at top right,#f2ece0 0%,var(--bg) 42%,#f7f4ee 100%);line-height:1.38;}"
+            "table{border-collapse:collapse;margin:10px 0 16px 0;width:100%;background:var(--panel);}"
+            "th,td{border:1px solid var(--line);padding:7px 10px;vertical-align:top;}"
+            "th{background:#ece7da;font-family:'Palatino Linotype',Georgia,serif;font-size:0.94rem;letter-spacing:0.2px;}"
+            "tr:nth-child(even) td{background:#fbf8f1;}"
+            "h1,h2,h3,h4,h5{font-family:'Palatino Linotype',Georgia,serif;margin:11px 0 7px 0;letter-spacing:0.2px;}"
+            "h1{font-size:2rem;border-bottom:2px solid #d8cfbd;padding-bottom:6px;}"
+            "code{background:#eee8dd;padding:2px 5px;border-radius:4px;border:1px solid #d6cec0;}"
+            "p{margin:4px 0 10px 0;}"
+            ".badge{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid transparent;"
+            "font-size:0.83rem;font-weight:600;text-transform:lowercase;}"
+            ".badge.stable{background:#e7f4ee;border-color:#b6dac8;color:var(--stable);}"
+            ".badge.unstable{background:#faeceb;border-color:#e5b9b7;color:var(--unstable);}"
+            ".badge.inconclusive{background:#f9f2e2;border-color:#e2d1ab;color:var(--inconclusive);}"
+            ".badge.neutral{background:#efefef;border-color:#d4d4d4;color:#4c4c4c;}"
+            "img{max-width:100%;height:auto;border:1px solid #cdc6b8;background:#fffdf8;padding:6px;box-shadow:0 1px 0 #ece6d9;}"
+            "</style>"
+        ),
         "</head><body>",
         "<h1>Claim Stability Report</h1>",
     ]
@@ -536,19 +773,26 @@ def main() -> None:
 
         stability_vs_cost = overall.get("stability_vs_cost", {})
         shots_rows_delta0 = stability_vs_cost.get("by_delta", {}).get(str(delta_rows[0].get("delta")) if delta_rows else "0.0", [])
+        threshold = float(rule.get("threshold", 0.95)) if isinstance(rule, dict) else 0.95
         if args.with_plots:
             try:
-                shots_plot_ok = _plot_shots_curve(shots_rows_delta0, shots_plot)
+                shots_plot_ok = _plot_shots_curve(shots_rows_delta0, shots_plot, threshold=threshold)
             except Exception as exc:
                 print(f"[WARN] Could not render shots curve for experiment {idx + 1}: {exc}")
                 shots_plot_ok = False
 
         html_body.append("<h3>Stability vs Cost (Shots)</h3>")
         for delta in [str(r.get("delta")) for r in delta_rows]:
+            rows_for_delta = stability_vs_cost.get("by_delta", {}).get(delta, [])
             html_body.append(f"<h4>delta={html.escape(delta)}</h4>")
-            html_body.append(_render_shots_curve_table(stability_vs_cost.get("by_delta", {}).get(delta, [])))
+            html_body.append(_render_shots_curve_table(rows_for_delta))
             min_shots = stability_vs_cost.get("minimum_shots_for_stable", {}).get(delta)
-            html_body.append(f"<p><b>minimum_shots_for_stable:</b> {html.escape(str(min_shots))}</p>")
+            min_shots_text = str(min_shots) if min_shots is not None else "None within evaluated shot levels"
+            html_body.append(f"<p><b>minimum_shots_for_stable:</b> {html.escape(min_shots_text)}</p>")
+            warn = _shots_warning(rows_for_delta)
+            if warn:
+                html_body.append(f"<p><b>Warning:</b> {html.escape(warn)}</p>")
+            html_body.append(f"<p><i>{html.escape(_shots_diagnostic_text(rows_for_delta, threshold))}</i></p>")
         if shots_plot_ok:
             shots_ref = _relative_ref(shots_plot, out_path.parent)
             html_body.append(f"<img src='{html.escape(shots_ref)}' width='700' />")
