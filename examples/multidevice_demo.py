@@ -14,6 +14,7 @@ from claimstab.claims.evaluation import collect_paired_scores
 from claimstab.claims.ranking import HigherIsBetter, RankingClaim, compute_rank_flip_summary
 from claimstab.claims.stability import conservative_stability_decision, estimate_binomial_rate
 from claimstab.devices.registry import parse_device_profile, parse_noise_model_mode, resolve_device_profile
+from claimstab.io.runtime_meta import collect_runtime_metadata
 from claimstab.methods.spec import MethodSpec
 from claimstab.perturbations.sampling import SamplingPolicy, ensure_config_included, sample_configs
 from claimstab.perturbations.space import CompilationPerturbation, ExecutionPerturbation, PerturbationConfig, PerturbationSpace
@@ -376,6 +377,7 @@ def main() -> None:
     deltas = parse_deltas(args.deltas)
     transpile_space = canonical_space_name(args.transpile_space)
     noisy_space = canonical_space_name(args.noisy_space)
+    runtime_meta = collect_runtime_metadata()
     spec_payload = try_load_spec(args.spec)
     task_plugin, task_suite = make_task(
         spec_payload.get("task") if isinstance(spec_payload, dict) else None,
@@ -412,6 +414,7 @@ def main() -> None:
                 "batch_mode": batch_mode,
                 "generated_by": "examples/multidevice_demo.py",
                 "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
+                "runtime": runtime_meta,
             },
             "batch": {
                 "mode": batch_mode,
@@ -586,6 +589,7 @@ def main() -> None:
                     "device_name": device_name,
                     "generated_by": "examples/multidevice_demo.py",
                     "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
+                    "runtime": runtime_meta,
                 },
                 "device_compatibility": {
                     "device_qubits": device_num_qubits,
@@ -602,6 +606,7 @@ def main() -> None:
                 "batch_mode": batch_mode,
                 "generated_by": "examples/multidevice_demo.py",
                 "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
+                "runtime": runtime_meta,
             },
             "batch": {
                 "mode": batch_mode,
@@ -672,6 +677,7 @@ def main() -> None:
                 "suite": suite_name,
                 "generated_by": "examples/multidevice_demo.py",
                 "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
+                "runtime": runtime_meta,
             },
             "device_summary": global_device_summary,
             "comparative": {"space_claim_delta": global_device_summary},

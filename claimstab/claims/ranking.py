@@ -3,13 +3,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable, Optional
 
 
 class HigherIsBetter(Enum):
     """Monotonicity of the evaluation metric."""
     YES = "higher_is_better"
     NO = "lower_is_better"
+
+
+class Relation(str, Enum):
+    A_GT_B = "A_GT_B"
+    A_EQ_B = "A_EQ_B"
+    A_LT_B = "A_LT_B"
 
 
 @dataclass(frozen=True)
@@ -44,24 +49,24 @@ class RankingClaim:
         else:
             return score_a <= score_b - self.delta
 
-    def relation(self, score_a: float, score_b: float) -> str:
+    def relation(self, score_a: float, score_b: float) -> Relation:
         """
-        Return a human-readable relation label among {A>B, A≈B, A<B}
+        Return a 3-way relation among {A_GT_B, A_EQ_B, A_LT_B}
         under the claim's delta semantics.
         """
         if self.direction == HigherIsBetter.YES:
             if score_a >= score_b + self.delta:
-                return "A>B"
+                return Relation.A_GT_B
             if score_b >= score_a + self.delta:
-                return "A<B"
-            return "A≈B"
+                return Relation.A_LT_B
+            return Relation.A_EQ_B
         else:
             # lower is better
             if score_a <= score_b - self.delta:
-                return "A>B"  # A better than B
+                return Relation.A_GT_B  # A better than B
             if score_b <= score_a - self.delta:
-                return "A<B"
-            return "A≈B"
+                return Relation.A_LT_B
+            return Relation.A_EQ_B
 
 
 @dataclass(frozen=True)
@@ -70,18 +75,18 @@ class RankFlip:
     A rank flip event for a given perturbation configuration.
 
     Interpretation:
-      - baseline_holds is the claim truth value under the baseline configuration
-      - perturbed_holds is the claim truth value under the perturbed configuration
-      - flip = (baseline_holds != perturbed_holds)
+      - baseline_relation is baseline relation under delta semantics
+      - perturbed_relation is perturbed relation under delta semantics
+      - flip = relation change
 
     This is the atomic unit used to compute rank-flip rate.
     """
-    baseline_holds: bool
-    perturbed_holds: bool
+    baseline_relation: Relation
+    perturbed_relation: Relation
 
     @property
     def flipped(self) -> bool:
-        return self.baseline_holds != self.perturbed_holds
+        return self.baseline_relation != self.perturbed_relation
 
 
 @dataclass(frozen=True)
@@ -110,11 +115,11 @@ def compute_rank_flip_summary(
       - baseline is typically one chosen configuration (e.g., seed=0,opt=0)
       - perturbed_scores are outcomes under other (seed,opt) configs
     """
-    baseline_holds = claim.holds(baseline_score_a, baseline_score_b)
+    baseline_relation = claim.relation(baseline_score_a, baseline_score_b)
 
     flips = 0
     for sa, sb in perturbed_scores:
-        if claim.holds(sa, sb) != baseline_holds:
+        if claim.relation(sa, sb) != baseline_relation:
             flips += 1
 
     return RankFlipSummary(total=len(perturbed_scores), flips=flips)

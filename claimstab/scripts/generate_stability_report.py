@@ -65,6 +65,10 @@ def _render_delta_table(delta_rows: list[dict[str, Any]]) -> str:
         "<th>stability_ci_low</th>"
         "<th>stability_ci_high</th>"
         "<th>decision</th>"
+        "<th>clustered_stability_mean</th>"
+        "<th>clustered_stability_ci_low</th>"
+        "<th>clustered_stability_ci_high</th>"
+        "<th>clustered_decision</th>"
         "<th>n_instances</th>"
         "<th>n_claim_evals</th>"
         "<th>stable</th>"
@@ -87,6 +91,10 @@ def _render_delta_table(delta_rows: list[dict[str, Any]]) -> str:
             f"<td>{row.get('stability_ci_low')}</td>"
             f"<td>{row.get('stability_ci_high')}</td>"
             f"<td>{_decision_badge(row.get('decision'))}</td>"
+            f"<td>{row.get('clustered_stability_mean')}</td>"
+            f"<td>{row.get('clustered_stability_ci_low')}</td>"
+            f"<td>{row.get('clustered_stability_ci_high')}</td>"
+            f"<td>{_decision_badge(row.get('clustered_decision'))}</td>"
             f"<td>{row.get('n_instances')}</td>"
             f"<td>{row.get('n_claim_evals')}</td>"
             f"<td>{_decision_count(row, 'stable')}</td>"
@@ -111,6 +119,10 @@ def _render_comparative_table(rows: list[dict[str, Any]]) -> str:
         "<th>stability_ci_low</th>"
         "<th>stability_ci_high</th>"
         "<th>decision</th>"
+        "<th>clustered_stability_mean</th>"
+        "<th>clustered_stability_ci_low</th>"
+        "<th>clustered_stability_ci_high</th>"
+        "<th>clustered_decision</th>"
         "<th>stable</th>"
         "<th>unstable</th>"
         "<th>inconclusive</th>"
@@ -131,6 +143,10 @@ def _render_comparative_table(rows: list[dict[str, Any]]) -> str:
             f"<td>{row.get('stability_ci_low')}</td>"
             f"<td>{row.get('stability_ci_high')}</td>"
             f"<td>{_decision_badge(row.get('decision'))}</td>"
+            f"<td>{row.get('clustered_stability_mean')}</td>"
+            f"<td>{row.get('clustered_stability_ci_low')}</td>"
+            f"<td>{row.get('clustered_stability_ci_high')}</td>"
+            f"<td>{_decision_badge(row.get('clustered_decision'))}</td>"
             f"<td>{_decision_count(row, 'stable')}</td>"
             f"<td>{_decision_count(row, 'unstable')}</td>"
             f"<td>{_decision_count(row, 'inconclusive')}</td>"
@@ -190,6 +206,8 @@ def _render_top_unstable(top_events: list[dict[str, Any]]) -> str:
         "<th>config</th>"
         "<th>score_a</th>"
         "<th>score_b</th>"
+        "<th>baseline_relation</th>"
+        "<th>perturbed_relation</th>"
         "<th>flip_severity</th>"
         "<th>margin_to_threshold</th>"
         "</tr>"
@@ -202,6 +220,8 @@ def _render_top_unstable(top_events: list[dict[str, Any]]) -> str:
             f"<td><code>{html.escape(str(event.get('config')))}</code></td>"
             f"<td>{event.get('score_a')}</td>"
             f"<td>{event.get('score_b')}</td>"
+            f"<td>{html.escape(str(event.get('baseline_relation')))}</td>"
+            f"<td>{html.escape(str(event.get('perturbed_relation')))}</td>"
             f"<td>{event.get('flip_severity')}</td>"
             f"<td>{event.get('margin_to_threshold')}</td>"
             "</tr>"
@@ -361,6 +381,37 @@ def _render_auxiliary_claims(aux: dict[str, Any]) -> str:
             "</p>"
         )
     return "".join(sections) if sections else "<p>No auxiliary decision/distribution examples.</p>"
+
+
+def _render_naive_summary(comparative_rows: list[dict[str, Any]]) -> str:
+    counts = {"naive_overclaim": 0, "naive_underclaim": 0, "agree": 0, "naive_uninformative": 0}
+    for row in comparative_rows:
+        naive = row.get("naive_baseline")
+        if isinstance(naive, dict):
+            label = str(naive.get("comparison", "naive_uninformative"))
+            if label in counts:
+                counts[label] += 1
+    header = "<tr><th>category</th><th>count</th></tr>"
+    body = "".join(f"<tr><td>{html.escape(k)}</td><td>{v}</td></tr>" for k, v in counts.items())
+    return f"<table>{header}{body}</table>"
+
+
+def _render_rq_summary(rq: dict[str, Any]) -> str:
+    if not rq:
+        return "<p>No RQ summary available.</p>"
+    out = []
+    rq1 = rq.get("rq1_prevalence", {})
+    out.append(f"<p><b>RQ1 prevalence:</b> {html.escape(str(rq1.get('by_space_and_claim_type', {})))}</p>")
+    rq2 = rq.get("rq2_drivers", {})
+    out.append(f"<p><b>RQ2 top drivers:</b> {html.escape(str(rq2.get('top_dimensions', [])))}</p>")
+    rq3 = rq.get("rq3_cost_tradeoff", {})
+    rows = rq3.get("stability_vs_cost_rows", [])
+    out.append(f"<p><b>RQ3 cost rows:</b> {len(rows) if isinstance(rows, list) else 0}</p>")
+    rq4 = rq.get("rq4_adaptive_sampling", {})
+    out.append(
+        f"<p><b>RQ4 adaptive runs:</b> {len(rq4.get('adaptive_sampling', [])) if isinstance(rq4, dict) else 0}</p>"
+    )
+    return "".join(out)
 
 
 def _executive_summary(experiments: list[dict[str, Any]], comparative_rows: list[dict[str, Any]]) -> list[str]:
@@ -715,6 +766,13 @@ def main() -> None:
     if comparative_rows:
         html_body.append("<h2>Claim Summary Table (Space x Claim x Delta)</h2>")
         html_body.append(_render_comparative_table(comparative_rows))
+        html_body.append("<h2>Naive Baseline vs ClaimStab</h2>")
+        html_body.append(_render_naive_summary(comparative_rows))
+
+    rq_summary = payload.get("rq_summary", {})
+    if isinstance(rq_summary, dict) and rq_summary:
+        html_body.append("<h2>RQ Summary (RQ1-RQ4)</h2>")
+        html_body.append(_render_rq_summary(rq_summary))
 
     for idx, experiment in enumerate(experiments):
         claim = experiment.get("claim", {})
@@ -729,9 +787,24 @@ def main() -> None:
         html_body.append(f"<h2>Experiment {idx + 1}: {html.escape(str(experiment.get('experiment_id')))}</h2>")
         html_body.append(f"<p><b>Claim:</b> {html.escape(str(claim))}</p>")
         html_body.append(f"<p><b>Sampling:</b> {html.escape(str(sampling))}</p>")
+        if isinstance(sampling, dict):
+            adaptive = sampling.get("adaptive_stopping")
+            if isinstance(adaptive, dict) and adaptive.get("enabled"):
+                html_body.append(
+                    "<p><b>Adaptive CI stopping:</b> "
+                    f"target_ci_width={html.escape(str(adaptive.get('target_ci_width')))}, "
+                    f"achieved_ci_width={html.escape(str(adaptive.get('achieved_ci_width')))}, "
+                    f"selected_configs={html.escape(str(adaptive.get('selected_configurations_with_baseline')))}, "
+                    f"reason={html.escape(str(adaptive.get('stop_reason')))}"
+                    "</p>"
+                )
         html_body.append(f"<p><b>Decision rule:</b> {html.escape(str(rule))}</p>")
         html_body.append(f"<p><b>Backend:</b> {html.escape(str(backend))}</p>")
-        html_body.append("<p><i>Interpretation note:</i> delta is a practical significance threshold, not a stability tuning knob. Read flip/stability together with holds rate.</p>")
+        claim_type = str(claim.get("type", "ranking"))
+        if claim_type == "ranking":
+            html_body.append("<p><i>Flip definition:</i> a flip is a relation change from baseline under delta semantics (A_GT_B, A_EQ_B, A_LT_B).</p>")
+            html_body.append("<p><i>Interpretation note:</i> delta is a practical significance threshold, not a stability tuning knob. Read flip/stability together with holds rate.</p>")
+            html_body.append("<p><i>Clustered CI note:</i> clustered stability bootstraps across instances (not pooled runs) to reduce dependence concerns.</p>")
         html_body.append("<h3>Delta Sweep Summary</h3>")
         html_body.append(_render_delta_table(delta_rows))
 
@@ -742,7 +815,7 @@ def main() -> None:
         factor_plot = assets_dir / f"factor_attribution_{idx + 1}.png"
         shots_plot = assets_dir / f"shots_stability_{idx + 1}.png"
 
-        if delta_rows and args.with_plots:
+        if claim_type == "ranking" and delta_rows and args.with_plots:
             try:
                 _plot_delta_curve(delta_rows, delta_plot)
                 delta_plot_ok = True
@@ -750,7 +823,7 @@ def main() -> None:
                 print(f"[WARN] Could not render delta plot for experiment {idx + 1}: {exc}")
 
         selected_delta = str(delta_rows[0].get("delta")) if delta_rows else "0.0"
-        if args.with_plots:
+        if claim_type == "ranking" and args.with_plots:
             try:
                 factor_plot_ok = _plot_factor_attribution(
                     per_graph,
@@ -761,12 +834,12 @@ def main() -> None:
                 print(f"[WARN] Could not render factor plot for experiment {idx + 1}: {exc}")
                 factor_plot_ok = False
 
-        if delta_plot_ok:
+        if claim_type == "ranking" and delta_plot_ok:
             delta_ref = _relative_ref(delta_plot, out_path.parent)
             html_body.append("<h3>Delta Curve</h3>")
             html_body.append(f"<img src='{html.escape(delta_ref)}' width='700' />")
 
-        if factor_plot_ok:
+        if claim_type == "ranking" and factor_plot_ok:
             factor_ref = _relative_ref(factor_plot, out_path.parent)
             html_body.append("<h3>Example Graph Factor Attribution</h3>")
             html_body.append(f"<img src='{html.escape(factor_ref)}' width='760' />")
@@ -782,7 +855,7 @@ def main() -> None:
                 shots_plot_ok = False
 
         html_body.append("<h3>Stability vs Cost (Shots)</h3>")
-        for delta in [str(r.get("delta")) for r in delta_rows]:
+        for delta in [str(r.get("delta")) for r in delta_rows if r.get("delta") is not None]:
             rows_for_delta = stability_vs_cost.get("by_delta", {}).get(delta, [])
             html_body.append(f"<h4>delta={html.escape(delta)}</h4>")
             html_body.append(_render_shots_curve_table(rows_for_delta))
@@ -801,7 +874,7 @@ def main() -> None:
         dim_by_delta = diagnostics.get("by_delta_dimension", {})
         top_by_delta = diagnostics.get("top_unstable_configs_by_delta", {})
         lockdown_by_delta = diagnostics.get("top_lockdown_recommendations_by_delta", {})
-        if dim_by_delta or top_by_delta:
+        if claim_type == "ranking" and (dim_by_delta or top_by_delta):
             html_body.append("<h3>Failure Mode Diagnostics</h3>")
             for delta in [str(r.get("delta")) for r in delta_rows]:
                 html_body.append(f"<h4>delta={html.escape(delta)}</h4>")
@@ -814,6 +887,11 @@ def main() -> None:
 
         html_body.append("<h3>Decision + Distribution Examples</h3>")
         html_body.append(_render_auxiliary_claims(aux))
+        if claim_type == "decision":
+            failures = overall.get("decision_failures", [])
+            if failures:
+                html_body.append("<h3>Top Failure Configurations</h3>")
+                html_body.append(f"<p>{html.escape(str(failures[:8]))}</p>")
 
     html_body.append("<h2>Reproduce</h2>")
     reproduce = payload.get("meta", {}).get("reproduce_command")

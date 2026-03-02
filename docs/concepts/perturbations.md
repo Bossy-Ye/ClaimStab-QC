@@ -7,6 +7,8 @@ ClaimStab focuses on software-visible, controllable perturbations:
 - `shots`
 - `seed_simulator`
 
+Deprecated compatibility note: legacy specs may use `repeats`; ClaimStab maps it to `seed_simulator` when needed and records `meta.deprecated_field_used`.
+
 ## Presets
 
 | Preset | Varying Knobs | Fixed Knobs | Typical Use |

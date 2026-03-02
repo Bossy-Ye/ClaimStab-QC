@@ -16,26 +16,31 @@ from .distribution import (
     tvd_distance,
 )
 from .evaluation import collect_paired_scores, perturbation_key
-from .ranking import RankingClaim, RankFlipSummary, compute_rank_flip_summary
+from .ranking import RankFlipSummary, RankingClaim, Relation, compute_rank_flip_summary
 from .stability import (
     BinomialEstimate,
     StabilityDecision,
+    ci_width,
     conservative_stability_decision,
     estimate_binomial_rate,
+    estimate_clustered_stability,
     estimate_stability_from_outcomes,
     wilson_interval,
 )
 
 __all__ = [
     "RankingClaim",
+    "Relation",
     "RankFlipSummary",
     "compute_rank_flip_summary",
     "perturbation_key",
     "collect_paired_scores",
     "StabilityDecision",
     "BinomialEstimate",
+    "ci_width",
     "wilson_interval",
     "estimate_binomial_rate",
+    "estimate_clustered_stability",
     "estimate_stability_from_outcomes",
     "conservative_stability_decision",
     "TieBreak",

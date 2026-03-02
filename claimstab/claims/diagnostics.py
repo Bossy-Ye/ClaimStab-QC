@@ -4,7 +4,7 @@ from collections import defaultdict
 from typing import Any, Dict, Mapping, Sequence
 
 from claimstab.claims.evaluation import PerturbationKey, ScorePair, collect_paired_scores
-from claimstab.claims.ranking import HigherIsBetter, RankingClaim
+from claimstab.claims.ranking import HigherIsBetter, RankingClaim, Relation
 from claimstab.claims.stability import conservative_stability_decision, estimate_binomial_rate
 from claimstab.runners.matrix_runner import ScoreRow
 
@@ -119,14 +119,14 @@ def conditional_rank_flip_summary(
         chosen_baseline = sorted(subset_keys)[0]
 
     baseline_scores = paired_scores[chosen_baseline]
-    baseline_holds = claim.holds(*baseline_scores)
+    baseline_relation = claim.relation(*baseline_scores)
     baseline_margin = _claim_margin(claim, *baseline_scores)
 
     flips = 0
     for key in subset_keys:
         if key == chosen_baseline:
             continue
-        if claim.holds(*paired_scores[key]) != baseline_holds:
+        if claim.relation(*paired_scores[key]) != baseline_relation:
             flips += 1
 
     total = len(subset_keys) - 1
@@ -145,7 +145,7 @@ def conditional_rank_flip_summary(
         "subset_size": len(subset_keys),
         "baseline_key_used": _key_to_config(chosen_baseline),
         "baseline_margin": baseline_margin,
-        "baseline_holds": baseline_holds,
+        "baseline_relation": baseline_relation.value,
         "total": total,
         "flips": flips,
         "flip_rate": 0.0 if total == 0 else flips / total,
@@ -286,14 +286,14 @@ def compute_stability_vs_shots(
                 chosen_baseline = sorted(subset_keys)[0]
 
             baseline_scores = paired_scores[chosen_baseline]
-            baseline_holds = claim.holds(*baseline_scores)
+            baseline_relation = claim.relation(*baseline_scores)
 
             total = len(subset_keys) - 1
             flips = 0
             for key in subset_keys:
                 if key == chosen_baseline:
                     continue
-                if claim.holds(*paired_scores[key]) != baseline_holds:
+                if claim.relation(*paired_scores[key]) != baseline_relation:
                     flips += 1
 
             per_shots_counts[shots]["total"] += total
@@ -344,7 +344,7 @@ def rank_flip_root_cause_by_dimension(
     paired_scores: Mapping[PerturbationKey, ScorePair],
     top_k: int = 5,
 ) -> Dict[str, Any]:
-    baseline_holds = claim.holds(*baseline_scores)
+    baseline_relation = claim.relation(*baseline_scores)
     baseline_margin = _claim_margin(claim, *baseline_scores)
 
     totals_by_dim_value: dict[str, dict[str, int]] = {d: {} for d in DIMENSION_NAMES}
@@ -359,22 +359,25 @@ def rank_flip_root_cause_by_dimension(
             continue
 
         total_perturbations += 1
-        perturbed_holds = claim.holds(score_a, score_b)
-        is_flip = perturbed_holds != baseline_holds
+        perturbed_relation = claim.relation(score_a, score_b)
+        is_flip = perturbed_relation != baseline_relation
         margin = _claim_margin(claim, score_a, score_b)
         margin_to_threshold = margin - claim.delta
         if is_flip:
             total_flips += 1
-            if baseline_holds:
+            if baseline_relation == Relation.A_GT_B:
                 severity = max(0.0, claim.delta - margin)
-            else:
+            elif baseline_relation == Relation.A_LT_B:
                 severity = max(0.0, margin - claim.delta)
+            else:
+                severity = abs(margin_to_threshold)
             flip_events.append(
                 {
                     "config": _key_to_config(key),
                     "score_a": score_a,
                     "score_b": score_b,
-                    "perturbed_holds": perturbed_holds,
+                    "baseline_relation": baseline_relation.value,
+                    "perturbed_relation": perturbed_relation.value,
                     "margin": margin,
                     "margin_to_threshold": margin_to_threshold,
                     "flip_severity": severity,
@@ -407,7 +410,7 @@ def rank_flip_root_cause_by_dimension(
     )[:max(0, top_k)]
 
     return {
-        "baseline_holds": baseline_holds,
+        "baseline_relation": baseline_relation.value,
         "total": total_perturbations,
         "flips": total_flips,
         "flip_rate": 0.0 if total_perturbations == 0 else total_flips / total_perturbations,

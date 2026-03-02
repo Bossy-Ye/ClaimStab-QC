@@ -35,6 +35,7 @@ class ScoreRow:
     circuit_depth: int | None = None
     two_qubit_count: int | None = None
     swap_count: int | None = None
+    counts: dict[str, int] | None = None
 
 
 class MatrixRunner:
@@ -66,6 +67,7 @@ class MatrixRunner:
         noise_model_mode: str = "none",
         device_snapshot_fingerprint: str | None = None,
         device_snapshot_summary: dict[str, object] | None = None,
+        store_counts: bool = False,
     ) -> List[ScoreRow]:
         """
         task contract:
@@ -135,8 +137,8 @@ class MatrixRunner:
                         circuit_depth=details.transpiled_depth,
                         two_qubit_count=details.two_qubit_count,
                         swap_count=details.swap_count,
+                        counts=details.counts if store_counts else None,
                     )
                 )
 
         return rows
-

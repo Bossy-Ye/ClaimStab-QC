@@ -8,7 +8,7 @@ import shlex
 import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import Iterable, List
+from typing import Any, Iterable, List
 
 from qiskit.transpiler import CouplingMap
 
@@ -24,10 +24,18 @@ from claimstab.claims.diagnostics import (
 from claimstab.claims.distribution import evaluate_distribution_claim
 from claimstab.claims.evaluation import collect_paired_scores, perturbation_key
 from claimstab.claims.ranking import RankingClaim, compute_rank_flip_summary
-from claimstab.claims.stability import conservative_stability_decision, estimate_binomial_rate
+from claimstab.claims.stability import (
+    ci_width,
+    conservative_stability_decision,
+    estimate_binomial_rate,
+    estimate_clustered_stability,
+)
+from claimstab.io.runtime_meta import collect_runtime_metadata
+from claimstab.analysis.rq import build_rq_summary
+from claimstab.baselines.naive import evaluate_naive_baseline
 from claimstab.devices.registry import parse_device_profile, parse_noise_model_mode, resolve_device_profile
 from claimstab.methods.spec import MethodSpec
-from claimstab.perturbations.sampling import SamplingPolicy, ensure_config_included, sample_configs
+from claimstab.perturbations.sampling import SamplingPolicy, adaptive_sample_configs, ensure_config_included, sample_configs
 from claimstab.perturbations.space import CompilationPerturbation, ExecutionPerturbation, PerturbationConfig, PerturbationSpace
 from claimstab.runners.matrix_runner import MatrixRunner, ScoreRow
 from claimstab.runners.qiskit_aer import QiskitAerRunner
@@ -55,11 +63,16 @@ SPACE_ALIASES = {
 
 
 def parse_args() -> argparse.Namespace:
-    ap = argparse.ArgumentParser(description="ClaimStab MaxCut demo with batch claim/space evaluation")
+    ap = argparse.ArgumentParser(description="ClaimStab demo with batch claim/space evaluation")
     ap.add_argument(
         "--suite",
         default="core",
         help="Suite preset: core | standard | large.",
+    )
+    ap.add_argument(
+        "--task",
+        default=None,
+        help="Optional task override, e.g. maxcut or bv.",
     )
     ap.add_argument(
         "--space-preset",
@@ -71,9 +84,13 @@ def parse_args() -> argparse.Namespace:
         default="",
         help="Comma-separated spaces for deterministic comparison, e.g. compilation_only,sampling_only,combined_light",
     )
-    ap.add_argument("--sampling-mode", choices=["full_factorial", "random_k"], default="full_factorial")
+    ap.add_argument("--sampling-mode", choices=["full_factorial", "random_k", "adaptive_ci"], default="full_factorial")
     ap.add_argument("--sample-size", type=int, default=40, help="Used when --sampling-mode random_k")
     ap.add_argument("--sample-seed", type=int, default=0)
+    ap.add_argument("--target-ci-width", type=float, default=0.02, help="Used when --sampling-mode adaptive_ci")
+    ap.add_argument("--max-sample-size", type=int, default=96, help="Used when --sampling-mode adaptive_ci")
+    ap.add_argument("--min-sample-size", type=int, default=16, help="Used when --sampling-mode adaptive_ci")
+    ap.add_argument("--step-size", type=int, default=8, help="Used when --sampling-mode adaptive_ci")
     ap.add_argument("--stability-threshold", type=float, default=0.95)
     ap.add_argument("--confidence-level", type=float, default=0.95)
     ap.add_argument("--deltas", default="0.0,0.01,0.05", help="Comma-separated delta values")
@@ -274,6 +291,95 @@ def build_baseline_config(space: PerturbationSpace) -> tuple[dict[str, int | str
     return baseline_cfg, baseline_pc, baseline_key
 
 
+def config_key(pc: PerturbationConfig) -> tuple[int, int, str | None, int, int | None]:
+    return (
+        pc.compilation.seed_transpiler,
+        pc.compilation.optimization_level,
+        pc.compilation.layout_method,
+        pc.execution.shots,
+        pc.execution.seed_simulator,
+    )
+
+
+def filter_rows_by_keys(
+    rows: list[ScoreRow],
+    allowed_keys: set[tuple[int, int, str | None, int, int | None]],
+) -> list[ScoreRow]:
+    return [row for row in rows if perturbation_key(row) in allowed_keys]
+
+
+def select_adaptive_keys(
+    *,
+    sampled_configs: list[PerturbationConfig],
+    paired_scores_by_graph: dict[str, dict[tuple[int, int, str | None, int, int | None], tuple[float, float]]],
+    method_a: str,
+    method_b: str,
+    deltas: list[float],
+    baseline_key: tuple[int, int, str | None, int, int | None],
+    confidence_level: float,
+    target_ci_width: float,
+    min_sample_size: int,
+    step_size: int,
+) -> tuple[set[tuple[int, int, str | None, int, int | None]], dict[str, object]]:
+    ordered_non_baseline = [pc for pc in sampled_configs if config_key(pc) != baseline_key]
+
+    def eval_prefix(prefix_cfgs: list[PerturbationConfig]) -> tuple[float, float]:
+        prefix_keys = {config_key(pc) for pc in prefix_cfgs}
+        widths: list[float] = []
+        for delta in deltas:
+            claim = RankingClaim(method_a=method_a, method_b=method_b, delta=delta)
+            successes = 0
+            total = 0
+            for paired in paired_scores_by_graph.values():
+                if baseline_key not in paired:
+                    continue
+                baseline_relation = claim.relation(*paired[baseline_key])
+                for key in prefix_keys:
+                    if key not in paired:
+                        continue
+                    total += 1
+                    if claim.relation(*paired[key]) == baseline_relation:
+                        successes += 1
+            if total > 0:
+                widths.append(ci_width(estimate_binomial_rate(successes=successes, total=total, confidence=confidence_level)))
+        if not widths:
+            return 0.0, 1.0
+        return 0.0, max(widths)
+
+    if not ordered_non_baseline:
+        return {baseline_key}, {
+            "enabled": True,
+            "target_ci_width": target_ci_width,
+            "achieved_ci_width": None,
+            "stop_reason": "no_candidate_configs",
+            "selected_configurations_without_baseline": 0,
+            "selected_configurations_with_baseline": 1,
+            "evaluated_configurations_without_baseline": 0,
+        }
+
+    adaptive = adaptive_sample_configs(
+        ordered_non_baseline,
+        evaluate_prefix=eval_prefix,
+        target_ci_width=target_ci_width,
+        min_sample_size=min_sample_size,
+        step_size=step_size,
+        max_sample_size=len(ordered_non_baseline),
+    )
+    selected_keys = {config_key(pc) for pc in adaptive.selected_configs}
+    selected_keys.add(baseline_key)
+    return selected_keys, {
+        "enabled": True,
+        "target_ci_width": adaptive.target_ci_width,
+        "achieved_ci_width": adaptive.achieved_ci_width,
+        "stop_reason": adaptive.stop_reason,
+        "selected_configurations_without_baseline": adaptive.evaluated_configs,
+        "selected_configurations_with_baseline": len(selected_keys),
+        "evaluated_configurations_without_baseline": len(ordered_non_baseline),
+        "min_sample_size": min_sample_size,
+        "step_size": step_size,
+    }
+
+
 def parse_claim_pairs_from_spec(spec_payload: dict) -> list[tuple[str, str]]:
     claims = spec_payload.get("claims")
     pairs: list[tuple[str, str]] = []
@@ -295,6 +401,30 @@ def parse_claim_pairs_from_spec(spec_payload: dict) -> list[tuple[str, str]]:
             if isinstance(method_a, str) and isinstance(method_b, str) and method_a and method_b:
                 pairs.append((method_a, method_b))
     return pairs
+
+
+def parse_decision_claims_from_spec(spec_payload: dict[str, Any]) -> list[dict[str, Any]]:
+    claims = spec_payload.get("claims")
+    out: list[dict[str, Any]] = []
+    if isinstance(claims, list):
+        for item in claims:
+            if not isinstance(item, dict):
+                continue
+            if str(item.get("type", "")).strip().lower() != "decision":
+                continue
+            method = item.get("method")
+            if not isinstance(method, str) or not method.strip():
+                continue
+            out.append(
+                {
+                    "type": "decision",
+                    "method": method.strip(),
+                    "top_k": int(item.get("top_k", 1)),
+                    "label": item.get("label"),
+                    "label_meta_key": str(item.get("label_meta_key", "target_label")),
+                }
+            )
+    return out
 
 
 class BoundTask:
@@ -543,6 +673,7 @@ def evaluate_claim_on_rows(
             stability_threshold=stability_threshold,
         ).value
         baseline_holds = claim.holds(baseline_a, baseline_b)
+        baseline_relation = claim.relation(baseline_a, baseline_b)
         claim_holds_count = sum(1 for pair in paired_scores.values() if claim.holds(*pair))
         claim_holds_rate = claim_holds_count / len(paired_scores) if paired_scores else 0.0
 
@@ -556,6 +687,7 @@ def evaluate_claim_on_rows(
             "stability_ci_high": estimate.ci_high,
             "decision": decision,
             "baseline_holds": baseline_holds,
+            "baseline_relation": baseline_relation.value,
             "claim_holds_count": claim_holds_count,
             "claim_total_count": len(paired_scores),
             "claim_holds_rate": claim_holds_rate,
@@ -612,9 +744,73 @@ def evaluate_claim_on_rows(
     }
 
 
+def evaluate_decision_claim_on_rows(
+    rows: list[ScoreRow],
+    *,
+    method: str,
+    top_k: int,
+    instance_target_label: str,
+    stability_threshold: float,
+    confidence_level: float,
+) -> dict[str, object]:
+    method_rows = [row for row in rows if row.method == method]
+    outcomes: list[bool] = []
+    failures: list[dict[str, object]] = []
+    for row in method_rows:
+        counts = row.counts or {}
+        try:
+            accepted = decision_in_top_k(
+                selected_label=instance_target_label,
+                scores={str(k): float(v) for k, v in counts.items()},
+                k=top_k,
+                higher_is_better=True,
+            )
+        except ValueError:
+            accepted = False
+        outcomes.append(accepted)
+        if not accepted:
+            failures.append(
+                {
+                    "config": {
+                        "seed_transpiler": row.seed_transpiler,
+                        "optimization_level": row.optimization_level,
+                        "layout_method": row.layout_method,
+                        "shots": row.shots,
+                        "seed_simulator": row.seed_simulator,
+                    },
+                    "target_label": instance_target_label,
+                    "counts": counts,
+                }
+            )
+
+    result = evaluate_decision_claim(
+        outcomes,
+        stability_threshold=stability_threshold,
+        confidence=confidence_level,
+    )
+    return {
+        "accepted": result.accepted,
+        "total": result.total,
+        "holds_rate": result.acceptance_rate,
+        "ci_low": result.ci_low,
+        "ci_high": result.ci_high,
+        "decision": result.decision.value,
+        "top_failures": failures[:5],
+    }
+
+
 def main() -> None:
     args = parse_args()
     spec_payload = try_load_spec(args.spec)
+    if args.task:
+        if not isinstance(spec_payload, dict):
+            spec_payload = {}
+        task_block = spec_payload.get("task")
+        if not isinstance(task_block, dict):
+            task_block = {}
+        task_block["kind"] = str(args.task).strip()
+        task_block.setdefault("suite", args.suite)
+        spec_payload["task"] = task_block
     deltas = parse_deltas(args.deltas)
     selected_space_inputs = parse_csv_tokens(args.space_presets) if args.space_presets.strip() else [args.space_preset]
     selected_spaces = [canonical_space_name(name) for name in selected_space_inputs]
@@ -627,18 +823,41 @@ def main() -> None:
     suite = task_plugin.instances(suite_name)
     if not suite:
         raise ValueError(f"Task '{getattr(task_plugin, 'name', 'unknown')}' returned an empty suite for '{suite_name}'.")
+    suite_by_id = {inst.instance_id: inst for inst in suite}
 
     out_dir = Path(args.out_dir)
     out_csv = out_dir / "scores.csv"
     out_json = out_dir / "claim_stability.json"
 
-    methods = parse_methods(spec_payload if isinstance(spec_payload, dict) else {})
+    task_kind = str(getattr(task_plugin, "name", "maxcut")).strip().lower()
+    methods = parse_methods(spec_payload if isinstance(spec_payload, dict) else {}, task_kind=task_kind)
     method_names = {m.name for m in methods}
+    decision_claims = parse_decision_claims_from_spec(spec_payload if isinstance(spec_payload, dict) else {})
+    if task_kind == "bv" and not decision_claims:
+        method_for_decision = methods[0].name if methods else "BVOracle"
+        decision_claims = [
+            {
+                "type": "decision",
+                "method": method_for_decision,
+                "top_k": 1,
+                "label": None,
+                "label_meta_key": "target_label",
+            },
+            {
+                "type": "decision",
+                "method": method_for_decision,
+                "top_k": 3,
+                "label": None,
+                "label_meta_key": "target_label",
+            },
+        ]
     spec_claim_pairs = parse_claim_pairs_from_spec(spec_payload if isinstance(spec_payload, dict) else {})
     if args.claim_pairs.strip():
         claim_pairs = parse_claim_pairs(args.claim_pairs, (args.method_a, args.method_b))
     elif spec_claim_pairs:
         claim_pairs = spec_claim_pairs
+    elif task_kind == "bv" and decision_claims:
+        claim_pairs = []
     else:
         claim_pairs = parse_claim_pairs(args.claim_pairs, (args.method_a, args.method_b))
     for method_a, method_b in claim_pairs:
@@ -651,8 +870,12 @@ def main() -> None:
 
     sampling_policy = SamplingPolicy(
         mode=args.sampling_mode,
-        sample_size=args.sample_size if args.sampling_mode == "random_k" else None,
+        sample_size=args.sample_size if args.sampling_mode == "random_k" else args.max_sample_size if args.sampling_mode == "adaptive_ci" else None,
         seed=args.sample_seed,
+        target_ci_width=args.target_ci_width if args.sampling_mode == "adaptive_ci" else None,
+        max_sample_size=args.max_sample_size if args.sampling_mode == "adaptive_ci" else None,
+        min_sample_size=args.min_sample_size,
+        step_size=args.step_size,
     )
     device_profile = parse_device_profile(spec_payload.get("device_profile") if isinstance(spec_payload, dict) else None)
     resolved_device = resolve_device_profile(device_profile)
@@ -671,6 +894,7 @@ def main() -> None:
     sampling_by_space: dict[str, dict[str, object]] = {}
     baseline_by_space: dict[str, dict[str, int | str]] = {}
     baseline_key_by_space: dict[str, tuple[int, int, str | None, int, int | None]] = {}
+    sampled_configs_by_space: dict[str, list[PerturbationConfig]] = {}
 
     for space_name in selected_spaces:
         space = make_space(space_name)
@@ -693,6 +917,7 @@ def main() -> None:
                 noise_model_mode=noise_model_mode,
                 device_snapshot_fingerprint=resolved_device.snapshot_fingerprint,
                 device_snapshot_summary=resolved_device.snapshot,
+                store_counts=bool(decision_claims),
             )
             rows_by_graph[inst.instance_id] = rows
             all_rows.extend((suite_name, space_name, row) for row in rows)
@@ -700,12 +925,17 @@ def main() -> None:
         rows_by_space_and_graph[space_name] = rows_by_graph
         baseline_by_space[space_name] = baseline_cfg
         baseline_key_by_space[space_name] = baseline_key
+        sampled_configs_by_space[space_name] = sampled_configs
         sampling_by_space[space_name] = {
             "suite": suite_name,
             "space_preset": space_name,
             "mode": sampling_policy.mode,
             "sample_size": sampling_policy.sample_size,
             "seed": sampling_policy.seed,
+            "target_ci_width": sampling_policy.target_ci_width,
+            "max_sample_size": sampling_policy.max_sample_size,
+            "min_sample_size": sampling_policy.min_sample_size,
+            "step_size": sampling_policy.step_size,
             "sampled_configurations_with_baseline": len(sampled_configs),
             "perturbation_space_size": space.size(),
         }
@@ -725,12 +955,33 @@ def main() -> None:
             by_delta_stability_totals: dict[float, int] = defaultdict(int)
             by_delta_claim_holds_successes: dict[float, int] = defaultdict(int)
             by_delta_claim_holds_totals: dict[float, int] = defaultdict(int)
+            by_delta_baseline_holds_successes: dict[float, int] = defaultdict(int)
+            by_delta_baseline_holds_totals: dict[float, int] = defaultdict(int)
             paired_scores_by_graph: dict[str, dict[tuple[int, int, str | None, int, int | None], tuple[float, float]]] = {}
             method_scores_by_graph: dict[str, dict[tuple[int, int, str | None, int, int | None], dict[str, float]]] = {}
+            for graph_id, graph_rows in space_rows.items():
+                paired_scores_by_graph[graph_id] = collect_paired_scores(graph_rows, method_a, method_b)
+
+            adaptive_info: dict[str, object] = {"enabled": False}
+            allowed_keys: set[tuple[int, int, str | None, int, int | None]] | None = None
+            if sampling_policy.mode == "adaptive_ci":
+                allowed_keys, adaptive_info = select_adaptive_keys(
+                    sampled_configs=sampled_configs_by_space[space_name],
+                    paired_scores_by_graph=paired_scores_by_graph,
+                    method_a=method_a,
+                    method_b=method_b,
+                    deltas=deltas,
+                    baseline_key=baseline_key,
+                    confidence_level=args.confidence_level,
+                    target_ci_width=float(sampling_policy.target_ci_width or 0.02),
+                    min_sample_size=max(1, int(sampling_policy.min_sample_size)),
+                    step_size=max(1, int(sampling_policy.step_size)),
+                )
 
             for graph_id, graph_rows in space_rows.items():
+                eval_rows = graph_rows if allowed_keys is None else filter_rows_by_keys(graph_rows, allowed_keys)
                 graph_eval = evaluate_claim_on_rows(
-                    graph_rows,
+                    eval_rows,
                     method_a=method_a,
                     method_b=method_b,
                     deltas=deltas,
@@ -739,7 +990,7 @@ def main() -> None:
                     confidence_level=args.confidence_level,
                     top_k_unstable=args.top_k_unstable,
                 )
-                method_scores_by_graph[graph_id] = build_method_scores_by_key(graph_rows)
+                method_scores_by_graph[graph_id] = build_method_scores_by_key(eval_rows)
                 paired_scores_by_graph[graph_id] = graph_eval["paired_scores"]
                 per_graph_summary[graph_id] = {
                     "sampled_configurations": graph_eval["sampled_configurations"],
@@ -757,12 +1008,28 @@ def main() -> None:
                     by_delta_stability_totals[delta_key] += int(record["total"])
                     by_delta_claim_holds_successes[delta_key] += int(record["claim_holds_count"])
                     by_delta_claim_holds_totals[delta_key] += int(record["claim_total_count"])
+                    by_delta_baseline_holds_successes[delta_key] += 1 if bool(record["baseline_holds"]) else 0
+                    by_delta_baseline_holds_totals[delta_key] += 1
 
+            all_selected_rows = [
+                row
+                for graph_rows in space_rows.values()
+                for row in (graph_rows if allowed_keys is None else filter_rows_by_keys(graph_rows, allowed_keys))
+            ]
             overall_delta = []
             for delta in deltas:
                 flips = by_delta_flip[delta]
                 decisions = by_delta_decision[delta]
                 n = len(flips)
+                clustered = estimate_clustered_stability(
+                    all_selected_rows,
+                    RankingClaim(method_a=method_a, method_b=method_b, delta=delta),
+                    baseline_by_space[space_name],
+                    stability_threshold=args.stability_threshold,
+                    confidence_level=args.confidence_level,
+                    n_boot=2000,
+                    seed=args.sample_seed,
+                )
                 holds_estimate = estimate_binomial_rate(
                     successes=by_delta_claim_holds_successes[delta],
                     total=by_delta_claim_holds_totals[delta],
@@ -791,17 +1058,31 @@ def main() -> None:
                     "stability_ci_low": stability_estimate.ci_low,
                     "stability_ci_high": stability_estimate.ci_high,
                     "decision": aggregate_decision,
+                    **clustered,
                     "decision_counts": {
                         "stable": sum(1 for d in decisions if d == "stable"),
                         "unstable": sum(1 for d in decisions if d == "unstable"),
                         "inconclusive": sum(1 for d in decisions if d == "inconclusive"),
                     },
                 }
+                naive = evaluate_naive_baseline(
+                    claim_type="ranking",
+                    baseline_holds=bool(
+                        by_delta_baseline_holds_totals[delta] > 0
+                        and by_delta_baseline_holds_successes[delta] == by_delta_baseline_holds_totals[delta]
+                    ),
+                    claimstab_decision=aggregate_decision,
+                    stability_ci_low=stability_estimate.ci_low,
+                    stability_ci_high=stability_estimate.ci_high,
+                    threshold=args.stability_threshold,
+                )
+                row["naive_baseline"] = naive
                 overall_delta.append(row)
                 comparative_rows.append(
                     {
                         "space_preset": space_name,
                         "claim_pair": f"{method_a}>{method_b}",
+                        "claim_type": "ranking",
                         **row,
                     }
                 )
@@ -814,7 +1095,7 @@ def main() -> None:
 
             stability_vs_cost_by_delta: dict[str, list[dict[str, object]]] = {}
             minimum_shots_by_delta: dict[str, int | None] = {}
-            all_space_rows = [row for graph_rows in space_rows.values() for row in graph_rows]
+            all_space_rows = all_selected_rows
             for delta in deltas:
                 shot_rows = compute_stability_vs_shots(
                     all_space_rows,
@@ -888,17 +1169,146 @@ def main() -> None:
                 },
                 "auxiliary_claims": auxiliary_claims,
             }
+            if adaptive_info.get("enabled"):
+                experiment["sampling"] = {
+                    **dict(sampling_by_space[space_name]),
+                    "adaptive_stopping": adaptive_info,
+                }
             experiments.append(experiment)
+
+        for decision_claim in decision_claims:
+            method = str(decision_claim["method"])
+            top_k = int(decision_claim.get("top_k", 1))
+            label_meta_key = str(decision_claim.get("label_meta_key", "target_label"))
+            fixed_label = decision_claim.get("label")
+            per_graph_summary: dict[str, dict[str, object]] = {}
+            accepted_total = 0
+            eval_total = 0
+            all_failures: list[dict[str, object]] = []
+
+            all_selected_rows = [row for graph_rows in space_rows.values() for row in graph_rows]
+            for graph_id, graph_rows in space_rows.items():
+                inst = suite_by_id.get(graph_id)
+                label = fixed_label
+                if label is None and inst is not None and isinstance(inst.meta, dict):
+                    label = inst.meta.get(label_meta_key)
+                if not isinstance(label, str) or not label:
+                    continue
+                graph_eval = evaluate_decision_claim_on_rows(
+                    graph_rows,
+                    method=method,
+                    top_k=top_k,
+                    instance_target_label=label,
+                    stability_threshold=args.stability_threshold,
+                    confidence_level=args.confidence_level,
+                )
+                per_graph_summary[graph_id] = graph_eval
+                accepted_total += int(graph_eval["accepted"])
+                eval_total += int(graph_eval["total"])
+                for fail in graph_eval.get("top_failures", []):
+                    fail_copy = dict(fail)
+                    fail_copy["graph_id"] = graph_id
+                    all_failures.append(fail_copy)
+
+            stability_estimate = estimate_binomial_rate(
+                successes=accepted_total,
+                total=eval_total,
+                confidence=args.confidence_level,
+            )
+            aggregate_decision = conservative_stability_decision(
+                estimate=stability_estimate,
+                stability_threshold=args.stability_threshold,
+            ).value
+
+            summary_row = {
+                "delta": None,
+                "n_instances": len(per_graph_summary),
+                "n_claim_evals": eval_total,
+                "flip_rate_mean": 1.0 - stability_estimate.rate,
+                "flip_rate_max": 1.0 - stability_estimate.rate,
+                "flip_rate_min": 1.0 - stability_estimate.rate,
+                "holds_rate_mean": stability_estimate.rate,
+                "holds_rate_ci_low": stability_estimate.ci_low,
+                "holds_rate_ci_high": stability_estimate.ci_high,
+                "stability_hat": stability_estimate.rate,
+                "stability_ci_low": stability_estimate.ci_low,
+                "stability_ci_high": stability_estimate.ci_high,
+                "decision": aggregate_decision,
+                "decision_counts": {
+                    "stable": 1 if aggregate_decision == "stable" else 0,
+                    "unstable": 1 if aggregate_decision == "unstable" else 0,
+                    "inconclusive": 1 if aggregate_decision == "inconclusive" else 0,
+                },
+            }
+            naive = evaluate_naive_baseline(
+                claim_type="decision",
+                baseline_holds=bool(accepted_total == eval_total and eval_total > 0),
+                claimstab_decision=aggregate_decision,
+                stability_ci_low=stability_estimate.ci_low,
+                stability_ci_high=stability_estimate.ci_high,
+                threshold=args.stability_threshold,
+            )
+            summary_row["naive_baseline"] = naive
+
+            comparative_rows.append(
+                {
+                    "space_preset": space_name,
+                    "claim_pair": f"{method}:top_k={top_k}",
+                    "claim_type": "decision",
+                    **summary_row,
+                }
+            )
+
+            experiments.append(
+                {
+                    "experiment_id": f"{space_name}:{method}:decision_top{top_k}",
+                    "claim": {
+                        "type": "decision",
+                        "method": method,
+                        "top_k": top_k,
+                        "label_meta_key": label_meta_key,
+                    },
+                    "baseline": baseline_by_space[space_name],
+                    "stability_rule": {
+                        "threshold": args.stability_threshold,
+                        "confidence_level": args.confidence_level,
+                        "decision": "stable iff CI lower bound >= threshold",
+                    },
+                    "sampling": sampling_by_space[space_name],
+                    "backend": {
+                        "engine": args.backend_engine,
+                        "noise_model": noise_model_mode,
+                        "spot_check_noise": args.spot_check_noise,
+                    },
+                    "device_profile": {
+                        "enabled": resolved_device.profile.enabled,
+                        "provider": resolved_device.profile.provider,
+                        "name": resolved_device.profile.name,
+                        "mode": resolved_device.profile.mode,
+                        "snapshot_fingerprint": resolved_device.snapshot_fingerprint,
+                        "snapshot": resolved_device.snapshot,
+                    },
+                    "per_graph": per_graph_summary,
+                    "overall": {
+                        "graphs": len(per_graph_summary),
+                        "delta_sweep": [summary_row],
+                        "decision_failures": all_failures[:12],
+                    },
+                    "naive_baseline": naive,
+                }
+            )
 
     write_scores_csv(all_rows, out_csv)
 
     payload = {
         "meta": {
             "suite": suite_name,
+            "task": task_kind,
             "deltas": deltas,
             "methods_available": sorted(method_names),
             "generated_by": "examples/claim_stability_demo.py",
             "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
+            "runtime": collect_runtime_metadata(),
         },
         "device_profile": {
             "enabled": resolved_device.profile.enabled,
@@ -911,6 +1321,7 @@ def main() -> None:
         "batch": {
             "space_presets": selected_spaces,
             "claim_pairs": [f"{a}>{b}" for a, b in claim_pairs],
+            "decision_claims": decision_claims,
             "num_experiments": len(experiments),
         },
         "experiments": experiments,
@@ -918,6 +1329,13 @@ def main() -> None:
             "space_claim_delta": comparative_rows,
         },
     }
+    if isinstance(spec_payload, dict):
+        m = spec_payload.get("meta")
+        if isinstance(m, dict) and isinstance(m.get("deprecated_field_used"), list):
+            payload["meta"]["deprecated_field_used"] = [str(x) for x in m.get("deprecated_field_used", [])]
+
+    rq_summary = build_rq_summary(payload)
+    payload["rq_summary"] = rq_summary
 
     if len(experiments) == 1:
         exp = experiments[0]
@@ -932,6 +1350,7 @@ def main() -> None:
 
     out_dir.mkdir(parents=True, exist_ok=True)
     out_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    (out_dir / "rq_summary.json").write_text(json.dumps(rq_summary, indent=2), encoding="utf-8")
 
     print("Wrote:")
     print(" ", out_csv.resolve())

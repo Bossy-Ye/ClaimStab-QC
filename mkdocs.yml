@@ -27,10 +27,12 @@ nav:
   - Concepts:
       - Claims: concepts/claims.md
       - Perturbations: concepts/perturbations.md
+      - Formal Definitions: concepts/formal_definitions.md
       - Extending: concepts/extending.md
   - Results:
       - Main Results: results/main_results.md
       - Device-aware Results: results/device_aware.md
+      - Figures: results/figures.md
       - Interactive Report: results/interactive_report.md
   - Reproduce: reproduce.md
   - Artifact: artifact.md
