@@ -1,0 +1,14 @@
+.md-typeset h1 {
+  font-weight: 700;
+}
+
+.md-typeset table:not([class]) th {
+  white-space: nowrap;
+}
+
+.md-typeset img {
+  border: 1px solid #d8dee9;
+  border-radius: 8px;
+  padding: 4px;
+  background: #fff;
+}

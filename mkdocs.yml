@@ -1,0 +1,49 @@
+site_name: ClaimStab-QC
+site_description: Claim-centric stability validation for quantum software experiments
+site_url: https://bossy-ye.github.io/ClaimStab-QC/
+repo_url: https://github.com/Bossy-Ye/ClaimStab-QC
+repo_name: Bossy-Ye/ClaimStab-QC
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+  palette:
+    - scheme: default
+      primary: teal
+      accent: indigo
+
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Concepts:
+      - Claims: concepts/claims.md
+      - Perturbations: concepts/perturbations.md
+  - Results:
+      - Main Results: results/main_results.md
+      - Device-aware Results: results/device_aware.md
+  - Reproduce: reproduce.md
+  - Artifact: artifact.md
+  - Cite: cite.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - footnotes
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - assets/extra.css

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="240" viewBox="0 0 980 240">
+  <style>
+    .bg { fill:#f8fafc; stroke:#cbd5e1; stroke-width:1; rx:10; ry:10; }
+    .h  { font-family:Arial, sans-serif; font-size:20px; fill:#0f172a; font-weight:700; }
+    .t  { font-family:Arial, sans-serif; font-size:16px; fill:#334155; }
+    .g  { fill:#dcfce7; stroke:#16a34a; stroke-width:1.5; }
+    .r  { fill:#fee2e2; stroke:#dc2626; stroke-width:1.5; }
+  </style>
+  <rect class="bg" x="10" y="10" width="960" height="220"/>
+  <text class="h" x="30" y="45">Result Snapshot</text>
+  <rect class="g" x="30" y="65" width="430" height="70" rx="8" ry="8"/>
+  <text class="t" x="45" y="95">Best: compilation_only, QAOA_p1 > RandomBaseline</text>
+  <text class="t" x="45" y="120">delta=0.0, stability ≈ 0.9958 (stable)</text>
+  <rect class="r" x="500" y="65" width="440" height="70" rx="8" ry="8"/>
+  <text class="t" x="515" y="95">Worst: sampling_only, QAOA_p2 > QAOA_p1</text>
+  <text class="t" x="515" y="120">delta=0.05, flip-rate ≈ 0.2831 (unstable)</text>
+  <text class="t" x="30" y="180">Key insight: sampling perturbations dominate instability; compilation-only is comparatively robust.</text>
+</svg>
