@@ -39,6 +39,11 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.generate_stability_report \
   --out output/stability_report.html
 ```
 
+For ecosystem contributions (tasks/methods/suites/results), run:
+```bash
+claimstab validate-ecosystem --root ecosystem
+```
+
 ## Commit Style
 Use concise commit messages that state the intent:
 - `feat: add device-aware noisy simulation mode`

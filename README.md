@@ -41,6 +41,12 @@ examples/
   exp_comprehensive_large.py
   multidevice_demo.py
   specs/
+ecosystem/
+  tasks/          # contributed task metadata
+  methods/        # contributed method metadata
+  suites/         # contributed suite metadata
+  results/        # contributed result-package metadata
+  schemas/        # contribution contract (JSON Schema)
 ```
 
 ## Quick Start
@@ -150,6 +156,25 @@ make docs-build
 Template specs:
 - [`examples/specs/claim_spec.yaml`](./examples/specs/claim_spec.yaml)
 - [`examples/specs/perturbation_spec.yaml`](./examples/specs/perturbation_spec.yaml)
+
+## Ecosystem Hub
+
+ClaimStab uses `ecosystem/` as a shared contribution hub for tasks, methods, suites, and result packages.
+
+Validate ecosystem metadata:
+```bash
+claimstab validate-ecosystem --root ecosystem
+```
+
+Start from templates:
+- [`ecosystem/templates/task.yaml`](./ecosystem/templates/task.yaml)
+- [`ecosystem/templates/method.yaml`](./ecosystem/templates/method.yaml)
+- [`ecosystem/templates/suite.yaml`](./ecosystem/templates/suite.yaml)
+- [`ecosystem/templates/result.yaml`](./ecosystem/templates/result.yaml)
+
+Guidelines:
+- [`ecosystem/README.md`](./ecosystem/README.md)
+- [`docs/ecosystem.md`](./docs/ecosystem.md)
 
 ## Community
 - Architecture overview: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
