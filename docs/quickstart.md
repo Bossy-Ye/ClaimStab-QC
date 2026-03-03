@@ -57,6 +57,16 @@ External task plugin demo:
 claimstab run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy
 ```
 
+Generate your own external-task starter:
+```bash
+claimstab init-external-task --name my_problem --out-dir examples/my_problem_demo
+```
+
+Then run it:
+```bash
+claimstab run --spec examples/my_problem_demo/spec_my_problem.yml --out-dir output/my_problem --report
+```
+
 ## Generate HTML Report
 ```bash
 PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.generate_stability_report \

@@ -108,3 +108,38 @@ task:
   kind: external
   entrypoint: examples.custom_task_demo.toy_task:ToyTask
 ```
+
+## Example E — Non-MaxCut BV -> ClaimAtlas (end-to-end)
+
+Command:
+```bash
+PYTHONPATH=. ./venv/bin/python examples/atlas_bv_workflow.py \
+  --spec specs/atlas_bv_demo.yml \
+  --run-dir output/atlas_bv_demo \
+  --atlas-root atlas \
+  --contributor your_name
+```
+
+What this does:
+1. Runs BV decision-claim stability (`top_k=1`, `top_k=3`) using `specs/atlas_bv_demo.yml`.
+2. Publishes the run into `atlas/submissions/<submission_id>/`.
+3. Validates `atlas/index.json` and artifact references.
+
+Published artifacts:
+- `atlas/submissions/<submission_id>/claim_stability.json`
+- `atlas/submissions/<submission_id>/scores.csv`
+- `atlas/submissions/<submission_id>/rq_summary.json`
+- `atlas/submissions/<submission_id>/stability_report.html`
+- `atlas/submissions/<submission_id>/metadata.json`
+
+## Example F — Community-Contributed External Problem (Portfolio)
+
+Command:
+```bash
+claimstab run --spec examples/community_contrib_demo/spec_portfolio.yml --out-dir output/community_portfolio_demo --report
+claimstab publish-result --run-dir output/community_portfolio_demo --atlas-root atlas --contributor your_name
+```
+
+Notes:
+- `UniformMix > Conservative` is typically stable in this demo.
+- `RiskAware > UniformMix` is intentionally a harder claim and may be unstable/inconclusive under perturbations.

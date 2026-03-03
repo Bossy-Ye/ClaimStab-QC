@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "submissions": [
+    {
+      "submission_id": "bv_demo_working_example",
+      "title": "BV Atlas Demo",
+      "contributor": "codex_demo",
+      "created_at_utc": "2026-03-03T13:48:24+00:00",
+      "task": "bv",
+      "suite": "core",
+      "claim_types": [
+        "decision"
+      ],
+      "source_run_dir": "/Users/mac/Documents/GitHub/ClaimStab-QC/output/atlas_bv_demo",
+      "artifacts": {
+        "claim_stability.json": "submissions/bv_demo_working_example/claim_stability.json",
+        "scores.csv": "submissions/bv_demo_working_example/scores.csv",
+        "rq_summary.json": "submissions/bv_demo_working_example/rq_summary.json",
+        "stability_report.html": "submissions/bv_demo_working_example/stability_report.html",
+        "metadata.json": "submissions/bv_demo_working_example/metadata.json"
+      }
+    },
+    {
+      "submission_id": "outside_user_portfolio_v1",
+      "title": "Outside User Portfolio Demo",
+      "contributor": "outside_user_demo",
+      "created_at_utc": "2026-03-03T14:12:21+00:00",
+      "task": "portfolio_allocation",
+      "suite": "core",
+      "claim_types": [
+        "ranking"
+      ],
+      "source_run_dir": "/Users/mac/Documents/GitHub/ClaimStab-QC/output/community_portfolio_demo",
+      "artifacts": {
+        "claim_stability.json": "submissions/outside_user_portfolio_v1/claim_stability.json",
+        "scores.csv": "submissions/outside_user_portfolio_v1/scores.csv",
+        "rq_summary.json": "submissions/outside_user_portfolio_v1/rq_summary.json",
+        "stability_report.html": "submissions/outside_user_portfolio_v1/stability_report.html",
+        "metadata.json": "submissions/outside_user_portfolio_v1/metadata.json"
+      }
+    }
+  ]
+}

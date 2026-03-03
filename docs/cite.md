@@ -2,7 +2,7 @@
 
 If ClaimStab-QC is useful in your work, please cite it.
 
-## BibTeX (placeholder)
+## BibTeX
 
 ```bibtex
 @software{claimstab_qc,
@@ -10,7 +10,7 @@ If ClaimStab-QC is useful in your work, please cite it.
   author       = {ClaimStab-QC Contributors},
   year         = {2026},
   url          = {https://github.com/Bossy-Ye/ClaimStab-QC},
-  note         = {Version and commit hash to be added}
+  note         = {Use the tagged release and commit hash you evaluated}
 }
 ```
 

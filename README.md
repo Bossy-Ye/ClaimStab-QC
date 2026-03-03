@@ -33,7 +33,7 @@ claimstab/
   perturbations/  # perturbation space + sampling policies
   runners/        # execution backends (Aer/basic)
   devices/        # device profile resolution + IBM fake backend support
-  tasks/          # benchmark/task adapters (MaxCut currently)
+  tasks/          # built-in task adapters (MaxCut, BV) + external plugin support
   scripts/        # report and plotting utilities
 examples/
   claim_stability_demo.py
@@ -41,12 +41,9 @@ examples/
   exp_comprehensive_large.py
   multidevice_demo.py
   specs/
-ecosystem/
-  tasks/          # contributed task metadata
-  methods/        # contributed method metadata
-  suites/         # contributed suite metadata
-  results/        # contributed result-package metadata
-  schemas/        # contribution contract (JSON Schema)
+atlas/
+  index.json      # shared results index
+  submissions/    # published run artifacts + metadata
 ```
 
 ## Quick Start
@@ -67,10 +64,28 @@ Validated Qiskit stack (current `venv`):
 CLI:
 ```bash
 claimstab --help
+claimstab init-external-task --name my_problem --out-dir examples/my_problem_demo
 claimstab validate-spec --spec specs/paper_main.yml
 claimstab run --spec specs/paper_main.yml --out-dir output/paper_main --report
 claimstab run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy
+claimstab run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_bv_demo --report
 ```
+
+Fast custom-task flow:
+```bash
+claimstab init-external-task --name my_problem --out-dir examples/my_problem_demo
+claimstab run --spec examples/my_problem_demo/spec_my_problem.yml --out-dir output/my_problem --report
+claimstab publish-result --run-dir output/my_problem --atlas-root atlas --contributor your_name
+```
+
+What user must provide for custom problems:
+1. Task plugin file (`instances` + `build`).
+2. Spec YAML (methods + claims + sampling).
+
+What ClaimStab provides:
+1. Perturbation execution matrix.
+2. Stability estimate + CI + conservative decision.
+3. HTML/JSON/CSV artifacts and Atlas publishing.
 
 Ready specs:
 - `specs/paper_main.yml` (main paper track)
@@ -157,24 +172,41 @@ Template specs:
 - [`examples/specs/claim_spec.yaml`](./examples/specs/claim_spec.yaml)
 - [`examples/specs/perturbation_spec.yaml`](./examples/specs/perturbation_spec.yaml)
 
-## Ecosystem Hub
+## ClaimAtlas Dataset
 
-ClaimStab uses `ecosystem/` as a shared contribution hub for tasks, methods, suites, and result packages.
+ClaimAtlas is the public results dataset layer. Users run their own tasks/algorithms with ClaimStab, then publish outputs into `atlas/`.
 
-Validate ecosystem metadata:
+Publish a run:
 ```bash
-claimstab validate-ecosystem --root ecosystem
+claimstab publish-result \
+  --run-dir output/paper_main \
+  --atlas-root atlas \
+  --contributor your_name
 ```
 
-Start from templates:
-- [`ecosystem/templates/task.yaml`](./ecosystem/templates/task.yaml)
-- [`ecosystem/templates/method.yaml`](./ecosystem/templates/method.yaml)
-- [`ecosystem/templates/suite.yaml`](./ecosystem/templates/suite.yaml)
-- [`ecosystem/templates/result.yaml`](./ecosystem/templates/result.yaml)
+Validate dataset integrity:
+```bash
+claimstab validate-atlas --atlas-root atlas
+```
+
+Generate website dataset registry page:
+```bash
+claimstab export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
+```
+
+Concrete non-MaxCut workflow (BV -> Atlas):
+```bash
+PYTHONPATH=. ./venv/bin/python examples/atlas_bv_workflow.py \
+  --spec specs/atlas_bv_demo.yml \
+  --run-dir output/atlas_bv_demo \
+  --atlas-root atlas \
+  --contributor your_name
+```
 
 Guidelines:
-- [`ecosystem/README.md`](./ecosystem/README.md)
-- [`docs/ecosystem.md`](./docs/ecosystem.md)
+- [`atlas/README.md`](./atlas/README.md)
+- [`docs/atlas.md`](./docs/atlas.md)
+- [`docs/dataset_registry.md`](./docs/dataset_registry.md)
 
 ## Community
 - Architecture overview: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)

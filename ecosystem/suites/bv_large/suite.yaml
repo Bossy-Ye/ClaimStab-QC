@@ -1,9 +1,0 @@
-id: bv_large
-name: BV Large Suite
-description: BV suite with variable hidden-string lengths (4-10 qubits).
-task_id: bv
-size: 30
-source: generated
-license: Apache-2.0
-citation: ClaimStab-QC artifact
-version: "1.0"

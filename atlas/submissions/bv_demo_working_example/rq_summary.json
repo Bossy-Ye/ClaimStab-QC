@@ -1,0 +1,39 @@
+{
+  "rq1_prevalence": {
+    "task": "bv",
+    "by_space_and_claim_type": {
+      "sampling_only": {
+        "decision": {
+          "stable": 2,
+          "unstable": 0,
+          "inconclusive": 0,
+          "total": 2
+        }
+      }
+    }
+  },
+  "rq2_drivers": {
+    "top_dimensions": [],
+    "all_dimensions": []
+  },
+  "rq3_cost_tradeoff": {
+    "stability_vs_cost_rows": []
+  },
+  "rq4_adaptive_sampling": {
+    "adaptive_sampling": [],
+    "decision_agreement_rate_vs_full_factorial": null
+  },
+  "naive_baseline_comparison": {
+    "counts": {
+      "naive_overclaim": 0,
+      "naive_underclaim": 0,
+      "agree": 2,
+      "naive_uninformative": 0
+    }
+  },
+  "decision_counts_overall": {
+    "stable": 2,
+    "unstable": 0,
+    "inconclusive": 0
+  }
+}

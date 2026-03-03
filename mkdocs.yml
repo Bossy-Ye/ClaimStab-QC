@@ -21,7 +21,9 @@ theme:
 nav:
   - Home: index.md
   - Quickstart: quickstart.md
-  - Ecosystem Hub: ecosystem.md
+  - Custom Task Quickstart: custom_task_quickstart.md
+  - ClaimAtlas Dataset: atlas.md
+  - Dataset Registry: dataset_registry.md
   - Interactive Playground: playground.md
   - Examples & Outputs: examples.md
   - Reproduction Contract: reproduction_contract.md

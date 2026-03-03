@@ -1,9 +1,0 @@
-id: qaoa_p2
-name: QAOA p=2
-kind: qaoa
-task_ids:
-  - maxcut
-description: QAOA depth-2 method for MaxCut.
-params:
-  p: 2
-version: "1.0"

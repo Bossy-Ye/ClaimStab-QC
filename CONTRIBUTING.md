@@ -39,9 +39,11 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.generate_stability_report \
   --out output/stability_report.html
 ```
 
-For ecosystem contributions (tasks/methods/suites/results), run:
+For public results dataset submissions, run:
 ```bash
-claimstab validate-ecosystem --root ecosystem
+claimstab publish-result --run-dir output/paper_main --atlas-root atlas --contributor your_name
+claimstab validate-atlas --atlas-root atlas
+claimstab export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
 ```
 
 ## Commit Style

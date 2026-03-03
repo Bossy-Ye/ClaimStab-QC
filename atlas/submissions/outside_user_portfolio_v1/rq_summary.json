@@ -1,0 +1,498 @@
+{
+  "rq1_prevalence": {
+    "task": "portfolio_allocation",
+    "by_space_and_claim_type": {
+      "sampling_only": {
+        "ranking": {
+          "stable": 2,
+          "unstable": 1,
+          "inconclusive": 1,
+          "total": 4
+        }
+      },
+      "combined_light": {
+        "ranking": {
+          "stable": 2,
+          "unstable": 1,
+          "inconclusive": 1,
+          "total": 4
+        }
+      }
+    }
+  },
+  "rq2_drivers": {
+    "top_dimensions": [
+      {
+        "dimension": "seed_simulator",
+        "driver_score": 0.05416666666666667,
+        "avg_contrast": 0.13425925925925924,
+        "avg_improvement_from_best_value": 0.05416666666666667,
+        "flip_rate": 0.05416666666666667,
+        "observations": 8
+      },
+      {
+        "dimension": "shots",
+        "driver_score": 0.05119047619047619,
+        "avg_contrast": 0.13194444444444445,
+        "avg_improvement_from_best_value": 0.05119047619047619,
+        "flip_rate": 0.05416666666666667,
+        "observations": 8
+      },
+      {
+        "dimension": "seed_transpiler",
+        "driver_score": 0.028125,
+        "avg_contrast": 0.08854166666666667,
+        "avg_improvement_from_best_value": 0.028125,
+        "flip_rate": 0.05416666666666667,
+        "observations": 8
+      }
+    ],
+    "all_dimensions": [
+      {
+        "dimension": "seed_simulator",
+        "driver_score": 0.05416666666666667,
+        "avg_contrast": 0.13425925925925924,
+        "avg_improvement_from_best_value": 0.05416666666666667,
+        "flip_rate": 0.05416666666666667,
+        "observations": 8
+      },
+      {
+        "dimension": "shots",
+        "driver_score": 0.05119047619047619,
+        "avg_contrast": 0.13194444444444445,
+        "avg_improvement_from_best_value": 0.05119047619047619,
+        "flip_rate": 0.05416666666666667,
+        "observations": 8
+      },
+      {
+        "dimension": "seed_transpiler",
+        "driver_score": 0.028125,
+        "avg_contrast": 0.08854166666666667,
+        "avg_improvement_from_best_value": 0.028125,
+        "flip_rate": 0.05416666666666667,
+        "observations": 8
+      },
+      {
+        "dimension": "optimization_level",
+        "driver_score": 0.009895833333333333,
+        "avg_contrast": 0.04427083333333333,
+        "avg_improvement_from_best_value": 0.009895833333333333,
+        "flip_rate": 0.05416666666666667,
+        "observations": 8
+      },
+      {
+        "dimension": "layout_method",
+        "driver_score": 0.007291666666666665,
+        "avg_contrast": 0.014583333333333334,
+        "avg_improvement_from_best_value": 0.007291666666666665,
+        "flip_rate": 0.05416666666666667,
+        "observations": 8
+      }
+    ]
+  },
+  "rq3_cost_tradeoff": {
+    "stability_vs_cost_rows": [
+      {
+        "experiment_id": "sampling_only:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 16,
+        "n_eval": 24,
+        "stability_hat": 0.7916666666666666,
+        "stability_ci_low": 0.5952954674681132,
+        "stability_ci_high": 0.9075517464714813,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 32,
+        "n_eval": 12,
+        "stability_hat": 0.6666666666666666,
+        "stability_ci_low": 0.3906220888727996,
+        "stability_ci_high": 0.8618799089087867,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 64,
+        "n_eval": 6,
+        "stability_hat": 0.8333333333333334,
+        "stability_ci_low": 0.43649717781352987,
+        "stability_ci_high": 0.9699466302516933,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 256,
+        "n_eval": 36,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9035813714055363,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 1024,
+        "n_eval": 18,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.8241207763533426,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 16,
+        "n_eval": 24,
+        "stability_hat": 0.6666666666666666,
+        "stability_ci_low": 0.46706316838131734,
+        "stability_ci_high": 0.8202780967270222,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 32,
+        "n_eval": 12,
+        "stability_hat": 0.6666666666666666,
+        "stability_ci_low": 0.3906220888727996,
+        "stability_ci_high": 0.8618799089087867,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 64,
+        "n_eval": 6,
+        "stability_hat": 0.8333333333333334,
+        "stability_ci_low": 0.43649717781352987,
+        "stability_ci_high": 0.9699466302516933,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 256,
+        "n_eval": 36,
+        "stability_hat": 0.9722222222222222,
+        "stability_ci_low": 0.8583028134672613,
+        "stability_ci_high": 0.9950795928601893,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 1024,
+        "n_eval": 18,
+        "stability_hat": 0.9444444444444444,
+        "stability_ci_low": 0.7424269921812743,
+        "stability_ci_high": 0.990124809021697,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 16,
+        "n_eval": 24,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.8620237953250198,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 32,
+        "n_eval": 12,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.7575059933447593,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 64,
+        "n_eval": 6,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.6096657120978348,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 256,
+        "n_eval": 36,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9035813714055363,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 1024,
+        "n_eval": 18,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.8241207763533426,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 16,
+        "n_eval": 24,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.8620237953250198,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 32,
+        "n_eval": 12,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.7575059933447593,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 64,
+        "n_eval": 6,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.6096657120978348,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 256,
+        "n_eval": 36,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9035813714055363,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 1024,
+        "n_eval": 18,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.8241207763533426,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 64,
+        "n_eval": 42,
+        "stability_hat": 0.8333333333333334,
+        "stability_ci_low": 0.6939599725535116,
+        "stability_ci_high": 0.9168408335360193,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 256,
+        "n_eval": 24,
+        "stability_hat": 0.9583333333333334,
+        "stability_ci_low": 0.7975819352134407,
+        "stability_ci_high": 0.9926065438344941,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 1024,
+        "n_eval": 42,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9162012091342963,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 64,
+        "n_eval": 42,
+        "stability_hat": 0.6428571428571429,
+        "stability_ci_low": 0.4916636571945582,
+        "stability_ci_high": 0.7701081168438123,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 256,
+        "n_eval": 24,
+        "stability_hat": 0.8333333333333334,
+        "stability_ci_low": 0.6414692935030094,
+        "stability_ci_high": 0.9332132367136704,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:RiskAware>UniformMix",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 1024,
+        "n_eval": 42,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9162012091342963,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 64,
+        "n_eval": 42,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9162012091342963,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 256,
+        "n_eval": 24,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.8620237953250198,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 1024,
+        "n_eval": 42,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9162012091342963,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 64,
+        "n_eval": 42,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9162012091342963,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 256,
+        "n_eval": 24,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.8620237953250198,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:UniformMix>Conservative",
+        "claim_type": "ranking",
+        "delta": "0.02",
+        "shots": 1024,
+        "n_eval": 42,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9162012091342963,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      }
+    ]
+  },
+  "rq4_adaptive_sampling": {
+    "adaptive_sampling": [],
+    "decision_agreement_rate_vs_full_factorial": null
+  },
+  "naive_baseline_comparison": {
+    "counts": {
+      "naive_overclaim": 0,
+      "naive_underclaim": 0,
+      "agree": 8,
+      "naive_uninformative": 0
+    }
+  },
+  "decision_counts_overall": {
+    "stable": 4,
+    "unstable": 2,
+    "inconclusive": 2
+  }
+}

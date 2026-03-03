@@ -1,33 +1,58 @@
 # Reproduce
 
-This page lists exact commands captured in result JSON metadata (`meta.reproduce_command`).
+This page lists copy-paste commands for the current workflows in this repo.
 
-## Command 1 — Core Claim Stability Run
-From `output/website_repro/claim_stability.json`:
+## 1) Main paper track
 
-```bash
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --suite core --sampling-mode random_k --sample-size 8 --sample-seed 1 --out-dir output/website_repro
-```
-
-## Command 2 — Multi-device Run
-From `output/multidevice_full/transpile_only/transpile_only_summary.json`:
-
-```bash
-PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py --run all --suite standard --out-dir output/multidevice_full
-```
-
-## CLI equivalents
 ```bash
 claimstab validate-spec --spec specs/paper_main.yml
 claimstab run --spec specs/paper_main.yml --out-dir output/paper_main --report
-claimstab run --spec specs/paper_device.yml --out-dir output/paper_device
-claimstab run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy
 ```
 
-## Expected Artifacts
-- `scores.csv`
-- `claim_stability.json` (or mode-specific summary JSON)
-- `stability_report.html`
+Expected artifacts:
+- `output/paper_main/claim_stability.json`
+- `output/paper_main/scores.csv`
+- `output/paper_main/rq_summary.json`
+- `output/paper_main/stability_report.html`
+
+## 2) Device-aware extension
+
+```bash
+claimstab validate-spec --spec specs/paper_device.yml
+claimstab run --spec specs/paper_device.yml --out-dir output/paper_device
+```
+
+Expected artifacts:
+- `output/paper_device/...` (mode-dependent summaries, CSV/JSON)
+
+## 3) Non-MaxCut BV + Atlas publication
+
+```bash
+claimstab validate-spec --spec specs/atlas_bv_demo.yml
+claimstab run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_bv_demo --report
+claimstab publish-result --run-dir output/atlas_bv_demo --atlas-root atlas --contributor your_name
+claimstab validate-atlas --atlas-root atlas
+```
+
+Expected artifacts:
+- `output/atlas_bv_demo/claim_stability.json`
+- `atlas/submissions/<submission_id>/...`
+- `atlas/index.json`
+
+## 4) External user task starter
+
+```bash
+claimstab init-external-task --name my_problem --out-dir examples/my_problem_demo
+claimstab validate-spec --spec examples/my_problem_demo/spec_my_problem.yml
+claimstab run --spec examples/my_problem_demo/spec_my_problem.yml --out-dir output/my_problem --report
+claimstab publish-result --run-dir output/my_problem --atlas-root atlas --contributor your_name
+```
+
+## 5) Refresh website dataset page
+
+```bash
+claimstab export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
+```
 
 ## Runtime Expectations
 - `core` smoke runs: short.

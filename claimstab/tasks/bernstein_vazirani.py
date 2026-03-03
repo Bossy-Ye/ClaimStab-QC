@@ -112,6 +112,9 @@ class BernsteinVaziraniTaskPlugin:
             n_values = list(range(self.min_qubits, self.max_qubits + 1))
             if not n_values:
                 raise TaskSpecError("BV task has no qubit-length range.")
+            # Cap to the number of unique non-zero secrets available in the configured range.
+            max_unique_total = sum((1 << n) - 1 for n in n_values)
+            target_total = min(target_total, max_unique_total)
             per_length = max(1, target_total // len(n_values))
             for n in n_values:
                 selected.extend(_generate_hidden_strings_for_n(n, min(self.instances_per_qubit, per_length)))

@@ -63,8 +63,11 @@ PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py --run all --suite st
 ## Project Links
 - [GitHub Repository](https://github.com/Bossy-Ye/ClaimStab-QC)
 - [Quickstart](quickstart.md)
+- [Custom Task Quickstart](custom_task_quickstart.md)
+- [Dataset Registry](dataset_registry.md)
 - [Interactive Playground](playground.md)
 - [Examples & Outputs](examples.md)
+- [ClaimAtlas Dataset](atlas.md)
 - [Extending ClaimStab](concepts/extending.md)
 - [Reproduction Contract](reproduction_contract.md)
 - [Reproduce](reproduce.md)

@@ -1,8 +1,0 @@
-id: your_method_id
-name: Your Method Name
-kind: your_method_kind
-task_ids:
-  - your_task_id
-description: Brief method description.
-params: {}
-version: "1.0"

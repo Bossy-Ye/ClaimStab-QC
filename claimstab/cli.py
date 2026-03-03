@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -10,8 +11,32 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any, Sequence
 
-from claimstab.ecosystem import validate_ecosystem
+from claimstab.atlas import build_dataset_registry_markdown, publish_result, validate_atlas
 from claimstab.spec import load_spec, validate_spec
+
+
+def _slugify_name(raw: str) -> str:
+    value = raw.strip().lower()
+    value = re.sub(r"[^a-z0-9_]+", "_", value)
+    value = re.sub(r"_+", "_", value).strip("_")
+    if not value:
+        raise ValueError("Name must include at least one alphanumeric character.")
+    if not value[0].isalpha():
+        value = f"task_{value}"
+    return value
+
+
+def _camel_from_slug(slug: str) -> str:
+    return "".join(part.capitalize() for part in slug.split("_") if part) + "Task"
+
+
+def _module_path_for_python_file(path: Path) -> str:
+    stem = path.with_suffix("")
+    try:
+        rel = stem.resolve().relative_to(Path.cwd().resolve())
+        return ".".join(rel.parts)
+    except Exception:
+        return stem.name
 
 
 def _csv_or_string(value: Any) -> str:
@@ -116,7 +141,7 @@ def _extract_claim_pairs(spec: dict[str, Any]) -> str:
                 deduped.append(p)
         return ",".join(deduped)
 
-    return "QAOA_p2>RandomBaseline"
+    return ""
 
 
 def _extract_decision(spec: dict[str, Any]) -> tuple[float, float]:
@@ -206,8 +231,6 @@ def _build_main_command(spec_path: Path, spec: dict[str, Any], args: argparse.Na
         str(confidence),
         "--deltas",
         deltas,
-        "--claim-pairs",
-        claim_pairs,
         "--backend-engine",
         _backend_engine(spec),
         "--spec",
@@ -215,6 +238,8 @@ def _build_main_command(spec_path: Path, spec: dict[str, Any], args: argparse.Na
         "--out-dir",
         str(args.out_dir),
     ]
+    if claim_pairs:
+        cmd.extend(["--claim-pairs", claim_pairs])
 
     if mode == "random_k" and sample_size is not None:
         cmd.extend(["--sample-size", str(sample_size)])
@@ -423,13 +448,18 @@ def cmd_validate_spec(args: argparse.Namespace) -> int:
 
 def cmd_examples(_: argparse.Namespace) -> int:
     print("Ready-to-run examples:")
+    print("  claimstab init-external-task --name my_problem --out-dir examples/my_problem_demo")
     print("  claimstab run --spec specs/paper_main.yml --out-dir output/paper_main --report")
     print("  claimstab run --spec specs/paper_device.yml --out-dir output/paper_device")
     print("  claimstab run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy")
+    print("  claimstab run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_bv_demo --report")
+    print("  PYTHONPATH=. ./venv/bin/python examples/atlas_bv_workflow.py --contributor your_name")
     print("  claimstab report --json output/paper_main/claim_stability.json --out output/paper_main/stability_report.html")
     print("  claimstab validate-spec --spec specs/paper_main.yml")
     print("  claimstab export-definitions --out docs/generated/definitions.md")
-    print("  claimstab validate-ecosystem --root ecosystem")
+    print("  claimstab publish-result --run-dir output/paper_main --atlas-root atlas --contributor your_name")
+    print("  claimstab validate-atlas --atlas-root atlas")
+    print("  claimstab export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md")
     return 0
 
 
@@ -445,15 +475,34 @@ def cmd_export_definitions(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_validate_ecosystem(args: argparse.Namespace) -> int:
+def cmd_publish_result(args: argparse.Namespace) -> int:
     try:
-        result = validate_ecosystem(args.root)
+        record = publish_result(
+            args.run_dir,
+            atlas_root=args.atlas_root,
+            contributor=args.contributor,
+            title=args.title,
+            submission_id=args.submission_id,
+        )
     except Exception as exc:
         print(str(exc), file=sys.stderr)
         return 2
 
-    print(f"Ecosystem valid: {result.root}")
-    print(f"Counts: {result.counts}")
+    print(f"Published submission: {record['submission_id']}")
+    print(f"Atlas root: {Path(args.atlas_root).resolve()}")
+    print(f"Task/Suite: {record.get('task')} / {record.get('suite')}")
+    return 0
+
+
+def cmd_validate_atlas(args: argparse.Namespace) -> int:
+    try:
+        result = validate_atlas(args.atlas_root)
+    except Exception as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+
+    print(f"Atlas valid: {result.root}")
+    print(f"Submission count: {result.submission_count}")
     if result.warnings:
         print("Warnings:")
         for line in result.warnings:
@@ -461,9 +510,170 @@ def cmd_validate_ecosystem(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_export_dataset_registry(args: argparse.Namespace) -> int:
+    try:
+        markdown = build_dataset_registry_markdown(atlas_root=args.atlas_root, repo_url=args.repo_url)
+    except Exception as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(markdown, encoding="utf-8")
+    print(f"Wrote dataset registry page: {out}")
+    return 0
+
+
+def cmd_init_external_task(args: argparse.Namespace) -> int:
+    try:
+        slug = _slugify_name(args.name)
+    except Exception as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+
+    out_dir = Path(args.out_dir) if args.out_dir else Path("examples") / f"{slug}_demo"
+    if out_dir.exists() and any(out_dir.iterdir()) and not args.force:
+        print(
+            f"Refusing to overwrite non-empty directory: {out_dir}. "
+            "Use --force or choose a new --out-dir.",
+            file=sys.stderr,
+        )
+        return 2
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    class_name = args.class_name.strip() if isinstance(args.class_name, str) and args.class_name.strip() else _camel_from_slug(slug)
+    task_file = out_dir / f"{slug}_task.py"
+    spec_file = out_dir / f"spec_{slug}.yml"
+    module_path = _module_path_for_python_file(task_file)
+
+    task_source = f'''from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any
+
+from qiskit import QuantumCircuit
+
+from claimstab.methods.spec import MethodSpec
+from claimstab.tasks.base import BuiltWorkflow
+from claimstab.tasks.instances import ProblemInstance
+
+
+@dataclass(frozen=True)
+class {class_name}Payload:
+    num_qubits: int
+
+
+class {class_name}:
+    """External task plugin starter generated by ClaimStab."""
+
+    name = "{slug}"
+
+    def __init__(self, num_qubits: int = 6, num_instances: int = 3) -> None:
+        self.num_qubits = int(num_qubits)
+        self.num_instances = int(num_instances)
+
+    def instances(self, suite: str) -> list[ProblemInstance]:
+        return [
+            ProblemInstance(
+                instance_id=f"{slug}_{{suite}}_{{i}}",
+                payload={class_name}Payload(num_qubits=self.num_qubits),
+            )
+            for i in range(self.num_instances)
+        ]
+
+    def build(self, instance: ProblemInstance, method: MethodSpec) -> BuiltWorkflow:
+        payload = instance.payload
+        n = int(getattr(payload, "num_qubits", self.num_qubits))
+        qc = QuantumCircuit(n)
+
+        if method.kind == "method_a":
+            qc.h(range(n))
+        elif method.kind == "method_b":
+            pass
+        else:
+            raise ValueError(f"Unsupported method kind: {{method.kind}}")
+
+        qc.measure_all()
+
+        def metric_fn(counts: dict[str, int]) -> float:
+            total = sum(counts.values())
+            if total == 0:
+                return 0.0
+            ones = 0.0
+            for bitstring, c in counts.items():
+                ones += (c / total) * bitstring.count("1")
+            return ones / n
+
+        return BuiltWorkflow(circuit=qc, metric_fn=metric_fn)
+'''
+
+    spec_source = f'''spec_version: 1
+pipeline: main
+meta:
+  name: {slug}_demo
+  description: External task starter generated by claimstab init-external-task
+
+task:
+  kind: external
+  entrypoint: {module_path}:{class_name}
+  suite: toy
+  params:
+    num_qubits: 6
+    num_instances: 3
+
+methods:
+  - name: MethodA
+    kind: method_a
+  - name: MethodB
+    kind: method_b
+
+claims:
+  - type: ranking
+    method_a: MethodA
+    method_b: MethodB
+    deltas: [0.0, 0.05]
+
+perturbations:
+  presets: [sampling_only]
+
+sampling:
+  mode: random_k
+  sample_size: 12
+  seed: 7
+  include_baseline: true
+
+decision_rule:
+  threshold: 0.95
+  confidence_level: 0.95
+
+backend:
+  engine: basic
+  noise_model: none
+'''
+
+    task_file.write_text(task_source, encoding="utf-8")
+    spec_file.write_text(spec_source, encoding="utf-8")
+
+    print(f"Generated starter in: {out_dir}")
+    print(f"- Task plugin: {task_file}")
+    print(f"- Spec: {spec_file}")
+    print("Next steps:")
+    print(f"1) claimstab validate-spec --spec {spec_file}")
+    print(f"2) claimstab run --spec {spec_file} --out-dir output/{slug} --report")
+    print(f"3) claimstab publish-result --run-dir output/{slug} --atlas-root atlas --contributor your_name")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="claimstab", description="ClaimStab CLI")
     sub = parser.add_subparsers(dest="command", required=True)
+
+    init_p = sub.add_parser("init-external-task", help="Generate a runnable external task plugin starter")
+    init_p.add_argument("--name", required=True, help="Task name (used for class/module/spec naming)")
+    init_p.add_argument("--out-dir", default=None, help="Output directory (default: examples/<name>_demo)")
+    init_p.add_argument("--class-name", default=None, help="Optional explicit class name")
+    init_p.add_argument("--force", action="store_true", help="Allow writing into an existing non-empty directory")
+    init_p.set_defaults(func=cmd_init_external_task)
 
     run_p = sub.add_parser("run", help="Run an experiment from a spec file")
     run_p.add_argument("--spec", required=True, help="Path to YAML/JSON experiment spec")
@@ -494,9 +704,27 @@ def build_parser() -> argparse.ArgumentParser:
     export_p.add_argument("--out", required=True, help="Output markdown path")
     export_p.set_defaults(func=cmd_export_definitions)
 
-    eco_p = sub.add_parser("validate-ecosystem", help="Validate ecosystem contribution metadata and references")
-    eco_p.add_argument("--root", default="ecosystem", help="Ecosystem root directory")
-    eco_p.set_defaults(func=cmd_validate_ecosystem)
+    publish_p = sub.add_parser("publish-result", help="Publish a run directory into the ClaimAtlas dataset")
+    publish_p.add_argument("--run-dir", required=True, help="Directory containing claim_stability.json")
+    publish_p.add_argument("--atlas-root", default="atlas", help="Atlas dataset root directory")
+    publish_p.add_argument("--contributor", default="anonymous", help="Contributor identifier")
+    publish_p.add_argument("--title", default=None, help="Optional submission title")
+    publish_p.add_argument("--submission-id", default=None, help="Optional stable submission id")
+    publish_p.set_defaults(func=cmd_publish_result)
+
+    val_atlas_p = sub.add_parser("validate-atlas", help="Validate ClaimAtlas index and artifact references")
+    val_atlas_p.add_argument("--atlas-root", default="atlas", help="Atlas dataset root directory")
+    val_atlas_p.set_defaults(func=cmd_validate_atlas)
+
+    exp_data_p = sub.add_parser("export-dataset-registry", help="Generate docs markdown page from atlas submissions")
+    exp_data_p.add_argument("--atlas-root", default="atlas", help="Atlas dataset root directory")
+    exp_data_p.add_argument("--out", default="docs/dataset_registry.md", help="Output markdown path")
+    exp_data_p.add_argument(
+        "--repo-url",
+        default="https://github.com/Bossy-Ye/ClaimStab-QC",
+        help="Repository URL used for artifact links",
+    )
+    exp_data_p.set_defaults(func=cmd_export_dataset_registry)
 
     return parser
 

@@ -23,6 +23,12 @@ class TestBernsteinVaziraniTask(unittest.TestCase):
         instances = plugin.instances("large")
         self.assertEqual(len(instances), 30)
 
+    def test_small_qubit_range_is_capped_by_unique_capacity(self) -> None:
+        plugin = BernsteinVaziraniTaskPlugin(min_qubits=1, max_qubits=1, instances_per_qubit=10)
+        instances = plugin.instances("core")
+        self.assertEqual(len(instances), 1)
+        self.assertEqual(instances[0].payload.hidden_string, "1")
+
 
 if __name__ == "__main__":
     unittest.main()
