@@ -1,0 +1,14 @@
+id: presentation_large_maxcut
+title: MaxCut paper-scale result package
+task_id: maxcut
+suite_id: maxcut_large
+generated_at: "2026-03-03"
+command: PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py --out-dir output/presentation_large/large
+artifacts:
+  claim_stability: output/presentation_large/large/maxcut_ranking/claim_stability.json
+  rq_summary: output/presentation_large/large/maxcut_ranking/rq_summary.json
+  scores: output/presentation_large/large/maxcut_ranking/scores.csv
+  report: output/presentation_large/large/maxcut_ranking/stability_report.html
+  figures_manifest: output/presentation_large/figures/manifest.json
+notes: Primary paper evidence for ranking-claim instability.
+version: "1.0"

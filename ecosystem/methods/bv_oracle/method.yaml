@@ -1,0 +1,8 @@
+id: bv_oracle
+name: BV Oracle
+kind: bv
+task_ids:
+  - bv
+description: Bernstein-Vazirani oracle construction method.
+params: {}
+version: "1.0"

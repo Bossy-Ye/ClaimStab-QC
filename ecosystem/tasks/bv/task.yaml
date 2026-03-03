@@ -1,0 +1,12 @@
+id: bv
+name: Bernstein-Vazirani Task
+description: Decision-claim control task with known hidden-string labels.
+entrypoint: claimstab.tasks.bernstein_vazirani:BernsteinVaziraniTaskPlugin
+claim_types:
+  - decision
+tags:
+  - oracle
+  - sanity_control
+version: "1.0"
+maintainers:
+  - ClaimStab-QC Contributors

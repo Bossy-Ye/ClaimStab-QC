@@ -1,0 +1,9 @@
+id: random_baseline
+name: Random Baseline
+kind: random_baseline
+task_ids:
+  - maxcut
+  - bv
+description: Uniform/random baseline method used as reference.
+params: {}
+version: "1.0"

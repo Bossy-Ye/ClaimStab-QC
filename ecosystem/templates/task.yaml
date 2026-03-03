@@ -1,0 +1,11 @@
+id: your_task_id
+name: Your Task Name
+description: One-paragraph task description.
+entrypoint: your_package.tasks.your_task:YourTaskPlugin
+claim_types:
+  - ranking
+tags:
+  - optimization
+version: "1.0"
+maintainers:
+  - your_name_or_group

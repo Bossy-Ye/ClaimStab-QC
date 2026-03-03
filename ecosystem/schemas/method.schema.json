@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ClaimStab Ecosystem Method",
+  "type": "object",
+  "required": ["id", "name", "kind", "task_ids"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$"},
+    "name": {"type": "string", "minLength": 1},
+    "kind": {"type": "string", "minLength": 1},
+    "task_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "description": {"type": "string"},
+    "params": {"type": "object"},
+    "version": {"type": "string"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,10 @@
+id: maxcut_large
+name: MaxCut Large Suite
+description: Large MaxCut suite used in paper-level instability analysis.
+task_id: maxcut
+size: 30
+source: generated
+license: Apache-2.0
+citation: ClaimStab-QC artifact
+path: data/suites/standard.json
+version: "1.0"

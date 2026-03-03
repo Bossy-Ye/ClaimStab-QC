@@ -1,0 +1,50 @@
+spec_version: 1
+pipeline: main
+meta:
+  name: toy_external_task_demo
+  description: External task plugin demo with module:Class loading
+
+task:
+  kind: external
+  entrypoint: examples.custom_task_demo.toy_task:ToyTask
+  suite: toy
+  params:
+    num_qubits: 6
+    num_instances: 3
+
+methods:
+  - name: HadamardAll
+    kind: hadamard
+  - name: ZeroState
+    kind: zero
+  - name: BiasedRX
+    kind: biased_rx
+    params:
+      theta: 1.2
+
+claims:
+  - type: ranking
+    method_a: HadamardAll
+    method_b: ZeroState
+    deltas: [0.0, 0.05]
+  - type: ranking
+    method_a: BiasedRX
+    method_b: ZeroState
+    deltas: [0.0, 0.05]
+
+perturbations:
+  presets: [sampling_only]
+
+sampling:
+  mode: random_k
+  sample_size: 12
+  seed: 7
+  include_baseline: true
+
+decision_rule:
+  threshold: 0.95
+  confidence_level: 0.95
+
+backend:
+  engine: basic
+  noise_model: none

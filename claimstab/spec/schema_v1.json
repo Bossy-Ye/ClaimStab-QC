@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claimstab-qc.dev/schema/spec_v1.json",
+  "title": "ClaimStab Spec v1",
+  "type": "object",
+  "properties": {
+    "spec_version": {"type": "integer", "enum": [1]},
+    "version": {"type": "integer"},
+    "pipeline": {"type": "string", "enum": ["main", "multidevice"]},
+    "meta": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string"},
+        "description": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "suite": {
+      "oneOf": [
+        {"type": "string", "minLength": 1},
+        {
+          "type": "object",
+          "properties": {
+            "id": {"type": "string"},
+            "name": {"type": "string"},
+            "instance_count": {"type": "integer", "minimum": 1}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "task": {
+      "type": "object",
+      "properties": {
+        "kind": {"type": "string"},
+        "suite": {"type": "string"},
+        "entrypoint": {"type": "string"},
+        "params": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "methods": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "kind": {"type": "string"},
+          "params": {"type": "object"},
+          "p": {"type": "integer", "minimum": 1}
+        },
+        "required": ["name", "kind"],
+        "additionalProperties": false
+      }
+    },
+    "claims": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {"type": "string", "enum": ["ranking", "decision", "distribution"]},
+              "method_a": {"type": "string"},
+              "method_b": {"type": "string"},
+              "method": {"type": "string"},
+              "deltas": {
+                "type": "array",
+                "items": {"type": "number"},
+                "minItems": 1
+              },
+              "top_k": {"type": "integer", "minimum": 1},
+              "label": {"type": ["string", "null"]},
+              "label_meta_key": {"type": "string"},
+              "metric_name": {"type": "string"},
+              "higher_is_better": {"type": "boolean"}
+            },
+            "additionalProperties": false
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "ranking": {
+              "type": "object",
+              "properties": {
+                "method_a": {"type": "string"},
+                "method_b": {"type": "string"},
+                "deltas": {
+                  "type": "array",
+                  "items": {"type": "number"},
+                  "minItems": 1
+                },
+                "metric": {"type": "string"},
+                "metric_name": {"type": "string"},
+                "higher_is_better": {"type": "boolean"}
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "perturbations": {
+      "type": "object",
+      "properties": {
+        "preset": {
+          "type": "string",
+          "enum": ["baseline", "compilation_only", "sampling_only", "combined_light", "day1_default"]
+        },
+        "presets": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["baseline", "compilation_only", "sampling_only", "combined_light", "day1_default"]
+          },
+          "minItems": 1
+        },
+        "transpile_space": {
+          "type": "string",
+          "enum": ["baseline", "compilation_only", "sampling_only", "combined_light", "day1_default"]
+        },
+        "noisy_space": {
+          "type": "string",
+          "enum": ["baseline", "compilation_only", "sampling_only", "combined_light", "day1_default"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "sampling": {
+      "type": "object",
+      "properties": {
+        "mode": {"type": "string", "enum": ["full_factorial", "random_k", "adaptive_ci"]},
+        "sample_size": {"type": "integer", "minimum": 1},
+        "seed": {"type": "integer"},
+        "include_baseline": {"type": "boolean"},
+        "target_ci_width": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+        "max_sample_size": {"type": "integer", "minimum": 1},
+        "min_sample_size": {"type": "integer", "minimum": 1},
+        "step_size": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "decision_rule": {
+      "type": "object",
+      "properties": {
+        "threshold": {"type": "number", "minimum": 0, "maximum": 1},
+        "confidence_level": {"type": "number", "minimum": 0, "maximum": 1}
+      },
+      "additionalProperties": false
+    },
+    "stability": {
+      "type": "object",
+      "properties": {
+        "threshold": {"type": "number", "minimum": 0, "maximum": 1},
+        "confidence_level": {"type": "number", "minimum": 0, "maximum": 1}
+      },
+      "additionalProperties": true
+    },
+    "backend": {
+      "type": "object",
+      "properties": {
+        "engine": {"type": "string", "enum": ["auto", "basic", "aer"]},
+        "noise_model": {"type": "string", "enum": ["none", "from_device_profile"]}
+      },
+      "additionalProperties": false
+    },
+    "device_profile": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "provider": {"type": "string", "enum": ["none", "ibm_fake", "generic"]},
+        "name": {"type": ["string", "null"]},
+        "mode": {"type": "string", "enum": ["transpile_only", "noisy_sim"]},
+        "basis_gates": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "coupling_map": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {"type": "integer"},
+            "minItems": 2,
+            "maxItems": 2
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "multidevice": {
+      "type": "object",
+      "properties": {
+        "run": {"type": "string", "enum": ["all", "transpile_only", "noisy_sim"]},
+        "transpile_devices": {
+          "oneOf": [
+            {"type": "string"},
+            {"type": "array", "items": {"type": "string"}, "minItems": 1}
+          ]
+        },
+        "noisy_devices": {
+          "oneOf": [
+            {"type": "string"},
+            {"type": "array", "items": {"type": "string"}, "minItems": 1}
+          ]
+        },
+        "transpile_claim_pairs": {
+          "oneOf": [
+            {"type": "string"},
+            {"type": "array", "items": {"type": "string"}, "minItems": 1}
+          ]
+        },
+        "noisy_claim_pairs": {
+          "oneOf": [
+            {"type": "string"},
+            {"type": "array", "items": {"type": "string"}, "minItems": 1}
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

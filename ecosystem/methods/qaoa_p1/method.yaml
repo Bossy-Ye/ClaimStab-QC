@@ -1,0 +1,9 @@
+id: qaoa_p1
+name: QAOA p=1
+kind: qaoa
+task_ids:
+  - maxcut
+description: QAOA depth-1 baseline for MaxCut.
+params:
+  p: 1
+version: "1.0"
