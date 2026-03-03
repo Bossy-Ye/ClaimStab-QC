@@ -2,6 +2,11 @@
 
 ClaimAtlas is the shared dataset layer for ClaimStab-QC.
 
+Public browsing:
+- Website: https://bossy-ye.github.io/ClaimStab-QC/dataset_registry/
+- GitHub index: https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/index.json
+- GitHub submissions: https://github.com/Bossy-Ye/ClaimStab-QC/tree/main/atlas/submissions
+
 Goal:
 - users run their own tasks/methods with ClaimStab,
 - publish resulting artifacts,

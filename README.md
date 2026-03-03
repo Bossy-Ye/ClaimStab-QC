@@ -14,6 +14,16 @@ Most experimental papers report point estimates. ClaimStab evaluates the paper c
 2. Confidence interval.
 3. Conservative decision (`stable`, `unstable`, `inconclusive`).
 
+## Public Dataset (ClaimAtlas)
+- Website registry page: [Dataset Registry](https://bossy-ye.github.io/ClaimStab-QC/dataset_registry/)
+- Raw index JSON: [`atlas/index.json`](./atlas/index.json)
+- Submission packages: [`atlas/submissions/`](./atlas/submissions)
+
+If you publish a new submission, regenerate the website registry page:
+```bash
+claimstab export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
+```
+
 ## Core Features
 - Claim-level evaluation (`ranking`, plus auxiliary decision/distribution checks).
 - Explicit perturbation controls (transpiler seed, optimization level, layout, shots, simulator seed).

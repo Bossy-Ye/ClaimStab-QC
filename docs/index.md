@@ -36,6 +36,13 @@ where \(\hat{s}\) is the estimated stability rate under sampled perturbation con
 
 ![ClaimStab Pipeline](assets/pipeline.svg)
 
+## Public Dataset Access
+
+ClaimAtlas submissions are publicly visible and queryable:
+- Website page: [Dataset Registry](dataset_registry.md)
+- GitHub JSON index: [atlas/index.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/index.json)
+- GitHub packages: [atlas/submissions](https://github.com/Bossy-Ye/ClaimStab-QC/tree/main/atlas/submissions)
+
 ## Device-aware Snapshot
 
 | Track | Snapshot |

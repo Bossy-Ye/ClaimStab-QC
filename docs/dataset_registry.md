@@ -2,7 +2,7 @@
 
 This page lists current ClaimAtlas submissions with problem/task, algorithms, claims, and perturbation settings.
 
-_Generated at 2026-03-03T14:32:50+00:00 from `atlas/index.json`._
+_Generated at 2026-03-03T15:06:14+00:00 from `atlas/index.json`._
 
 ## Submission Overview
 

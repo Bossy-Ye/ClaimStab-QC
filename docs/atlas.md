@@ -2,6 +2,11 @@
 
 ClaimAtlas is the shared dataset for ClaimStab outcomes.
 
+Direct access:
+- [Dataset Registry](dataset_registry.md)
+- [GitHub `atlas/index.json`](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/index.json)
+- [GitHub `atlas/submissions`](https://github.com/Bossy-Ye/ClaimStab-QC/tree/main/atlas/submissions)
+
 Core idea:
 - contributors run experiments with their own task and method plugins,
 - publish the resulting `claim_stability.json` package,
