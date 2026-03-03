@@ -32,8 +32,9 @@ jobs:
           python -m pip install -e ".[docs]"
 
       - name: Refresh dataset registry page
+        continue-on-error: true
         run: |
-          python -m claimstab.cli export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
+          python -m claimstab.cli export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md || echo "Dataset registry refresh skipped; using committed docs/dataset_registry.md"
 
       - name: Build MkDocs site
         run: mkdocs build --strict
