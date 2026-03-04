@@ -8,7 +8,7 @@ import shlex
 import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Iterable, List
+from typing import Any, Callable, Iterable, List, Mapping
 
 from qiskit.transpiler import CouplingMap
 
@@ -33,6 +33,8 @@ from claimstab.claims.stability import (
 from claimstab.io.runtime_meta import collect_runtime_metadata
 from claimstab.analysis.rq import build_rq_summary
 from claimstab.baselines.naive import evaluate_naive_baseline
+from claimstab.cache.store import CacheStore
+from claimstab.core import ArtifactManifest, ExecutionEvent, JsonlEventLogger, TraceIndex, TraceRecord
 from claimstab.devices.registry import parse_device_profile, parse_noise_model_mode, resolve_device_profile
 from claimstab.methods.spec import MethodSpec
 from claimstab.perturbations.sampling import SamplingPolicy, adaptive_sample_configs, ensure_config_included, sample_configs
@@ -122,6 +124,26 @@ def parse_args() -> argparse.Namespace:
         "--spec",
         default=None,
         help="Optional YAML/JSON file. Optional blocks: device_profile, backend.noise_model.",
+    )
+    ap.add_argument(
+        "--cache-db",
+        default=None,
+        help="Optional sqlite cache path. If set, runner reuses cached cells by fingerprint.",
+    )
+    ap.add_argument(
+        "--events-out",
+        default=None,
+        help="Optional JSONL file for execution events.",
+    )
+    ap.add_argument(
+        "--trace-out",
+        default=None,
+        help="Optional JSONL file for trace records (default: <out-dir>/trace.jsonl).",
+    )
+    ap.add_argument(
+        "--replay-trace",
+        default=None,
+        help="Replay mode: load trace JSONL and recompute claims/reports without executing circuits.",
     )
     return ap.parse_args()
 
@@ -327,6 +349,64 @@ def config_key(pc: PerturbationConfig) -> tuple[int, int, str | None, int, int |
         pc.execution.shots,
         pc.execution.seed_simulator,
     )
+
+
+def key_sort_value(key: tuple[int, int, str | None, int, int | None]) -> tuple[int, int, str, int, int]:
+    return (
+        int(key[0]),
+        int(key[1]),
+        "" if key[2] is None else str(key[2]),
+        int(key[3]),
+        -1 if key[4] is None else int(key[4]),
+    )
+
+
+def config_from_key(key: tuple[int, int, str | None, int, int | None]) -> PerturbationConfig:
+    return PerturbationConfig(
+        compilation=CompilationPerturbation(
+            seed_transpiler=int(key[0]),
+            optimization_level=int(key[1]),
+            layout_method=str(key[2]) if key[2] is not None else None,
+        ),
+        execution=ExecutionPerturbation(
+            shots=int(key[3]),
+            seed_simulator=None if key[4] is None else int(key[4]),
+        ),
+    )
+
+
+def baseline_from_keys(
+    keys: set[tuple[int, int, str | None, int, int | None]],
+) -> tuple[dict[str, int | str | None], tuple[int, int, str | None, int, int | None]]:
+    if not keys:
+        raise ValueError("Cannot infer baseline from empty key set.")
+    baseline_key = sorted(keys, key=key_sort_value)[0]
+    baseline_cfg: dict[str, int | str | None] = {
+        "seed_transpiler": int(baseline_key[0]),
+        "optimization_level": int(baseline_key[1]),
+        "layout_method": baseline_key[2],
+        "shots": int(baseline_key[3]),
+        "seed_simulator": None if baseline_key[4] is None else int(baseline_key[4]),
+    }
+    return baseline_cfg, baseline_key
+
+
+def make_event_logger(path: Path) -> Callable[[dict[str, Any]], None]:
+    sink = JsonlEventLogger(path)
+
+    def _log(payload: dict[str, Any]) -> None:
+        core_keys = {"event_type", "instance_id", "method", "metric_name", "config"}
+        event = ExecutionEvent.build(
+            event_type=str(payload.get("event_type", "unknown")),
+            instance_id=str(payload.get("instance_id", "unknown")),
+            method=str(payload.get("method", "unknown")),
+            metric_name=str(payload.get("metric_name", "objective")),
+            config=dict(payload.get("config", {}) or {}),
+            details={k: v for k, v in payload.items() if k not in core_keys},
+        )
+        sink.log(event)
+
+    return _log
 
 
 def filter_rows_by_keys(
@@ -860,6 +940,29 @@ def evaluate_decision_claim_on_rows(
     }
 
 
+def load_rows_from_trace(
+    trace_path: Path,
+) -> tuple[
+    list[tuple[str, str, ScoreRow]],
+    dict[str, dict[str, dict[str, list[ScoreRow]]]],
+    dict[str, set[tuple[int, int, str | None, int, int | None]]],
+]:
+    trace_index = TraceIndex.load_jsonl(trace_path)
+    all_rows: list[tuple[str, str, ScoreRow]] = []
+    rows_by_space_metric_graph: dict[str, dict[str, dict[str, list[ScoreRow]]]] = {}
+    keys_by_space: dict[str, set[tuple[int, int, str | None, int, int | None]]] = defaultdict(set)
+
+    for rec in trace_index.records:
+        suite_name = str(rec.suite or "replay")
+        space_name = str(rec.space_preset or "baseline")
+        row = rec.to_score_row()
+        all_rows.append((suite_name, space_name, row))
+        rows_by_space_metric_graph.setdefault(space_name, {}).setdefault(row.metric_name, {}).setdefault(row.instance_id, []).append(row)
+        keys_by_space[space_name].add(perturbation_key(row))
+
+    return all_rows, rows_by_space_metric_graph, keys_by_space
+
+
 def main() -> None:
     args = parse_args()
     spec_payload = try_load_spec(args.spec)
@@ -992,72 +1095,145 @@ def main() -> None:
         min_sample_size=args.min_sample_size,
         step_size=args.step_size,
     )
+    runtime_meta = collect_runtime_metadata()
+    runtime_context: Mapping[str, Any] = {
+        "python_version": runtime_meta.get("python_version"),
+        "git_commit": runtime_meta.get("git_commit"),
+        "qiskit_version": (runtime_meta.get("dependencies", {}) or {}).get("qiskit"),
+    }
+    trace_path = Path(args.trace_out) if args.trace_out else (out_dir / "trace.jsonl")
+    events_path = Path(args.events_out) if args.events_out else None
+    cache_path = Path(args.cache_db) if args.cache_db else None
+
     device_profile = parse_device_profile(spec_payload.get("device_profile") if isinstance(spec_payload, dict) else None)
     resolved_device = resolve_device_profile(device_profile)
     noise_model_mode = parse_noise_model_mode(spec_payload.get("backend") if isinstance(spec_payload, dict) else None)
-    runner = MatrixRunner(
-        backend=QiskitAerRunner(
-            engine=args.backend_engine,
-            spot_check_noise=args.spot_check_noise,
-            one_qubit_error=args.one_qubit_error,
-            two_qubit_error=args.two_qubit_error,
-        )
-    )
 
     all_rows: list[tuple[str, str, ScoreRow]] = []
     rows_by_space_metric_graph: dict[str, dict[str, dict[str, list[ScoreRow]]]] = {}
     sampling_by_space: dict[str, dict[str, object]] = {}
-    baseline_by_space: dict[str, dict[str, int | str]] = {}
+    baseline_by_space: dict[str, dict[str, int | str | None]] = {}
     baseline_key_by_space: dict[str, tuple[int, int, str | None, int, int | None]] = {}
     sampled_configs_by_space: dict[str, list[PerturbationConfig]] = {}
 
-    for space_name in selected_spaces:
-        space = make_space(space_name)
-        baseline_cfg, baseline_pc, baseline_key = build_baseline_config(space)
-        sampled_configs = sample_configs(space, sampling_policy)
-        sampled_configs = ensure_config_included(sampled_configs, baseline_pc)
+    if args.replay_trace:
+        replay_path = Path(args.replay_trace)
+        all_rows, rows_by_space_metric_graph, keys_by_space = load_rows_from_trace(replay_path)
+        if not all_rows:
+            raise ValueError(f"Replay trace has no rows: {replay_path}")
+        replay_suites = sorted({suite_token for suite_token, _, _ in all_rows})
+        if replay_suites:
+            suite_name = replay_suites[0]
+        selected_spaces = sorted(rows_by_space_metric_graph.keys())
+        sampling_policy = SamplingPolicy(mode="full_factorial", sample_size=None, seed=args.sample_seed)
+        trace_path = replay_path
+        for space_name in selected_spaces:
+            keys = keys_by_space.get(space_name, set())
+            if not keys:
+                continue
+            try:
+                default_space = make_space(space_name)
+                baseline_cfg_default, _, baseline_key_default = build_baseline_config(default_space)
+                if baseline_key_default in keys:
+                    baseline_cfg = baseline_cfg_default
+                    baseline_key = baseline_key_default
+                else:
+                    baseline_cfg, baseline_key = baseline_from_keys(keys)
+            except Exception:
+                baseline_cfg, baseline_key = baseline_from_keys(keys)
+            sampled_configs = [config_from_key(k) for k in sorted(keys, key=key_sort_value)]
+            baseline_by_space[space_name] = baseline_cfg
+            baseline_key_by_space[space_name] = baseline_key
+            sampled_configs_by_space[space_name] = sampled_configs
+            sampling_by_space[space_name] = {
+                "suite": suite_name,
+                "space_preset": space_name,
+                "mode": "replay_trace",
+                "sample_size": None,
+                "seed": args.sample_seed,
+                "target_ci_width": None,
+                "max_sample_size": None,
+                "min_sample_size": None,
+                "step_size": None,
+                "sampled_configurations_with_baseline": len(sampled_configs),
+                "perturbation_space_size": len(sampled_configs),
+                "replay_trace": str(replay_path),
+            }
+    else:
+        runner = MatrixRunner(
+            backend=QiskitAerRunner(
+                engine=args.backend_engine,
+                spot_check_noise=args.spot_check_noise,
+                one_qubit_error=args.one_qubit_error,
+                two_qubit_error=args.two_qubit_error,
+            )
+        )
+        trace_index = TraceIndex()
+        cache_store: CacheStore | None = CacheStore(cache_path) if cache_path is not None else None
+        event_logger = make_event_logger(events_path) if events_path is not None else None
 
-        by_metric_rows: dict[str, dict[str, list[ScoreRow]]] = {}
-        for metric_name in metrics_needed or ["objective"]:
-            rows_by_graph: dict[str, list[ScoreRow]] = {}
-            for inst in suite:
-                task = BoundTask(task_plugin, inst)
-                coupling_map = build_coupling_map(task.infer_num_qubits(methods))
-                rows = runner.run(
-                    task=task,
-                    methods=methods,
-                    space=space,
-                    configs=sampled_configs,
-                    coupling_map=coupling_map,
-                    metric_name=metric_name,
-                    device_profile=resolved_device.profile,
-                    device_backend=resolved_device.backend,
-                    noise_model_mode=noise_model_mode,
-                    device_snapshot_fingerprint=resolved_device.snapshot_fingerprint,
-                    device_snapshot_summary=resolved_device.snapshot,
-                    store_counts=bool(decision_claims),
-                )
-                rows_by_graph[inst.instance_id] = rows
-                all_rows.extend((suite_name, space_name, row) for row in rows)
-            by_metric_rows[metric_name] = rows_by_graph
+        try:
+            for space_name in selected_spaces:
+                space = make_space(space_name)
+                baseline_cfg, baseline_pc, baseline_key = build_baseline_config(space)
+                sampled_configs = sample_configs(space, sampling_policy)
+                sampled_configs = ensure_config_included(sampled_configs, baseline_pc)
 
-        rows_by_space_metric_graph[space_name] = by_metric_rows
-        baseline_by_space[space_name] = baseline_cfg
-        baseline_key_by_space[space_name] = baseline_key
-        sampled_configs_by_space[space_name] = sampled_configs
-        sampling_by_space[space_name] = {
-            "suite": suite_name,
-            "space_preset": space_name,
-            "mode": sampling_policy.mode,
-            "sample_size": sampling_policy.sample_size,
-            "seed": sampling_policy.seed,
-            "target_ci_width": sampling_policy.target_ci_width,
-            "max_sample_size": sampling_policy.max_sample_size,
-            "min_sample_size": sampling_policy.min_sample_size,
-            "step_size": sampling_policy.step_size,
-            "sampled_configurations_with_baseline": len(sampled_configs),
-            "perturbation_space_size": space.size(),
-        }
+                by_metric_rows: dict[str, dict[str, list[ScoreRow]]] = {}
+                for metric_name in metrics_needed or ["objective"]:
+                    rows_by_graph: dict[str, list[ScoreRow]] = {}
+                    for inst in suite:
+                        task = BoundTask(task_plugin, inst)
+                        coupling_map = build_coupling_map(task.infer_num_qubits(methods))
+                        rows = runner.run(
+                            task=task,
+                            methods=methods,
+                            space=space,
+                            configs=sampled_configs,
+                            coupling_map=coupling_map,
+                            metric_name=metric_name,
+                            device_profile=resolved_device.profile,
+                            device_backend=resolved_device.backend,
+                            noise_model_mode=noise_model_mode,
+                            device_snapshot_fingerprint=resolved_device.snapshot_fingerprint,
+                            device_snapshot_summary=resolved_device.snapshot,
+                            store_counts=bool(decision_claims),
+                            cache_store=cache_store,
+                            runtime_context=runtime_context,
+                            event_logger=event_logger,
+                        )
+                        rows_by_graph[inst.instance_id] = rows
+                        all_rows.extend((suite_name, space_name, row) for row in rows)
+                        trace_index.extend(
+                            [
+                                TraceRecord.from_score_row(suite=suite_name, space_preset=space_name, row=row)
+                                for row in rows
+                            ]
+                        )
+                    by_metric_rows[metric_name] = rows_by_graph
+
+                rows_by_space_metric_graph[space_name] = by_metric_rows
+                baseline_by_space[space_name] = baseline_cfg
+                baseline_key_by_space[space_name] = baseline_key
+                sampled_configs_by_space[space_name] = sampled_configs
+                sampling_by_space[space_name] = {
+                    "suite": suite_name,
+                    "space_preset": space_name,
+                    "mode": sampling_policy.mode,
+                    "sample_size": sampling_policy.sample_size,
+                    "seed": sampling_policy.seed,
+                    "target_ci_width": sampling_policy.target_ci_width,
+                    "max_sample_size": sampling_policy.max_sample_size,
+                    "min_sample_size": sampling_policy.min_sample_size,
+                    "step_size": sampling_policy.step_size,
+                    "sampled_configurations_with_baseline": len(sampled_configs),
+                    "perturbation_space_size": space.size(),
+                }
+        finally:
+            if cache_store is not None:
+                cache_store.close()
+
+        trace_index.save_jsonl(trace_path)
 
     experiments: list[dict[str, object]] = []
     comparative_rows: list[dict[str, object]] = []
@@ -1172,7 +1348,7 @@ def main() -> None:
                 ).value
                 row = {
                     "delta": delta,
-                    "n_instances": len(suite),
+                    "n_instances": len(per_graph_summary),
                     "n_claim_evals": by_delta_stability_totals[delta],
                     "flip_rate_mean": sum(flips) / n if n else 0.0,
                     "flip_rate_max": max(flips) if n else 0.0,
@@ -1288,7 +1464,7 @@ def main() -> None:
                 },
                 "per_graph": per_graph_summary,
                 "overall": {
-                    "graphs": len(suite),
+                    "graphs": len(per_graph_summary),
                     "delta_sweep": overall_delta,
                     "diagnostics": diagnostics_summary,
                     "stability_vs_cost": {
@@ -1438,6 +1614,11 @@ def main() -> None:
         if ranking_jobs
         else list(deltas)
     )
+    artifact_manifest = ArtifactManifest(
+        trace_jsonl=str(trace_path.resolve()),
+        events_jsonl=str(events_path.resolve()) if events_path is not None else None,
+        cache_db=str(cache_path.resolve()) if cache_path is not None else None,
+    )
 
     payload = {
         "meta": {
@@ -1447,7 +1628,13 @@ def main() -> None:
             "methods_available": sorted(method_names),
             "generated_by": "examples/claim_stability_demo.py",
             "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
-            "runtime": collect_runtime_metadata(),
+            "runtime": runtime_meta,
+            "artifacts": {
+                "trace_jsonl": artifact_manifest.trace_jsonl,
+                "events_jsonl": artifact_manifest.events_jsonl,
+                "cache_db": artifact_manifest.cache_db,
+                "replay_trace": str(args.replay_trace) if args.replay_trace else None,
+            },
         },
         "device_profile": {
             "enabled": resolved_device.profile.enabled,

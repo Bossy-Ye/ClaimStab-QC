@@ -1,6 +1,7 @@
 # claimstab/__init__.py
 from .claims import (
     BinomialEstimate,
+    DEFAULT_INFERENCE_POLICY,
     DecisionClaimResult,
     DistributionClaimResult,
     RankFlipSummary,
@@ -10,6 +11,7 @@ from .claims import (
     ci_width,
     collect_paired_scores,
     conservative_stability_decision,
+    evaluate_binomial_with_policy,
     decision_in_top_k,
     evaluate_decision_claim,
     evaluate_distribution_claim,
@@ -41,8 +43,10 @@ __all__ = [
     "StabilityDecision",
     "ci_width",
     "BinomialEstimate",
+    "DEFAULT_INFERENCE_POLICY",
     "wilson_interval",
     "estimate_binomial_rate",
+    "evaluate_binomial_with_policy",
     "estimate_clustered_stability",
     "estimate_stability_from_outcomes",
     "conservative_stability_decision",

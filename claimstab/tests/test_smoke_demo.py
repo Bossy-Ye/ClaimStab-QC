@@ -55,6 +55,65 @@ class TestSmokeDemo(unittest.TestCase):
         )
         self.assertEqual(top_ks, [1, 3])
 
+    def test_replay_trace_smoke(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            first_dir = Path(td) / "first"
+            replay_dir = Path(td) / "replay"
+            trace_path = Path(td) / "trace.jsonl"
+
+            cmd_first = [
+                sys.executable,
+                "examples/claim_stability_demo.py",
+                "--task",
+                "maxcut",
+                "--suite",
+                "core",
+                "--space-preset",
+                "baseline",
+                "--sampling-mode",
+                "random_k",
+                "--sample-size",
+                "3",
+                "--sample-seed",
+                "1",
+                "--backend-engine",
+                "basic",
+                "--trace-out",
+                str(trace_path),
+                "--out-dir",
+                str(first_dir),
+            ]
+            subprocess.run(cmd_first, check=True)
+            self.assertTrue(trace_path.exists())
+
+            cmd_replay = [
+                sys.executable,
+                "examples/claim_stability_demo.py",
+                "--task",
+                "maxcut",
+                "--suite",
+                "core",
+                "--space-preset",
+                "baseline",
+                "--replay-trace",
+                str(trace_path),
+                "--out-dir",
+                str(replay_dir),
+            ]
+            subprocess.run(cmd_replay, check=True)
+
+            first_payload = json.loads((first_dir / "claim_stability.json").read_text(encoding="utf-8"))
+            replay_payload = json.loads((replay_dir / "claim_stability.json").read_text(encoding="utf-8"))
+            self.assertEqual(len(first_payload.get("experiments", [])), len(replay_payload.get("experiments", [])))
+            self.assertEqual(
+                len(first_payload.get("comparative", {}).get("space_claim_delta", [])),
+                len(replay_payload.get("comparative", {}).get("space_claim_delta", [])),
+            )
+            self.assertEqual(
+                replay_payload.get("meta", {}).get("artifacts", {}).get("replay_trace"),
+                str(trace_path),
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -263,6 +263,15 @@ def _build_main_command(spec_path: Path, spec: dict[str, Any], args: argparse.Na
         if sampling.get("step_size") is not None:
             cmd.extend(["--step-size", str(sampling["step_size"])])
 
+    if args.cache_db:
+        cmd.extend(["--cache-db", str(args.cache_db)])
+    if args.events_out:
+        cmd.extend(["--events-out", str(args.events_out)])
+    if args.trace_out:
+        cmd.extend(["--trace-out", str(args.trace_out)])
+    if args.replay_trace:
+        cmd.extend(["--replay-trace", str(args.replay_trace)])
+
     return cmd
 
 
@@ -696,6 +705,10 @@ def build_parser() -> argparse.ArgumentParser:
     run_p.add_argument("--report", action="store_true", help="Generate stability_report.html when claim_stability.json exists")
     run_p.add_argument("--with-plots", action="store_true", help="Use --with-plots for report generation")
     run_p.add_argument("--validate", action="store_true", help="Validate spec against v1 schema before running")
+    run_p.add_argument("--cache-db", default=None, help="Optional sqlite cache path for matrix cell reuse")
+    run_p.add_argument("--events-out", default=None, help="Optional JSONL output path for execution events")
+    run_p.add_argument("--trace-out", default=None, help="Optional JSONL output path for trace records")
+    run_p.add_argument("--replay-trace", default=None, help="Replay mode: reuse an existing trace JSONL instead of executing")
     run_p.add_argument("--dry-run", action="store_true", help="Print resolved command without executing")
     run_p.set_defaults(func=cmd_run)
 

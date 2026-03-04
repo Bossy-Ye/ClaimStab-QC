@@ -86,6 +86,48 @@ class TestCLI(unittest.TestCase):
             )
             self.assertEqual(rc, 0)
 
+    def test_run_dry_run_main_with_trace_cache_flags(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            spec_path = Path(td) / "spec.yml"
+            spec_path.write_text(
+                """
+                spec_version: 1
+                pipeline: main
+                suite: core
+                claims:
+                  - type: ranking
+                    method_a: QAOA_p2
+                    method_b: RandomBaseline
+                    deltas: [0.0]
+                perturbations:
+                  preset: baseline
+                sampling:
+                  mode: random_k
+                  sample_size: 4
+                  seed: 1
+                """,
+                encoding="utf-8",
+            )
+            rc = cli.main(
+                [
+                    "run",
+                    "--spec",
+                    str(spec_path),
+                    "--out-dir",
+                    str(Path(td) / "out"),
+                    "--cache-db",
+                    str(Path(td) / "cache.sqlite"),
+                    "--trace-out",
+                    str(Path(td) / "trace.jsonl"),
+                    "--events-out",
+                    str(Path(td) / "events.jsonl"),
+                    "--replay-trace",
+                    str(Path(td) / "trace_existing.jsonl"),
+                    "--dry-run",
+                ]
+            )
+            self.assertEqual(rc, 0)
+
     def test_run_dry_run_external_task(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             spec_path = Path(td) / "spec.yml"

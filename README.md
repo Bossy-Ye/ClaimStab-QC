@@ -154,12 +154,18 @@ Evaluation tracks:
 - Main run:
   - `output/scores.csv`
   - `output/claim_stability.json`
+  - `output/trace.jsonl` (execution trace for replay/re-analysis)
 - Report:
   - `output/stability_report.html`
   - `output/report_assets/*.png` (with `--with-plots`)
 - Multi-device:
   - `output/multidevice/transpile_only/*.json|*.csv`
   - `output/multidevice/noisy_sim/*.json|*.csv`
+
+Optional reproducibility artifacts:
+- `--cache-db output/cache.sqlite` enables fingerprint-based cell caching.
+- `--events-out output/events.jsonl` saves execution event logs.
+- `--replay-trace output/trace.jsonl` recomputes claims/reports from trace without re-running circuits.
 
 ## Reporting
 Generate HTML report:

@@ -1,6 +1,9 @@
 import unittest
 from dataclasses import dataclass
+import tempfile
+from pathlib import Path
 
+from claimstab.cache.store import CacheStore
 from claimstab.methods.spec import MethodSpec
 from claimstab.perturbations.space import PerturbationSpace
 from claimstab.runners.matrix_runner import MatrixRunner
@@ -12,6 +15,7 @@ class _Details:
     transpiled_size: int
     two_qubit_count: int = 0
     swap_count: int = 0
+    counts: dict[str, int] | None = None
     device_provider: str | None = None
     device_name: str | None = None
     device_mode: str | None = None
@@ -19,7 +23,11 @@ class _Details:
 
 
 class _Backend:
+    def __init__(self) -> None:
+        self.calls = 0
+
     def run_metric(self, circuit, cfg, metric_fn, *, return_details=False, **_kwargs):
+        self.calls += 1
         details = _Details(transpiled_depth=7, transpiled_size=11)
         score = float(cfg.seed_transpiler)
         if return_details:
@@ -109,6 +117,51 @@ class TestMatrixRunner(unittest.TestCase):
         self.assertIsNone(rows[0].device_provider)
         self.assertIsNone(rows[0].device_name)
         self.assertIsNone(rows[0].device_mode)
+
+    def test_cache_hit_skips_backend_execution(self) -> None:
+        space = PerturbationSpace(
+            seeds_transpiler=[3],
+            opt_levels=[0],
+            layout_methods=["trivial"],
+            shots_list=[64],
+            seeds_simulator=[0],
+        )
+        sampled = list(space.iter_configs())
+        backend = _Backend()
+        runner = MatrixRunner(backend=backend)
+        with tempfile.TemporaryDirectory() as td:
+            cache = CacheStore(Path(td) / "cells.sqlite")
+            events: list[dict[str, object]] = []
+            try:
+                rows1 = runner.run(
+                    task=_Task(),
+                    methods=[MethodSpec(name="M1", kind="random")],
+                    space=space,
+                    configs=sampled,
+                    coupling_map=None,
+                    metric_name="objective",
+                    cache_store=cache,
+                    runtime_context={"test": "yes"},
+                    event_logger=events.append,
+                )
+                rows2 = runner.run(
+                    task=_Task(),
+                    methods=[MethodSpec(name="M1", kind="random")],
+                    space=space,
+                    configs=sampled,
+                    coupling_map=None,
+                    metric_name="objective",
+                    cache_store=cache,
+                    runtime_context={"test": "yes"},
+                    event_logger=events.append,
+                )
+            finally:
+                cache.close()
+            self.assertEqual(backend.calls, 1)
+            self.assertEqual(len(rows1), 1)
+            self.assertEqual(len(rows2), 1)
+            self.assertEqual(rows1[0].score, rows2[0].score)
+            self.assertTrue(any(str(e.get("event_type")) == "cache_hit" for e in events))
 
 
 if __name__ == "__main__":
