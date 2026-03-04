@@ -145,6 +145,11 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Replay mode: load trace JSONL and recompute claims/reports without executing circuits.",
     )
+    ap.add_argument(
+        "--use-operator-shim",
+        action="store_true",
+        help="Use perturbation operator shim to generate config pool (backward-compatible opt-in).",
+    )
     return ap.parse_args()
 
 
@@ -1176,7 +1181,7 @@ def main() -> None:
             for space_name in selected_spaces:
                 space = make_space(space_name)
                 baseline_cfg, baseline_pc, baseline_key = build_baseline_config(space)
-                sampled_configs = sample_configs(space, sampling_policy)
+                sampled_configs = sample_configs(space, sampling_policy, use_operator_shim=args.use_operator_shim)
                 sampled_configs = ensure_config_included(sampled_configs, baseline_pc)
 
                 by_metric_rows: dict[str, dict[str, list[ScoreRow]]] = {}
@@ -1228,6 +1233,7 @@ def main() -> None:
                     "step_size": sampling_policy.step_size,
                     "sampled_configurations_with_baseline": len(sampled_configs),
                     "perturbation_space_size": space.size(),
+                    "operator_shim": bool(args.use_operator_shim),
                 }
         finally:
             if cache_store is not None:

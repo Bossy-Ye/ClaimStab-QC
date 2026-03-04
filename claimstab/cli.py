@@ -356,6 +356,14 @@ def _build_multidevice_command(spec_path: Path, spec: dict[str, Any], args: argp
         cmd.extend(["--transpile-claim-pairs", transpile_pairs])
     if noisy_pairs:
         cmd.extend(["--noisy-claim-pairs", noisy_pairs])
+    if args.cache_db:
+        cmd.extend(["--cache-db", str(args.cache_db)])
+    if args.events_out:
+        cmd.extend(["--events-out", str(args.events_out)])
+    if args.trace_out:
+        cmd.extend(["--trace-out", str(args.trace_out)])
+    if args.replay_trace:
+        cmd.extend(["--replay-trace", str(args.replay_trace)])
 
     return cmd
 

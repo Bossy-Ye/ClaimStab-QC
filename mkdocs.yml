@@ -40,6 +40,7 @@ nav:
       - Figures: results/figures.md
       - Interactive Report: results/interactive_report.md
   - Reproduce: reproduce.md
+  - Trace Cache Replay: trace_cache_replay.md
   - Artifact: artifact.md
   - Appendix:
       - Architecture: ARCHITECTURE.md

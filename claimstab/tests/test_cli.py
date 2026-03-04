@@ -174,6 +174,48 @@ class TestCLI(unittest.TestCase):
             )
             self.assertEqual(rc, 0)
 
+    def test_run_dry_run_multidevice_with_trace_flags(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            spec_path = Path(td) / "spec.yml"
+            spec_path.write_text(
+                """
+                spec_version: 1
+                pipeline: multidevice
+                suite: core
+                perturbations:
+                  transpile_space: baseline
+                  noisy_space: sampling_only
+                sampling:
+                  mode: random_k
+                  sample_size: 2
+                  seed: 1
+                multidevice:
+                  run: transpile_only
+                  transpile_devices: [FakeManilaV2]
+                  transpile_claim_pairs: [QAOA_p1>QAOA_p2]
+                """,
+                encoding="utf-8",
+            )
+            rc = cli.main(
+                [
+                    "run",
+                    "--spec",
+                    str(spec_path),
+                    "--out-dir",
+                    str(Path(td) / "out"),
+                    "--cache-db",
+                    str(Path(td) / "cache.sqlite"),
+                    "--trace-out",
+                    str(Path(td) / "trace.jsonl"),
+                    "--events-out",
+                    str(Path(td) / "events.jsonl"),
+                    "--replay-trace",
+                    str(Path(td) / "trace_existing.jsonl"),
+                    "--dry-run",
+                ]
+            )
+            self.assertEqual(rc, 0)
+
     def test_run_dry_run_bv_decision_only_no_ranking_pairs(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             spec_path = Path(td) / "spec.yml"

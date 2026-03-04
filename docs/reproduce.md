@@ -74,6 +74,12 @@ make reproduce-paper
 
 This generates experiment outputs, HTML reports, paper figures, and a run manifest under `output/paper_artifact/`.
 
+## 7) Trace / Cache / Replay workflow
+
+See [Trace Cache Replay](trace_cache_replay.md) for copy-paste commands for both:
+- `examples/claim_stability_demo.py`
+- `examples/multidevice_demo.py`
+
 ## Runtime Expectations
 - `core` smoke runs: short.
 - `standard`/`large` comprehensive runs: moderate to long.
