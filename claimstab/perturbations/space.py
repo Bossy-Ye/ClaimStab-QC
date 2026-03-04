@@ -74,6 +74,15 @@ class PerturbationSpace:
                                 )
                             )
 
+    def iter_configs_with_operators(self) -> Iterable[PerturbationConfig]:
+        """
+        Optional operator-shim path (backward-compatible).
+        Default callers still use iter_configs().
+        """
+        from claimstab.perturbations.operators import iter_space_configs_via_operators
+
+        yield from iter_space_configs_via_operators(self)
+
     def size(self) -> int:
         return (
             len(self.seeds_transpiler)

@@ -6,6 +6,15 @@ from .sampling import (
     normalize_repeats_to_seed_simulator,
     sample_configs,
 )
+from .operators import (
+    LayoutMethodOperator,
+    OptimizationLevelOperator,
+    PerturbationOperator,
+    SeedSimulatorOperator,
+    SeedTranspilerOperator,
+    ShotsOperator,
+    iter_space_configs_via_operators,
+)
 from .space import PerturbationConfig, PerturbationLevel, PerturbationSpace
 
 __all__ = [
@@ -18,4 +27,11 @@ __all__ = [
     "adaptive_sample_configs",
     "normalize_repeats_to_seed_simulator",
     "ensure_config_included",
+    "PerturbationOperator",
+    "SeedTranspilerOperator",
+    "OptimizationLevelOperator",
+    "LayoutMethodOperator",
+    "ShotsOperator",
+    "SeedSimulatorOperator",
+    "iter_space_configs_via_operators",
 ]

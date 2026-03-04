@@ -55,8 +55,13 @@ def normalize_repeats_to_seed_simulator(raw: dict[str, Any]) -> tuple[dict[str, 
 
 
 
-def sample_configs(space: PerturbationSpace, policy: SamplingPolicy) -> list[PerturbationConfig]:
-    configs = list(space.iter_configs())
+def sample_configs(
+    space: PerturbationSpace,
+    policy: SamplingPolicy,
+    *,
+    use_operator_shim: bool = False,
+) -> list[PerturbationConfig]:
+    configs = list(space.iter_configs_with_operators() if use_operator_shim else space.iter_configs())
     if policy.mode == "full_factorial":
         return configs
 

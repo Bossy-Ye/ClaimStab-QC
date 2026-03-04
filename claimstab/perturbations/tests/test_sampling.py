@@ -27,6 +27,12 @@ class TestSampling(unittest.TestCase):
         sampled = sample_configs(space, SamplingPolicy(mode="full_factorial"))
         self.assertEqual(len(sampled), space.size())
 
+    def test_full_factorial_with_operator_shim_matches_default(self) -> None:
+        space = _small_space()
+        sampled_default = sample_configs(space, SamplingPolicy(mode="full_factorial"))
+        sampled_shim = sample_configs(space, SamplingPolicy(mode="full_factorial"), use_operator_shim=True)
+        self.assertEqual(sampled_shim, sampled_default)
+
     def test_random_k_sampling_respects_k(self) -> None:
         space = _small_space()
         sampled = sample_configs(space, SamplingPolicy(mode="random_k", sample_size=2, seed=0))
