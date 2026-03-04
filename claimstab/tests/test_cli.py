@@ -313,6 +313,75 @@ class TestCLI(unittest.TestCase):
             self.assertTrue(out_path.exists())
             self.assertIn("Dataset Registry", out_path.read_text(encoding="utf-8"))
 
+    def test_atlas_compare_command(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            left = root / "left.json"
+            right = root / "right.json"
+            out = root / "diff.json"
+            left.write_text(
+                json.dumps(
+                    {
+                        "meta": {"task": "maxcut", "suite": "core"},
+                        "comparative": {
+                            "space_claim_delta": [
+                                {
+                                    "claim_type": "ranking",
+                                    "space_preset": "sampling_only",
+                                    "claim_pair": "A>B",
+                                    "metric_name": "objective",
+                                    "delta": 0.0,
+                                    "decision": "stable",
+                                    "flip_rate_mean": 0.1,
+                                    "stability_hat": 0.9,
+                                    "naive_baseline": {"comparison": "agree"},
+                                }
+                            ]
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            right.write_text(
+                json.dumps(
+                    {
+                        "meta": {"task": "maxcut", "suite": "core"},
+                        "comparative": {
+                            "space_claim_delta": [
+                                {
+                                    "claim_type": "ranking",
+                                    "space_preset": "sampling_only",
+                                    "claim_pair": "A>B",
+                                    "metric_name": "objective",
+                                    "delta": 0.0,
+                                    "decision": "unstable",
+                                    "flip_rate_mean": 0.2,
+                                    "stability_hat": 0.8,
+                                    "naive_baseline": {"comparison": "naive_overclaim"},
+                                }
+                            ]
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            rc = cli.main(
+                [
+                    "atlas-compare",
+                    "--left",
+                    str(left),
+                    "--right",
+                    str(right),
+                    "--out",
+                    str(out),
+                ]
+            )
+            self.assertEqual(rc, 0)
+            self.assertTrue(out.exists())
+            payload = json.loads(out.read_text(encoding="utf-8"))
+            self.assertEqual(payload.get("paired_rows"), 1)
+            self.assertEqual(payload.get("decision_changed_count"), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

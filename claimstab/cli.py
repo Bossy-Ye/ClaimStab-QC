@@ -11,7 +11,7 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any, Sequence
 
-from claimstab.atlas import build_dataset_registry_markdown, publish_result, validate_atlas
+from claimstab.atlas import build_dataset_registry_markdown, compare_claim_outputs, publish_result, validate_atlas
 from claimstab.spec import load_spec, validate_spec
 
 
@@ -545,6 +545,31 @@ def cmd_export_dataset_registry(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_atlas_compare(args: argparse.Namespace) -> int:
+    try:
+        diff = compare_claim_outputs(args.left, args.right)
+    except Exception as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+
+    print(f"Left: {diff.get('left_source')}")
+    print(f"Right: {diff.get('right_source')}")
+    print(f"Paired rows: {diff.get('paired_rows')}")
+    print(f"Decision changed: {diff.get('decision_changed_count')}")
+    print(f"Naive comparison changed: {diff.get('naive_comparison_changed_count')}")
+    print(f"Mean flip-rate delta (right-left): {diff.get('mean_flip_rate_delta')}")
+    print(f"Mean stability-hat delta (right-left): {diff.get('mean_stability_hat_delta')}")
+    print(f"Left-only keys: {len(diff.get('left_only_keys', []))}")
+    print(f"Right-only keys: {len(diff.get('right_only_keys', []))}")
+
+    if args.out:
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(diff, indent=2), encoding="utf-8")
+        print(f"Wrote compare diff: {out}")
+    return 0
+
+
 def cmd_init_external_task(args: argparse.Namespace) -> int:
     try:
         slug = _slugify_name(args.name)
@@ -750,6 +775,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Repository URL used for artifact links",
     )
     exp_data_p.set_defaults(func=cmd_export_dataset_registry)
+
+    compare_p = sub.add_parser("atlas-compare", help="Compare two claim_stability outputs or run directories")
+    compare_p.add_argument("--left", required=True, help="Left run directory or claim_stability.json")
+    compare_p.add_argument("--right", required=True, help="Right run directory or claim_stability.json")
+    compare_p.add_argument("--out", default=None, help="Optional JSON output path for full diff payload")
+    compare_p.set_defaults(func=cmd_atlas_compare)
 
     return parser
 
