@@ -18,6 +18,7 @@ from .distribution import (
 from .evaluation import collect_paired_scores, perturbation_key
 from .ranking import RankFlipSummary, RankingClaim, Relation, compute_rank_flip_summary
 from .stability import (
+    BayesianBetaPolicy,
     BinomialEstimate,
     StabilityDecision,
     DEFAULT_INFERENCE_POLICY,
@@ -27,6 +28,7 @@ from .stability import (
     estimate_binomial_rate,
     estimate_clustered_stability,
     estimate_stability_from_outcomes,
+    resolve_inference_policy,
     wilson_interval,
 )
 
@@ -39,10 +41,12 @@ __all__ = [
     "collect_paired_scores",
     "StabilityDecision",
     "BinomialEstimate",
+    "BayesianBetaPolicy",
     "DEFAULT_INFERENCE_POLICY",
     "ci_width",
     "wilson_interval",
     "estimate_binomial_rate",
+    "resolve_inference_policy",
     "evaluate_binomial_with_policy",
     "estimate_clustered_stability",
     "estimate_stability_from_outcomes",

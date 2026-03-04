@@ -6,6 +6,7 @@ from typing import Any, Mapping, Sequence
 from claimstab.claims.evaluation import PerturbationKey, collect_paired_scores
 from claimstab.claims.ranking import RankingClaim
 from claimstab.inference.policies import (
+    BayesianBetaPolicy,
     BinomialEstimate,
     InferencePolicy,
     StabilityDecision,
@@ -14,6 +15,7 @@ from claimstab.inference.policies import (
     conservative_stability_decision,
     estimate_binomial_rate,
     estimate_stability_from_outcomes,
+    resolve_inference_policy,
     wilson_interval,
 )
 from claimstab.runners.matrix_runner import ScoreRow
@@ -28,6 +30,7 @@ def evaluate_binomial_with_policy(
     confidence: float,
     stability_threshold: float,
     policy: InferencePolicy | None = None,
+    policy_name: str | None = None,
 ) -> tuple[BinomialEstimate, StabilityDecision]:
     """
     Policy-pluggable inference entrypoint.
@@ -35,7 +38,7 @@ def evaluate_binomial_with_policy(
     Backward compatibility:
     - if no policy is given, defaults to WilsonInferencePolicy.
     """
-    active = policy or DEFAULT_INFERENCE_POLICY
+    active = policy or resolve_inference_policy(policy_name)
     estimate = active.estimate(successes=successes, total=total, confidence=confidence)
     decision = active.decide(estimate=estimate, stability_threshold=stability_threshold)
     return estimate, decision
