@@ -55,3 +55,4 @@ def ensure_builtin_tasks_registered() -> None:
     # Import modules with registration side-effects.
     importlib.import_module("claimstab.tasks.maxcut")
     importlib.import_module("claimstab.tasks.bernstein_vazirani")
+    importlib.import_module("claimstab.tasks.ghz_structural")

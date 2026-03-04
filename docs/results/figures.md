@@ -8,6 +8,12 @@ ClaimStab includes a reproducible paper-figure pipeline that reads experiment ar
 make figures
 ```
 
+For full paper artifact regeneration (experiments + reports + figures):
+
+```bash
+make reproduce-paper
+```
+
 Equivalent command:
 
 ```bash

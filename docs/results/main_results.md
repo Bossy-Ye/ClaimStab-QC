@@ -12,6 +12,10 @@ Both phases evaluate:
 
 This produces a 27-row space×claim×delta comparative matrix per phase.
 
+Additional tracks used for generality:
+- **Bernstein-Vazirani decision-claim benchmark** (non-optimization control task).
+- **GHZ structural compilation benchmark** (circuit-depth / 2Q structural claims).
+
 ## Key Takeaways
 - `compilation_only` is the most stable regime overall.
 - `sampling_only` is the dominant instability source.

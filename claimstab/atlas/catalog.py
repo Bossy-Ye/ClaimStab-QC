@@ -17,9 +17,12 @@ class SubmissionSnapshot:
     claim_types: list[str]
     methods: list[str]
     claims: list[str]
+    claim_summaries: list[str]
     spaces: list[str]
     sampling_rows: list[dict[str, Any]]
     baseline: dict[str, Any] | None
+    reproduce_command: str | None
+    how_to_cite: str | None
     artifact_paths: dict[str, str]
     created_at_utc: str
 
@@ -65,7 +68,10 @@ def _snapshot_from_entry(atlas_root: Path, entry: dict[str, Any]) -> SubmissionS
     task = str(entry.get("task", "unknown"))
     suite = str(entry.get("suite", "unknown"))
     claim_types = _normalize_list(entry.get("claim_types"))
+    claim_summaries = _normalize_list(entry.get("claim_summaries"))
     created_at = str(entry.get("created_at_utc", "unknown"))
+    reproduce_command = entry.get("reproduce_command")
+    how_to_cite = entry.get("how_to_cite")
     artifact_paths = {
         str(k): str(v) for k, v in (entry.get("artifacts", {}) or {}).items() if isinstance(v, str)
     }
@@ -127,9 +133,12 @@ def _snapshot_from_entry(atlas_root: Path, entry: dict[str, Any]) -> SubmissionS
         claim_types=claim_types,
         methods=methods,
         claims=claims,
+        claim_summaries=claim_summaries,
         spaces=spaces,
         sampling_rows=sampling_rows,
         baseline=baseline,
+        reproduce_command=str(reproduce_command) if isinstance(reproduce_command, str) else None,
+        how_to_cite=str(how_to_cite) if isinstance(how_to_cite, str) else None,
         artifact_paths=artifact_paths,
         created_at_utc=created_at,
     )
@@ -187,8 +196,9 @@ def build_dataset_registry_markdown(
         lines.append(f"- Algorithms (methods): `{', '.join(s.methods) if s.methods else 'N/A'}`")
         lines.append("")
         lines.append("Claims:")
-        if s.claims:
-            for c in s.claims:
+        rendered_claims = s.claim_summaries or s.claims
+        if rendered_claims:
+            for c in rendered_claims:
                 lines.append(f"- `{c}`")
         else:
             lines.append("- `N/A`")
@@ -232,6 +242,17 @@ def build_dataset_registry_markdown(
             public_rel = str(Path("atlas") / rel_path)
             url = _github_blob_url(repo_url, public_rel)
             lines.append(f"- `{name}`: [{public_rel}]({url})")
+
+        if s.reproduce_command:
+            lines.append("")
+            lines.append("Reproduce command:")
+            lines.append("")
+            lines.append("```bash")
+            lines.append(s.reproduce_command)
+            lines.append("```")
+        if s.how_to_cite:
+            lines.append("")
+            lines.append(f"Citation: [{s.how_to_cite}]({s.how_to_cite})")
 
     lines.append("")
     lines.append("## How To Add New Dataset Rows")

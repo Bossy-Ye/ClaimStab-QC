@@ -23,7 +23,7 @@ from claimstab.claims.diagnostics import (
 )
 from claimstab.claims.distribution import evaluate_distribution_claim
 from claimstab.claims.evaluation import collect_paired_scores, perturbation_key
-from claimstab.claims.ranking import RankingClaim, compute_rank_flip_summary
+from claimstab.claims.ranking import HigherIsBetter, RankingClaim, compute_rank_flip_summary
 from claimstab.claims.stability import (
     ci_width,
     conservative_stability_decision,
@@ -94,6 +94,17 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--stability-threshold", type=float, default=0.95)
     ap.add_argument("--confidence-level", type=float, default=0.95)
     ap.add_argument("--deltas", default="0.0,0.01,0.05", help="Comma-separated delta values")
+    ap.add_argument(
+        "--ranking-metric",
+        choices=["objective", "circuit_depth", "two_qubit_count", "swap_count"],
+        default="objective",
+        help="Metric for ranking claims (default: objective).",
+    )
+    ap.add_argument(
+        "--lower-is-better",
+        action="store_true",
+        help="Treat ranking metric as lower-is-better.",
+    )
     ap.add_argument("--method-a", default="QAOA_p2")
     ap.add_argument("--method-b", default="RandomBaseline")
     ap.add_argument(
@@ -125,6 +136,21 @@ def parse_deltas(raw: str) -> list[float]:
     if not deltas:
         raise ValueError("At least one delta must be provided")
     return deltas
+
+
+def _as_bool(value: Any, default: bool = True) -> bool:
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return default
+    if isinstance(value, (int, float)):
+        return bool(value)
+    text = str(value).strip().lower()
+    if text in {"true", "1", "yes", "y"}:
+        return True
+    if text in {"false", "0", "no", "n"}:
+        return False
+    return default
 
 
 def parse_csv_tokens(raw: str) -> list[str]:
@@ -202,6 +228,7 @@ def write_scores_csv(rows: Iterable[tuple[str, str, ScoreRow]], path: Path) -> N
                 "seed_simulator",
                 "shots",
                 "method",
+                "metric_name",
                 "score",
                 "transpiled_depth",
                 "transpiled_size",
@@ -227,6 +254,7 @@ def write_scores_csv(rows: Iterable[tuple[str, str, ScoreRow]], path: Path) -> N
                     r.seed_simulator,
                     r.shots,
                     r.method,
+                    r.metric_name,
                     r.score,
                     r.transpiled_depth,
                     r.transpiled_size,
@@ -380,27 +408,58 @@ def select_adaptive_keys(
     }
 
 
-def parse_claim_pairs_from_spec(spec_payload: dict) -> list[tuple[str, str]]:
+def parse_ranking_claims_from_spec(
+    spec_payload: dict[str, Any],
+    *,
+    default_deltas: list[float],
+    default_metric_name: str,
+    default_higher_is_better: bool,
+) -> list[dict[str, Any]]:
     claims = spec_payload.get("claims")
-    pairs: list[tuple[str, str]] = []
+    jobs: list[dict[str, Any]] = []
+
     if isinstance(claims, list):
         for item in claims:
             if not isinstance(item, dict):
                 continue
-            if str(item.get("type", "ranking")) != "ranking":
+            if str(item.get("type", "ranking")).strip().lower() != "ranking":
                 continue
             method_a = item.get("method_a")
             method_b = item.get("method_b")
-            if isinstance(method_a, str) and isinstance(method_b, str) and method_a and method_b:
-                pairs.append((method_a, method_b))
+            if not (isinstance(method_a, str) and method_a.strip() and isinstance(method_b, str) and method_b.strip()):
+                continue
+            deltas_raw = item.get("deltas")
+            deltas = [float(x) for x in deltas_raw] if isinstance(deltas_raw, list) and deltas_raw else list(default_deltas)
+            metric_name = str(item.get("metric_name", item.get("metric", default_metric_name))).strip() or default_metric_name
+            jobs.append(
+                {
+                    "method_a": method_a.strip(),
+                    "method_b": method_b.strip(),
+                    "deltas": deltas,
+                    "metric_name": metric_name,
+                    "higher_is_better": _as_bool(item.get("higher_is_better"), default_higher_is_better),
+                }
+            )
     elif isinstance(claims, dict):
         ranking = claims.get("ranking")
         if isinstance(ranking, dict):
             method_a = ranking.get("method_a")
             method_b = ranking.get("method_b")
-            if isinstance(method_a, str) and isinstance(method_b, str) and method_a and method_b:
-                pairs.append((method_a, method_b))
-    return pairs
+            if isinstance(method_a, str) and method_a.strip() and isinstance(method_b, str) and method_b.strip():
+                deltas_raw = ranking.get("deltas")
+                deltas = [float(x) for x in deltas_raw] if isinstance(deltas_raw, list) and deltas_raw else list(default_deltas)
+                jobs.append(
+                    {
+                        "method_a": method_a.strip(),
+                        "method_b": method_b.strip(),
+                        "deltas": deltas,
+                        "metric_name": str(ranking.get("metric_name", ranking.get("metric", default_metric_name))).strip()
+                        or default_metric_name,
+                        "higher_is_better": _as_bool(ranking.get("higher_is_better"), default_higher_is_better),
+                    }
+                )
+
+    return jobs
 
 
 def parse_decision_claims_from_spec(spec_payload: dict[str, Any]) -> list[dict[str, Any]]:
@@ -624,12 +683,14 @@ def evaluate_claim_on_rows(
     method_a: str,
     method_b: str,
     deltas: list[float],
+    higher_is_better: bool,
     baseline_key: tuple[int, int, str | None, int, int | None],
     stability_threshold: float,
     confidence_level: float,
     top_k_unstable: int,
 ) -> dict[str, object]:
-    base_claim = RankingClaim(method_a=method_a, method_b=method_b, delta=0.0)
+    direction = HigherIsBetter.YES if higher_is_better else HigherIsBetter.NO
+    base_claim = RankingClaim(method_a=method_a, method_b=method_b, delta=0.0, direction=direction)
 
     paired_scores = collect_paired_scores(rows, method_a, method_b)
     if baseline_key not in paired_scores:
@@ -812,6 +873,8 @@ def main() -> None:
         task_block.setdefault("suite", args.suite)
         spec_payload["task"] = task_block
     deltas = parse_deltas(args.deltas)
+    default_ranking_metric = args.ranking_metric
+    default_higher_is_better = not args.lower_is_better
     selected_space_inputs = parse_csv_tokens(args.space_presets) if args.space_presets.strip() else [args.space_preset]
     selected_spaces = [canonical_space_name(name) for name in selected_space_inputs]
 
@@ -851,22 +914,74 @@ def main() -> None:
                 "label_meta_key": "target_label",
             },
         ]
-    spec_claim_pairs = parse_claim_pairs_from_spec(spec_payload if isinstance(spec_payload, dict) else {})
+    spec_ranking_jobs = parse_ranking_claims_from_spec(
+        spec_payload if isinstance(spec_payload, dict) else {},
+        default_deltas=deltas,
+        default_metric_name=default_ranking_metric,
+        default_higher_is_better=default_higher_is_better,
+    )
     if args.claim_pairs.strip():
-        claim_pairs = parse_claim_pairs(args.claim_pairs, (args.method_a, args.method_b))
-    elif spec_claim_pairs:
-        claim_pairs = spec_claim_pairs
+        ranking_jobs = [
+            {
+                "method_a": method_a,
+                "method_b": method_b,
+                "deltas": list(deltas),
+                "metric_name": default_ranking_metric,
+                "higher_is_better": default_higher_is_better,
+            }
+            for method_a, method_b in parse_claim_pairs(args.claim_pairs, (args.method_a, args.method_b))
+        ]
+    elif spec_ranking_jobs:
+        ranking_jobs = spec_ranking_jobs
     elif task_kind == "bv" and decision_claims:
-        claim_pairs = []
+        ranking_jobs = []
+    elif task_kind == "ghz":
+        ranking_jobs = [
+            {
+                "method_a": "GHZ_Linear",
+                "method_b": "GHZ_Star",
+                "deltas": list(deltas),
+                "metric_name": default_ranking_metric,
+                "higher_is_better": default_higher_is_better,
+            }
+        ]
     else:
-        claim_pairs = parse_claim_pairs(args.claim_pairs, (args.method_a, args.method_b))
-    for method_a, method_b in claim_pairs:
+        ranking_jobs = [
+            {
+                "method_a": method_a,
+                "method_b": method_b,
+                "deltas": list(deltas),
+                "metric_name": default_ranking_metric,
+                "higher_is_better": default_higher_is_better,
+            }
+            for method_a, method_b in parse_claim_pairs(args.claim_pairs, (args.method_a, args.method_b))
+        ]
+
+    allowed_metrics = {"objective", "circuit_depth", "two_qubit_count", "swap_count"}
+    for job in ranking_jobs:
+        method_a = str(job["method_a"])
+        method_b = str(job["method_b"])
         if method_a not in method_names or method_b not in method_names:
             raise ValueError(
                 f"Unknown claim methods: {method_a}, {method_b}. Available: {sorted(method_names)}"
             )
         if method_a == method_b:
             raise ValueError("Claim pair must compare two different methods.")
+        metric_name = str(job.get("metric_name", "objective"))
+        if metric_name not in allowed_metrics:
+            raise ValueError(
+                f"Unsupported ranking metric '{metric_name}'. Use one of: {sorted(allowed_metrics)}"
+            )
+        dvals = job.get("deltas")
+        if not isinstance(dvals, list) or not dvals:
+            raise ValueError("Ranking claim job must include non-empty deltas.")
+        job["deltas"] = [float(v) for v in dvals]
+
+    ranking_metric_names = sorted({str(job["metric_name"]) for job in ranking_jobs})
+    decision_metric_name = "objective" if "objective" in ranking_metric_names else (ranking_metric_names[0] if ranking_metric_names else "objective")
+    metrics_needed = list(ranking_metric_names)
+    if decision_claims and decision_metric_name not in metrics_needed:
+        metrics_needed.append(decision_metric_name)
 
     sampling_policy = SamplingPolicy(
         mode=args.sampling_mode,
@@ -890,7 +1005,7 @@ def main() -> None:
     )
 
     all_rows: list[tuple[str, str, ScoreRow]] = []
-    rows_by_space_and_graph: dict[str, dict[str, list[ScoreRow]]] = {}
+    rows_by_space_metric_graph: dict[str, dict[str, dict[str, list[ScoreRow]]]] = {}
     sampling_by_space: dict[str, dict[str, object]] = {}
     baseline_by_space: dict[str, dict[str, int | str]] = {}
     baseline_key_by_space: dict[str, tuple[int, int, str | None, int, int | None]] = {}
@@ -902,27 +1017,31 @@ def main() -> None:
         sampled_configs = sample_configs(space, sampling_policy)
         sampled_configs = ensure_config_included(sampled_configs, baseline_pc)
 
-        rows_by_graph: dict[str, list[ScoreRow]] = {}
-        for inst in suite:
-            task = BoundTask(task_plugin, inst)
-            coupling_map = build_coupling_map(task.infer_num_qubits(methods))
-            rows = runner.run(
-                task=task,
-                methods=methods,
-                space=space,
-                configs=sampled_configs,
-                coupling_map=coupling_map,
-                device_profile=resolved_device.profile,
-                device_backend=resolved_device.backend,
-                noise_model_mode=noise_model_mode,
-                device_snapshot_fingerprint=resolved_device.snapshot_fingerprint,
-                device_snapshot_summary=resolved_device.snapshot,
-                store_counts=bool(decision_claims),
-            )
-            rows_by_graph[inst.instance_id] = rows
-            all_rows.extend((suite_name, space_name, row) for row in rows)
+        by_metric_rows: dict[str, dict[str, list[ScoreRow]]] = {}
+        for metric_name in metrics_needed or ["objective"]:
+            rows_by_graph: dict[str, list[ScoreRow]] = {}
+            for inst in suite:
+                task = BoundTask(task_plugin, inst)
+                coupling_map = build_coupling_map(task.infer_num_qubits(methods))
+                rows = runner.run(
+                    task=task,
+                    methods=methods,
+                    space=space,
+                    configs=sampled_configs,
+                    coupling_map=coupling_map,
+                    metric_name=metric_name,
+                    device_profile=resolved_device.profile,
+                    device_backend=resolved_device.backend,
+                    noise_model_mode=noise_model_mode,
+                    device_snapshot_fingerprint=resolved_device.snapshot_fingerprint,
+                    device_snapshot_summary=resolved_device.snapshot,
+                    store_counts=bool(decision_claims),
+                )
+                rows_by_graph[inst.instance_id] = rows
+                all_rows.extend((suite_name, space_name, row) for row in rows)
+            by_metric_rows[metric_name] = rows_by_graph
 
-        rows_by_space_and_graph[space_name] = rows_by_graph
+        rows_by_space_metric_graph[space_name] = by_metric_rows
         baseline_by_space[space_name] = baseline_cfg
         baseline_key_by_space[space_name] = baseline_key
         sampled_configs_by_space[space_name] = sampled_configs
@@ -944,10 +1063,16 @@ def main() -> None:
     comparative_rows: list[dict[str, object]] = []
 
     for space_name in selected_spaces:
-        space_rows = rows_by_space_and_graph[space_name]
         baseline_key = baseline_key_by_space[space_name]
 
-        for method_a, method_b in claim_pairs:
+        for ranking_job in ranking_jobs:
+            method_a = str(ranking_job["method_a"])
+            method_b = str(ranking_job["method_b"])
+            claim_deltas = [float(v) for v in ranking_job.get("deltas", [])]
+            metric_name = str(ranking_job.get("metric_name", "objective"))
+            higher_is_better = _as_bool(ranking_job.get("higher_is_better"), True)
+            direction = HigherIsBetter.YES if higher_is_better else HigherIsBetter.NO
+            space_rows = rows_by_space_metric_graph[space_name][metric_name]
             per_graph_summary: dict[str, dict[str, object]] = {}
             by_delta_flip: dict[float, list[float]] = defaultdict(list)
             by_delta_decision: dict[float, list[str]] = defaultdict(list)
@@ -970,7 +1095,7 @@ def main() -> None:
                     paired_scores_by_graph=paired_scores_by_graph,
                     method_a=method_a,
                     method_b=method_b,
-                    deltas=deltas,
+                    deltas=claim_deltas,
                     baseline_key=baseline_key,
                     confidence_level=args.confidence_level,
                     target_ci_width=float(sampling_policy.target_ci_width or 0.02),
@@ -984,7 +1109,8 @@ def main() -> None:
                     eval_rows,
                     method_a=method_a,
                     method_b=method_b,
-                    deltas=deltas,
+                    deltas=claim_deltas,
+                    higher_is_better=higher_is_better,
                     baseline_key=baseline_key,
                     stability_threshold=args.stability_threshold,
                     confidence_level=args.confidence_level,
@@ -999,7 +1125,7 @@ def main() -> None:
                     "lockdown_recommendation": graph_eval["lockdown_recommendation"],
                     "conditional_stability": graph_eval["conditional_stability"],
                 }
-                for delta in deltas:
+                for delta in claim_deltas:
                     by_delta_flip[delta].extend(graph_eval["by_delta_flip"][delta])
                     by_delta_decision[delta].extend(graph_eval["by_delta_decision"][delta])
                 for record in graph_eval["delta_sweep"]:
@@ -1017,13 +1143,13 @@ def main() -> None:
                 for row in (graph_rows if allowed_keys is None else filter_rows_by_keys(graph_rows, allowed_keys))
             ]
             overall_delta = []
-            for delta in deltas:
+            for delta in claim_deltas:
                 flips = by_delta_flip[delta]
                 decisions = by_delta_decision[delta]
                 n = len(flips)
                 clustered = estimate_clustered_stability(
                     all_selected_rows,
-                    RankingClaim(method_a=method_a, method_b=method_b, delta=delta),
+                    RankingClaim(method_a=method_a, method_b=method_b, delta=delta, direction=direction),
                     baseline_by_space[space_name],
                     stability_threshold=args.stability_threshold,
                     confidence_level=args.confidence_level,
@@ -1083,27 +1209,29 @@ def main() -> None:
                         "space_preset": space_name,
                         "claim_pair": f"{method_a}>{method_b}",
                         "claim_type": "ranking",
+                        "metric_name": metric_name,
+                        "higher_is_better": higher_is_better,
                         **row,
                     }
                 )
 
             diagnostics_summary = aggregate_factor_attribution(
                 per_graph_summary=per_graph_summary,
-                deltas=deltas,
+                deltas=claim_deltas,
                 top_k=args.top_k_unstable,
             )
 
             stability_vs_cost_by_delta: dict[str, list[dict[str, object]]] = {}
             minimum_shots_by_delta: dict[str, int | None] = {}
             all_space_rows = all_selected_rows
-            for delta in deltas:
+            for delta in claim_deltas:
                 shot_rows = compute_stability_vs_shots(
                     all_space_rows,
                     claim_spec={
                         "method_a": method_a,
                         "method_b": method_b,
                         "delta": delta,
-                        "higher_is_better": True,
+                        "higher_is_better": higher_is_better,
                     },
                     baseline_config=baseline_by_space[space_name],
                     threshold=args.stability_threshold,
@@ -1131,7 +1259,9 @@ def main() -> None:
                     "type": "ranking",
                     "method_a": method_a,
                     "method_b": method_b,
-                    "deltas": deltas,
+                    "deltas": claim_deltas,
+                    "metric_name": metric_name,
+                    "higher_is_better": higher_is_better,
                     "delta_interpretation": "delta is a practical significance threshold; increasing delta makes the claim stricter and may change both holds rate and stability.",
                 },
                 "baseline": baseline_by_space[space_name],
@@ -1176,6 +1306,7 @@ def main() -> None:
                 }
             experiments.append(experiment)
 
+        decision_space_rows = rows_by_space_metric_graph[space_name][decision_metric_name]
         for decision_claim in decision_claims:
             method = str(decision_claim["method"])
             top_k = int(decision_claim.get("top_k", 1))
@@ -1186,8 +1317,8 @@ def main() -> None:
             eval_total = 0
             all_failures: list[dict[str, object]] = []
 
-            all_selected_rows = [row for graph_rows in space_rows.values() for row in graph_rows]
-            for graph_id, graph_rows in space_rows.items():
+            all_selected_rows = [row for graph_rows in decision_space_rows.values() for row in graph_rows]
+            for graph_id, graph_rows in decision_space_rows.items():
                 inst = suite_by_id.get(graph_id)
                 label = fixed_label
                 if label is None and inst is not None and isinstance(inst.meta, dict):
@@ -1255,6 +1386,7 @@ def main() -> None:
                     "space_preset": space_name,
                     "claim_pair": f"{method}:top_k={top_k}",
                     "claim_type": "decision",
+                    "metric_name": decision_metric_name,
                     **summary_row,
                 }
             )
@@ -1267,6 +1399,7 @@ def main() -> None:
                         "method": method,
                         "top_k": top_k,
                         "label_meta_key": label_meta_key,
+                        "metric_name": decision_metric_name,
                     },
                     "baseline": baseline_by_space[space_name],
                     "stability_rule": {
@@ -1300,11 +1433,17 @@ def main() -> None:
 
     write_scores_csv(all_rows, out_csv)
 
+    meta_deltas = (
+        sorted({float(delta) for job in ranking_jobs for delta in job.get("deltas", [])})
+        if ranking_jobs
+        else list(deltas)
+    )
+
     payload = {
         "meta": {
             "suite": suite_name,
             "task": task_kind,
-            "deltas": deltas,
+            "deltas": meta_deltas,
             "methods_available": sorted(method_names),
             "generated_by": "examples/claim_stability_demo.py",
             "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
@@ -1320,7 +1459,12 @@ def main() -> None:
         },
         "batch": {
             "space_presets": selected_spaces,
-            "claim_pairs": [f"{a}>{b}" for a, b in claim_pairs],
+            "claim_pairs": [
+                f"{job['method_a']}>{job['method_b']}[{job['metric_name']}]"
+                for job in ranking_jobs
+            ],
+            "ranking_claims": ranking_jobs,
+            "metrics_evaluated": metrics_needed or ["objective"],
             "decision_claims": decision_claims,
             "num_experiments": len(experiments),
         },

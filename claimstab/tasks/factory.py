@@ -17,9 +17,16 @@ class TaskConfig:
 
 
 def _default_methods(task_kind: str = "maxcut") -> list[MethodSpec]:
-    if task_kind.strip().lower() == "bv":
+    task_key = task_kind.strip().lower()
+    if task_key == "bv":
         return [
             MethodSpec(name="BVOracle", kind="bv"),
+            MethodSpec(name="RandomBaseline", kind="random_baseline"),
+        ]
+    if task_key == "ghz":
+        return [
+            MethodSpec(name="GHZ_Linear", kind="ghz_linear"),
+            MethodSpec(name="GHZ_Star", kind="ghz_star"),
             MethodSpec(name="RandomBaseline", kind="random_baseline"),
         ]
     return [

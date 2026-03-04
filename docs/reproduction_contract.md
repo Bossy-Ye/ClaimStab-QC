@@ -4,6 +4,7 @@ This contract defines what is required to reproduce the **main paper evaluation*
 
 ## Scope
 - **Main paper evaluation**: comprehensive claim-stability experiments from `examples/exp_comprehensive_*.py`.
+- **Structural benchmark track**: `examples/exp_structural_compilation.py` (GHZ compilation claims).
 - **Device-aware extension**: `examples/multidevice_demo.py` (transpile-only + optional noisy simulation).
 
 ## Supported Runtime Contract
@@ -35,4 +36,6 @@ python -m pip install -e ".[aer,ibm]"
 ```bash
 PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_calibration.py
 PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py
+PYTHONPATH=. ./venv/bin/python examples/exp_structural_compilation.py
+make reproduce-paper
 ```

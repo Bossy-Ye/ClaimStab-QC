@@ -50,6 +50,69 @@ def _infer_claim_types(payload: dict[str, Any]) -> list[str]:
     return sorted(claim_types)
 
 
+def _extract_claim_summaries(payload: dict[str, Any]) -> list[str]:
+    out: list[str] = []
+    experiments = payload.get("experiments")
+    if not isinstance(experiments, list):
+        return out
+    for exp in experiments:
+        if not isinstance(exp, dict):
+            continue
+        claim = exp.get("claim")
+        if not isinstance(claim, dict):
+            continue
+        ctype = str(claim.get("type", "ranking"))
+        if ctype == "ranking":
+            method_a = str(claim.get("method_a", "A"))
+            method_b = str(claim.get("method_b", "B"))
+            metric_name = str(claim.get("metric_name", "objective"))
+            deltas = claim.get("deltas", [])
+            out.append(f"ranking:{method_a}>{method_b};metric={metric_name};deltas={deltas}")
+        elif ctype == "decision":
+            method = str(claim.get("method", "method"))
+            top_k = claim.get("top_k", 1)
+            out.append(f"decision:{method};top_k={top_k}")
+        elif ctype == "distribution":
+            method = str(claim.get("method", "method"))
+            out.append(f"distribution:{method}")
+        else:
+            out.append(f"{ctype}:{claim}")
+    # preserve order, dedupe
+    return list(dict.fromkeys(out))
+
+
+def _extract_sampling_summary(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    experiments = payload.get("experiments")
+    if not isinstance(experiments, list):
+        return rows
+    for exp in experiments:
+        if not isinstance(exp, dict):
+            continue
+        sampling = exp.get("sampling")
+        if not isinstance(sampling, dict):
+            continue
+        rows.append(
+            {
+                "space_preset": sampling.get("space_preset"),
+                "mode": sampling.get("mode"),
+                "sample_size": sampling.get("sample_size"),
+                "seed": sampling.get("seed"),
+                "sampled_configurations_with_baseline": sampling.get("sampled_configurations_with_baseline"),
+                "perturbation_space_size": sampling.get("perturbation_space_size"),
+            }
+        )
+    unique: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for row in rows:
+        key = json.dumps(row, sort_keys=True, default=str)
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(row)
+    return unique
+
+
 def _default_submission_id(payload: dict[str, Any], contributor: str, run_dir: Path) -> str:
     meta = payload.get("meta", {})
     task = str(meta.get("task", "task"))
@@ -121,6 +184,10 @@ def publish_result(
         "task": str(meta.get("task", "unknown")),
         "suite": str(meta.get("suite", "unknown")),
         "claim_types": _infer_claim_types(payload),
+        "claim_summaries": _extract_claim_summaries(payload),
+        "sampling_summary": _extract_sampling_summary(payload),
+        "reproduce_command": meta.get("reproduce_command"),
+        "how_to_cite": "https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff",
         "source_run_dir": str(run_path.resolve()),
         "artifacts": artifacts,
     }

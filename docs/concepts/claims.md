@@ -23,6 +23,8 @@ For ranking claims, \(\delta\) is a practical effect-size margin, not a tuning t
 - \(\delta=0\): strict ranking with no margin.
 - higher \(\delta\): requires larger practical separation.
 
+For structural metrics (for example circuit depth, two-qubit count), set `higher_is_better: false` so ranking semantics remain correct.
+
 Near-ties are common sources of flip behavior. Delta sweeps expose this directly.
 
 ## Sampling + CI Are Mandatory

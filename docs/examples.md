@@ -143,3 +143,16 @@ claimstab publish-result --run-dir output/community_portfolio_demo --atlas-root 
 Notes:
 - `UniformMix > Conservative` is typically stable in this demo.
 - `RiskAware > UniformMix` is intentionally a harder claim and may be unstable/inconclusive under perturbations.
+
+## Example G — Structural Compilation Benchmark (GHZ)
+
+Command:
+```bash
+PYTHONPATH=. ./venv/bin/python examples/exp_structural_compilation.py --out-dir output/exp_structural_compilation
+```
+
+What this evaluates:
+1. `GHZ_Linear > GHZ_Star` on `circuit_depth` (`lower_is_better`).
+2. `GHZ_Linear > GHZ_Star` on `two_qubit_count` (`lower_is_better`).
+
+This provides a non-MaxCut, circuit-level benchmark class for compilation perturbation studies.

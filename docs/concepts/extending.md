@@ -62,3 +62,8 @@ Method plugins are task-defined via `methods[*].kind`; the framework does not ha
 - existing core tests still pass
 - JSON output still includes stability estimate + CI + decision
 - docs include a runnable command for your extension
+
+Recommended contract checks for task plugins:
+- `instances(suite)` returns non-empty `ProblemInstance` list
+- `build(instance, method)` returns a circuit with deterministic metric output type
+- unsupported `method.kind` raises `TaskSpecError` with clear message

@@ -11,6 +11,12 @@ def parse_args() -> argparse.Namespace:
     )
     ap.add_argument("--out-dir", default="output/exp_comprehensive_calibration")
     ap.add_argument("--backend-engine", choices=["auto", "aer", "basic"], default="basic")
+    ap.add_argument(
+        "--include-structural",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Also run GHZ structural compilation benchmark.",
+    )
     return ap.parse_args()
 
 
@@ -50,6 +56,17 @@ def main() -> None:
     subprocess.run(maxcut_cmd, check=True)
     print("Running:", " ".join(bv_cmd))
     subprocess.run(bv_cmd, check=True)
+    if args.include_structural:
+        ghz_cmd = [
+            sys.executable,
+            "examples/exp_structural_compilation.py",
+            "--out-dir",
+            f"{args.out_dir}/ghz_structural",
+            "--backend-engine",
+            args.backend_engine,
+        ]
+        print("Running:", " ".join(ghz_cmd))
+        subprocess.run(ghz_cmd, check=True)
 
 
 if __name__ == "__main__":

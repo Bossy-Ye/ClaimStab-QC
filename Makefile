@@ -1,4 +1,4 @@
-.PHONY: docs-serve docs-build figures atlas-validate dataset-registry
+.PHONY: docs-serve docs-build figures atlas-validate dataset-registry reproduce-paper
 
 docs-serve:
 	mkdocs serve
@@ -14,3 +14,6 @@ atlas-validate:
 
 dataset-registry:
 	PYTHONPATH=. ./venv/bin/python -m claimstab.cli export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
+
+reproduce-paper:
+	PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.reproduce_paper --out-root output/paper_artifact --backend-engine basic

@@ -31,6 +31,10 @@ claimstab export-dataset-registry --atlas-root atlas --out docs/dataset_registry
 - CI-based conservative decision rule (Wilson interval).
 - Failure diagnostics (root-cause by dimension, top unstable configs, lock-down recommendations).
 - Stability-vs-cost analysis.
+- Built-in benchmark classes:
+  - `maxcut` (variational optimization ranking claims)
+  - `bv` (Bernstein-Vazirani decision-claim benchmark)
+  - `ghz` (circuit-level structural compilation benchmark)
 - Task plugin support via spec (`task.kind` built-in or `task.entrypoint` external `module:Class`).
 - Multi-device workflow:
   - Tier-1: transpile-only structural metrics.
@@ -43,12 +47,13 @@ claimstab/
   perturbations/  # perturbation space + sampling policies
   runners/        # execution backends (Aer/basic)
   devices/        # device profile resolution + IBM fake backend support
-  tasks/          # built-in task adapters (MaxCut, BV) + external plugin support
+  tasks/          # built-in task adapters (MaxCut, BV, GHZ) + external plugin support
   scripts/        # report and plotting utilities
 examples/
   claim_stability_demo.py
   exp_comprehensive_calibration.py
   exp_comprehensive_large.py
+  exp_structural_compilation.py
   multidevice_demo.py
   specs/
 atlas/
@@ -99,6 +104,7 @@ What ClaimStab provides:
 
 Ready specs:
 - `specs/paper_main.yml` (main paper track)
+- `specs/paper_structural.yml` (structural compilation track)
 - `specs/paper_device.yml` (multi-device extension)
 
 Run a baseline experiment:
@@ -113,6 +119,12 @@ Run the main paper tracks (recommended for submission artifacts):
 ```bash
 PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_calibration.py
 PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py
+PYTHONPATH=. ./venv/bin/python examples/exp_structural_compilation.py
+```
+
+Run one-command paper reproduction (experiments + reports + figures + manifest):
+```bash
+make reproduce-paper
 ```
 
 Run a comprehensive large benchmark directly:
@@ -135,7 +147,7 @@ PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py \
 ```
 
 Evaluation tracks:
-- Main paper evaluation: `examples/exp_comprehensive_calibration.py`, `examples/exp_comprehensive_large.py`
+- Main paper evaluation: `examples/exp_comprehensive_calibration.py`, `examples/exp_comprehensive_large.py`, `examples/exp_structural_compilation.py`
 - Device-targeted extension: `examples/multidevice_demo.py`
 
 ## Outputs
@@ -217,10 +229,12 @@ Guidelines:
 - [`atlas/README.md`](./atlas/README.md)
 - [`docs/atlas.md`](./docs/atlas.md)
 - [`docs/dataset_registry.md`](./docs/dataset_registry.md)
+- [Dataset submission PR checklist](./.github/PULL_REQUEST_TEMPLATE/dataset_submission.md)
 
 ## Community
 - Architecture overview: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
 - Extension guide: [`docs/concepts/extending.md`](./docs/concepts/extending.md)
+- Threats to validity: [`docs/concepts/threats_to_validity.md`](./docs/concepts/threats_to_validity.md)
 - Experiment playbook: [`docs/EXPERIMENT_PLAYBOOK.md`](./docs/EXPERIMENT_PLAYBOOK.md)
 - Contributing guide: [`CONTRIBUTING.md`](./CONTRIBUTING.md)
 - Code of conduct: [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md)

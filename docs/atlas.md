@@ -12,6 +12,12 @@ Core idea:
 - publish the resulting `claim_stability.json` package,
 - aggregate all submissions into a public index for cross-paper analysis.
 
+Submission contract (required for registry-quality entries):
+- what claim(s) were tested,
+- what perturbation policy was used,
+- what decisions/results were obtained,
+- how to reproduce and cite the submission.
+
 ## Contributor Flow
 
 1. Run experiment (built-in or custom task):
@@ -46,6 +52,9 @@ Regenerate the website dataset page after new submissions:
 ```bash
 claimstab export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
 ```
+
+Dataset PR checklist template:
+- `.github/PULL_REQUEST_TEMPLATE/dataset_submission.md`
 
 ## Stored Artifacts
 

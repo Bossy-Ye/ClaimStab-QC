@@ -144,6 +144,15 @@ def _extract_claim_pairs(spec: dict[str, Any]) -> str:
     return ""
 
 
+def _has_explicit_ranking_claims(spec: dict[str, Any]) -> bool:
+    claims = spec.get("claims")
+    if isinstance(claims, list):
+        return any(isinstance(entry, dict) and str(entry.get("type", "ranking")).strip().lower() == "ranking" for entry in claims)
+    if isinstance(claims, dict):
+        return isinstance(claims.get("ranking"), dict)
+    return False
+
+
 def _extract_decision(spec: dict[str, Any]) -> tuple[float, float]:
     decision_rule = spec.get("decision_rule", {})
     if isinstance(decision_rule, dict) and decision_rule:
@@ -212,6 +221,7 @@ def _build_main_command(spec_path: Path, spec: dict[str, Any], args: argparse.Na
     threshold, confidence = _extract_decision(spec)
     claim_pairs = _extract_claim_pairs(spec)
     deltas = _extract_deltas(spec)
+    has_explicit_ranking = _has_explicit_ranking_claims(spec)
     space_flag, space_val = _extract_space(spec)
 
     cmd = [
@@ -229,8 +239,6 @@ def _build_main_command(spec_path: Path, spec: dict[str, Any], args: argparse.Na
         str(threshold),
         "--confidence-level",
         str(confidence),
-        "--deltas",
-        deltas,
         "--backend-engine",
         _backend_engine(spec),
         "--spec",
@@ -238,7 +246,9 @@ def _build_main_command(spec_path: Path, spec: dict[str, Any], args: argparse.Na
         "--out-dir",
         str(args.out_dir),
     ]
-    if claim_pairs:
+    if not has_explicit_ranking:
+        cmd.extend(["--deltas", deltas])
+    if claim_pairs and not has_explicit_ranking:
         cmd.extend(["--claim-pairs", claim_pairs])
 
     if mode == "random_k" and sample_size is not None:
@@ -450,6 +460,7 @@ def cmd_examples(_: argparse.Namespace) -> int:
     print("Ready-to-run examples:")
     print("  claimstab init-external-task --name my_problem --out-dir examples/my_problem_demo")
     print("  claimstab run --spec specs/paper_main.yml --out-dir output/paper_main --report")
+    print("  claimstab run --spec specs/paper_structural.yml --out-dir output/paper_structural --report")
     print("  claimstab run --spec specs/paper_device.yml --out-dir output/paper_device")
     print("  claimstab run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy")
     print("  claimstab run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_bv_demo --report")
@@ -460,6 +471,7 @@ def cmd_examples(_: argparse.Namespace) -> int:
     print("  claimstab publish-result --run-dir output/paper_main --atlas-root atlas --contributor your_name")
     print("  claimstab validate-atlas --atlas-root atlas")
     print("  claimstab export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md")
+    print("  make reproduce-paper")
     return 0
 
 

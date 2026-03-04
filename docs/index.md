@@ -23,6 +23,11 @@ where \(\hat{s}\) is the estimated stability rate under sampled perturbation con
 4. Compute claim flips/holds and Wilson confidence intervals.
 5. Emit conservative decisions plus diagnostics and report artifacts.
 
+Built-in benchmark classes:
+- MaxCut ranking claims (variational optimization).
+- Bernstein-Vazirani decision-claim benchmark.
+- GHZ structural compilation benchmark.
+
 ## Results Snapshot
 !!! info "Key Results"
     - `compilation_only` is the strongest regime for stability.
@@ -76,6 +81,7 @@ PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py --run all --suite st
 - [Examples & Outputs](examples.md)
 - [ClaimAtlas Dataset](atlas.md)
 - [Extending ClaimStab](concepts/extending.md)
+- [Threats to Validity](concepts/threats_to_validity.md)
 - [Reproduction Contract](reproduction_contract.md)
 - [Reproduce](reproduce.md)
 - [Results](results/main_results.md)

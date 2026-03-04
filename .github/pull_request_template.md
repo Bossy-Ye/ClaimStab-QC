@@ -2,6 +2,8 @@
 - What changed?
 - Why is this needed?
 
+If this PR adds ClaimAtlas data, use: `.github/PULL_REQUEST_TEMPLATE/dataset_submission.md`.
+
 ## Type of Change
 - [ ] Bug fix
 - [ ] Feature

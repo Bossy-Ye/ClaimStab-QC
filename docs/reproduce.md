@@ -15,6 +15,18 @@ Expected artifacts:
 - `output/paper_main/rq_summary.json`
 - `output/paper_main/stability_report.html`
 
+## 1.5) Structural compilation track (GHZ)
+
+```bash
+claimstab validate-spec --spec specs/paper_structural.yml
+PYTHONPATH=. ./venv/bin/python examples/exp_structural_compilation.py --out-dir output/exp_structural_compilation
+```
+
+Expected artifacts:
+- `output/exp_structural_compilation/claim_stability.json`
+- `output/exp_structural_compilation/scores.csv`
+- `output/exp_structural_compilation/rq_summary.json`
+
 ## 2) Device-aware extension
 
 ```bash
@@ -53,6 +65,14 @@ claimstab publish-result --run-dir output/my_problem --atlas-root atlas --contri
 ```bash
 claimstab export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
 ```
+
+## 6) One-command paper reproduction
+
+```bash
+make reproduce-paper
+```
+
+This generates experiment outputs, HTML reports, paper figures, and a run manifest under `output/paper_artifact/`.
 
 ## Runtime Expectations
 - `core` smoke runs: short.

@@ -45,6 +45,7 @@ Main paper tracks:
 ```bash
 PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_calibration.py
 PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py
+PYTHONPATH=. ./venv/bin/python examples/exp_structural_compilation.py
 ```
 
 Device-targeted extension:
@@ -65,6 +66,11 @@ claimstab init-external-task --name my_problem --out-dir examples/my_problem_dem
 Then run it:
 ```bash
 claimstab run --spec examples/my_problem_demo/spec_my_problem.yml --out-dir output/my_problem --report
+```
+
+One-command artifact build (experiments + reports + figures):
+```bash
+make reproduce-paper
 ```
 
 ## Generate HTML Report

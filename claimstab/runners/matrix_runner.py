@@ -25,6 +25,7 @@ class ScoreRow:
     transpiled_size: int
     method: str
     score: float
+    metric_name: str = "objective"
     seed_simulator: int | None = None
     shots: int = 1024
     layout_method: str | None = None
@@ -126,6 +127,7 @@ class MatrixRunner:
                         transpiled_depth=details.transpiled_depth,
                         transpiled_size=details.transpiled_size,
                         method=method.name,
+                        metric_name=metric_name,
                         score=effective_score,
                         layout_method=comp.layout_method,
                         seed_simulator=exe.seed_simulator,
