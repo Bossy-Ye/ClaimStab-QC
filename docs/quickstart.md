@@ -37,7 +37,7 @@ Expected outputs:
 Equivalent CLI run from spec:
 ```bash
 claimstab validate-spec --spec specs/paper_main.yml
-claimstab run --spec specs/paper_main.yml --out-dir output/paper_main --report
+claimstab run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
 ```
 
 ## Evaluation Tracks

@@ -11,6 +11,7 @@ ClaimStab-QC is a claim-centric validation framework for checking whether paper-
 - Docs quickstart: [Quickstart](https://bossy-ye.github.io/ClaimStab-QC/quickstart/)
 - Interactive page: [Playground](https://bossy-ye.github.io/ClaimStab-QC/playground/)
 - Public dataset registry: [Dataset Registry](https://bossy-ye.github.io/ClaimStab-QC/dataset_registry/)
+- Output directory map: [Output Map](https://bossy-ye.github.io/ClaimStab-QC/output_map/)
 
 ## Why ClaimStab
 Most papers report point estimates. ClaimStab evaluates the claim itself and returns:

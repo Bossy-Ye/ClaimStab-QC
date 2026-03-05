@@ -148,7 +148,7 @@ Notes:
 
 Command:
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/exp_structural_compilation.py --out-dir output/exp_structural_compilation
+PYTHONPATH=. ./venv/bin/python examples/exp_structural_compilation.py --out-dir output/paper_artifact/structural
 ```
 
 What this evaluates:

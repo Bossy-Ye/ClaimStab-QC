@@ -1,6 +1,7 @@
 # Experiment Playbook
 
 This document provides recommended experiment profiles for paper-ready runs.
+For the canonical command-to-directory mapping, see [Output Directory Map](output_map.md).
 
 ## 1) Fast Smoke Check
 Use this before editing report scripts or claim logic.

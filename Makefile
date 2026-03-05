@@ -10,7 +10,7 @@ docs-build:
 	$(MKDOCS_PY) -m mkdocs build
 
 figures:
-	PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.make_paper_figures --input-dir output/exp_comprehensive_large --also-calibration output/exp_comprehensive_calibration --output-dir figures
+	PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.make_paper_figures --input-dir output/paper_artifact/large/maxcut_ranking --also-calibration output/paper_artifact/calibration/maxcut_ranking --output-dir output/paper_artifact/figures/main
 
 atlas-validate:
 	PYTHONPATH=. ./venv/bin/python -m claimstab.cli validate-atlas --atlas-root atlas

@@ -62,8 +62,8 @@ Supporting note: current multi-device transpile-only outputs are often stable on
 Main paper tracks:
 
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_calibration.py
-PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py
+PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_calibration.py --out-dir output/presentation_large/calibration
+PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py --out-dir output/presentation_large/large
 ```
 
 Device-aware extension:
@@ -79,6 +79,7 @@ PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py --run all --suite st
 - [Dataset Registry](dataset_registry.md)
 - [Interactive Playground](playground.md)
 - [Examples & Outputs](examples.md)
+- [Output Directory Map](output_map.md)
 - [ClaimAtlas Dataset](atlas.md)
 - [Extending ClaimStab](concepts/extending.md)
 - [Threats to Validity](concepts/threats_to_validity.md)

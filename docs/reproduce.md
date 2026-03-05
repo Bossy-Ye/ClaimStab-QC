@@ -2,6 +2,8 @@
 
 This page lists copy-paste commands for the current workflows in this repo.
 
+For the canonical command-to-directory mapping, see [Output Directory Map](output_map.md).
+
 ## Output Convention (Canonical)
 
 Preferred artifact roots for paper/submission:

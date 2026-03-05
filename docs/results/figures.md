@@ -23,6 +23,8 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.make_paper_figures \
   --output-dir output/paper_artifact/figures/main
 ```
 
+This is the same target used by `make figures`.
+
 ## Figure Set
 
 - Flip-rate heatmaps (per perturbation space).
