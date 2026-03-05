@@ -46,6 +46,7 @@ nav:
   - Appendix:
       - Architecture: ARCHITECTURE.md
       - Experiment Playbook: EXPERIMENT_PLAYBOOK.md
+      - Implementation Catalog: generated/implementation_catalog.md
   - Cite: cite.md
 
 plugins:

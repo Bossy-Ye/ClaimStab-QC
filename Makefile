@@ -1,4 +1,4 @@
-.PHONY: docs-serve docs-build figures atlas-validate dataset-registry reproduce-paper
+.PHONY: docs-serve docs-build figures atlas-validate dataset-registry reproduce-paper gen-catalog
 
 PYTHON ?= python3
 MKDOCS_PY := $(if $(wildcard ./venv/bin/python),./venv/bin/python,$(PYTHON))
@@ -8,6 +8,9 @@ docs-serve:
 
 docs-build:
 	$(MKDOCS_PY) -m mkdocs build
+
+gen-catalog:
+	PYTHONPATH=. $(MKDOCS_PY) -m claimstab.scripts.generate_implementation_catalog --out docs/generated/implementation_catalog.md
 
 figures:
 	PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.make_paper_figures --input-dir output/paper_artifact/large/maxcut_ranking --also-calibration output/paper_artifact/calibration/maxcut_ranking --output-dir output/paper_artifact/figures/main

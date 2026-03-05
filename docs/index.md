@@ -80,6 +80,7 @@ PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py --run all --suite st
 - [Interactive Playground](playground.md)
 - [Examples & Outputs](examples.md)
 - [Output Directory Map](output_map.md)
+- [Implementation Catalog](generated/implementation_catalog.md)
 - [ClaimAtlas Dataset](atlas.md)
 - [Extending ClaimStab](concepts/extending.md)
 - [Threats to Validity](concepts/threats_to_validity.md)
