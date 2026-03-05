@@ -1,10 +1,13 @@
 .PHONY: docs-serve docs-build figures atlas-validate dataset-registry reproduce-paper
 
+PYTHON ?= python3
+MKDOCS_PY := $(if $(wildcard ./venv/bin/python),./venv/bin/python,$(PYTHON))
+
 docs-serve:
-	mkdocs serve
+	$(MKDOCS_PY) -m mkdocs serve
 
 docs-build:
-	mkdocs build
+	$(MKDOCS_PY) -m mkdocs build
 
 figures:
 	PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.make_paper_figures --input-dir output/exp_comprehensive_large --also-calibration output/exp_comprehensive_calibration --output-dir figures
