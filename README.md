@@ -57,12 +57,12 @@ claimstab validate-spec --spec specs/paper_main.yml
 
 Run and build report:
 ```bash
-claimstab run --spec specs/paper_main.yml --out-dir output/paper_main --report
+claimstab run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
 ```
 
 Publish run to Atlas dataset:
 ```bash
-claimstab publish-result --run-dir output/paper_main --atlas-root atlas --contributor your_name
+claimstab publish-result --run-dir output/presentation_large/large/maxcut_ranking --atlas-root atlas --contributor your_name
 ```
 
 ## Choose Your Path
@@ -119,8 +119,18 @@ atlas/                      # public dataset index + submissions
 output/                     # generated experiment outputs
   presentation/             # frozen submission package (core)
   presentation_large/       # frozen submission package (extended)
+  paper_artifact/           # one-command full reproduction package
 docs/                       # MkDocs website source
 ```
+
+## Output Convention
+
+Preferred artifact roots:
+- `output/paper_artifact/` from `make reproduce-paper`
+- `output/presentation/` for core curated presentation results
+- `output/presentation_large/` for extended curated presentation results
+
+`output/exp_*` paths are still supported for ad-hoc local runs, but are considered legacy for paper packaging.
 
 ## Main Scripts and Their Roles
 - `examples/claim_stability_demo.py`: general claim-stability runner (main local entry).
@@ -139,15 +149,15 @@ docs/                       # MkDocs website source
 Generate HTML report from JSON:
 ```bash
 PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.generate_stability_report \
-  --json output/paper_main/claim_stability.json \
-  --out output/paper_main/stability_report.html
+  --json output/presentation_large/large/maxcut_ranking/claim_stability.json \
+  --out output/presentation_large/large/maxcut_ranking/stability_report.html
 ```
 
 Generate report with plots:
 ```bash
 MPLBACKEND=Agg PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.generate_stability_report \
-  --json output/paper_main/claim_stability.json \
-  --out output/paper_main/stability_report_plots.html \
+  --json output/presentation_large/large/maxcut_ranking/claim_stability.json \
+  --out output/presentation_large/large/maxcut_ranking/stability_report_plots.html \
   --with-plots
 ```
 

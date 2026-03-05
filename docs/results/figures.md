@@ -18,9 +18,9 @@ Equivalent command:
 
 ```bash
 PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.make_paper_figures \
-  --input-dir output/exp_comprehensive_large \
-  --also-calibration output/exp_comprehensive_calibration \
-  --output-dir figures
+  --input-dir output/paper_artifact/large/maxcut_ranking \
+  --also-calibration output/paper_artifact/calibration/maxcut_ranking \
+  --output-dir output/paper_artifact/figures/main
 ```
 
 ## Figure Set
@@ -31,4 +31,6 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.make_paper_figures \
 - CI-width shrink curve (adaptive sampling, when available).
 - Naive baseline vs ClaimStab comparison plot.
 
-Generated files are indexed in `figures/manifest.json`.
+Generated files are indexed in `output/paper_artifact/figures/main/manifest.json`.
+
+`output/exp_*` figure inputs are still supported for ad-hoc experiments, but canonical paper figures should come from `output/paper_artifact/`.

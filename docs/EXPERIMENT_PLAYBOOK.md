@@ -10,7 +10,7 @@ PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
   --suite core \
   --sampling-mode random_k \
   --sample-size 8 \
-  --out-dir output/smoke
+  --out-dir output/presentation/main/maxcut_core_smoke
 ```
 
 ## 2) Calibration Run (Deterministic)
@@ -23,7 +23,7 @@ PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
   --claim-pairs "QAOA_p2>RandomBaseline,QAOA_p2>QAOA_p1,QAOA_p1>RandomBaseline" \
   --sampling-mode full_factorial \
   --deltas 0.0,0.01,0.05 \
-  --out-dir output/exp_calibration
+  --out-dir output/presentation_large/calibration/maxcut_ranking
 ```
 
 ## 3) Large-Scale Run (Cost-Controlled)
@@ -38,7 +38,7 @@ PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
   --sample-size 64 \
   --sample-seed 42 \
   --deltas 0.0,0.01,0.05 \
-  --out-dir output/exp_large
+  --out-dir output/presentation_large/large/maxcut_ranking
 ```
 
 ## 4) Multi-Device Run
@@ -55,7 +55,17 @@ PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py \
 ```bash
 MPLBACKEND=Agg MPLCONFIGDIR=/tmp/mplcache XDG_CACHE_HOME=/tmp/cache \
 PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.generate_stability_report \
-  --json output/exp_large/claim_stability.json \
-  --out output/exp_large/stability_report.html \
+  --json output/presentation_large/large/maxcut_ranking/claim_stability.json \
+  --out output/presentation_large/large/maxcut_ranking/stability_report.html \
   --with-plots
 ```
+
+## Output Path Convention
+
+Preferred (paper/submission):
+- `output/paper_artifact/` (from `make reproduce-paper`)
+- `output/presentation/` (core curated package)
+- `output/presentation_large/` (extended curated package)
+
+Optional legacy ad-hoc paths:
+- `output/exp_*`
