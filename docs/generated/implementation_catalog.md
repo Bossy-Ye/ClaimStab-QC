@@ -4,9 +4,9 @@ This page is auto-generated from tracked repository files.
 
 ## Summary
 
-- Tracked files: `184`
-- Python files: `112`
-- Markdown files: `34`
+- Tracked files: `188`
+- Python files: `115`
+- Markdown files: `35`
 - YAML files: `14`
 - JSON files: `9`
 
@@ -100,6 +100,7 @@ This page is auto-generated from tracked repository files.
 - `docs/dataset_registry.md`
 - `docs/examples.md`
 - `docs/generated/.gitkeep`
+- `docs/generated/implementation_catalog.md`
 - `docs/index.md`
 - `docs/output_map.md`
 - `docs/playground.md`
@@ -458,6 +459,10 @@ This page is auto-generated from tracked repository files.
 - Classes: _none_
 - Top-level functions: _none_
 
+### `claimstab/results/report_sections.py`
+- Classes: _none_
+- Top-level functions: available_sections_text, parse_sections_arg, is_section_enabled
+
 ### `claimstab/runners/__init__.py`
 - Classes: _none_
 - Top-level functions: _none_
@@ -496,9 +501,15 @@ This page is auto-generated from tracked repository files.
 - Classes: _none_
 - Top-level functions: parse_args, run_tiny_experiment, check_outputs, main
 
+### `claimstab/scripts/generate_implementation_catalog.py`
+- Classes:
+  - `ClassInfo` (methods: -)
+  - `ModuleInfo` (methods: -)
+- Top-level functions: parse_args, _repo_root, _tracked_files, _module_info, _section_files, _render_file_list, _render_module_list, build_catalog_markdown, main
+
 ### `claimstab/scripts/generate_stability_report.py`
 - Classes: _none_
-- Top-level functions: _as_float, _numeric_sort_key, _decision_badge, _decision_count, parse_args, _parse_sections, _enabled, _render_delta_table, _render_comparative_table, _render_device_summary_table, _render_top_unstable, _render_dimension_breakdown, _render_lockdown_recommendations, _render_shots_curve_table, _shots_warning, _shots_diagnostic_text, _render_auxiliary_claims, _render_naive_summary, _render_rq_summary, _executive_summary, _plot_delta_curve, _plot_shots_curve, _plot_factor_attribution, _legacy_to_experiment, _relative_ref, main
+- Top-level functions: _as_float, _numeric_sort_key, _decision_badge, _decision_count, parse_args, _render_delta_table, _render_comparative_table, _render_device_summary_table, _render_top_unstable, _render_dimension_breakdown, _render_lockdown_recommendations, _render_shots_curve_table, _shots_warning, _shots_diagnostic_text, _render_auxiliary_claims, _render_naive_summary, _render_rq_summary, _render_evidence_chain, _executive_summary, _plot_delta_curve, _plot_shots_curve, _plot_factor_attribution, _legacy_to_experiment, _relative_ref, main
 
 ### `claimstab/scripts/make_paper_figures.py`
 - Classes: _none_
@@ -635,6 +646,11 @@ This page is auto-generated from tracked repository files.
   - `TestMultideviceReplaySmoke` (methods: test_transpile_only_replay_trace)
 - Top-level functions: _none_
 
+### `claimstab/tests/test_report_section_registry.py`
+- Classes:
+  - `TestReportSectionRegistry` (methods: test_available_sections_text_contains_known_ids, test_parse_sections_arg_empty_returns_none, test_parse_sections_arg_returns_set, test_is_section_enabled)
+- Top-level functions: _none_
+
 ### `claimstab/tests/test_report_sections.py`
 - Classes:
   - `TestReportSections` (methods: _payload, _run_report, test_default_includes_naive_and_delta_sections, test_custom_sections_can_hide_naive)
@@ -663,7 +679,7 @@ This page is auto-generated from tracked repository files.
 ### `examples/claim_stability_demo.py`
 - Classes:
   - `BoundTask` (methods: __init__, build, infer_num_qubits)
-- Top-level functions: parse_args, parse_deltas, _as_bool, parse_csv_tokens, try_load_spec, parse_claim_pairs, canonical_suite_name, canonical_space_name, write_scores_csv, make_space, build_baseline_config, config_key, key_sort_value, config_from_key, baseline_from_keys, make_event_logger, filter_rows_by_keys, select_adaptive_keys, parse_ranking_claims_from_spec, parse_decision_claims_from_spec, build_coupling_map, aggregate_factor_attribution, build_method_scores_by_key, evaluate_auxiliary_claim_examples, evaluate_claim_on_rows, evaluate_decision_claim_on_rows, load_rows_from_trace, main
+- Top-level functions: parse_args, parse_deltas, _as_bool, parse_csv_tokens, try_load_spec, parse_claim_pairs, canonical_suite_name, canonical_space_name, build_evidence_ref, write_scores_csv, make_space, build_baseline_config, config_key, key_sort_value, config_from_key, baseline_from_keys, make_event_logger, filter_rows_by_keys, select_adaptive_keys, parse_ranking_claims_from_spec, parse_decision_claims_from_spec, build_coupling_map, aggregate_factor_attribution, build_method_scores_by_key, evaluate_auxiliary_claim_examples, evaluate_claim_on_rows, evaluate_decision_claim_on_rows, load_rows_from_trace, main
 
 ### `examples/community_contrib_demo/portfolio_task.py`
 - Classes:
@@ -692,4 +708,4 @@ This page is auto-generated from tracked repository files.
 ### `examples/multidevice_demo.py`
 - Classes:
   - `BoundTask` (methods: __init__, build, infer_num_qubits)
-- Top-level functions: parse_args, parse_csv_tokens, parse_deltas, parse_claim_pairs, canonical_suite_name, canonical_space_name, make_space, build_baseline, key_sort_value, config_from_key, baseline_from_keys, make_event_logger, load_rows_from_trace, evaluate_rows_for_claim, write_rows_csv, try_load_spec, main
+- Top-level functions: parse_args, parse_csv_tokens, parse_deltas, parse_claim_pairs, canonical_suite_name, canonical_space_name, make_space, build_baseline, key_sort_value, config_from_key, baseline_from_keys, build_evidence_ref, evidence_chain_meta, make_event_logger, load_rows_from_trace, evaluate_rows_for_claim, write_rows_csv, try_load_spec, main
