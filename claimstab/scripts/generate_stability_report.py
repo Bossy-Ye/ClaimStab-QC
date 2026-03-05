@@ -53,7 +53,7 @@ def parse_args() -> argparse.Namespace:
         default="",
         help=(
             "Optional comma-separated section ids. If empty, default layout is unchanged. "
-            "Available ids: summary,device_summary,claim_table,naive_comparison,rq_summary,"
+            "Available ids: summary,evidence_chain,device_summary,claim_table,naive_comparison,rq_summary,"
             "experiment_summary,delta_sweep,cost_curve,diagnostics,auxiliary_claims."
         ),
     )
@@ -432,6 +432,62 @@ def _render_rq_summary(rq: dict[str, Any]) -> str:
     return "".join(out)
 
 
+def _render_evidence_chain(
+    *,
+    meta: dict[str, Any],
+    experiments: list[dict[str, Any]],
+) -> str:
+    artifacts = meta.get("artifacts", {})
+    evidence_meta = meta.get("evidence_chain", {})
+
+    parts: list[str] = []
+    if isinstance(artifacts, dict):
+        rows = []
+        for key in ("trace_jsonl", "events_jsonl", "cache_db", "replay_trace"):
+            value = artifacts.get(key)
+            if value:
+                rows.append(
+                    "<tr>"
+                    f"<td>{html.escape(str(key))}</td>"
+                    f"<td><code>{html.escape(str(value))}</code></td>"
+                    "</tr>"
+                )
+        if rows:
+            parts.append("<h3>Artifact References</h3>")
+            parts.append("<table><tr><th>artifact</th><th>path</th></tr>" + "".join(rows) + "</table>")
+
+    if isinstance(evidence_meta, dict):
+        lookup_fields = evidence_meta.get("lookup_fields")
+        if isinstance(lookup_fields, list) and lookup_fields:
+            parts.append(
+                "<p><b>Trace lookup fields:</b> "
+                f"{html.escape(', '.join(str(x) for x in lookup_fields))}</p>"
+            )
+        provenance = evidence_meta.get("decision_provenance")
+        if provenance:
+            parts.append(f"<p><b>Decision provenance:</b> {html.escape(str(provenance))}</p>")
+
+    exp_rows: list[str] = []
+    for exp in experiments:
+        evidence = exp.get("evidence")
+        if not isinstance(evidence, dict):
+            continue
+        trace_query = evidence.get("trace_query", {})
+        exp_rows.append(
+            "<tr>"
+            f"<td>{html.escape(str(exp.get('experiment_id')))}</td>"
+            f"<td><code>{html.escape(str(trace_query))}</code></td>"
+            "</tr>"
+        )
+    if exp_rows:
+        parts.append("<h3>Experiment-to-Trace Queries</h3>")
+        parts.append("<table><tr><th>experiment_id</th><th>trace_query</th></tr>" + "".join(exp_rows) + "</table>")
+
+    if not parts:
+        return "<p>No explicit evidence-chain references found in this artifact.</p>"
+    return "".join(parts)
+
+
 def _executive_summary(experiments: list[dict[str, Any]], comparative_rows: list[dict[str, Any]]) -> list[str]:
     if not experiments:
         return ["No experiments available."]
@@ -771,13 +827,17 @@ def main() -> None:
         "<h1>Claim Stability Report</h1>",
     ]
 
-    if payload.get("meta"):
-        html_body.append(f"<p><b>Meta:</b> {html.escape(str(payload['meta']))}</p>")
+    meta_obj = payload.get("meta") if isinstance(payload.get("meta"), dict) else {}
+    if meta_obj:
+        html_body.append(f"<p><b>Meta:</b> {html.escape(str(meta_obj))}</p>")
     if payload.get("batch"):
         html_body.append(f"<p><b>Batch:</b> {html.escape(str(payload['batch']))}</p>")
     if _enabled("summary", selected_sections):
         html_body.append("<h2>Executive Summary</h2>")
         html_body.append("<ul>" + "".join(f"<li>{html.escape(b)}</li>" for b in summary_bullets[:3]) + "</ul>")
+    if _enabled("evidence_chain", selected_sections):
+        html_body.append("<h2>Evidence Chain</h2>")
+        html_body.append(_render_evidence_chain(meta=meta_obj, experiments=experiments))
 
     if device_rows and _enabled("device_summary", selected_sections):
         html_body.append("<h2>Per-Device Summary</h2>")

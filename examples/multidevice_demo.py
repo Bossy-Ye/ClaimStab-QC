@@ -264,6 +264,70 @@ def baseline_from_keys(
     return baseline_key, baseline_dict
 
 
+def build_evidence_ref(
+    *,
+    suite_name: str,
+    space_name: str,
+    metric_name: str,
+    claim: dict[str, Any],
+    artifact_manifest: ArtifactManifest,
+) -> dict[str, Any]:
+    methods: list[str] = []
+    for key in ("method_a", "method_b", "method"):
+        value = claim.get(key)
+        if isinstance(value, str) and value:
+            methods.append(value)
+    return {
+        "trace_query": {
+            "suite": suite_name,
+            "space_preset": space_name,
+            "metric_name": metric_name,
+            "methods": sorted(set(methods)),
+        },
+        "artifacts": {
+            "trace_jsonl": artifact_manifest.trace_jsonl,
+            "events_jsonl": artifact_manifest.events_jsonl,
+            "cache_db": artifact_manifest.cache_db,
+        },
+        "lookup_fields": [
+            "suite",
+            "space_preset",
+            "instance_id",
+            "method",
+            "metric_name",
+            "seed_transpiler",
+            "optimization_level",
+            "layout_method",
+            "shots",
+            "seed_simulator",
+            "device_name",
+            "device_mode",
+        ],
+    }
+
+
+def evidence_chain_meta() -> dict[str, Any]:
+    return {
+        "trace_source": "trace_jsonl",
+        "events_source": "events_jsonl",
+        "lookup_fields": [
+            "suite",
+            "space_preset",
+            "instance_id",
+            "method",
+            "metric_name",
+            "seed_transpiler",
+            "optimization_level",
+            "layout_method",
+            "shots",
+            "seed_simulator",
+            "device_name",
+            "device_mode",
+        ],
+        "decision_provenance": "each experiment includes an evidence.trace_query block that can be matched against trace records",
+    }
+
+
 def make_event_logger(path: Path) -> Callable[[dict[str, Any]], None]:
     sink = JsonlEventLogger(path)
 
@@ -565,6 +629,7 @@ def main() -> None:
                     "cache_db": artifact_manifest.cache_db,
                     "replay_trace": str(args.replay_trace) if args.replay_trace else None,
                 },
+                "evidence_chain": evidence_chain_meta(),
             },
             "batch": {
                 "mode": batch_mode,
@@ -648,16 +713,17 @@ def main() -> None:
                             stability_threshold=args.stability_threshold,
                             confidence_level=args.confidence_level,
                         )
+                        claim_payload = {
+                            "type": "ranking",
+                            "metric_name": metric_name,
+                            "direction": direction.value,
+                            "method_a": method_a,
+                            "method_b": method_b,
+                            "deltas": deltas,
+                        }
                         exp = {
                             "experiment_id": f"{batch_mode}:{device_name}:{metric_name}:{method_a}>{method_b}",
-                            "claim": {
-                                "type": "ranking",
-                                "metric_name": metric_name,
-                                "direction": direction.value,
-                                "method_a": method_a,
-                                "method_b": method_b,
-                                "deltas": deltas,
-                            },
+                            "claim": claim_payload,
                             "baseline": baseline_dict,
                             "sampling": {
                                 "suite": suite_name,
@@ -686,6 +752,13 @@ def main() -> None:
                                 "graphs": len(per_graph),
                                 "delta_sweep": overall,
                             },
+                            "evidence": build_evidence_ref(
+                                suite_name=suite_name,
+                                space_name=space_name,
+                                metric_name=metric_name,
+                                claim=claim_payload,
+                                artifact_manifest=artifact_manifest,
+                            ),
                         }
                         batch_experiments.append(exp)
                         for row in overall:
@@ -714,6 +787,7 @@ def main() -> None:
                             "cache_db": artifact_manifest.cache_db,
                             "replay_trace": str(args.replay_trace) if args.replay_trace else None,
                         },
+                        "evidence_chain": evidence_chain_meta(),
                     },
                     "device_compatibility": {
                         "device_qubits": None,
@@ -836,16 +910,17 @@ def main() -> None:
                                 stability_threshold=args.stability_threshold,
                                 confidence_level=args.confidence_level,
                             )
+                            claim_payload = {
+                                "type": "ranking",
+                                "metric_name": metric_name,
+                                "direction": direction.value,
+                                "method_a": method_a,
+                                "method_b": method_b,
+                                "deltas": deltas,
+                            }
                             exp = {
                                 "experiment_id": f"{batch_mode}:{device_name}:{metric_name}:{method_a}>{method_b}",
-                                "claim": {
-                                    "type": "ranking",
-                                    "metric_name": metric_name,
-                                    "direction": direction.value,
-                                    "method_a": method_a,
-                                    "method_b": method_b,
-                                    "deltas": deltas,
-                                },
+                                "claim": claim_payload,
                                 "baseline": baseline_dict,
                                 "sampling": {
                                     "suite": suite_name,
@@ -874,6 +949,13 @@ def main() -> None:
                                     "graphs": len(per_graph),
                                     "delta_sweep": overall,
                                 },
+                                "evidence": build_evidence_ref(
+                                    suite_name=suite_name,
+                                    space_name=space_name,
+                                    metric_name=metric_name,
+                                    claim=claim_payload,
+                                    artifact_manifest=artifact_manifest,
+                                ),
                             }
                             batch_experiments.append(exp)
                             for row in overall:
@@ -902,6 +984,7 @@ def main() -> None:
                                 "cache_db": artifact_manifest.cache_db,
                                 "replay_trace": str(args.replay_trace) if args.replay_trace else None,
                             },
+                            "evidence_chain": evidence_chain_meta(),
                         },
                         "device_compatibility": {
                             "device_qubits": device_num_qubits,
@@ -928,6 +1011,7 @@ def main() -> None:
                     "cache_db": artifact_manifest.cache_db,
                     "replay_trace": str(args.replay_trace) if args.replay_trace else None,
                 },
+                "evidence_chain": evidence_chain_meta(),
             },
             "batch": {
                 "mode": batch_mode,
@@ -1025,6 +1109,7 @@ def main() -> None:
                     "cache_db": artifact_manifest.cache_db,
                     "replay_trace": str(args.replay_trace) if args.replay_trace else None,
                 },
+                "evidence_chain": evidence_chain_meta(),
             },
             "device_summary": global_device_summary,
             "comparative": {"space_claim_delta": global_device_summary},

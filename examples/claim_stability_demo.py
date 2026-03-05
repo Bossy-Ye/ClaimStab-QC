@@ -238,6 +238,46 @@ def canonical_space_name(name: str) -> str:
     return canonical
 
 
+def build_evidence_ref(
+    *,
+    suite_name: str,
+    space_name: str,
+    metric_name: str,
+    claim: dict[str, Any],
+    artifact_manifest: ArtifactManifest,
+) -> dict[str, Any]:
+    methods: list[str] = []
+    for key in ("method_a", "method_b", "method"):
+        value = claim.get(key)
+        if isinstance(value, str) and value:
+            methods.append(value)
+    return {
+        "trace_query": {
+            "suite": suite_name,
+            "space_preset": space_name,
+            "metric_name": metric_name,
+            "methods": sorted(set(methods)),
+        },
+        "artifacts": {
+            "trace_jsonl": artifact_manifest.trace_jsonl,
+            "events_jsonl": artifact_manifest.events_jsonl,
+            "cache_db": artifact_manifest.cache_db,
+        },
+        "lookup_fields": [
+            "suite",
+            "space_preset",
+            "instance_id",
+            "method",
+            "metric_name",
+            "seed_transpiler",
+            "optimization_level",
+            "layout_method",
+            "shots",
+            "seed_simulator",
+        ],
+    }
+
+
 DIMENSION_NAMES = [
     "seed_transpiler",
     "optimization_level",
@@ -1251,6 +1291,12 @@ def main() -> None:
 
         trace_index.save_jsonl(trace_path)
 
+    artifact_manifest = ArtifactManifest(
+        trace_jsonl=str(trace_path.resolve()),
+        events_jsonl=str(events_path.resolve()) if events_path is not None else None,
+        cache_db=str(cache_path.resolve()) if cache_path is not None else None,
+    )
+
     experiments: list[dict[str, object]] = []
     comparative_rows: list[dict[str, object]] = []
 
@@ -1445,17 +1491,19 @@ def main() -> None:
                     ),
                 }
 
+            claim_payload = {
+                "type": "ranking",
+                "method_a": method_a,
+                "method_b": method_b,
+                "deltas": claim_deltas,
+                "metric_name": metric_name,
+                "higher_is_better": higher_is_better,
+                "delta_interpretation": "delta is a practical significance threshold; increasing delta makes the claim stricter and may change both holds rate and stability.",
+            }
+
             experiment = {
                 "experiment_id": f"{space_name}:{method_a}>{method_b}",
-                "claim": {
-                    "type": "ranking",
-                    "method_a": method_a,
-                    "method_b": method_b,
-                    "deltas": claim_deltas,
-                    "metric_name": metric_name,
-                    "higher_is_better": higher_is_better,
-                    "delta_interpretation": "delta is a practical significance threshold; increasing delta makes the claim stricter and may change both holds rate and stability.",
-                },
+                "claim": claim_payload,
                 "baseline": baseline_by_space[space_name],
                 "stability_rule": {
                     "threshold": args.stability_threshold,
@@ -1490,6 +1538,13 @@ def main() -> None:
                     },
                 },
                 "auxiliary_claims": auxiliary_claims,
+                "evidence": build_evidence_ref(
+                    suite_name=suite_name,
+                    space_name=space_name,
+                    metric_name=metric_name,
+                    claim=claim_payload,
+                    artifact_manifest=artifact_manifest,
+                ),
             }
             if adaptive_info.get("enabled"):
                 experiment["sampling"] = {
@@ -1583,16 +1638,18 @@ def main() -> None:
                 }
             )
 
+            decision_claim_payload = {
+                "type": "decision",
+                "method": method,
+                "top_k": top_k,
+                "label_meta_key": label_meta_key,
+                "metric_name": decision_metric_name,
+            }
+
             experiments.append(
                 {
                     "experiment_id": f"{space_name}:{method}:decision_top{top_k}",
-                    "claim": {
-                        "type": "decision",
-                        "method": method,
-                        "top_k": top_k,
-                        "label_meta_key": label_meta_key,
-                        "metric_name": decision_metric_name,
-                    },
+                    "claim": decision_claim_payload,
                     "baseline": baseline_by_space[space_name],
                     "stability_rule": {
                         "threshold": args.stability_threshold,
@@ -1620,6 +1677,13 @@ def main() -> None:
                         "decision_failures": all_failures[:12],
                     },
                     "naive_baseline": naive,
+                    "evidence": build_evidence_ref(
+                        suite_name=suite_name,
+                        space_name=space_name,
+                        metric_name=decision_metric_name,
+                        claim=decision_claim_payload,
+                        artifact_manifest=artifact_manifest,
+                    ),
                 }
             )
 
@@ -1630,12 +1694,6 @@ def main() -> None:
         if ranking_jobs
         else list(deltas)
     )
-    artifact_manifest = ArtifactManifest(
-        trace_jsonl=str(trace_path.resolve()),
-        events_jsonl=str(events_path.resolve()) if events_path is not None else None,
-        cache_db=str(cache_path.resolve()) if cache_path is not None else None,
-    )
-
     payload = {
         "meta": {
             "suite": suite_name,
@@ -1650,6 +1708,23 @@ def main() -> None:
                 "events_jsonl": artifact_manifest.events_jsonl,
                 "cache_db": artifact_manifest.cache_db,
                 "replay_trace": str(args.replay_trace) if args.replay_trace else None,
+            },
+            "evidence_chain": {
+                "trace_source": "trace_jsonl",
+                "events_source": "events_jsonl",
+                "lookup_fields": [
+                    "suite",
+                    "space_preset",
+                    "instance_id",
+                    "method",
+                    "metric_name",
+                    "seed_transpiler",
+                    "optimization_level",
+                    "layout_method",
+                    "shots",
+                    "seed_simulator",
+                ],
+                "decision_provenance": "each experiment includes an evidence.trace_query block that can be matched against trace records",
             },
         },
         "device_profile": {
