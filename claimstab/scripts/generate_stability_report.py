@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from claimstab.results.report_sections import available_sections_text, is_section_enabled, parse_sections_arg
+
 
 def _as_float(value: Any, default: float = 0.0) -> float:
     try:
@@ -53,20 +55,10 @@ def parse_args() -> argparse.Namespace:
         default="",
         help=(
             "Optional comma-separated section ids. If empty, default layout is unchanged. "
-            "Available ids: summary,evidence_chain,device_summary,claim_table,naive_comparison,rq_summary,"
-            "experiment_summary,delta_sweep,cost_curve,diagnostics,auxiliary_claims."
+            f"Available ids: {available_sections_text()}."
         ),
     )
     return ap.parse_args()
-
-
-def _parse_sections(raw: str) -> set[str] | None:
-    values = {token.strip() for token in raw.split(",") if token.strip()}
-    return values or None
-
-
-def _enabled(section_id: str, selected: set[str] | None) -> bool:
-    return selected is None or section_id in selected
 
 
 def _render_delta_table(delta_rows: list[dict[str, Any]]) -> str:
@@ -783,7 +775,7 @@ def _relative_ref(path: Path, base: Path) -> str:
 
 def main() -> None:
     args = parse_args()
-    selected_sections = _parse_sections(args.sections)
+    selected_sections = parse_sections_arg(args.sections)
 
     json_path = Path(args.json)
     out_path = Path(args.out) if args.out else (json_path.parent / "stability_report.html")
@@ -832,26 +824,26 @@ def main() -> None:
         html_body.append(f"<p><b>Meta:</b> {html.escape(str(meta_obj))}</p>")
     if payload.get("batch"):
         html_body.append(f"<p><b>Batch:</b> {html.escape(str(payload['batch']))}</p>")
-    if _enabled("summary", selected_sections):
+    if is_section_enabled("summary", selected_sections):
         html_body.append("<h2>Executive Summary</h2>")
         html_body.append("<ul>" + "".join(f"<li>{html.escape(b)}</li>" for b in summary_bullets[:3]) + "</ul>")
-    if _enabled("evidence_chain", selected_sections):
+    if is_section_enabled("evidence_chain", selected_sections):
         html_body.append("<h2>Evidence Chain</h2>")
         html_body.append(_render_evidence_chain(meta=meta_obj, experiments=experiments))
 
-    if device_rows and _enabled("device_summary", selected_sections):
+    if device_rows and is_section_enabled("device_summary", selected_sections):
         html_body.append("<h2>Per-Device Summary</h2>")
         html_body.append(_render_device_summary_table(device_rows))
 
-    if comparative_rows and _enabled("claim_table", selected_sections):
+    if comparative_rows and is_section_enabled("claim_table", selected_sections):
         html_body.append("<h2>Claim Summary Table (Space x Claim x Delta)</h2>")
         html_body.append(_render_comparative_table(comparative_rows))
-    if comparative_rows and _enabled("naive_comparison", selected_sections):
+    if comparative_rows and is_section_enabled("naive_comparison", selected_sections):
         html_body.append("<h2>Naive Baseline vs ClaimStab</h2>")
         html_body.append(_render_naive_summary(comparative_rows))
 
     rq_summary = payload.get("rq_summary", {})
-    if isinstance(rq_summary, dict) and rq_summary and _enabled("rq_summary", selected_sections):
+    if isinstance(rq_summary, dict) and rq_summary and is_section_enabled("rq_summary", selected_sections):
         html_body.append("<h2>RQ Summary (RQ1-RQ4)</h2>")
         html_body.append(_render_rq_summary(rq_summary))
 
@@ -866,7 +858,7 @@ def main() -> None:
         aux = experiment.get("auxiliary_claims", {})
 
         html_body.append(f"<h2>Experiment {idx + 1}: {html.escape(str(experiment.get('experiment_id')))}</h2>")
-        if _enabled("experiment_summary", selected_sections):
+        if is_section_enabled("experiment_summary", selected_sections):
             html_body.append(f"<p><b>Claim:</b> {html.escape(str(claim))}</p>")
             html_body.append(f"<p><b>Sampling:</b> {html.escape(str(sampling))}</p>")
             if isinstance(sampling, dict):
@@ -883,7 +875,7 @@ def main() -> None:
             html_body.append(f"<p><b>Decision rule:</b> {html.escape(str(rule))}</p>")
             html_body.append(f"<p><b>Backend:</b> {html.escape(str(backend))}</p>")
         claim_type = str(claim.get("type", "ranking"))
-        if _enabled("delta_sweep", selected_sections):
+        if is_section_enabled("delta_sweep", selected_sections):
             if claim_type == "ranking":
                 html_body.append(
                     "<p><i>Flip definition:</i> a flip is a relation change from baseline under delta semantics (A_GT_B, A_EQ_B, A_LT_B).</p>"
@@ -904,7 +896,7 @@ def main() -> None:
         factor_plot = assets_dir / f"factor_attribution_{idx + 1}.png"
         shots_plot = assets_dir / f"shots_stability_{idx + 1}.png"
 
-        if claim_type == "ranking" and delta_rows and args.with_plots and _enabled("delta_sweep", selected_sections):
+        if claim_type == "ranking" and delta_rows and args.with_plots and is_section_enabled("delta_sweep", selected_sections):
             try:
                 _plot_delta_curve(delta_rows, delta_plot)
                 delta_plot_ok = True
@@ -912,7 +904,7 @@ def main() -> None:
                 print(f"[WARN] Could not render delta plot for experiment {idx + 1}: {exc}")
 
         selected_delta = str(delta_rows[0].get("delta")) if delta_rows else "0.0"
-        if claim_type == "ranking" and args.with_plots and _enabled("delta_sweep", selected_sections):
+        if claim_type == "ranking" and args.with_plots and is_section_enabled("delta_sweep", selected_sections):
             try:
                 factor_plot_ok = _plot_factor_attribution(
                     per_graph,
@@ -923,12 +915,12 @@ def main() -> None:
                 print(f"[WARN] Could not render factor plot for experiment {idx + 1}: {exc}")
                 factor_plot_ok = False
 
-        if claim_type == "ranking" and delta_plot_ok and _enabled("delta_sweep", selected_sections):
+        if claim_type == "ranking" and delta_plot_ok and is_section_enabled("delta_sweep", selected_sections):
             delta_ref = _relative_ref(delta_plot, out_path.parent)
             html_body.append("<h3>Delta Curve</h3>")
             html_body.append(f"<img src='{html.escape(delta_ref)}' width='700' />")
 
-        if claim_type == "ranking" and factor_plot_ok and _enabled("delta_sweep", selected_sections):
+        if claim_type == "ranking" and factor_plot_ok and is_section_enabled("delta_sweep", selected_sections):
             factor_ref = _relative_ref(factor_plot, out_path.parent)
             html_body.append("<h3>Example Graph Factor Attribution</h3>")
             html_body.append(f"<img src='{html.escape(factor_ref)}' width='760' />")
@@ -936,14 +928,14 @@ def main() -> None:
         stability_vs_cost = overall.get("stability_vs_cost", {})
         shots_rows_delta0 = stability_vs_cost.get("by_delta", {}).get(str(delta_rows[0].get("delta")) if delta_rows else "0.0", [])
         threshold = float(rule.get("threshold", 0.95)) if isinstance(rule, dict) else 0.95
-        if args.with_plots and _enabled("cost_curve", selected_sections):
+        if args.with_plots and is_section_enabled("cost_curve", selected_sections):
             try:
                 shots_plot_ok = _plot_shots_curve(shots_rows_delta0, shots_plot, threshold=threshold)
             except Exception as exc:
                 print(f"[WARN] Could not render shots curve for experiment {idx + 1}: {exc}")
                 shots_plot_ok = False
 
-        if _enabled("cost_curve", selected_sections):
+        if is_section_enabled("cost_curve", selected_sections):
             html_body.append("<h3>Stability vs Cost (Shots)</h3>")
             for delta in [str(r.get("delta")) for r in delta_rows if r.get("delta") is not None]:
                 rows_for_delta = stability_vs_cost.get("by_delta", {}).get(delta, [])
@@ -964,7 +956,7 @@ def main() -> None:
         dim_by_delta = diagnostics.get("by_delta_dimension", {})
         top_by_delta = diagnostics.get("top_unstable_configs_by_delta", {})
         lockdown_by_delta = diagnostics.get("top_lockdown_recommendations_by_delta", {})
-        if claim_type == "ranking" and (dim_by_delta or top_by_delta) and _enabled("diagnostics", selected_sections):
+        if claim_type == "ranking" and (dim_by_delta or top_by_delta) and is_section_enabled("diagnostics", selected_sections):
             html_body.append("<h3>Failure Mode Diagnostics</h3>")
             for delta in [str(r.get("delta")) for r in delta_rows]:
                 html_body.append(f"<h4>delta={html.escape(delta)}</h4>")
@@ -975,7 +967,7 @@ def main() -> None:
                 html_body.append("<h5>Top Lock-Down Drivers (Fix knob to improve stability)</h5>")
                 html_body.append(_render_lockdown_recommendations(lockdown_by_delta.get(delta, [])))
 
-        if _enabled("auxiliary_claims", selected_sections):
+        if is_section_enabled("auxiliary_claims", selected_sections):
             html_body.append("<h3>Decision + Distribution Examples</h3>")
             html_body.append(_render_auxiliary_claims(aux))
             if claim_type == "decision":
