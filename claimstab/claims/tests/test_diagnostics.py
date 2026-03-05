@@ -3,6 +3,7 @@ import unittest
 from claimstab.claims.diagnostics import (
     aggregate_lockdown_recommendations,
     build_conditional_robustness_summary,
+    compute_effect_diagnostics,
     conditional_rank_flip_summary,
     rank_flip_root_cause_by_dimension,
     single_knob_lockdown_recommendation,
@@ -145,6 +146,43 @@ class TestDiagnostics(unittest.TestCase):
         self.assertEqual(lockdown["lock_dimensions"], ["shots_bucket"])
         self.assertEqual(lockdown["conditions"]["shots_bucket"], "high")
         self.assertEqual(lockdown["decision"], "stable")
+
+    def test_effect_diagnostics_highlights_shots_bucket(self) -> None:
+        observations = []
+        for seed in (0, 1):
+            for _ in range(120):
+                observations.append(
+                    {
+                        "seed_transpiler": seed,
+                        "optimization_level": 1,
+                        "layout_method": "sabre",
+                        "shots": 64,
+                        "seed_simulator": 0,
+                        "is_flip": True,
+                    }
+                )
+                observations.append(
+                    {
+                        "seed_transpiler": seed,
+                        "optimization_level": 1,
+                        "layout_method": "sabre",
+                        "shots": 1024,
+                        "seed_simulator": 0,
+                        "is_flip": False,
+                    }
+                )
+
+        effects = compute_effect_diagnostics(
+            observations_by_delta={"0.0": observations},
+            context_conditions={"space_preset": "sampling_only"},
+            top_k=3,
+        )
+        rows = effects["by_delta"]["0.0"]["main_effects"]
+        self.assertGreaterEqual(len(rows), 2)
+        self.assertEqual(rows[0]["dimension"], "shots_bucket")
+        self.assertGreater(float(rows[0]["effect_score"]), 0.9)
+        by_dim = {str(row["dimension"]): row for row in rows}
+        self.assertAlmostEqual(float(by_dim["seed_transpiler"]["effect_score"]), 0.0, places=12)
 
 
 if __name__ == "__main__":

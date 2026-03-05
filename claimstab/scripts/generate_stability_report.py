@@ -455,6 +455,20 @@ def _render_rq_summary(rq: dict[str, Any]) -> str:
     if isinstance(rq5, dict):
         out.append(f"<p><b>RQ5 robustness maps:</b> {rq5.get('experiments_with_map', 0)} experiments.</p>")
         out.append(f"<p><b>RQ5 minimal lockdown examples:</b> {len(rq5.get('minimal_lockdown_examples', []))}</p>")
+    rq6 = rq.get("rq6_stratified_stability", {})
+    if isinstance(rq6, dict):
+        out.append(f"<p><b>RQ6 stratified runs:</b> {rq6.get('experiments_with_strata', 0)} experiments.</p>")
+        out.append(
+            "<p><b>RQ6 decision counts:</b> "
+            f"{html.escape(str(rq6.get('decision_counts', {})))}</p>"
+        )
+    rq7 = rq.get("rq7_effect_diagnostics", {})
+    if isinstance(rq7, dict):
+        out.append(
+            "<p><b>RQ7 effect diagnostics:</b> "
+            f"{rq7.get('experiments_with_effect_diagnostics', 0)} experiments.</p>"
+        )
+        out.append(f"<p><b>RQ7 top interactions:</b> {len(rq7.get('top_interactions', []))}</p>")
     return "".join(out)
 
 

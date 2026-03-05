@@ -92,7 +92,24 @@ class TestReportSections(unittest.TestCase):
                     }
                 ]
             },
-            "rq_summary": {"rq1_prevalence": {"by_space_and_claim_type": {}}, "rq2_drivers": {"top_dimensions": []}, "rq3_cost_tradeoff": {"stability_vs_cost_rows": []}, "rq4_adaptive_sampling": {"adaptive_sampling": []}},
+            "rq_summary": {
+                "rq1_prevalence": {"by_space_and_claim_type": {}},
+                "rq2_drivers": {"top_dimensions": []},
+                "rq3_cost_tradeoff": {"stability_vs_cost_rows": []},
+                "rq4_adaptive_sampling": {"adaptive_sampling": []},
+                "rq5_conditional_robustness": {
+                    "experiments_with_map": 1,
+                    "minimal_lockdown_examples": [{}],
+                },
+                "rq6_stratified_stability": {
+                    "experiments_with_strata": 1,
+                    "decision_counts": {"stable": 1, "unstable": 0, "inconclusive": 0},
+                },
+                "rq7_effect_diagnostics": {
+                    "experiments_with_effect_diagnostics": 1,
+                    "top_interactions": [{}],
+                },
+            },
         }
 
     def _run_report(self, payload: dict, extra_args: list[str] | None = None) -> str:
@@ -120,6 +137,8 @@ class TestReportSections(unittest.TestCase):
         self.assertIn("Naive Baseline vs ClaimStab", html)
         self.assertIn("Delta Sweep Summary", html)
         self.assertIn("Stability vs Cost (Shots)", html)
+        self.assertIn("RQ6 stratified runs", html)
+        self.assertIn("RQ7 effect diagnostics", html)
 
     def test_custom_sections_can_hide_naive(self) -> None:
         html = self._run_report(

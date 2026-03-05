@@ -133,6 +133,179 @@ def _build_rq5_conditional_robustness(experiments: list[dict[str, Any]]) -> dict
     }
 
 
+def _build_rq6_stratified_stability(experiments: list[dict[str, Any]]) -> dict[str, Any]:
+    experiments_with_strata = 0
+    all_dimensions: set[str] = set()
+    stable_rows: list[dict[str, Any]] = []
+    unstable_rows: list[dict[str, Any]] = []
+    inconclusive_rows: list[dict[str, Any]] = []
+
+    for exp in experiments:
+        overall = exp.get("overall", {})
+        stratified = overall.get("stratified_stability")
+        if not isinstance(stratified, dict):
+            continue
+        by_delta = stratified.get("by_delta")
+        if not isinstance(by_delta, dict):
+            continue
+        experiments_with_strata += 1
+        for name in stratified.get("strata_dimensions", []):
+            all_dimensions.add(str(name))
+        exp_id = str(exp.get("experiment_id"))
+        claim = exp.get("claim", {})
+        claim_type = str(claim.get("type", "ranking"))
+
+        for delta, rows in by_delta.items():
+            if not isinstance(rows, list):
+                continue
+            for row in rows:
+                if not isinstance(row, dict):
+                    continue
+                out_row = {
+                    "experiment_id": exp_id,
+                    "claim_type": claim_type,
+                    "delta": str(delta),
+                    "conditions": row.get("conditions", {}),
+                    "n_instances": _as_int(row.get("n_instances"), 0),
+                    "n_eval": _as_int(row.get("n_eval"), 0),
+                    "flip_rate": _as_float(row.get("flip_rate"), 0.0),
+                    "stability_hat": _as_float(row.get("stability_hat"), 0.0),
+                    "stability_ci_low": _as_float(row.get("stability_ci_low"), 0.0),
+                    "stability_ci_high": _as_float(row.get("stability_ci_high"), 0.0),
+                    "decision": str(row.get("decision", "inconclusive")),
+                }
+                decision = str(out_row["decision"])
+                if decision == "stable":
+                    stable_rows.append(out_row)
+                elif decision == "unstable":
+                    unstable_rows.append(out_row)
+                else:
+                    inconclusive_rows.append(out_row)
+
+    stable_rows.sort(
+        key=lambda row: (
+            _as_float(row.get("stability_ci_low"), 0.0),
+            _as_int(row.get("n_eval"), 0),
+            _as_int(row.get("n_instances"), 0),
+        ),
+        reverse=True,
+    )
+    unstable_rows.sort(
+        key=lambda row: (
+            _as_float(row.get("flip_rate"), 0.0),
+            -_as_float(row.get("stability_ci_high"), 0.0),
+            _as_int(row.get("n_eval"), 0),
+        ),
+        reverse=True,
+    )
+    inconclusive_rows.sort(
+        key=lambda row: (
+            _as_int(row.get("n_eval"), 0),
+            _as_float(row.get("stability_ci_low"), 0.0),
+        ),
+        reverse=True,
+    )
+
+    decision_counts = {
+        "stable": len(stable_rows),
+        "unstable": len(unstable_rows),
+        "inconclusive": len(inconclusive_rows),
+    }
+    return {
+        "experiments_with_strata": experiments_with_strata,
+        "strata_dimensions": sorted(all_dimensions),
+        "decision_counts": decision_counts,
+        "stable_examples": stable_rows[:20],
+        "unstable_examples": unstable_rows[:20],
+        "inconclusive_examples": inconclusive_rows[:20],
+    }
+
+
+def _build_rq7_effect_diagnostics(experiments: list[dict[str, Any]]) -> dict[str, Any]:
+    experiments_with_effects = 0
+    dimensions_union: set[str] = set()
+    main_effect_rows: list[dict[str, Any]] = []
+    interaction_rows: list[dict[str, Any]] = []
+
+    for exp in experiments:
+        overall = exp.get("overall", {})
+        effects = overall.get("effect_diagnostics")
+        if not isinstance(effects, dict):
+            continue
+        by_delta = effects.get("by_delta")
+        if not isinstance(by_delta, dict):
+            continue
+        experiments_with_effects += 1
+        for dim_name in effects.get("dimensions", []):
+            dimensions_union.add(str(dim_name))
+        context_conditions = effects.get("context_conditions", {})
+        exp_id = str(exp.get("experiment_id"))
+        claim = exp.get("claim", {})
+        claim_type = str(claim.get("type", "ranking"))
+
+        for delta, payload in by_delta.items():
+            if not isinstance(payload, dict):
+                continue
+            for row in payload.get("main_effects", []):
+                if not isinstance(row, dict):
+                    continue
+                main_effect_rows.append(
+                    {
+                        "experiment_id": exp_id,
+                        "claim_type": claim_type,
+                        "delta": str(delta),
+                        "context_conditions": context_conditions,
+                        "dimension": str(row.get("dimension", "")),
+                        "effect_score": _as_float(row.get("effect_score"), 0.0),
+                        "n_levels": _as_int(row.get("n_levels"), 0),
+                        "n_eval": _as_int(row.get("n_eval"), 0),
+                        "by_value": row.get("by_value", []),
+                    }
+                )
+            for row in payload.get("interaction_effects", []):
+                if not isinstance(row, dict):
+                    continue
+                dims = row.get("dimensions", [])
+                interaction_rows.append(
+                    {
+                        "experiment_id": exp_id,
+                        "claim_type": claim_type,
+                        "delta": str(delta),
+                        "context_conditions": context_conditions,
+                        "dimensions": [str(x) for x in dims] if isinstance(dims, list) else [],
+                        "interaction_score": _as_float(row.get("interaction_score"), 0.0),
+                        "joint_spread": _as_float(row.get("joint_spread"), 0.0),
+                        "reference_main_effect": _as_float(row.get("reference_main_effect"), 0.0),
+                        "n_cells": _as_int(row.get("n_cells"), 0),
+                        "n_eval": _as_int(row.get("n_eval"), 0),
+                    }
+                )
+
+    main_effect_rows.sort(
+        key=lambda row: (
+            _as_float(row.get("effect_score"), 0.0),
+            _as_int(row.get("n_eval"), 0),
+            _as_int(row.get("n_levels"), 0),
+        ),
+        reverse=True,
+    )
+    interaction_rows.sort(
+        key=lambda row: (
+            _as_float(row.get("interaction_score"), 0.0),
+            _as_float(row.get("joint_spread"), 0.0),
+            _as_int(row.get("n_eval"), 0),
+        ),
+        reverse=True,
+    )
+
+    return {
+        "experiments_with_effect_diagnostics": experiments_with_effects,
+        "dimensions": sorted(dimensions_union),
+        "top_main_effects": main_effect_rows[:20],
+        "top_interactions": interaction_rows[:20],
+    }
+
+
 def _weighted_std(values: list[float], weights: list[float]) -> float:
     if not values or not weights:
         return 0.0
@@ -412,6 +585,8 @@ def build_rq_summary(
         "decision_agreement_rate_vs_full_factorial": None,
     }
     rq5 = _build_rq5_conditional_robustness(experiments)
+    rq6 = _build_rq6_stratified_stability(experiments)
+    rq7 = _build_rq7_effect_diagnostics(experiments)
 
     naive_counts = {"naive_overclaim": 0, "naive_underclaim": 0, "agree": 0, "naive_uninformative": 0}
     for row in comparative_rows:
@@ -428,6 +603,8 @@ def build_rq_summary(
         "rq3_cost_tradeoff": rq3,
         "rq4_adaptive_sampling": rq4,
         "rq5_conditional_robustness": rq5,
+        "rq6_stratified_stability": rq6,
+        "rq7_effect_diagnostics": rq7,
         "naive_baseline_comparison": baseline_compare,
         "decision_counts_overall": _decision_counts(comparative_rows),
     }

@@ -95,6 +95,119 @@ class TestRQDrivers(unittest.TestCase):
         self.assertGreaterEqual(len(rq5["failure_frontier_examples"]), 1)
         self.assertGreaterEqual(len(rq5["minimal_lockdown_examples"]), 1)
 
+    def test_rq6_stratified_stability_collects_and_ranks_examples(self) -> None:
+        payload = {
+            "meta": {"task": "maxcut"},
+            "comparative": {"space_claim_delta": []},
+            "experiments": [
+                {
+                    "experiment_id": "combined_light:A>B",
+                    "claim": {"type": "ranking"},
+                    "overall": {
+                        "stratified_stability": {
+                            "strata_dimensions": ["instance_family", "graph_size_bucket"],
+                            "by_delta": {
+                                "0.0": [
+                                    {
+                                        "conditions": {"instance_family": "ring", "graph_size_bucket": "small"},
+                                        "n_instances": 8,
+                                        "n_eval": 160,
+                                        "flip_rate": 0.01,
+                                        "stability_hat": 0.99,
+                                        "stability_ci_low": 0.96,
+                                        "stability_ci_high": 1.0,
+                                        "decision": "stable",
+                                    },
+                                    {
+                                        "conditions": {"instance_family": "erdos_renyi", "graph_size_bucket": "large"},
+                                        "n_instances": 8,
+                                        "n_eval": 160,
+                                        "flip_rate": 0.62,
+                                        "stability_hat": 0.38,
+                                        "stability_ci_low": 0.30,
+                                        "stability_ci_high": 0.46,
+                                        "decision": "unstable",
+                                    },
+                                ]
+                            },
+                        }
+                    },
+                }
+            ],
+        }
+
+        rq = build_rq_summary(payload)
+        rq6 = rq["rq6_stratified_stability"]
+        self.assertEqual(int(rq6["experiments_with_strata"]), 1)
+        self.assertIn("instance_family", rq6["strata_dimensions"])
+        self.assertEqual(int(rq6["decision_counts"]["stable"]), 1)
+        self.assertEqual(int(rq6["decision_counts"]["unstable"]), 1)
+        self.assertGreaterEqual(len(rq6["unstable_examples"]), 1)
+        self.assertEqual(rq6["unstable_examples"][0]["conditions"]["instance_family"], "erdos_renyi")
+
+    def test_rq7_effect_diagnostics_collects_main_and_interactions(self) -> None:
+        payload = {
+            "meta": {"task": "maxcut"},
+            "comparative": {"space_claim_delta": []},
+            "experiments": [
+                {
+                    "experiment_id": "sampling_only:A>B",
+                    "claim": {"type": "ranking"},
+                    "overall": {
+                        "effect_diagnostics": {
+                            "dimensions": ["shots_bucket", "seed_simulator", "layout_method"],
+                            "context_conditions": {"space_preset": "sampling_only"},
+                            "by_delta": {
+                                "0.0": {
+                                    "main_effects": [
+                                        {
+                                            "dimension": "shots_bucket",
+                                            "effect_score": 0.80,
+                                            "n_levels": 2,
+                                            "n_eval": 200,
+                                            "by_value": [
+                                                {"value": "low", "n_eval": 100, "flip_rate": 0.9},
+                                                {"value": "high", "n_eval": 100, "flip_rate": 0.1},
+                                            ],
+                                        },
+                                        {
+                                            "dimension": "seed_simulator",
+                                            "effect_score": 0.05,
+                                            "n_levels": 2,
+                                            "n_eval": 200,
+                                            "by_value": [
+                                                {"value": 0, "n_eval": 100, "flip_rate": 0.55},
+                                                {"value": 1, "n_eval": 100, "flip_rate": 0.50},
+                                            ],
+                                        },
+                                    ],
+                                    "interaction_effects": [
+                                        {
+                                            "dimensions": ["shots_bucket", "layout_method"],
+                                            "interaction_score": 0.35,
+                                            "joint_spread": 0.95,
+                                            "reference_main_effect": 0.60,
+                                            "n_cells": 4,
+                                            "n_eval": 200,
+                                        }
+                                    ],
+                                }
+                            },
+                        }
+                    },
+                }
+            ],
+        }
+
+        rq = build_rq_summary(payload)
+        rq7 = rq["rq7_effect_diagnostics"]
+        self.assertEqual(int(rq7["experiments_with_effect_diagnostics"]), 1)
+        self.assertIn("shots_bucket", rq7["dimensions"])
+        self.assertGreaterEqual(len(rq7["top_main_effects"]), 1)
+        self.assertEqual(rq7["top_main_effects"][0]["dimension"], "shots_bucket")
+        self.assertGreaterEqual(len(rq7["top_interactions"]), 1)
+        self.assertEqual(rq7["top_interactions"][0]["dimensions"], ["shots_bucket", "layout_method"])
+
 
 if __name__ == "__main__":
     unittest.main()
