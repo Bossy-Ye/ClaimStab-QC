@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import csv
 import json
 import os
 import shlex
@@ -12,22 +11,15 @@ from typing import Any, Callable, Iterable, List, Mapping
 
 from qiskit.transpiler import CouplingMap
 
-from claimstab.claims.decision import decision_in_top_k, evaluate_decision_claim
 from claimstab.claims.diagnostics import (
-    aggregate_lockdown_recommendations,
     build_conditional_robustness_summary,
     compute_stability_vs_shots,
     compute_effect_diagnostics,
-    conditional_rank_flip_summary,
     minimum_shots_for_stable,
-    rank_flip_root_cause_by_dimension,
-    single_knob_lockdown_recommendation,
 )
-from claimstab.claims.distribution import evaluate_distribution_claim
-from claimstab.claims.evaluation import collect_paired_scores, perturbation_key
-from claimstab.claims.ranking import HigherIsBetter, RankingClaim, compute_rank_flip_summary
+from claimstab.claims.evaluation import collect_paired_scores
+from claimstab.claims.ranking import HigherIsBetter, RankingClaim
 from claimstab.claims.stability import (
-    ci_width,
     conservative_stability_decision,
     estimate_binomial_rate,
     estimate_clustered_stability,
@@ -39,7 +31,11 @@ from claimstab.cache.store import CacheStore
 from claimstab.core import ArtifactManifest, TraceIndex, TraceRecord
 from claimstab.devices.registry import parse_device_profile, parse_noise_model_mode, resolve_device_profile
 from claimstab.evidence import build_cep_protocol_meta, build_experiment_cep_record
-from claimstab.methods.spec import MethodSpec
+from claimstab.pipelines.aggregate import (
+    aggregate_factor_attribution as _aggregate_factor_attribution,
+    build_method_scores_by_key as _build_method_scores_by_key,
+    build_robustness_map_artifact as _build_robustness_map_artifact,
+)
 from claimstab.pipelines.common import (
     baseline_from_keys as _baseline_from_keys,
     build_baseline_config as _build_baseline_config,
@@ -57,11 +53,24 @@ from claimstab.pipelines.common import (
     parse_deltas as _parse_deltas,
     try_load_spec as _try_load_spec,
 )
-from claimstab.perturbations.sampling import SamplingPolicy, adaptive_sample_configs, ensure_config_included, sample_configs
+from claimstab.pipelines.emit import write_scores_csv as _write_scores_csv
+from claimstab.pipelines.evaluate import (
+    derive_instance_strata as _derive_instance_strata_impl,
+    evaluate_auxiliary_claim_examples as _evaluate_auxiliary_claim_examples,
+    evaluate_claim_on_rows as _evaluate_claim_on_rows,
+    evaluate_decision_claim_on_rows as _evaluate_decision_claim_on_rows,
+    evaluate_distribution_claim_on_rows as _evaluate_distribution_claim_on_rows,
+)
+from claimstab.pipelines.runner import (
+    BoundTask as _BoundTask,
+    build_coupling_map as _build_coupling_map,
+    filter_rows_by_keys as _filter_rows_by_keys,
+    select_adaptive_keys as _select_adaptive_keys,
+)
+from claimstab.perturbations.sampling import SamplingPolicy, ensure_config_included, sample_configs
 from claimstab.perturbations.space import PerturbationConfig, PerturbationSpace
 from claimstab.runners.matrix_runner import MatrixRunner, ScoreRow
 from claimstab.runners.qiskit_aer import QiskitAerRunner
-from claimstab.tasks.base import BuiltWorkflow
 from claimstab.tasks.factory import make_task, parse_methods
 
 EVIDENCE_LOOKUP_FIELDS = [
@@ -244,60 +253,7 @@ DIMENSION_NAMES = [
 
 
 def write_scores_csv(rows: Iterable[tuple[str, str, ScoreRow]], path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-
-    with path.open("w", newline="", encoding="utf-8") as f:
-        w = csv.writer(f)
-        w.writerow(
-            [
-                "suite",
-                "space_preset",
-                "instance_id",
-                "seed_transpiler",
-                "optimization_level",
-                "layout_method",
-                "seed_simulator",
-                "shots",
-                "method",
-                "metric_name",
-                "score",
-                "transpiled_depth",
-                "transpiled_size",
-                "device_provider",
-                "device_name",
-                "device_mode",
-                "device_snapshot_fingerprint",
-                "circuit_depth",
-                "two_qubit_count",
-                "swap_count",
-            ]
-        )
-
-        for suite_name, space_name, r in rows:
-            w.writerow(
-                [
-                    suite_name,
-                    space_name,
-                    r.instance_id,
-                    r.seed_transpiler,
-                    r.optimization_level,
-                    r.layout_method,
-                    r.seed_simulator,
-                    r.shots,
-                    r.method,
-                    r.metric_name,
-                    r.score,
-                    r.transpiled_depth,
-                    r.transpiled_size,
-                    r.device_provider,
-                    r.device_name,
-                    r.device_mode,
-                    r.device_snapshot_fingerprint,
-                    r.circuit_depth,
-                    r.two_qubit_count,
-                    r.swap_count,
-                ]
-            )
+    _write_scores_csv(rows, path)
 
 
 def make_space(preset: str) -> PerturbationSpace:
@@ -336,7 +292,7 @@ def filter_rows_by_keys(
     rows: list[ScoreRow],
     allowed_keys: set[tuple[int, int, str | None, int, int | None]],
 ) -> list[ScoreRow]:
-    return [row for row in rows if perturbation_key(row) in allowed_keys]
+    return _filter_rows_by_keys(rows, allowed_keys)
 
 
 def select_adaptive_keys(
@@ -352,63 +308,18 @@ def select_adaptive_keys(
     min_sample_size: int,
     step_size: int,
 ) -> tuple[set[tuple[int, int, str | None, int, int | None]], dict[str, object]]:
-    ordered_non_baseline = [pc for pc in sampled_configs if config_key(pc) != baseline_key]
-
-    def eval_prefix(prefix_cfgs: list[PerturbationConfig]) -> tuple[float, float]:
-        prefix_keys = {config_key(pc) for pc in prefix_cfgs}
-        widths: list[float] = []
-        for delta in deltas:
-            claim = RankingClaim(method_a=method_a, method_b=method_b, delta=delta)
-            successes = 0
-            total = 0
-            for paired in paired_scores_by_graph.values():
-                if baseline_key not in paired:
-                    continue
-                baseline_relation = claim.relation(*paired[baseline_key])
-                for key in prefix_keys:
-                    if key not in paired:
-                        continue
-                    total += 1
-                    if claim.relation(*paired[key]) == baseline_relation:
-                        successes += 1
-            if total > 0:
-                widths.append(ci_width(estimate_binomial_rate(successes=successes, total=total, confidence=confidence_level)))
-        if not widths:
-            return 0.0, 1.0
-        return 0.0, max(widths)
-
-    if not ordered_non_baseline:
-        return {baseline_key}, {
-            "enabled": True,
-            "target_ci_width": target_ci_width,
-            "achieved_ci_width": None,
-            "stop_reason": "no_candidate_configs",
-            "selected_configurations_without_baseline": 0,
-            "selected_configurations_with_baseline": 1,
-            "evaluated_configurations_without_baseline": 0,
-        }
-
-    adaptive = adaptive_sample_configs(
-        ordered_non_baseline,
-        evaluate_prefix=eval_prefix,
+    return _select_adaptive_keys(
+        sampled_configs=sampled_configs,
+        paired_scores_by_graph=paired_scores_by_graph,
+        method_a=method_a,
+        method_b=method_b,
+        deltas=deltas,
+        baseline_key=baseline_key,
+        confidence_level=confidence_level,
         target_ci_width=target_ci_width,
         min_sample_size=min_sample_size,
         step_size=step_size,
-        max_sample_size=len(ordered_non_baseline),
     )
-    selected_keys = {config_key(pc) for pc in adaptive.selected_configs}
-    selected_keys.add(baseline_key)
-    return selected_keys, {
-        "enabled": True,
-        "target_ci_width": adaptive.target_ci_width,
-        "achieved_ci_width": adaptive.achieved_ci_width,
-        "stop_reason": adaptive.stop_reason,
-        "selected_configurations_without_baseline": adaptive.evaluated_configs,
-        "selected_configurations_with_baseline": len(selected_keys),
-        "evaluated_configurations_without_baseline": len(ordered_non_baseline),
-        "min_sample_size": min_sample_size,
-        "step_size": step_size,
-    }
 
 
 def parse_ranking_claims_from_spec(
@@ -554,135 +465,19 @@ def has_explicit_claims(spec_payload: dict[str, Any]) -> bool:
     return False
 
 
-class BoundTask:
-    """MatrixRunner-compatible adapter for TaskPlugin(instance, method) API."""
-
-    def __init__(self, plugin, instance) -> None:
-        self.plugin = plugin
-        self.instance = instance
-        self.instance_id = instance.instance_id
-
-    def build(self, method):
-        built = self.plugin.build(self.instance, method)
-        if isinstance(built, BuiltWorkflow):
-            return built.circuit, built.metric_fn
-        return built
-
-    def infer_num_qubits(self, methods: list[MethodSpec]) -> int:
-        payload = getattr(self.instance, "payload", None)
-        graph_nodes = getattr(payload, "num_nodes", None)
-        if isinstance(graph_nodes, int) and graph_nodes > 0:
-            return graph_nodes
-        if not methods:
-            raise ValueError("Cannot infer qubit count without methods.")
-        circuit, _ = self.build(methods[0])
-        num_qubits = getattr(circuit, "num_qubits", None)
-        if not isinstance(num_qubits, int) or num_qubits <= 0:
-            raise ValueError(f"Cannot infer qubit count for instance '{self.instance_id}'.")
-        return num_qubits
+BoundTask = _BoundTask
 
 
 def build_coupling_map(num_qubits: int) -> CouplingMap:
-    line_edges = [[i, i + 1] for i in range(num_qubits - 1)]
-    reverse_edges = [[i + 1, i] for i in range(num_qubits - 1)]
-    return CouplingMap(line_edges + reverse_edges)
+    return _build_coupling_map(num_qubits)
 
 
 def aggregate_factor_attribution(per_graph_summary: dict[str, dict[str, object]], deltas: list[float], top_k: int) -> dict[str, object]:
-    combined: dict[str, dict[str, dict[str, dict[str, int]]]] = {}
-    top_by_delta: dict[str, list[dict[str, object]]] = {}
-    lockdown_by_delta: dict[str, list[dict[str, object]]] = {}
-
-    for delta in deltas:
-        dkey = str(delta)
-        dim_totals: dict[str, dict[str, dict[str, int]]] = defaultdict(lambda: defaultdict(lambda: {"total": 0, "flips": 0}))
-        flip_events: list[dict[str, object]] = []
-        lockdown_rows: list[dict[str, object]] = []
-
-        for graph_id, payload in per_graph_summary.items():
-            attrib = payload.get("factor_attribution", {}).get(dkey, {})
-            by_dimension = attrib.get("by_dimension", {})
-            for dim_name, values in by_dimension.items():
-                for value, stats in values.items():
-                    dim_totals[dim_name][value]["total"] += int(stats.get("total", 0))
-                    dim_totals[dim_name][value]["flips"] += int(stats.get("flips", 0))
-
-            for event in attrib.get("top_flip_configs", []):
-                event_copy = dict(event)
-                event_copy["graph_id"] = graph_id
-                flip_events.append(event_copy)
-            lockdown = payload.get("lockdown_recommendation", {}).get(dkey)
-            if isinstance(lockdown, dict):
-                lockdown_rows.append(lockdown)
-
-        dim_rates: dict[str, dict[str, dict[str, float | int]]] = {}
-        for dim_name, values in dim_totals.items():
-            dim_rates[dim_name] = {}
-            for value, counts in sorted(values.items()):
-                total = counts["total"]
-                flips = counts["flips"]
-                dim_rates[dim_name][value] = {
-                    "total": total,
-                    "flips": flips,
-                    "flip_rate": 0.0 if total == 0 else flips / total,
-                }
-
-        combined[dkey] = dim_rates
-        top_by_delta[dkey] = sorted(
-            flip_events,
-            key=lambda e: (float(e.get("flip_severity", 0.0)), abs(float(e.get("margin_shift_vs_baseline", 0.0)))),
-            reverse=True,
-        )[:max(0, top_k)]
-        lockdown_by_delta[dkey] = aggregate_lockdown_recommendations(lockdown_rows, top_k=top_k)
-
-    return {
-        "by_delta_dimension": combined,
-        "top_unstable_configs_by_delta": top_by_delta,
-        "top_lockdown_recommendations_by_delta": lockdown_by_delta,
-    }
+    return _aggregate_factor_attribution(per_graph_summary, deltas, top_k)
 
 
 def build_method_scores_by_key(rows: list[ScoreRow]) -> dict[tuple[int, int, str | None, int, int | None], dict[str, float]]:
-    by_key: dict[tuple[int, int, str | None, int, int | None], dict[str, float]] = defaultdict(dict)
-    for row in rows:
-        by_key[perturbation_key(row)][row.method] = row.score
-    return by_key
-
-
-def _bucket_problem_size(value: int) -> str:
-    if value <= 6:
-        return "small"
-    if value <= 10:
-        return "medium"
-    return "large"
-
-
-def _bucket_density(value: float) -> str:
-    if value <= 0.25:
-        return "sparse"
-    if value <= 0.45:
-        return "mid"
-    return "dense"
-
-
-def _bucket_transpiled_depth(depth: int | None) -> str | None:
-    if depth is None:
-        return None
-    if depth <= 40:
-        return "depth_low"
-    if depth <= 120:
-        return "depth_mid"
-    return "depth_high"
-
-
-def _bucket_two_qubit_count(two_q: int | None) -> str | None:
-    if two_q is None:
-        return None
-    if two_q <= 20:
-        return "twoq_low"
-    if two_q <= 60:
-        return "twoq_mid"
-    return "twoq_high"
+    return _build_method_scores_by_key(rows)
 
 
 def _derive_instance_strata(
@@ -694,59 +489,14 @@ def _derive_instance_strata(
     method_name: str,
     baseline_key: tuple[int, int, str | None, int, int | None],
 ) -> dict[str, object]:
-    strata: dict[str, object] = {}
-
-    payload = getattr(instance, "payload", None) if instance is not None else None
-    meta = getattr(instance, "meta", None) if instance is not None else None
-
-    if task_kind == "maxcut":
-        n_nodes = getattr(payload, "num_nodes", None)
-        edges = getattr(payload, "edges", None)
-        if isinstance(n_nodes, int) and n_nodes > 0:
-            strata["graph_size_bucket"] = _bucket_problem_size(int(n_nodes))
-        if isinstance(n_nodes, int) and n_nodes > 1 and isinstance(edges, list):
-            density = (2.0 * len(edges)) / float(n_nodes * (n_nodes - 1))
-            strata["edge_density_bucket"] = _bucket_density(density)
-        if str(graph_id).startswith("ring"):
-            strata["instance_family"] = "ring"
-        elif str(graph_id).startswith("er_"):
-            strata["instance_family"] = "erdos_renyi"
-        else:
-            strata["instance_family"] = "other_graph"
-    elif task_kind == "bv":
-        hidden = getattr(payload, "hidden_string", None)
-        if isinstance(hidden, str) and hidden:
-            strata["input_size_bucket"] = _bucket_problem_size(len(hidden))
-        strata["instance_family"] = "bv"
-    elif task_kind == "ghz":
-        n_qubits = getattr(payload, "num_qubits", None)
-        if not isinstance(n_qubits, int) and isinstance(meta, dict):
-            mq = meta.get("num_qubits")
-            if isinstance(mq, int):
-                n_qubits = mq
-        if isinstance(n_qubits, int) and n_qubits > 0:
-            strata["input_size_bucket"] = _bucket_problem_size(n_qubits)
-        strata["instance_family"] = "ghz"
-
-    baseline_depth: int | None = None
-    baseline_twoq: int | None = None
-    for row in graph_rows:
-        if row.method != method_name:
-            continue
-        if perturbation_key(row) != baseline_key:
-            continue
-        baseline_depth = int(row.transpiled_depth)
-        baseline_twoq = int(row.two_qubit_count) if row.two_qubit_count is not None else None
-        break
-    depth_bucket = _bucket_transpiled_depth(baseline_depth)
-    twoq_bucket = _bucket_two_qubit_count(baseline_twoq)
-    if depth_bucket is not None:
-        strata["transpiled_depth_bucket"] = depth_bucket
-    if twoq_bucket is not None:
-        strata["two_qubit_count_bucket"] = twoq_bucket
-    if not strata:
-        strata["instance_family"] = "all"
-    return strata
+    return _derive_instance_strata_impl(
+        task_kind=task_kind,
+        graph_id=graph_id,
+        instance=instance,
+        graph_rows=graph_rows,
+        method_name=method_name,
+        baseline_key=baseline_key,
+    )
 
 
 def evaluate_auxiliary_claim_examples(
@@ -756,171 +506,16 @@ def evaluate_auxiliary_claim_examples(
     stability_threshold: float,
     confidence_level: float,
 ) -> dict[str, object]:
-    if baseline_key not in method_scores_by_key:
-        return {}
-
-    keys = sorted(method_scores_by_key)
-    baseline_scores = method_scores_by_key[baseline_key]
-    selected_label = sorted(baseline_scores.items(), key=lambda kv: (-kv[1], kv[0]))[0][0]
-
-    accepted_outcomes = []
-    for key in keys:
-        scores = method_scores_by_key[key]
-        accepted_outcomes.append(
-            decision_in_top_k(
-                selected_label=selected_label,
-                scores=scores,
-                k=2,
-                higher_is_better=True,
-            )
-        )
-    decision_res = evaluate_decision_claim(
-        accepted_outcomes,
+    return _evaluate_auxiliary_claim_examples(
+        method_scores_by_key=method_scores_by_key,
+        baseline_key=baseline_key,
         stability_threshold=stability_threshold,
-        confidence=confidence_level,
+        confidence_level=confidence_level,
     )
-
-    winners: dict[tuple[int, int, str | None, int, int | None], str] = {}
-    for key in keys:
-        scores = method_scores_by_key[key]
-        winners[key] = sorted(scores.items(), key=lambda kv: (-kv[1], kv[0]))[0][0]
-
-    shots_values = sorted({int(k[3]) for k in keys})
-    low_keys: list[tuple[int, int, str | None, int, int | None]]
-    high_keys: list[tuple[int, int, str | None, int, int | None]]
-    if len(shots_values) >= 2:
-        low_keys = [k for k in keys if int(k[3]) == shots_values[0]]
-        high_keys = [k for k in keys if int(k[3]) == shots_values[-1]]
-        observed_group = f"shots={shots_values[0]}"
-        reference_group = f"shots={shots_values[-1]}"
-    else:
-        low_keys = [k for k in keys if (int(k[4]) if k[4] is not None else 0) % 2 == 0]
-        high_keys = [k for k in keys if (int(k[4]) if k[4] is not None else 0) % 2 == 1]
-        observed_group = "seed_simulator_even"
-        reference_group = "seed_simulator_odd"
-
-    observed_counts: dict[str, int] = defaultdict(int)
-    reference_counts: dict[str, int] = defaultdict(int)
-    for k in low_keys:
-        observed_counts[winners[k]] += 1
-    for k in high_keys:
-        reference_counts[winners[k]] += 1
-
-    distribution_payload: dict[str, object] = {}
-    if observed_counts and reference_counts:
-        dist_res = evaluate_distribution_claim(
-            observed_counts=observed_counts,
-            reference_counts=reference_counts,
-            epsilon=0.20,
-            primary_distance="js",
-            sanity_distance="tvd",
-        )
-        distribution_payload = {
-            "observed_group": observed_group,
-            "reference_group": reference_group,
-            "observed_counts": dict(observed_counts),
-            "reference_counts": dict(reference_counts),
-            "epsilon": dist_res.epsilon,
-            "primary_distance": dist_res.primary_distance,
-            "primary_value": dist_res.primary_value,
-            "primary_holds": dist_res.primary_holds,
-            "sanity_distance": dist_res.sanity_distance,
-            "sanity_value": dist_res.sanity_value,
-            "sanity_holds": dist_res.sanity_holds,
-            "distances_agree": dist_res.distances_agree,
-        }
-
-    return {
-        "decision_example": {
-            "selected_label": selected_label,
-            "rule": "selected baseline winner remains in top-2 under perturbation",
-            "accepted": decision_res.accepted,
-            "total": decision_res.total,
-            "acceptance_rate": decision_res.acceptance_rate,
-            "ci_low": decision_res.ci_low,
-            "ci_high": decision_res.ci_high,
-            "decision": decision_res.decision.value,
-        },
-        "distribution_example": distribution_payload,
-    }
 
 
 def build_robustness_map_artifact(experiments: list[dict[str, Any]]) -> dict[str, Any]:
-    cells: list[dict[str, Any]] = []
-    by_experiment: dict[str, dict[str, list[dict[str, Any]]]] = {}
-    for exp in experiments:
-        if not isinstance(exp, dict):
-            continue
-        exp_id = str(exp.get("experiment_id", "unknown"))
-        claim = exp.get("claim", {})
-        if not isinstance(claim, dict) or str(claim.get("type", "ranking")) != "ranking":
-            continue
-        overall = exp.get("overall", {})
-        if not isinstance(overall, dict):
-            continue
-        robustness = overall.get("conditional_robustness", {})
-        if not isinstance(robustness, dict):
-            continue
-        by_delta = robustness.get("cells_by_delta", {})
-        if not isinstance(by_delta, dict):
-            continue
-        exp_rows: dict[str, list[dict[str, Any]]] = {}
-        for delta, rows in by_delta.items():
-            if not isinstance(rows, list):
-                continue
-            dkey = str(delta)
-            mapped_rows: list[dict[str, Any]] = []
-            for row in rows:
-                if not isinstance(row, dict):
-                    continue
-                out_row = {
-                    "experiment_id": exp_id,
-                    "delta": dkey,
-                    "conditions": row.get("conditions", {}),
-                    "n_eval": int(row.get("n_eval", 0)),
-                    "flip_rate": float(row.get("flip_rate", 0.0)),
-                    "stability_hat": float(row.get("stability_hat", 0.0)),
-                    "stability_ci_low": float(row.get("stability_ci_low", 0.0)),
-                    "stability_ci_high": float(row.get("stability_ci_high", 0.0)),
-                    "decision": str(row.get("decision", "inconclusive")),
-                }
-                mapped_rows.append(out_row)
-                cells.append(out_row)
-            mapped_rows.sort(
-                key=lambda item: (
-                    item["decision"] == "stable",
-                    int(item["n_eval"]),
-                    float(item["stability_ci_low"]),
-                ),
-                reverse=True,
-            )
-            exp_rows[dkey] = mapped_rows
-        by_experiment[exp_id] = exp_rows
-
-    cells.sort(
-        key=lambda item: (
-            str(item["experiment_id"]),
-            float(item["delta"]),
-            str(item["decision"]) == "stable",
-            int(item["n_eval"]),
-        ),
-        reverse=True,
-    )
-    return {
-        "schema_version": "robustness_map_v1",
-        "cell_fields": [
-            "experiment_id",
-            "delta",
-            "conditions",
-            "n_eval",
-            "stability_hat",
-            "stability_ci_low",
-            "stability_ci_high",
-            "decision",
-        ],
-        "cells": cells,
-        "by_experiment_delta": by_experiment,
-    }
+    return _build_robustness_map_artifact(experiments)
 
 
 def evaluate_claim_on_rows(
@@ -935,146 +530,17 @@ def evaluate_claim_on_rows(
     confidence_level: float,
     top_k_unstable: int,
 ) -> dict[str, object]:
-    direction = HigherIsBetter.YES if higher_is_better else HigherIsBetter.NO
-    base_claim = RankingClaim(method_a=method_a, method_b=method_b, delta=0.0, direction=direction)
-
-    paired_scores = collect_paired_scores(rows, method_a, method_b)
-    if baseline_key not in paired_scores:
-        raise ValueError(f"Baseline key missing from sampled set: {baseline_key}")
-
-    baseline_a, baseline_b = paired_scores[baseline_key]
-    perturbed_pairs = [scores for key, scores in paired_scores.items() if key != baseline_key]
-    shot_values = sorted({int(key[3]) for key in paired_scores})
-    seed_values = sorted({int(key[4]) for key in paired_scores if key[4] is not None})
-
-    by_delta_flip: dict[float, list[float]] = defaultdict(list)
-    by_delta_decision: dict[float, list[str]] = defaultdict(list)
-
-    delta_sweep = []
-    factor_attribution: dict[str, dict[str, object]] = {}
-    lockdown_recommendation: dict[str, dict[str, object]] = {}
-    conditional_stability: dict[str, list[dict[str, object]]] = {}
-    flip_observations_by_delta: dict[str, list[dict[str, object]]] = {}
-
-    for delta in deltas:
-        claim = RankingClaim(
-            method_a=base_claim.method_a,
-            method_b=base_claim.method_b,
-            delta=delta,
-            direction=base_claim.direction,
-        )
-        summary = compute_rank_flip_summary(
-            claim=claim,
-            baseline_score_a=baseline_a,
-            baseline_score_b=baseline_b,
-            perturbed_scores=perturbed_pairs,
-        )
-
-        stable_count = summary.total - summary.flips
-        estimate = estimate_binomial_rate(
-            successes=stable_count,
-            total=summary.total,
-            confidence=confidence_level,
-        )
-        decision = conservative_stability_decision(
-            estimate=estimate,
-            stability_threshold=stability_threshold,
-        ).value
-        baseline_holds = claim.holds(baseline_a, baseline_b)
-        baseline_relation = claim.relation(baseline_a, baseline_b)
-        baseline_margin = (baseline_a - baseline_b) if higher_is_better else (baseline_b - baseline_a)
-        claim_holds_count = sum(1 for pair in paired_scores.values() if claim.holds(*pair))
-        claim_holds_rate = claim_holds_count / len(paired_scores) if paired_scores else 0.0
-
-        delta_flip_observations: list[dict[str, object]] = []
-        for key, (score_a, score_b) in paired_scores.items():
-            if key == baseline_key:
-                continue
-            perturbed_relation = claim.relation(score_a, score_b)
-            margin = (score_a - score_b) if higher_is_better else (score_b - score_a)
-            delta_flip_observations.append(
-                {
-                    "seed_transpiler": int(key[0]),
-                    "optimization_level": int(key[1]),
-                    "layout_method": key[2],
-                    "shots": int(key[3]),
-                    "seed_simulator": int(key[4]) if key[4] is not None else None,
-                    "baseline_relation": baseline_relation.value,
-                    "perturbed_relation": perturbed_relation.value,
-                    "is_flip": perturbed_relation != baseline_relation,
-                    "margin": margin,
-                    "margin_to_threshold": margin - float(delta),
-                    "margin_shift_vs_baseline": margin - baseline_margin,
-                }
-            )
-        flip_observations_by_delta[str(delta)] = delta_flip_observations
-
-        delta_record = {
-            "delta": delta,
-            "total": summary.total,
-            "flips": summary.flips,
-            "flip_rate": summary.flip_rate,
-            "stability_hat": estimate.rate,
-            "stability_ci_low": estimate.ci_low,
-            "stability_ci_high": estimate.ci_high,
-            "decision": decision,
-            "baseline_holds": baseline_holds,
-            "baseline_relation": baseline_relation.value,
-            "claim_holds_count": claim_holds_count,
-            "claim_total_count": len(paired_scores),
-            "claim_holds_rate": claim_holds_rate,
-        }
-        delta_sweep.append(delta_record)
-        by_delta_flip[delta].append(summary.flip_rate)
-        by_delta_decision[delta].append(decision)
-        factor_attribution[str(delta)] = rank_flip_root_cause_by_dimension(
-            claim=claim,
-            baseline_scores=(baseline_a, baseline_b),
-            baseline_key=baseline_key,
-            paired_scores=paired_scores,
-            top_k=top_k_unstable,
-        )
-        lockdown_recommendation[str(delta)] = single_knob_lockdown_recommendation(
-            claim,
-            paired_scores=paired_scores,
-            baseline_key=baseline_key,
-            global_flip_rate=summary.flip_rate,
-            stability_threshold=stability_threshold,
-            confidence_level=confidence_level,
-            top_k=2,
-        )
-
-        constraints_to_try: list[dict[str, int | str | None]] = [{}]
-        if shot_values:
-            constraints_to_try.append({"shots": shot_values[-1]})
-            if seed_values:
-                constraints_to_try.append({"shots": shot_values[-1], "seed_simulator": seed_values[0]})
-        rows_conditional: list[dict[str, object]] = []
-        for constraint in constraints_to_try:
-            summary_cond = conditional_rank_flip_summary(
-                claim,
-                paired_scores=paired_scores,
-                baseline_key=baseline_key,
-                constraints=constraint,
-                stability_threshold=stability_threshold,
-                confidence_level=confidence_level,
-            )
-            if summary_cond is None:
-                continue
-            rows_conditional.append(summary_cond)
-        conditional_stability[str(delta)] = rows_conditional
-
-    return {
-        "sampled_configurations": len(paired_scores),
-        "delta_sweep": delta_sweep,
-        "factor_attribution": factor_attribution,
-        "lockdown_recommendation": lockdown_recommendation,
-        "conditional_stability": conditional_stability,
-        "flip_observations_by_delta": flip_observations_by_delta,
-        "by_delta_flip": by_delta_flip,
-        "by_delta_decision": by_delta_decision,
-        "paired_scores": paired_scores,
-    }
+    return _evaluate_claim_on_rows(
+        rows=rows,
+        method_a=method_a,
+        method_b=method_b,
+        deltas=deltas,
+        higher_is_better=higher_is_better,
+        baseline_key=baseline_key,
+        stability_threshold=stability_threshold,
+        confidence_level=confidence_level,
+        top_k_unstable=top_k_unstable,
+    )
 
 
 def evaluate_decision_claim_on_rows(
@@ -1086,50 +552,14 @@ def evaluate_decision_claim_on_rows(
     stability_threshold: float,
     confidence_level: float,
 ) -> dict[str, object]:
-    method_rows = [row for row in rows if row.method == method]
-    outcomes: list[bool] = []
-    failures: list[dict[str, object]] = []
-    for row in method_rows:
-        counts = row.counts or {}
-        try:
-            accepted = decision_in_top_k(
-                selected_label=instance_target_label,
-                scores={str(k): float(v) for k, v in counts.items()},
-                k=top_k,
-                higher_is_better=True,
-            )
-        except ValueError:
-            accepted = False
-        outcomes.append(accepted)
-        if not accepted:
-            failures.append(
-                {
-                    "config": {
-                        "seed_transpiler": row.seed_transpiler,
-                        "optimization_level": row.optimization_level,
-                        "layout_method": row.layout_method,
-                        "shots": row.shots,
-                        "seed_simulator": row.seed_simulator,
-                    },
-                    "target_label": instance_target_label,
-                    "counts": counts,
-                }
-            )
-
-    result = evaluate_decision_claim(
-        outcomes,
+    return _evaluate_decision_claim_on_rows(
+        rows=rows,
+        method=method,
+        top_k=top_k,
+        instance_target_label=instance_target_label,
         stability_threshold=stability_threshold,
-        confidence=confidence_level,
+        confidence_level=confidence_level,
     )
-    return {
-        "accepted": result.accepted,
-        "total": result.total,
-        "holds_rate": result.acceptance_rate,
-        "ci_low": result.ci_low,
-        "ci_high": result.ci_high,
-        "decision": result.decision.value,
-        "top_failures": failures[:5],
-    }
 
 
 def evaluate_distribution_claim_on_rows(
@@ -1144,115 +574,18 @@ def evaluate_distribution_claim_on_rows(
     stability_threshold: float,
     confidence_level: float,
 ) -> dict[str, object]:
-    method_rows = [row for row in rows if row.method == method and isinstance(row.counts, dict) and row.counts]
-    counts_by_key: dict[tuple[int, int, str | None, int, int | None], dict[str, int]] = {}
-    for row in method_rows:
-        key = perturbation_key(row)
-        counts_by_key[key] = {str(k): int(v) for k, v in (row.counts or {}).items()}
-
-    if not counts_by_key:
-        estimate = estimate_binomial_rate(successes=0, total=0, confidence=confidence_level)
-        return {
-            "accepted": 0,
-            "total": 0,
-            "flip_rate": 0.0,
-            "holds_rate": estimate.rate,
-            "ci_low": estimate.ci_low,
-            "ci_high": estimate.ci_high,
-            "decision": conservative_stability_decision(
-                estimate=estimate,
-                stability_threshold=stability_threshold,
-            ).value,
-            "reference_config": None,
-            "reference_shots": reference_shots,
-            "top_violations": [],
-            "distance_observations": [],
-        }
-
-    reference_key: tuple[int, int, str | None, int, int | None] | None = None
-    if isinstance(reference_shots, int):
-        candidates = [key for key in counts_by_key if int(key[3]) == int(reference_shots)]
-        if candidates:
-            reference_key = sorted(candidates, key=key_sort_value)[0]
-    elif isinstance(reference_shots, str):
-        token = reference_shots.strip().lower()
-        if token == "baseline" and baseline_key in counts_by_key:
-            reference_key = baseline_key
-        elif token == "max":
-            max_shots = max(int(key[3]) for key in counts_by_key)
-            candidates = [key for key in counts_by_key if int(key[3]) == max_shots]
-            reference_key = sorted(candidates, key=key_sort_value)[0]
-
-    if reference_key is None and baseline_key in counts_by_key:
-        reference_key = baseline_key
-    if reference_key is None:
-        # Fallback to highest-shot configuration as a practical reference distribution.
-        max_shots = max(int(key[3]) for key in counts_by_key)
-        candidates = [key for key in counts_by_key if int(key[3]) == max_shots]
-        reference_key = sorted(candidates, key=key_sort_value)[0]
-
-    reference_counts = counts_by_key[reference_key]
-
-    outcomes: list[bool] = []
-    distance_rows: list[dict[str, object]] = []
-    violations: list[dict[str, object]] = []
-    for key, observed_counts in counts_by_key.items():
-        if key == reference_key:
-            continue
-        dist_res = evaluate_distribution_claim(
-            observed_counts=observed_counts,
-            reference_counts=reference_counts,
-            epsilon=epsilon,
-            primary_distance=primary_distance,
-            sanity_distance=sanity_distance,
-        )
-        holds = bool(dist_res.primary_holds)
-        outcomes.append(holds)
-        obs = {
-            "seed_transpiler": int(key[0]),
-            "optimization_level": int(key[1]),
-            "layout_method": key[2],
-            "shots": int(key[3]),
-            "seed_simulator": int(key[4]) if key[4] is not None else None,
-            "primary_distance": dist_res.primary_distance,
-            "primary_value": float(dist_res.primary_value),
-            "primary_holds": bool(dist_res.primary_holds),
-            "sanity_distance": dist_res.sanity_distance,
-            "sanity_value": float(dist_res.sanity_value),
-            "sanity_holds": bool(dist_res.sanity_holds),
-            "distances_agree": bool(dist_res.distances_agree),
-        }
-        distance_rows.append(obs)
-        if not holds:
-            violations.append({**obs, "observed_counts": dict(observed_counts)})
-
-    accepted = sum(1 for flag in outcomes if flag)
-    total = len(outcomes)
-    estimate = estimate_binomial_rate(successes=accepted, total=total, confidence=confidence_level)
-    decision = conservative_stability_decision(
-        estimate=estimate,
+    return _evaluate_distribution_claim_on_rows(
+        rows=rows,
+        method=method,
+        baseline_key=baseline_key,
+        key_sort_value=key_sort_value,
+        epsilon=epsilon,
+        primary_distance=primary_distance,
+        sanity_distance=sanity_distance,
+        reference_shots=reference_shots,
         stability_threshold=stability_threshold,
-    ).value
-    violations.sort(key=lambda row: float(row.get("primary_value", 0.0)), reverse=True)
-    return {
-        "accepted": accepted,
-        "total": total,
-        "flip_rate": (1.0 - estimate.rate) if total > 0 else 0.0,
-        "holds_rate": estimate.rate,
-        "ci_low": estimate.ci_low,
-        "ci_high": estimate.ci_high,
-        "decision": decision,
-        "reference_config": {
-            "seed_transpiler": int(reference_key[0]),
-            "optimization_level": int(reference_key[1]),
-            "layout_method": reference_key[2],
-            "shots": int(reference_key[3]),
-            "seed_simulator": int(reference_key[4]) if reference_key[4] is not None else None,
-        },
-        "reference_shots": int(reference_key[3]),
-        "top_violations": violations[:5],
-        "distance_observations": distance_rows,
-    }
+        confidence_level=confidence_level,
+    )
 
 
 def load_rows_from_trace(
@@ -1763,6 +1096,8 @@ def main() -> None:
                         by_delta_baseline_holds_totals[delta] > 0
                         and by_delta_baseline_holds_successes[delta] == by_delta_baseline_holds_totals[delta]
                     ),
+                    baseline_holds_successes=by_delta_baseline_holds_successes[delta],
+                    baseline_holds_total=by_delta_baseline_holds_totals[delta],
                     claimstab_decision=aggregate_decision,
                     stability_ci_low=stability_estimate.ci_low,
                     stability_ci_high=stability_estimate.ci_high,
@@ -2013,6 +1348,8 @@ def main() -> None:
             naive = evaluate_naive_baseline(
                 claim_type="decision",
                 baseline_holds=bool(accepted_total == eval_total and eval_total > 0),
+                baseline_holds_successes=accepted_total,
+                baseline_holds_total=eval_total,
                 claimstab_decision=aggregate_decision,
                 stability_ci_low=stability_estimate.ci_low,
                 stability_ci_high=stability_estimate.ci_high,
@@ -2158,7 +1495,9 @@ def main() -> None:
             }
             naive = evaluate_naive_baseline(
                 claim_type="distribution",
-                baseline_holds=True,
+                baseline_holds=bool(accepted_total == eval_total and eval_total > 0),
+                baseline_holds_successes=accepted_total,
+                baseline_holds_total=eval_total,
                 claimstab_decision=aggregate_decision,
                 stability_ci_low=stability_estimate.ci_low,
                 stability_ci_high=stability_estimate.ci_high,

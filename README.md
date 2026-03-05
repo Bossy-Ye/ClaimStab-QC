@@ -6,90 +6,39 @@
 
 ClaimStab-QC is a claim-centric validation framework for checking whether paper-level conclusions remain true under software-visible perturbations in quantum toolchains.
 
-## Start Here
-- Project website: [ClaimStab-QC](https://bossy-ye.github.io/ClaimStab-QC/)
-- Docs quickstart: [Quickstart](https://bossy-ye.github.io/ClaimStab-QC/quickstart/)
-- Interactive page: [Playground](https://bossy-ye.github.io/ClaimStab-QC/playground/)
-- Public dataset registry: [Dataset Registry](https://bossy-ye.github.io/ClaimStab-QC/dataset_registry/)
-- Output directory map: [Output Map](https://bossy-ye.github.io/ClaimStab-QC/output_map/)
-- Auto-generated implementation catalog: [Implementation Catalog](https://bossy-ye.github.io/ClaimStab-QC/generated/implementation_catalog/)
-
-## Why ClaimStab
-Most papers report point estimates. ClaimStab evaluates the claim itself and returns:
-1. Stability estimate.
-2. Confidence interval.
-3. Conservative decision (`stable`, `unstable`, `inconclusive`).
-
-Conservative rule:
-- `stable` iff `CI_low >= threshold`
-- `unstable` iff `CI_high < threshold`
-- otherwise `inconclusive`
-
-## What You Need (Input) vs What You Get (Output)
-
-### Input (from user)
-1. A task plugin (`task.kind` built-in or `task.entrypoint` external `module:Class`).
-2. A spec YAML (methods, claims, perturbations, sampling, decision rule).
-
-### Output (from ClaimStab)
-1. `scores.csv` (raw method-by-config outcomes).
-2. `claim_stability.json` (stability stats, CI, decisions, diagnostics).
-3. `stability_report.html` (human-readable report).
-4. Optional reproducibility artifacts:
-- `trace.jsonl`
-- `events.jsonl`
-- `cache.sqlite`
-
-## 5-Minute Quick Run
+## Quickstart (Paper-First)
 
 Install:
 ```bash
 python -m pip install -e .
 ```
 
-Optional extras:
-```bash
-python -m pip install -e ".[aer,ibm,docs,dev]"
-```
-
-Validate a paper spec:
+1) Validate paper spec:
 ```bash
 claimstab validate-spec --spec specs/paper_main.yml
 ```
 
-Run and build report:
+2) Run paper preset + HTML report:
 ```bash
 claimstab run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
-claimstab validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
 ```
 
-Publish run to Atlas dataset:
+3) Export paper pack (tables/figures/manifest):
 ```bash
-claimstab publish-result --run-dir output/presentation_large/large/maxcut_ranking --atlas-root atlas --contributor your_name
+python -m claimstab.scripts.export_paper_pack --input-root output/presentation_large --out output/paper_pack --which large
 ```
 
-## Choose Your Path
+Optional checks:
+- `claimstab validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json`
+- `make reproduce-paper`
 
-### A) Paper Reproduction
-One command for experiments + reports + figures + manifest:
-```bash
-make reproduce-paper
-```
-
-### B) Custom Task (not MaxCut)
-Generate skeleton, run, and report:
-```bash
-claimstab init-external-task --name my_problem --out-dir examples/my_problem_demo
-claimstab run --spec examples/my_problem_demo/spec_my_problem.yml --out-dir output/my_problem --report
-```
-
-### C) Multi-Device Extension
-```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app \
-  --run all \
-  --suite standard \
-  --out-dir output/multidevice
-```
+More docs:
+- Project website: [ClaimStab-QC](https://bossy-ye.github.io/ClaimStab-QC/)
+- Docs quickstart: [Quickstart](https://bossy-ye.github.io/ClaimStab-QC/quickstart/)
+- Interactive page: [Playground](https://bossy-ye.github.io/ClaimStab-QC/playground/)
+- Public dataset registry: [Dataset Registry](https://bossy-ye.github.io/ClaimStab-QC/dataset_registry/)
+- Output directory map: [Output Map](https://bossy-ye.github.io/ClaimStab-QC/output_map/)
+- Auto-generated implementation catalog: [Implementation Catalog](https://bossy-ye.github.io/ClaimStab-QC/generated/implementation_catalog/)
 
 ## Core Capabilities
 - Claim evaluation: ranking + decision + distribution pathways.
@@ -186,6 +135,7 @@ claimstab validate-atlas --atlas-root atlas
 ```
 
 ## Community and Contribution
+- Paper scope lock: [`PAPER_SCOPE.md`](./PAPER_SCOPE.md)
 - Contributing: [`CONTRIBUTING.md`](./CONTRIBUTING.md)
 - Extension guide: [`docs/concepts/extending.md`](./docs/concepts/extending.md)
 - Architecture: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)

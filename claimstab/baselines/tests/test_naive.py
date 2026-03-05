@@ -38,6 +38,20 @@ class TestNaiveBaseline(unittest.TestCase):
         self.assertIn("baseline_config", payload)
         self.assertEqual(payload["comparison"], "agree")
 
+    def test_default_policy_uses_hold_rate_when_available(self) -> None:
+        payload = evaluate_naive_baseline(
+            claim_type="ranking",
+            baseline_holds=False,
+            baseline_holds_successes=2,
+            baseline_holds_total=3,
+            claimstab_decision="stable",
+            stability_ci_low=0.96,
+            stability_ci_high=0.99,
+            threshold=0.95,
+        )
+        self.assertTrue(payload["naive_holds"])
+        self.assertEqual(payload["naive_policy"], "default_researcher_v1")
+
 
 if __name__ == "__main__":
     unittest.main()
