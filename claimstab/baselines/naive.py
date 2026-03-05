@@ -10,8 +10,9 @@ NAIVE_BASELINE_CONFIG = {
     "shots": 1024,
     "seed_simulator": 0,
 }
-NAIVE_POLICY_DEFAULT = "default_researcher_v1"
 NAIVE_POLICY_LEGACY = "legacy_strict_all"
+NAIVE_POLICY_REALISTIC = "default_researcher_v1"
+NAIVE_POLICY_DEFAULT = NAIVE_POLICY_LEGACY
 DEFAULT_ACCEPTANCE_THRESHOLD = 2.0 / 3.0
 
 
@@ -78,11 +79,12 @@ def evaluate_naive_baseline(
     successes = max(0, min(successes, sample_size))
     hold_rate = float(successes / sample_size) if sample_size > 0 else (1.0 if baseline_holds else 0.0)
 
-    if naive_policy == NAIVE_POLICY_LEGACY:
-        naive_result = bool(baseline_holds)
-    elif sample_size > 1:
+    if naive_policy == NAIVE_POLICY_REALISTIC and sample_size > 1:
         naive_result = hold_rate >= float(naive_acceptance_threshold)
+    elif naive_policy == NAIVE_POLICY_REALISTIC:
+        naive_result = bool(baseline_holds)
     else:
+        # Legacy baseline semantics: strict "all baseline checks must hold".
         naive_result = bool(baseline_holds)
 
     comparison = compare_naive_vs_claimstab(

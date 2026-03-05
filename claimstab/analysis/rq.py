@@ -588,14 +588,19 @@ def build_rq_summary(
     rq6 = _build_rq6_stratified_stability(experiments)
     rq7 = _build_rq7_effect_diagnostics(experiments)
 
-    naive_counts = {"naive_overclaim": 0, "naive_underclaim": 0, "agree": 0, "naive_uninformative": 0}
-    for row in comparative_rows:
-        naive = row.get("naive_baseline")
-        if isinstance(naive, dict):
+    def _naive_counts(field_name: str) -> dict[str, int]:
+        counts = {"naive_overclaim": 0, "naive_underclaim": 0, "agree": 0, "naive_uninformative": 0}
+        for row in comparative_rows:
+            naive = row.get(field_name)
+            if not isinstance(naive, dict):
+                continue
             label = str(naive.get("comparison", "naive_uninformative"))
-            if label in naive_counts:
-                naive_counts[label] += 1
-    baseline_compare = {"counts": naive_counts}
+            if label in counts:
+                counts[label] += 1
+        return counts
+
+    baseline_compare = {"counts": _naive_counts("naive_baseline"), "policy": "legacy_strict_all"}
+    baseline_compare_realistic = {"counts": _naive_counts("naive_baseline_realistic"), "policy": "default_researcher_v1"}
 
     return {
         "rq1_prevalence": rq1,
@@ -606,5 +611,6 @@ def build_rq_summary(
         "rq6_stratified_stability": rq6,
         "rq7_effect_diagnostics": rq7,
         "naive_baseline_comparison": baseline_compare,
+        "naive_baseline_realistic_comparison": baseline_compare_realistic,
         "decision_counts_overall": _decision_counts(comparative_rows),
     }

@@ -490,16 +490,29 @@ def render_auxiliary_claims(aux: dict[str, Any]) -> str:
 
 
 def render_naive_summary(comparative_rows: list[dict[str, Any]]) -> str:
-    counts = {"naive_overclaim": 0, "naive_underclaim": 0, "agree": 0, "naive_uninformative": 0}
-    for row in comparative_rows:
-        naive = row.get("naive_baseline")
-        if isinstance(naive, dict):
+    def _count(field_name: str) -> dict[str, int]:
+        counts = {"naive_overclaim": 0, "naive_underclaim": 0, "agree": 0, "naive_uninformative": 0}
+        for row in comparative_rows:
+            naive = row.get(field_name)
+            if not isinstance(naive, dict):
+                continue
             label = str(naive.get("comparison", "naive_uninformative"))
             if label in counts:
                 counts[label] += 1
-    header = "<tr><th>category</th><th>count</th></tr>"
-    body = "".join(f"<tr><td>{html.escape(k)}</td><td>{v}</td></tr>" for k, v in counts.items())
-    return f"<table>{header}{body}</table>"
+        return counts
+
+    def _render_table(title: str, counts: dict[str, int]) -> str:
+        header = "<tr><th>category</th><th>count</th></tr>"
+        body = "".join(f"<tr><td>{html.escape(k)}</td><td>{v}</td></tr>" for k, v in counts.items())
+        return f"<h4>{html.escape(title)}</h4><table>{header}{body}</table>"
+
+    legacy_counts = _count("naive_baseline")
+    realistic_counts = _count("naive_baseline_realistic")
+    has_realistic = any(v > 0 for v in realistic_counts.values())
+    out = [_render_table("Legacy Baseline (strict)", legacy_counts)]
+    if has_realistic:
+        out.append(_render_table("Realistic Default Baseline", realistic_counts))
+    return "".join(out)
 
 
 def render_rq_summary(rq: dict[str, Any]) -> str:

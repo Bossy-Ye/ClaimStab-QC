@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from claimstab.baselines.naive import compare_naive_vs_claimstab, evaluate_naive_baseline
+from claimstab.baselines.naive import NAIVE_POLICY_REALISTIC, compare_naive_vs_claimstab, evaluate_naive_baseline
 
 
 class TestNaiveBaseline(unittest.TestCase):
@@ -38,7 +38,22 @@ class TestNaiveBaseline(unittest.TestCase):
         self.assertIn("baseline_config", payload)
         self.assertEqual(payload["comparison"], "agree")
 
-    def test_default_policy_uses_hold_rate_when_available(self) -> None:
+    def test_realistic_policy_uses_hold_rate_when_available(self) -> None:
+        payload = evaluate_naive_baseline(
+            claim_type="ranking",
+            baseline_holds=False,
+            baseline_holds_successes=2,
+            baseline_holds_total=3,
+            claimstab_decision="stable",
+            stability_ci_low=0.96,
+            stability_ci_high=0.99,
+            threshold=0.95,
+            naive_policy=NAIVE_POLICY_REALISTIC,
+        )
+        self.assertTrue(payload["naive_holds"])
+        self.assertEqual(payload["naive_policy"], "default_researcher_v1")
+
+    def test_default_policy_remains_legacy(self) -> None:
         payload = evaluate_naive_baseline(
             claim_type="ranking",
             baseline_holds=False,
@@ -49,8 +64,8 @@ class TestNaiveBaseline(unittest.TestCase):
             stability_ci_high=0.99,
             threshold=0.95,
         )
-        self.assertTrue(payload["naive_holds"])
-        self.assertEqual(payload["naive_policy"], "default_researcher_v1")
+        self.assertFalse(payload["naive_holds"])
+        self.assertEqual(payload["naive_policy"], "legacy_strict_all")
 
 
 if __name__ == "__main__":

@@ -23,13 +23,19 @@ def _collect_naive_rows(payload: dict[str, Any]) -> pd.DataFrame:
         for row in rows:
             if not isinstance(row, dict):
                 continue
-            naive = row.get("naive_baseline")
-            if isinstance(naive, dict):
+            for field_name, policy in (
+                ("naive_baseline", "legacy_strict_all"),
+                ("naive_baseline_realistic", "default_researcher_v1"),
+            ):
+                naive = row.get(field_name)
+                if not isinstance(naive, dict):
+                    continue
                 out.append(
                     {
                         "space_preset": row.get("space_preset"),
                         "claim_type": row.get("claim_type", "ranking"),
                         "comparison": naive.get("comparison"),
+                        "policy": naive.get("naive_policy", policy),
                     }
                 )
     return pd.DataFrame(out)

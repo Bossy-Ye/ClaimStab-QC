@@ -26,7 +26,7 @@ from claimstab.claims.stability import (
 )
 from claimstab.io.runtime_meta import collect_runtime_metadata
 from claimstab.analysis.rq import build_rq_summary
-from claimstab.baselines.naive import evaluate_naive_baseline
+from claimstab.baselines.naive import NAIVE_POLICY_REALISTIC, evaluate_naive_baseline
 from claimstab.cache.store import CacheStore
 from claimstab.core import ArtifactManifest, TraceIndex, TraceRecord
 from claimstab.devices.registry import parse_device_profile, parse_noise_model_mode, resolve_device_profile
@@ -1103,7 +1103,22 @@ def main() -> None:
                     stability_ci_high=stability_estimate.ci_high,
                     threshold=args.stability_threshold,
                 )
+                naive_realistic = evaluate_naive_baseline(
+                    claim_type="ranking",
+                    baseline_holds=bool(
+                        by_delta_baseline_holds_totals[delta] > 0
+                        and by_delta_baseline_holds_successes[delta] == by_delta_baseline_holds_totals[delta]
+                    ),
+                    baseline_holds_successes=by_delta_baseline_holds_successes[delta],
+                    baseline_holds_total=by_delta_baseline_holds_totals[delta],
+                    claimstab_decision=aggregate_decision,
+                    stability_ci_low=stability_estimate.ci_low,
+                    stability_ci_high=stability_estimate.ci_high,
+                    threshold=args.stability_threshold,
+                    naive_policy=NAIVE_POLICY_REALISTIC,
+                )
                 row["naive_baseline"] = naive
+                row["naive_baseline_realistic"] = naive_realistic
                 overall_delta.append(row)
                 comparative_rows.append(
                     {
@@ -1355,7 +1370,19 @@ def main() -> None:
                 stability_ci_high=stability_estimate.ci_high,
                 threshold=args.stability_threshold,
             )
+            naive_realistic = evaluate_naive_baseline(
+                claim_type="decision",
+                baseline_holds=bool(accepted_total == eval_total and eval_total > 0),
+                baseline_holds_successes=accepted_total,
+                baseline_holds_total=eval_total,
+                claimstab_decision=aggregate_decision,
+                stability_ci_low=stability_estimate.ci_low,
+                stability_ci_high=stability_estimate.ci_high,
+                threshold=args.stability_threshold,
+                naive_policy=NAIVE_POLICY_REALISTIC,
+            )
             summary_row["naive_baseline"] = naive
+            summary_row["naive_baseline_realistic"] = naive_realistic
 
             comparative_rows.append(
                 {
@@ -1503,7 +1530,19 @@ def main() -> None:
                 stability_ci_high=stability_estimate.ci_high,
                 threshold=args.stability_threshold,
             )
+            naive_realistic = evaluate_naive_baseline(
+                claim_type="distribution",
+                baseline_holds=bool(accepted_total == eval_total and eval_total > 0),
+                baseline_holds_successes=accepted_total,
+                baseline_holds_total=eval_total,
+                claimstab_decision=aggregate_decision,
+                stability_ci_low=stability_estimate.ci_low,
+                stability_ci_high=stability_estimate.ci_high,
+                threshold=args.stability_threshold,
+                naive_policy=NAIVE_POLICY_REALISTIC,
+            )
             summary_row["naive_baseline"] = naive
+            summary_row["naive_baseline_realistic"] = naive_realistic
 
             comparative_rows.append(
                 {
