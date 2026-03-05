@@ -1,0 +1,2014 @@
+{
+  "meta": {
+    "suite": "core",
+    "task": "bv",
+    "deltas": [
+      0.0,
+      0.01,
+      0.05
+    ],
+    "methods_available": [
+      "BVOracle",
+      "RandomBaseline"
+    ],
+    "generated_by": "examples/claim_stability_demo.py",
+    "reproduce_command": "PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --task bv --suite core --space-presets compilation_only,sampling_only,combined_light --sampling-mode random_k --sample-size 16 --sample-seed 7 --backend-engine basic --out-dir output/presentation/main/bv_core",
+    "runtime": {
+      "python_version": "3.13.5",
+      "platform": "macOS-14.3-arm64-arm-64bit-Mach-O",
+      "dependencies": {
+        "qiskit": "2.2.3",
+        "qiskit-aer": "0.17.2",
+        "qiskit-ibm-runtime": "0.45.1",
+        "numpy": "2.4.1",
+        "pandas": "3.0.0",
+        "matplotlib": "3.10.8",
+        "pyyaml": "6.0.3"
+      },
+      "environment_flags": {
+        "aer_available": true,
+        "ibm_runtime_available": true
+      },
+      "git_commit": "f9fd3fab96818e23e8c21574ca7449c1f862e671",
+      "git_dirty": true
+    }
+  },
+  "device_profile": {
+    "enabled": false,
+    "provider": "none",
+    "name": null,
+    "mode": "transpile_only",
+    "snapshot_fingerprint": null,
+    "snapshot": null
+  },
+  "batch": {
+    "space_presets": [
+      "compilation_only",
+      "sampling_only",
+      "combined_light"
+    ],
+    "claim_pairs": [],
+    "decision_claims": [
+      {
+        "type": "decision",
+        "method": "BVOracle",
+        "top_k": 1,
+        "label": null,
+        "label_meta_key": "target_label"
+      },
+      {
+        "type": "decision",
+        "method": "BVOracle",
+        "top_k": 3,
+        "label": null,
+        "label_meta_key": "target_label"
+      }
+    ],
+    "num_experiments": 6
+  },
+  "experiments": [
+    {
+      "experiment_id": "compilation_only:BVOracle:decision_top1",
+      "claim": {
+        "type": "decision",
+        "method": "BVOracle",
+        "top_k": 1,
+        "label_meta_key": "target_label"
+      },
+      "baseline": {
+        "seed_transpiler": 0,
+        "optimization_level": 0,
+        "layout_method": "trivial",
+        "shots": 1024,
+        "seed_simulator": 0
+      },
+      "stability_rule": {
+        "threshold": 0.95,
+        "confidence_level": 0.95,
+        "decision": "stable iff CI lower bound >= threshold"
+      },
+      "sampling": {
+        "suite": "core",
+        "space_preset": "compilation_only",
+        "mode": "random_k",
+        "sample_size": 16,
+        "seed": 7,
+        "target_ci_width": null,
+        "max_sample_size": null,
+        "min_sample_size": 16,
+        "step_size": 8,
+        "sampled_configurations_with_baseline": 17,
+        "perturbation_space_size": 80
+      },
+      "backend": {
+        "engine": "basic",
+        "noise_model": "none",
+        "spot_check_noise": false
+      },
+      "device_profile": {
+        "enabled": false,
+        "provider": "none",
+        "name": null,
+        "mode": "transpile_only",
+        "snapshot_fingerprint": null,
+        "snapshot": null
+      },
+      "per_graph": {
+        "bv_0": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_1": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_2": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_3": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_4": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_5": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_6": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_7": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_8": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_9": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_10": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_11": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_12": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_13": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_14": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_15": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_16": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_17": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_18": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_19": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        }
+      },
+      "overall": {
+        "graphs": 20,
+        "delta_sweep": [
+          {
+            "delta": null,
+            "n_instances": 20,
+            "n_claim_evals": 340,
+            "flip_rate_mean": 0.0,
+            "flip_rate_max": 0.0,
+            "flip_rate_min": 0.0,
+            "holds_rate_mean": 1.0,
+            "holds_rate_ci_low": 0.9888278195600102,
+            "holds_rate_ci_high": 1.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.9888278195600102,
+            "stability_ci_high": 1.0,
+            "decision": "stable",
+            "decision_counts": {
+              "stable": 1,
+              "unstable": 0,
+              "inconclusive": 0
+            },
+            "naive_baseline": {
+              "claim_type": "decision",
+              "baseline_config": {
+                "seed_transpiler": 0,
+                "optimization_level": 1,
+                "layout_method": "trivial",
+                "shots": 1024,
+                "seed_simulator": 0
+              },
+              "naive_holds": true,
+              "comparison": "agree"
+            }
+          }
+        ],
+        "decision_failures": []
+      },
+      "naive_baseline": {
+        "claim_type": "decision",
+        "baseline_config": {
+          "seed_transpiler": 0,
+          "optimization_level": 1,
+          "layout_method": "trivial",
+          "shots": 1024,
+          "seed_simulator": 0
+        },
+        "naive_holds": true,
+        "comparison": "agree"
+      }
+    },
+    {
+      "experiment_id": "compilation_only:BVOracle:decision_top3",
+      "claim": {
+        "type": "decision",
+        "method": "BVOracle",
+        "top_k": 3,
+        "label_meta_key": "target_label"
+      },
+      "baseline": {
+        "seed_transpiler": 0,
+        "optimization_level": 0,
+        "layout_method": "trivial",
+        "shots": 1024,
+        "seed_simulator": 0
+      },
+      "stability_rule": {
+        "threshold": 0.95,
+        "confidence_level": 0.95,
+        "decision": "stable iff CI lower bound >= threshold"
+      },
+      "sampling": {
+        "suite": "core",
+        "space_preset": "compilation_only",
+        "mode": "random_k",
+        "sample_size": 16,
+        "seed": 7,
+        "target_ci_width": null,
+        "max_sample_size": null,
+        "min_sample_size": 16,
+        "step_size": 8,
+        "sampled_configurations_with_baseline": 17,
+        "perturbation_space_size": 80
+      },
+      "backend": {
+        "engine": "basic",
+        "noise_model": "none",
+        "spot_check_noise": false
+      },
+      "device_profile": {
+        "enabled": false,
+        "provider": "none",
+        "name": null,
+        "mode": "transpile_only",
+        "snapshot_fingerprint": null,
+        "snapshot": null
+      },
+      "per_graph": {
+        "bv_0": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_1": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_2": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_3": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_4": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_5": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_6": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_7": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_8": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_9": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_10": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_11": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_12": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_13": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_14": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_15": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_16": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_17": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_18": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_19": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        }
+      },
+      "overall": {
+        "graphs": 20,
+        "delta_sweep": [
+          {
+            "delta": null,
+            "n_instances": 20,
+            "n_claim_evals": 340,
+            "flip_rate_mean": 0.0,
+            "flip_rate_max": 0.0,
+            "flip_rate_min": 0.0,
+            "holds_rate_mean": 1.0,
+            "holds_rate_ci_low": 0.9888278195600102,
+            "holds_rate_ci_high": 1.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.9888278195600102,
+            "stability_ci_high": 1.0,
+            "decision": "stable",
+            "decision_counts": {
+              "stable": 1,
+              "unstable": 0,
+              "inconclusive": 0
+            },
+            "naive_baseline": {
+              "claim_type": "decision",
+              "baseline_config": {
+                "seed_transpiler": 0,
+                "optimization_level": 1,
+                "layout_method": "trivial",
+                "shots": 1024,
+                "seed_simulator": 0
+              },
+              "naive_holds": true,
+              "comparison": "agree"
+            }
+          }
+        ],
+        "decision_failures": []
+      },
+      "naive_baseline": {
+        "claim_type": "decision",
+        "baseline_config": {
+          "seed_transpiler": 0,
+          "optimization_level": 1,
+          "layout_method": "trivial",
+          "shots": 1024,
+          "seed_simulator": 0
+        },
+        "naive_holds": true,
+        "comparison": "agree"
+      }
+    },
+    {
+      "experiment_id": "sampling_only:BVOracle:decision_top1",
+      "claim": {
+        "type": "decision",
+        "method": "BVOracle",
+        "top_k": 1,
+        "label_meta_key": "target_label"
+      },
+      "baseline": {
+        "seed_transpiler": 0,
+        "optimization_level": 1,
+        "layout_method": "sabre",
+        "shots": 16,
+        "seed_simulator": 0
+      },
+      "stability_rule": {
+        "threshold": 0.95,
+        "confidence_level": 0.95,
+        "decision": "stable iff CI lower bound >= threshold"
+      },
+      "sampling": {
+        "suite": "core",
+        "space_preset": "sampling_only",
+        "mode": "random_k",
+        "sample_size": 16,
+        "seed": 7,
+        "target_ci_width": null,
+        "max_sample_size": null,
+        "min_sample_size": 16,
+        "step_size": 8,
+        "sampled_configurations_with_baseline": 17,
+        "perturbation_space_size": 100
+      },
+      "backend": {
+        "engine": "basic",
+        "noise_model": "none",
+        "spot_check_noise": false
+      },
+      "device_profile": {
+        "enabled": false,
+        "provider": "none",
+        "name": null,
+        "mode": "transpile_only",
+        "snapshot_fingerprint": null,
+        "snapshot": null
+      },
+      "per_graph": {
+        "bv_0": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_1": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_2": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_3": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_4": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_5": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_6": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_7": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_8": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_9": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_10": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_11": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_12": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_13": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_14": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_15": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_16": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_17": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_18": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_19": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        }
+      },
+      "overall": {
+        "graphs": 20,
+        "delta_sweep": [
+          {
+            "delta": null,
+            "n_instances": 20,
+            "n_claim_evals": 340,
+            "flip_rate_mean": 0.0,
+            "flip_rate_max": 0.0,
+            "flip_rate_min": 0.0,
+            "holds_rate_mean": 1.0,
+            "holds_rate_ci_low": 0.9888278195600102,
+            "holds_rate_ci_high": 1.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.9888278195600102,
+            "stability_ci_high": 1.0,
+            "decision": "stable",
+            "decision_counts": {
+              "stable": 1,
+              "unstable": 0,
+              "inconclusive": 0
+            },
+            "naive_baseline": {
+              "claim_type": "decision",
+              "baseline_config": {
+                "seed_transpiler": 0,
+                "optimization_level": 1,
+                "layout_method": "trivial",
+                "shots": 1024,
+                "seed_simulator": 0
+              },
+              "naive_holds": true,
+              "comparison": "agree"
+            }
+          }
+        ],
+        "decision_failures": []
+      },
+      "naive_baseline": {
+        "claim_type": "decision",
+        "baseline_config": {
+          "seed_transpiler": 0,
+          "optimization_level": 1,
+          "layout_method": "trivial",
+          "shots": 1024,
+          "seed_simulator": 0
+        },
+        "naive_holds": true,
+        "comparison": "agree"
+      }
+    },
+    {
+      "experiment_id": "sampling_only:BVOracle:decision_top3",
+      "claim": {
+        "type": "decision",
+        "method": "BVOracle",
+        "top_k": 3,
+        "label_meta_key": "target_label"
+      },
+      "baseline": {
+        "seed_transpiler": 0,
+        "optimization_level": 1,
+        "layout_method": "sabre",
+        "shots": 16,
+        "seed_simulator": 0
+      },
+      "stability_rule": {
+        "threshold": 0.95,
+        "confidence_level": 0.95,
+        "decision": "stable iff CI lower bound >= threshold"
+      },
+      "sampling": {
+        "suite": "core",
+        "space_preset": "sampling_only",
+        "mode": "random_k",
+        "sample_size": 16,
+        "seed": 7,
+        "target_ci_width": null,
+        "max_sample_size": null,
+        "min_sample_size": 16,
+        "step_size": 8,
+        "sampled_configurations_with_baseline": 17,
+        "perturbation_space_size": 100
+      },
+      "backend": {
+        "engine": "basic",
+        "noise_model": "none",
+        "spot_check_noise": false
+      },
+      "device_profile": {
+        "enabled": false,
+        "provider": "none",
+        "name": null,
+        "mode": "transpile_only",
+        "snapshot_fingerprint": null,
+        "snapshot": null
+      },
+      "per_graph": {
+        "bv_0": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_1": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_2": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_3": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_4": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_5": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_6": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_7": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_8": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_9": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_10": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_11": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_12": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_13": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_14": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_15": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_16": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_17": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_18": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_19": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        }
+      },
+      "overall": {
+        "graphs": 20,
+        "delta_sweep": [
+          {
+            "delta": null,
+            "n_instances": 20,
+            "n_claim_evals": 340,
+            "flip_rate_mean": 0.0,
+            "flip_rate_max": 0.0,
+            "flip_rate_min": 0.0,
+            "holds_rate_mean": 1.0,
+            "holds_rate_ci_low": 0.9888278195600102,
+            "holds_rate_ci_high": 1.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.9888278195600102,
+            "stability_ci_high": 1.0,
+            "decision": "stable",
+            "decision_counts": {
+              "stable": 1,
+              "unstable": 0,
+              "inconclusive": 0
+            },
+            "naive_baseline": {
+              "claim_type": "decision",
+              "baseline_config": {
+                "seed_transpiler": 0,
+                "optimization_level": 1,
+                "layout_method": "trivial",
+                "shots": 1024,
+                "seed_simulator": 0
+              },
+              "naive_holds": true,
+              "comparison": "agree"
+            }
+          }
+        ],
+        "decision_failures": []
+      },
+      "naive_baseline": {
+        "claim_type": "decision",
+        "baseline_config": {
+          "seed_transpiler": 0,
+          "optimization_level": 1,
+          "layout_method": "trivial",
+          "shots": 1024,
+          "seed_simulator": 0
+        },
+        "naive_holds": true,
+        "comparison": "agree"
+      }
+    },
+    {
+      "experiment_id": "combined_light:BVOracle:decision_top1",
+      "claim": {
+        "type": "decision",
+        "method": "BVOracle",
+        "top_k": 1,
+        "label_meta_key": "target_label"
+      },
+      "baseline": {
+        "seed_transpiler": 0,
+        "optimization_level": 0,
+        "layout_method": "trivial",
+        "shots": 64,
+        "seed_simulator": 0
+      },
+      "stability_rule": {
+        "threshold": 0.95,
+        "confidence_level": 0.95,
+        "decision": "stable iff CI lower bound >= threshold"
+      },
+      "sampling": {
+        "suite": "core",
+        "space_preset": "combined_light",
+        "mode": "random_k",
+        "sample_size": 16,
+        "seed": 7,
+        "target_ci_width": null,
+        "max_sample_size": null,
+        "min_sample_size": 16,
+        "step_size": 8,
+        "sampled_configurations_with_baseline": 17,
+        "perturbation_space_size": 720
+      },
+      "backend": {
+        "engine": "basic",
+        "noise_model": "none",
+        "spot_check_noise": false
+      },
+      "device_profile": {
+        "enabled": false,
+        "provider": "none",
+        "name": null,
+        "mode": "transpile_only",
+        "snapshot_fingerprint": null,
+        "snapshot": null
+      },
+      "per_graph": {
+        "bv_0": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_1": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_2": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_3": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_4": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_5": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_6": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_7": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_8": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_9": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_10": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_11": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_12": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_13": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_14": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_15": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_16": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_17": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_18": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_19": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        }
+      },
+      "overall": {
+        "graphs": 20,
+        "delta_sweep": [
+          {
+            "delta": null,
+            "n_instances": 20,
+            "n_claim_evals": 340,
+            "flip_rate_mean": 0.0,
+            "flip_rate_max": 0.0,
+            "flip_rate_min": 0.0,
+            "holds_rate_mean": 1.0,
+            "holds_rate_ci_low": 0.9888278195600102,
+            "holds_rate_ci_high": 1.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.9888278195600102,
+            "stability_ci_high": 1.0,
+            "decision": "stable",
+            "decision_counts": {
+              "stable": 1,
+              "unstable": 0,
+              "inconclusive": 0
+            },
+            "naive_baseline": {
+              "claim_type": "decision",
+              "baseline_config": {
+                "seed_transpiler": 0,
+                "optimization_level": 1,
+                "layout_method": "trivial",
+                "shots": 1024,
+                "seed_simulator": 0
+              },
+              "naive_holds": true,
+              "comparison": "agree"
+            }
+          }
+        ],
+        "decision_failures": []
+      },
+      "naive_baseline": {
+        "claim_type": "decision",
+        "baseline_config": {
+          "seed_transpiler": 0,
+          "optimization_level": 1,
+          "layout_method": "trivial",
+          "shots": 1024,
+          "seed_simulator": 0
+        },
+        "naive_holds": true,
+        "comparison": "agree"
+      }
+    },
+    {
+      "experiment_id": "combined_light:BVOracle:decision_top3",
+      "claim": {
+        "type": "decision",
+        "method": "BVOracle",
+        "top_k": 3,
+        "label_meta_key": "target_label"
+      },
+      "baseline": {
+        "seed_transpiler": 0,
+        "optimization_level": 0,
+        "layout_method": "trivial",
+        "shots": 64,
+        "seed_simulator": 0
+      },
+      "stability_rule": {
+        "threshold": 0.95,
+        "confidence_level": 0.95,
+        "decision": "stable iff CI lower bound >= threshold"
+      },
+      "sampling": {
+        "suite": "core",
+        "space_preset": "combined_light",
+        "mode": "random_k",
+        "sample_size": 16,
+        "seed": 7,
+        "target_ci_width": null,
+        "max_sample_size": null,
+        "min_sample_size": 16,
+        "step_size": 8,
+        "sampled_configurations_with_baseline": 17,
+        "perturbation_space_size": 720
+      },
+      "backend": {
+        "engine": "basic",
+        "noise_model": "none",
+        "spot_check_noise": false
+      },
+      "device_profile": {
+        "enabled": false,
+        "provider": "none",
+        "name": null,
+        "mode": "transpile_only",
+        "snapshot_fingerprint": null,
+        "snapshot": null
+      },
+      "per_graph": {
+        "bv_0": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_1": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_2": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_3": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_4": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_5": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_6": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_7": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_8": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_9": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_10": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_11": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_12": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_13": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_14": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_15": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_16": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_17": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_18": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        },
+        "bv_19": {
+          "accepted": 17,
+          "total": 17,
+          "holds_rate": 1.0,
+          "ci_low": 0.8156818649911484,
+          "ci_high": 1.0,
+          "decision": "inconclusive",
+          "top_failures": []
+        }
+      },
+      "overall": {
+        "graphs": 20,
+        "delta_sweep": [
+          {
+            "delta": null,
+            "n_instances": 20,
+            "n_claim_evals": 340,
+            "flip_rate_mean": 0.0,
+            "flip_rate_max": 0.0,
+            "flip_rate_min": 0.0,
+            "holds_rate_mean": 1.0,
+            "holds_rate_ci_low": 0.9888278195600102,
+            "holds_rate_ci_high": 1.0,
+            "stability_hat": 1.0,
+            "stability_ci_low": 0.9888278195600102,
+            "stability_ci_high": 1.0,
+            "decision": "stable",
+            "decision_counts": {
+              "stable": 1,
+              "unstable": 0,
+              "inconclusive": 0
+            },
+            "naive_baseline": {
+              "claim_type": "decision",
+              "baseline_config": {
+                "seed_transpiler": 0,
+                "optimization_level": 1,
+                "layout_method": "trivial",
+                "shots": 1024,
+                "seed_simulator": 0
+              },
+              "naive_holds": true,
+              "comparison": "agree"
+            }
+          }
+        ],
+        "decision_failures": []
+      },
+      "naive_baseline": {
+        "claim_type": "decision",
+        "baseline_config": {
+          "seed_transpiler": 0,
+          "optimization_level": 1,
+          "layout_method": "trivial",
+          "shots": 1024,
+          "seed_simulator": 0
+        },
+        "naive_holds": true,
+        "comparison": "agree"
+      }
+    }
+  ],
+  "comparative": {
+    "space_claim_delta": [
+      {
+        "space_preset": "compilation_only",
+        "claim_pair": "BVOracle:top_k=1",
+        "claim_type": "decision",
+        "delta": null,
+        "n_instances": 20,
+        "n_claim_evals": 340,
+        "flip_rate_mean": 0.0,
+        "flip_rate_max": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_mean": 1.0,
+        "holds_rate_ci_low": 0.9888278195600102,
+        "holds_rate_ci_high": 1.0,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9888278195600102,
+        "stability_ci_high": 1.0,
+        "decision": "stable",
+        "decision_counts": {
+          "stable": 1,
+          "unstable": 0,
+          "inconclusive": 0
+        },
+        "naive_baseline": {
+          "claim_type": "decision",
+          "baseline_config": {
+            "seed_transpiler": 0,
+            "optimization_level": 1,
+            "layout_method": "trivial",
+            "shots": 1024,
+            "seed_simulator": 0
+          },
+          "naive_holds": true,
+          "comparison": "agree"
+        }
+      },
+      {
+        "space_preset": "compilation_only",
+        "claim_pair": "BVOracle:top_k=3",
+        "claim_type": "decision",
+        "delta": null,
+        "n_instances": 20,
+        "n_claim_evals": 340,
+        "flip_rate_mean": 0.0,
+        "flip_rate_max": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_mean": 1.0,
+        "holds_rate_ci_low": 0.9888278195600102,
+        "holds_rate_ci_high": 1.0,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9888278195600102,
+        "stability_ci_high": 1.0,
+        "decision": "stable",
+        "decision_counts": {
+          "stable": 1,
+          "unstable": 0,
+          "inconclusive": 0
+        },
+        "naive_baseline": {
+          "claim_type": "decision",
+          "baseline_config": {
+            "seed_transpiler": 0,
+            "optimization_level": 1,
+            "layout_method": "trivial",
+            "shots": 1024,
+            "seed_simulator": 0
+          },
+          "naive_holds": true,
+          "comparison": "agree"
+        }
+      },
+      {
+        "space_preset": "sampling_only",
+        "claim_pair": "BVOracle:top_k=1",
+        "claim_type": "decision",
+        "delta": null,
+        "n_instances": 20,
+        "n_claim_evals": 340,
+        "flip_rate_mean": 0.0,
+        "flip_rate_max": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_mean": 1.0,
+        "holds_rate_ci_low": 0.9888278195600102,
+        "holds_rate_ci_high": 1.0,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9888278195600102,
+        "stability_ci_high": 1.0,
+        "decision": "stable",
+        "decision_counts": {
+          "stable": 1,
+          "unstable": 0,
+          "inconclusive": 0
+        },
+        "naive_baseline": {
+          "claim_type": "decision",
+          "baseline_config": {
+            "seed_transpiler": 0,
+            "optimization_level": 1,
+            "layout_method": "trivial",
+            "shots": 1024,
+            "seed_simulator": 0
+          },
+          "naive_holds": true,
+          "comparison": "agree"
+        }
+      },
+      {
+        "space_preset": "sampling_only",
+        "claim_pair": "BVOracle:top_k=3",
+        "claim_type": "decision",
+        "delta": null,
+        "n_instances": 20,
+        "n_claim_evals": 340,
+        "flip_rate_mean": 0.0,
+        "flip_rate_max": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_mean": 1.0,
+        "holds_rate_ci_low": 0.9888278195600102,
+        "holds_rate_ci_high": 1.0,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9888278195600102,
+        "stability_ci_high": 1.0,
+        "decision": "stable",
+        "decision_counts": {
+          "stable": 1,
+          "unstable": 0,
+          "inconclusive": 0
+        },
+        "naive_baseline": {
+          "claim_type": "decision",
+          "baseline_config": {
+            "seed_transpiler": 0,
+            "optimization_level": 1,
+            "layout_method": "trivial",
+            "shots": 1024,
+            "seed_simulator": 0
+          },
+          "naive_holds": true,
+          "comparison": "agree"
+        }
+      },
+      {
+        "space_preset": "combined_light",
+        "claim_pair": "BVOracle:top_k=1",
+        "claim_type": "decision",
+        "delta": null,
+        "n_instances": 20,
+        "n_claim_evals": 340,
+        "flip_rate_mean": 0.0,
+        "flip_rate_max": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_mean": 1.0,
+        "holds_rate_ci_low": 0.9888278195600102,
+        "holds_rate_ci_high": 1.0,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9888278195600102,
+        "stability_ci_high": 1.0,
+        "decision": "stable",
+        "decision_counts": {
+          "stable": 1,
+          "unstable": 0,
+          "inconclusive": 0
+        },
+        "naive_baseline": {
+          "claim_type": "decision",
+          "baseline_config": {
+            "seed_transpiler": 0,
+            "optimization_level": 1,
+            "layout_method": "trivial",
+            "shots": 1024,
+            "seed_simulator": 0
+          },
+          "naive_holds": true,
+          "comparison": "agree"
+        }
+      },
+      {
+        "space_preset": "combined_light",
+        "claim_pair": "BVOracle:top_k=3",
+        "claim_type": "decision",
+        "delta": null,
+        "n_instances": 20,
+        "n_claim_evals": 340,
+        "flip_rate_mean": 0.0,
+        "flip_rate_max": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_mean": 1.0,
+        "holds_rate_ci_low": 0.9888278195600102,
+        "holds_rate_ci_high": 1.0,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9888278195600102,
+        "stability_ci_high": 1.0,
+        "decision": "stable",
+        "decision_counts": {
+          "stable": 1,
+          "unstable": 0,
+          "inconclusive": 0
+        },
+        "naive_baseline": {
+          "claim_type": "decision",
+          "baseline_config": {
+            "seed_transpiler": 0,
+            "optimization_level": 1,
+            "layout_method": "trivial",
+            "shots": 1024,
+            "seed_simulator": 0
+          },
+          "naive_holds": true,
+          "comparison": "agree"
+        }
+      }
+    ]
+  },
+  "rq_summary": {
+    "rq1_prevalence": {
+      "task": "bv",
+      "by_space_and_claim_type": {
+        "compilation_only": {
+          "decision": {
+            "stable": 2,
+            "unstable": 0,
+            "inconclusive": 0,
+            "total": 2
+          }
+        },
+        "sampling_only": {
+          "decision": {
+            "stable": 2,
+            "unstable": 0,
+            "inconclusive": 0,
+            "total": 2
+          }
+        },
+        "combined_light": {
+          "decision": {
+            "stable": 2,
+            "unstable": 0,
+            "inconclusive": 0,
+            "total": 2
+          }
+        }
+      }
+    },
+    "rq2_drivers": {
+      "top_dimensions": [],
+      "all_dimensions": []
+    },
+    "rq3_cost_tradeoff": {
+      "stability_vs_cost_rows": []
+    },
+    "rq4_adaptive_sampling": {
+      "adaptive_sampling": [],
+      "decision_agreement_rate_vs_full_factorial": null
+    },
+    "naive_baseline_comparison": {
+      "counts": {
+        "naive_overclaim": 0,
+        "naive_underclaim": 0,
+        "agree": 6,
+        "naive_uninformative": 0
+      }
+    },
+    "decision_counts_overall": {
+      "stable": 6,
+      "unstable": 0,
+      "inconclusive": 0
+    }
+  }
+}

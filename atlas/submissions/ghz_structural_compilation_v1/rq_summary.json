@@ -1,0 +1,402 @@
+{
+  "rq1_prevalence": {
+    "task": "ghz",
+    "by_space_and_claim_type": {
+      "compilation_only": {
+        "ranking": {
+          "stable": 6,
+          "unstable": 0,
+          "inconclusive": 0,
+          "total": 6
+        }
+      },
+      "combined_light": {
+        "ranking": {
+          "stable": 6,
+          "unstable": 0,
+          "inconclusive": 0,
+          "total": 6
+        }
+      }
+    }
+  },
+  "rq2_drivers": {
+    "top_dimensions": [
+      {
+        "dimension": "seed_transpiler",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 12
+      },
+      {
+        "dimension": "optimization_level",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 12
+      },
+      {
+        "dimension": "layout_method",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 12
+      }
+    ],
+    "all_dimensions": [
+      {
+        "dimension": "seed_transpiler",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 12
+      },
+      {
+        "dimension": "optimization_level",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 12
+      },
+      {
+        "dimension": "layout_method",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 12
+      },
+      {
+        "dimension": "shots",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 12
+      },
+      {
+        "dimension": "seed_simulator",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 12
+      }
+    ]
+  },
+  "rq3_cost_tradeoff": {
+    "stability_vs_cost_rows": [
+      {
+        "experiment_id": "compilation_only:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 1024,
+        "n_eval": 235,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.983916281370656,
+        "stability_ci_high": 1.0,
+        "decision": "stable",
+        "minimum_shots_for_stable": 1024
+      },
+      {
+        "experiment_id": "compilation_only:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "1.0",
+        "shots": 1024,
+        "n_eval": 235,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.983916281370656,
+        "stability_ci_high": 1.0,
+        "decision": "stable",
+        "minimum_shots_for_stable": 1024
+      },
+      {
+        "experiment_id": "compilation_only:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "2.0",
+        "shots": 1024,
+        "n_eval": 235,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.983916281370656,
+        "stability_ci_high": 1.0,
+        "decision": "stable",
+        "minimum_shots_for_stable": 1024
+      },
+      {
+        "experiment_id": "compilation_only:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 1024,
+        "n_eval": 235,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.983916281370656,
+        "stability_ci_high": 1.0,
+        "decision": "stable",
+        "minimum_shots_for_stable": 1024
+      },
+      {
+        "experiment_id": "compilation_only:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "1.0",
+        "shots": 1024,
+        "n_eval": 235,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.983916281370656,
+        "stability_ci_high": 1.0,
+        "decision": "stable",
+        "minimum_shots_for_stable": 1024
+      },
+      {
+        "experiment_id": "compilation_only:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "2.0",
+        "shots": 1024,
+        "n_eval": 235,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.983916281370656,
+        "stability_ci_high": 1.0,
+        "decision": "stable",
+        "minimum_shots_for_stable": 1024
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 64,
+        "n_eval": 85,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9567605161859484,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "stable",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 256,
+        "n_eval": 60,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.93982814785791,
+        "stability_ci_high": 0.9999999999999998,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 1024,
+        "n_eval": 85,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9567605161859484,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "stable",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "1.0",
+        "shots": 64,
+        "n_eval": 85,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9567605161859484,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "stable",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "1.0",
+        "shots": 256,
+        "n_eval": 60,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.93982814785791,
+        "stability_ci_high": 0.9999999999999998,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "1.0",
+        "shots": 1024,
+        "n_eval": 85,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9567605161859484,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "stable",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "2.0",
+        "shots": 64,
+        "n_eval": 85,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9567605161859484,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "stable",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "2.0",
+        "shots": 256,
+        "n_eval": 60,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.93982814785791,
+        "stability_ci_high": 0.9999999999999998,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "2.0",
+        "shots": 1024,
+        "n_eval": 85,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9567605161859484,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "stable",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 64,
+        "n_eval": 85,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9567605161859484,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "stable",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 256,
+        "n_eval": 60,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.93982814785791,
+        "stability_ci_high": 0.9999999999999998,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 1024,
+        "n_eval": 85,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9567605161859484,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "stable",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "1.0",
+        "shots": 64,
+        "n_eval": 85,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9567605161859484,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "stable",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "1.0",
+        "shots": 256,
+        "n_eval": 60,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.93982814785791,
+        "stability_ci_high": 0.9999999999999998,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "1.0",
+        "shots": 1024,
+        "n_eval": 85,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9567605161859484,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "stable",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "2.0",
+        "shots": 64,
+        "n_eval": 85,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9567605161859484,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "stable",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "2.0",
+        "shots": 256,
+        "n_eval": 60,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.93982814785791,
+        "stability_ci_high": 0.9999999999999998,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": 64
+      },
+      {
+        "experiment_id": "combined_light:GHZ_Linear>GHZ_Star",
+        "claim_type": "ranking",
+        "delta": "2.0",
+        "shots": 1024,
+        "n_eval": 85,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.9567605161859484,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "stable",
+        "minimum_shots_for_stable": 64
+      }
+    ]
+  },
+  "rq4_adaptive_sampling": {
+    "adaptive_sampling": [],
+    "decision_agreement_rate_vs_full_factorial": null
+  },
+  "naive_baseline_comparison": {
+    "counts": {
+      "naive_overclaim": 0,
+      "naive_underclaim": 0,
+      "agree": 12,
+      "naive_uninformative": 0
+    }
+  },
+  "decision_counts_overall": {
+    "stable": 12,
+    "unstable": 0,
+    "inconclusive": 0
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "submission_id": "maxcut_adaptive_sampling_only_ci_w03_v1",
+  "title": "MaxCut Adaptive CI (sampling_only)",
+  "contributor": "claimstab_team",
+  "created_at_utc": "2026-03-05T03:00:25+00:00",
+  "task": "maxcut",
+  "suite": "large",
+  "claim_types": [
+    "ranking"
+  ],
+  "claim_summaries": [
+    "ranking:QAOA_p2>QAOA_p1;metric=objective;deltas=[0.0, 0.01, 0.05]"
+  ],
+  "sampling_summary": [
+    {
+      "space_preset": "sampling_only",
+      "mode": "adaptive_ci",
+      "sample_size": 128,
+      "seed": 42,
+      "sampled_configurations_with_baseline": 100,
+      "perturbation_space_size": 100
+    }
+  ],
+  "reproduce_command": "PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --task maxcut --suite large --space-preset sampling_only --claim-pairs 'QAOA_p2>QAOA_p1' --deltas 0.0,0.01,0.05 --sampling-mode adaptive_ci --target-ci-width 0.03 --max-sample-size 128 --min-sample-size 16 --step-size 8 --sample-seed 42 --backend-engine basic --out-dir output/presentation_large/adaptive/maxcut_sampling_p2_vs_p1_w03",
+  "how_to_cite": "https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff",
+  "source_run_dir": "/Users/mac/Documents/GitHub/ClaimStab-QC/output/presentation_large/adaptive/maxcut_sampling_p2_vs_p1_w03",
+  "artifacts": {
+    "claim_stability.json": "submissions/maxcut_adaptive_sampling_only_ci_w03_v1/claim_stability.json",
+    "scores.csv": "submissions/maxcut_adaptive_sampling_only_ci_w03_v1/scores.csv",
+    "rq_summary.json": "submissions/maxcut_adaptive_sampling_only_ci_w03_v1/rq_summary.json"
+  }
+}

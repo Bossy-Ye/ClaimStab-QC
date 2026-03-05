@@ -2,7 +2,7 @@
 
 This page lists current ClaimAtlas submissions with problem/task, algorithms, claims, and perturbation settings.
 
-_Generated at 2026-03-04T13:01:30+00:00 from `atlas/index.json`._
+_Generated at 2026-03-05T03:00:26+00:00 from `atlas/index.json`._
 
 ## Submission Overview
 
@@ -10,6 +10,13 @@ _Generated at 2026-03-04T13:01:30+00:00 from `atlas/index.json`._
 |---|---|---|---|---|---|
 | `bv_demo_working_example` | `bv` | `core` | `decision` | `sampling_only` | `codex_demo` |
 | `outside_user_portfolio_v1` | `portfolio_allocation` | `core` | `ranking` | `sampling_only, combined_light` | `outside_user_demo` |
+| `maxcut_core_multispace_randomk_v1` | `maxcut` | `core` | `ranking` | `compilation_only, sampling_only, combined_light` | `claimstab_team` |
+| `maxcut_calibration_fullfactorial_v1` | `maxcut` | `standard` | `ranking` | `compilation_only, sampling_only, combined_light` | `claimstab_team` |
+| `maxcut_adaptive_sampling_only_ci_w03_v1` | `maxcut` | `large` | `ranking` | `sampling_only` | `claimstab_team` |
+| `bv_core_decision_multispace_v1` | `bv` | `core` | `decision` | `compilation_only, sampling_only, combined_light` | `claimstab_team` |
+| `bv_calibration_fullfactorial_v1` | `bv` | `standard` | `decision` | `compilation_only, sampling_only, combined_light` | `claimstab_team` |
+| `ghz_structural_compilation_v1` | `ghz` | `standard` | `ranking` | `compilation_only, combined_light` | `claimstab_team` |
+| `sample_problem_plugin_demo_v1` | `sample_problem` | `toy` | `ranking` | `sampling_only` | `claimstab_team` |
 
 ## Submission `bv_demo_working_example`
 
@@ -87,6 +94,334 @@ Artifacts:
 - `rq_summary.json`: [atlas/submissions/outside_user_portfolio_v1/rq_summary.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/outside_user_portfolio_v1/rq_summary.json)
 - `scores.csv`: [atlas/submissions/outside_user_portfolio_v1/scores.csv](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/outside_user_portfolio_v1/scores.csv)
 - `stability_report.html`: [atlas/submissions/outside_user_portfolio_v1/stability_report.html](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/outside_user_portfolio_v1/stability_report.html)
+
+## Submission `maxcut_core_multispace_randomk_v1`
+
+- Title: MaxCut Core Multi-Space (random_k)
+- Created (UTC): 2026-03-05T03:00:24+00:00
+- Task: `maxcut`
+- Suite: `core`
+- Claim types: `ranking`
+- Algorithms (methods): `QAOA_p1, QAOA_p2, RandomBaseline`
+
+Claims:
+- `ranking:QAOA_p2>RandomBaseline;metric=objective;deltas=[0.0, 0.01, 0.05]`
+
+Perturbation / Sampling settings:
+
+| space_preset | mode | sample_size | seed | sampled_with_baseline | perturbation_space_size |
+|---|---:|---:|---:|---:|---:|
+| `compilation_only` | `random_k` | `16` | `7` | `17` | `80` |
+| `sampling_only` | `random_k` | `16` | `7` | `17` | `100` |
+| `combined_light` | `random_k` | `16` | `7` | `17` | `720` |
+
+Reference baseline configuration:
+
+```json
+{
+  "seed_transpiler": 0,
+  "optimization_level": 0,
+  "layout_method": "trivial",
+  "shots": 1024,
+  "seed_simulator": 0
+}
+```
+
+Artifacts:
+- `claim_stability.json`: [atlas/submissions/maxcut_core_multispace_randomk_v1/claim_stability.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/maxcut_core_multispace_randomk_v1/claim_stability.json)
+- `metadata.json`: [atlas/submissions/maxcut_core_multispace_randomk_v1/metadata.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/maxcut_core_multispace_randomk_v1/metadata.json)
+- `rq_summary.json`: [atlas/submissions/maxcut_core_multispace_randomk_v1/rq_summary.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/maxcut_core_multispace_randomk_v1/rq_summary.json)
+- `scores.csv`: [atlas/submissions/maxcut_core_multispace_randomk_v1/scores.csv](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/maxcut_core_multispace_randomk_v1/scores.csv)
+- `stability_report.html`: [atlas/submissions/maxcut_core_multispace_randomk_v1/stability_report.html](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/maxcut_core_multispace_randomk_v1/stability_report.html)
+
+Reproduce command:
+
+```bash
+PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --task maxcut --suite core --space-presets compilation_only,sampling_only,combined_light --sampling-mode random_k --sample-size 16 --sample-seed 7 --backend-engine basic --out-dir output/presentation/main/maxcut_core
+```
+
+Citation: [https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff)
+
+## Submission `maxcut_calibration_fullfactorial_v1`
+
+- Title: MaxCut Calibration Full-Factorial
+- Created (UTC): 2026-03-05T03:00:24+00:00
+- Task: `maxcut`
+- Suite: `standard`
+- Claim types: `ranking`
+- Algorithms (methods): `QAOA_p1, QAOA_p2, RandomBaseline`
+
+Claims:
+- `ranking:QAOA_p2>RandomBaseline;metric=objective;deltas=[0.0, 0.01, 0.05]`
+- `ranking:QAOA_p2>QAOA_p1;metric=objective;deltas=[0.0, 0.01, 0.05]`
+- `ranking:QAOA_p1>RandomBaseline;metric=objective;deltas=[0.0, 0.01, 0.05]`
+
+Perturbation / Sampling settings:
+
+| space_preset | mode | sample_size | seed | sampled_with_baseline | perturbation_space_size |
+|---|---:|---:|---:|---:|---:|
+| `compilation_only` | `full_factorial` | `None` | `0` | `80` | `80` |
+| `sampling_only` | `full_factorial` | `None` | `0` | `100` | `100` |
+| `combined_light` | `full_factorial` | `None` | `0` | `720` | `720` |
+
+Reference baseline configuration:
+
+```json
+{
+  "seed_transpiler": 0,
+  "optimization_level": 0,
+  "layout_method": "trivial",
+  "shots": 1024,
+  "seed_simulator": 0
+}
+```
+
+Artifacts:
+- `claim_stability.json`: [atlas/submissions/maxcut_calibration_fullfactorial_v1/claim_stability.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/maxcut_calibration_fullfactorial_v1/claim_stability.json)
+- `metadata.json`: [atlas/submissions/maxcut_calibration_fullfactorial_v1/metadata.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/maxcut_calibration_fullfactorial_v1/metadata.json)
+- `rq_summary.json`: [atlas/submissions/maxcut_calibration_fullfactorial_v1/rq_summary.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/maxcut_calibration_fullfactorial_v1/rq_summary.json)
+- `scores.csv`: [atlas/submissions/maxcut_calibration_fullfactorial_v1/scores.csv](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/maxcut_calibration_fullfactorial_v1/scores.csv)
+- `stability_report.html`: [atlas/submissions/maxcut_calibration_fullfactorial_v1/stability_report.html](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/maxcut_calibration_fullfactorial_v1/stability_report.html)
+
+Reproduce command:
+
+```bash
+PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --suite standard --space-presets compilation_only,sampling_only,combined_light --claim-pairs 'QAOA_p2>RandomBaseline,QAOA_p2>QAOA_p1,QAOA_p1>RandomBaseline' --sampling-mode full_factorial --deltas 0.0,0.01,0.05 --stability-threshold 0.95 --confidence-level 0.95 --backend-engine basic --task maxcut --out-dir output/presentation_large/calibration/maxcut_ranking
+```
+
+Citation: [https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff)
+
+## Submission `maxcut_adaptive_sampling_only_ci_w03_v1`
+
+- Title: MaxCut Adaptive CI (sampling_only)
+- Created (UTC): 2026-03-05T03:00:25+00:00
+- Task: `maxcut`
+- Suite: `large`
+- Claim types: `ranking`
+- Algorithms (methods): `QAOA_p1, QAOA_p2, RandomBaseline`
+
+Claims:
+- `ranking:QAOA_p2>QAOA_p1;metric=objective;deltas=[0.0, 0.01, 0.05]`
+
+Perturbation / Sampling settings:
+
+| space_preset | mode | sample_size | seed | sampled_with_baseline | perturbation_space_size |
+|---|---:|---:|---:|---:|---:|
+| `sampling_only` | `adaptive_ci` | `128` | `42` | `100` | `100` |
+
+Reference baseline configuration:
+
+```json
+{
+  "seed_transpiler": 0,
+  "optimization_level": 1,
+  "layout_method": "sabre",
+  "shots": 16,
+  "seed_simulator": 0
+}
+```
+
+Artifacts:
+- `claim_stability.json`: [atlas/submissions/maxcut_adaptive_sampling_only_ci_w03_v1/claim_stability.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/maxcut_adaptive_sampling_only_ci_w03_v1/claim_stability.json)
+- `metadata.json`: [atlas/submissions/maxcut_adaptive_sampling_only_ci_w03_v1/metadata.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/maxcut_adaptive_sampling_only_ci_w03_v1/metadata.json)
+- `rq_summary.json`: [atlas/submissions/maxcut_adaptive_sampling_only_ci_w03_v1/rq_summary.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/maxcut_adaptive_sampling_only_ci_w03_v1/rq_summary.json)
+- `scores.csv`: [atlas/submissions/maxcut_adaptive_sampling_only_ci_w03_v1/scores.csv](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/maxcut_adaptive_sampling_only_ci_w03_v1/scores.csv)
+
+Reproduce command:
+
+```bash
+PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --task maxcut --suite large --space-preset sampling_only --claim-pairs 'QAOA_p2>QAOA_p1' --deltas 0.0,0.01,0.05 --sampling-mode adaptive_ci --target-ci-width 0.03 --max-sample-size 128 --min-sample-size 16 --step-size 8 --sample-seed 42 --backend-engine basic --out-dir output/presentation_large/adaptive/maxcut_sampling_p2_vs_p1_w03
+```
+
+Citation: [https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff)
+
+## Submission `bv_core_decision_multispace_v1`
+
+- Title: BV Core Decision Multi-Space
+- Created (UTC): 2026-03-05T03:00:25+00:00
+- Task: `bv`
+- Suite: `core`
+- Claim types: `decision`
+- Algorithms (methods): `BVOracle, RandomBaseline`
+
+Claims:
+- `decision:BVOracle;top_k=1`
+- `decision:BVOracle;top_k=3`
+
+Perturbation / Sampling settings:
+
+| space_preset | mode | sample_size | seed | sampled_with_baseline | perturbation_space_size |
+|---|---:|---:|---:|---:|---:|
+| `compilation_only` | `random_k` | `16` | `7` | `17` | `80` |
+| `sampling_only` | `random_k` | `16` | `7` | `17` | `100` |
+| `combined_light` | `random_k` | `16` | `7` | `17` | `720` |
+
+Reference baseline configuration:
+
+```json
+{
+  "seed_transpiler": 0,
+  "optimization_level": 0,
+  "layout_method": "trivial",
+  "shots": 1024,
+  "seed_simulator": 0
+}
+```
+
+Artifacts:
+- `claim_stability.json`: [atlas/submissions/bv_core_decision_multispace_v1/claim_stability.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/bv_core_decision_multispace_v1/claim_stability.json)
+- `metadata.json`: [atlas/submissions/bv_core_decision_multispace_v1/metadata.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/bv_core_decision_multispace_v1/metadata.json)
+- `rq_summary.json`: [atlas/submissions/bv_core_decision_multispace_v1/rq_summary.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/bv_core_decision_multispace_v1/rq_summary.json)
+- `scores.csv`: [atlas/submissions/bv_core_decision_multispace_v1/scores.csv](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/bv_core_decision_multispace_v1/scores.csv)
+- `stability_report.html`: [atlas/submissions/bv_core_decision_multispace_v1/stability_report.html](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/bv_core_decision_multispace_v1/stability_report.html)
+
+Reproduce command:
+
+```bash
+PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --task bv --suite core --space-presets compilation_only,sampling_only,combined_light --sampling-mode random_k --sample-size 16 --sample-seed 7 --backend-engine basic --out-dir output/presentation/main/bv_core
+```
+
+Citation: [https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff)
+
+## Submission `bv_calibration_fullfactorial_v1`
+
+- Title: BV Calibration Full-Factorial
+- Created (UTC): 2026-03-05T03:00:25+00:00
+- Task: `bv`
+- Suite: `standard`
+- Claim types: `decision`
+- Algorithms (methods): `BVOracle, RandomBaseline`
+
+Claims:
+- `decision:BVOracle;top_k=1`
+- `decision:BVOracle;top_k=3`
+
+Perturbation / Sampling settings:
+
+| space_preset | mode | sample_size | seed | sampled_with_baseline | perturbation_space_size |
+|---|---:|---:|---:|---:|---:|
+| `compilation_only` | `full_factorial` | `None` | `0` | `80` | `80` |
+| `sampling_only` | `full_factorial` | `None` | `0` | `100` | `100` |
+| `combined_light` | `full_factorial` | `None` | `0` | `720` | `720` |
+
+Reference baseline configuration:
+
+```json
+{
+  "seed_transpiler": 0,
+  "optimization_level": 0,
+  "layout_method": "trivial",
+  "shots": 1024,
+  "seed_simulator": 0
+}
+```
+
+Artifacts:
+- `claim_stability.json`: [atlas/submissions/bv_calibration_fullfactorial_v1/claim_stability.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/bv_calibration_fullfactorial_v1/claim_stability.json)
+- `metadata.json`: [atlas/submissions/bv_calibration_fullfactorial_v1/metadata.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/bv_calibration_fullfactorial_v1/metadata.json)
+- `rq_summary.json`: [atlas/submissions/bv_calibration_fullfactorial_v1/rq_summary.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/bv_calibration_fullfactorial_v1/rq_summary.json)
+- `scores.csv`: [atlas/submissions/bv_calibration_fullfactorial_v1/scores.csv](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/bv_calibration_fullfactorial_v1/scores.csv)
+- `stability_report.html`: [atlas/submissions/bv_calibration_fullfactorial_v1/stability_report.html](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/bv_calibration_fullfactorial_v1/stability_report.html)
+
+Reproduce command:
+
+```bash
+PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --task bv --suite standard --space-presets compilation_only,sampling_only,combined_light --sampling-mode full_factorial --deltas 0.0,0.01,0.05 --stability-threshold 0.95 --confidence-level 0.95 --backend-engine basic --out-dir output/presentation_large/calibration/bv_decision
+```
+
+Citation: [https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff)
+
+## Submission `ghz_structural_compilation_v1`
+
+- Title: GHZ Structural Compilation Benchmark
+- Created (UTC): 2026-03-05T03:00:25+00:00
+- Task: `ghz`
+- Suite: `standard`
+- Claim types: `ranking`
+- Algorithms (methods): `GHZ_Linear, GHZ_Star, RandomBaseline`
+
+Claims:
+- `ranking:GHZ_Linear>GHZ_Star;metric=circuit_depth;deltas=[0.0, 1.0, 2.0]`
+- `ranking:GHZ_Linear>GHZ_Star;metric=two_qubit_count;deltas=[0.0, 1.0, 2.0]`
+
+Perturbation / Sampling settings:
+
+| space_preset | mode | sample_size | seed | sampled_with_baseline | perturbation_space_size |
+|---|---:|---:|---:|---:|---:|
+| `compilation_only` | `random_k` | `48` | `42` | `48` | `80` |
+| `combined_light` | `random_k` | `48` | `42` | `49` | `720` |
+
+Reference baseline configuration:
+
+```json
+{
+  "seed_transpiler": 0,
+  "optimization_level": 0,
+  "layout_method": "trivial",
+  "shots": 1024,
+  "seed_simulator": 0
+}
+```
+
+Artifacts:
+- `claim_stability.json`: [atlas/submissions/ghz_structural_compilation_v1/claim_stability.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/ghz_structural_compilation_v1/claim_stability.json)
+- `metadata.json`: [atlas/submissions/ghz_structural_compilation_v1/metadata.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/ghz_structural_compilation_v1/metadata.json)
+- `rq_summary.json`: [atlas/submissions/ghz_structural_compilation_v1/rq_summary.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/ghz_structural_compilation_v1/rq_summary.json)
+- `scores.csv`: [atlas/submissions/ghz_structural_compilation_v1/scores.csv](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/ghz_structural_compilation_v1/scores.csv)
+- `stability_report.html`: [atlas/submissions/ghz_structural_compilation_v1/stability_report.html](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/ghz_structural_compilation_v1/stability_report.html)
+
+Reproduce command:
+
+```bash
+PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --suite standard --task ghz --spec specs/paper_structural.yml --space-presets compilation_only,combined_light --sampling-mode random_k --sample-size 48 --sample-seed 42 --stability-threshold 0.95 --confidence-level 0.95 --backend-engine basic --out-dir output/paper_artifact/structural
+```
+
+Citation: [https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff)
+
+## Submission `sample_problem_plugin_demo_v1`
+
+- Title: Sample Problem Plugin Demo
+- Created (UTC): 2026-03-05T03:00:26+00:00
+- Task: `sample_problem`
+- Suite: `toy`
+- Claim types: `ranking`
+- Algorithms (methods): `MethodA, MethodB`
+
+Claims:
+- `ranking:MethodA>MethodB;metric=objective;deltas=[0.0, 0.05]`
+
+Perturbation / Sampling settings:
+
+| space_preset | mode | sample_size | seed | sampled_with_baseline | perturbation_space_size |
+|---|---:|---:|---:|---:|---:|
+| `sampling_only` | `random_k` | `12` | `7` | `13` | `100` |
+
+Reference baseline configuration:
+
+```json
+{
+  "seed_transpiler": 0,
+  "optimization_level": 1,
+  "layout_method": "sabre",
+  "shots": 16,
+  "seed_simulator": 0
+}
+```
+
+Artifacts:
+- `claim_stability.json`: [atlas/submissions/sample_problem_plugin_demo_v1/claim_stability.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/sample_problem_plugin_demo_v1/claim_stability.json)
+- `metadata.json`: [atlas/submissions/sample_problem_plugin_demo_v1/metadata.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/sample_problem_plugin_demo_v1/metadata.json)
+- `rq_summary.json`: [atlas/submissions/sample_problem_plugin_demo_v1/rq_summary.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/sample_problem_plugin_demo_v1/rq_summary.json)
+- `scores.csv`: [atlas/submissions/sample_problem_plugin_demo_v1/scores.csv](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/sample_problem_plugin_demo_v1/scores.csv)
+- `stability_report.html`: [atlas/submissions/sample_problem_plugin_demo_v1/stability_report.html](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/submissions/sample_problem_plugin_demo_v1/stability_report.html)
+
+Reproduce command:
+
+```bash
+PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --suite toy --space-presets sampling_only --sampling-mode random_k --sample-seed 7 --stability-threshold 0.95 --confidence-level 0.95 --deltas 0.0,0.05 --backend-engine basic --spec output/sample_problem_demo/spec_sample_problem.yml --out-dir output/sample_problem_demo_run --claim-pairs 'MethodA>MethodB' --sample-size 12
+```
+
+Citation: [https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff)
 
 ## How To Add New Dataset Rows
 

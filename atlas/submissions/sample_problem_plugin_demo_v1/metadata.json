@@ -1,0 +1,33 @@
+{
+  "submission_id": "sample_problem_plugin_demo_v1",
+  "title": "Sample Problem Plugin Demo",
+  "contributor": "claimstab_team",
+  "created_at_utc": "2026-03-05T03:00:26+00:00",
+  "task": "sample_problem",
+  "suite": "toy",
+  "claim_types": [
+    "ranking"
+  ],
+  "claim_summaries": [
+    "ranking:MethodA>MethodB;metric=objective;deltas=[0.0, 0.05]"
+  ],
+  "sampling_summary": [
+    {
+      "space_preset": "sampling_only",
+      "mode": "random_k",
+      "sample_size": 12,
+      "seed": 7,
+      "sampled_configurations_with_baseline": 13,
+      "perturbation_space_size": 100
+    }
+  ],
+  "reproduce_command": "PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --suite toy --space-presets sampling_only --sampling-mode random_k --sample-seed 7 --stability-threshold 0.95 --confidence-level 0.95 --deltas 0.0,0.05 --backend-engine basic --spec output/sample_problem_demo/spec_sample_problem.yml --out-dir output/sample_problem_demo_run --claim-pairs 'MethodA>MethodB' --sample-size 12",
+  "how_to_cite": "https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff",
+  "source_run_dir": "/Users/mac/Documents/GitHub/ClaimStab-QC/output/sample_problem_demo_run",
+  "artifacts": {
+    "claim_stability.json": "submissions/sample_problem_plugin_demo_v1/claim_stability.json",
+    "scores.csv": "submissions/sample_problem_plugin_demo_v1/scores.csv",
+    "rq_summary.json": "submissions/sample_problem_plugin_demo_v1/rq_summary.json",
+    "stability_report.html": "submissions/sample_problem_plugin_demo_v1/stability_report.html"
+  }
+}

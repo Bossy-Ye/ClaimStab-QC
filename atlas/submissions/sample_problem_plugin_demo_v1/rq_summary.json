@@ -1,0 +1,178 @@
+{
+  "rq1_prevalence": {
+    "task": "sample_problem",
+    "by_space_and_claim_type": {
+      "sampling_only": {
+        "ranking": {
+          "stable": 0,
+          "unstable": 0,
+          "inconclusive": 2,
+          "total": 2
+        }
+      }
+    }
+  },
+  "rq2_drivers": {
+    "top_dimensions": [
+      {
+        "dimension": "seed_transpiler",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 2
+      },
+      {
+        "dimension": "optimization_level",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 2
+      },
+      {
+        "dimension": "layout_method",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 2
+      }
+    ],
+    "all_dimensions": [
+      {
+        "dimension": "seed_transpiler",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 2
+      },
+      {
+        "dimension": "optimization_level",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 2
+      },
+      {
+        "dimension": "layout_method",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 2
+      },
+      {
+        "dimension": "shots",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 2
+      },
+      {
+        "dimension": "seed_simulator",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.0,
+        "observations": 2
+      }
+    ]
+  },
+  "rq3_cost_tradeoff": {
+    "stability_vs_cost_rows": [
+      {
+        "experiment_id": "sampling_only:MethodA>MethodB",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 16,
+        "n_eval": 15,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.7961166989641515,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:MethodA>MethodB",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 64,
+        "n_eval": 6,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.6096657120978348,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:MethodA>MethodB",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 256,
+        "n_eval": 6,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.6096657120978348,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:MethodA>MethodB",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 16,
+        "n_eval": 15,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.7961166989641515,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:MethodA>MethodB",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 64,
+        "n_eval": 6,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.6096657120978348,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:MethodA>MethodB",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 256,
+        "n_eval": 6,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.6096657120978348,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      }
+    ]
+  },
+  "rq4_adaptive_sampling": {
+    "adaptive_sampling": [],
+    "decision_agreement_rate_vs_full_factorial": null
+  },
+  "naive_baseline_comparison": {
+    "counts": {
+      "naive_overclaim": 2,
+      "naive_underclaim": 0,
+      "agree": 0,
+      "naive_uninformative": 0
+    }
+  },
+  "decision_counts_overall": {
+    "stable": 0,
+    "unstable": 0,
+    "inconclusive": 2
+  }
+}

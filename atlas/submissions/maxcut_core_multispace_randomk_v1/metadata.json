@@ -1,0 +1,49 @@
+{
+  "submission_id": "maxcut_core_multispace_randomk_v1",
+  "title": "MaxCut Core Multi-Space (random_k)",
+  "contributor": "claimstab_team",
+  "created_at_utc": "2026-03-05T03:00:24+00:00",
+  "task": "maxcut",
+  "suite": "core",
+  "claim_types": [
+    "ranking"
+  ],
+  "claim_summaries": [
+    "ranking:QAOA_p2>RandomBaseline;metric=objective;deltas=[0.0, 0.01, 0.05]"
+  ],
+  "sampling_summary": [
+    {
+      "space_preset": "compilation_only",
+      "mode": "random_k",
+      "sample_size": 16,
+      "seed": 7,
+      "sampled_configurations_with_baseline": 17,
+      "perturbation_space_size": 80
+    },
+    {
+      "space_preset": "sampling_only",
+      "mode": "random_k",
+      "sample_size": 16,
+      "seed": 7,
+      "sampled_configurations_with_baseline": 17,
+      "perturbation_space_size": 100
+    },
+    {
+      "space_preset": "combined_light",
+      "mode": "random_k",
+      "sample_size": 16,
+      "seed": 7,
+      "sampled_configurations_with_baseline": 17,
+      "perturbation_space_size": 720
+    }
+  ],
+  "reproduce_command": "PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --task maxcut --suite core --space-presets compilation_only,sampling_only,combined_light --sampling-mode random_k --sample-size 16 --sample-seed 7 --backend-engine basic --out-dir output/presentation/main/maxcut_core",
+  "how_to_cite": "https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff",
+  "source_run_dir": "/Users/mac/Documents/GitHub/ClaimStab-QC/output/presentation/main/maxcut_core",
+  "artifacts": {
+    "claim_stability.json": "submissions/maxcut_core_multispace_randomk_v1/claim_stability.json",
+    "scores.csv": "submissions/maxcut_core_multispace_randomk_v1/scores.csv",
+    "rq_summary.json": "submissions/maxcut_core_multispace_randomk_v1/rq_summary.json",
+    "stability_report.html": "submissions/maxcut_core_multispace_randomk_v1/stability_report.html"
+  }
+}

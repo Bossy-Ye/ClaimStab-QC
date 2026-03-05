@@ -1,0 +1,374 @@
+{
+  "rq1_prevalence": {
+    "task": "maxcut",
+    "by_space_and_claim_type": {
+      "compilation_only": {
+        "ranking": {
+          "stable": 0,
+          "unstable": 0,
+          "inconclusive": 3,
+          "total": 3
+        }
+      },
+      "sampling_only": {
+        "ranking": {
+          "stable": 0,
+          "unstable": 3,
+          "inconclusive": 0,
+          "total": 3
+        }
+      },
+      "combined_light": {
+        "ranking": {
+          "stable": 0,
+          "unstable": 0,
+          "inconclusive": 3,
+          "total": 3
+        }
+      }
+    }
+  },
+  "rq2_drivers": {
+    "top_dimensions": [
+      {
+        "dimension": "seed_simulator",
+        "driver_score": 0.3055555555555556,
+        "avg_contrast": 0.3611111111111111,
+        "avg_improvement_from_best_value": 0.3055555555555556,
+        "flip_rate": 0.3055555555555556,
+        "observations": 9
+      },
+      {
+        "dimension": "shots",
+        "driver_score": 0.0515873015873016,
+        "avg_contrast": 0.1015873015873016,
+        "avg_improvement_from_best_value": 0.0515873015873016,
+        "flip_rate": 0.3055555555555556,
+        "observations": 9
+      },
+      {
+        "dimension": "seed_transpiler",
+        "driver_score": 0.006944444444444444,
+        "avg_contrast": 0.1111111111111111,
+        "avg_improvement_from_best_value": 0.006944444444444444,
+        "flip_rate": 0.3055555555555556,
+        "observations": 9
+      }
+    ],
+    "all_dimensions": [
+      {
+        "dimension": "seed_simulator",
+        "driver_score": 0.3055555555555556,
+        "avg_contrast": 0.3611111111111111,
+        "avg_improvement_from_best_value": 0.3055555555555556,
+        "flip_rate": 0.3055555555555556,
+        "observations": 9
+      },
+      {
+        "dimension": "shots",
+        "driver_score": 0.0515873015873016,
+        "avg_contrast": 0.1015873015873016,
+        "avg_improvement_from_best_value": 0.0515873015873016,
+        "flip_rate": 0.3055555555555556,
+        "observations": 9
+      },
+      {
+        "dimension": "seed_transpiler",
+        "driver_score": 0.006944444444444444,
+        "avg_contrast": 0.1111111111111111,
+        "avg_improvement_from_best_value": 0.006944444444444444,
+        "flip_rate": 0.3055555555555556,
+        "observations": 9
+      },
+      {
+        "dimension": "layout_method",
+        "driver_score": 0.006944444444444444,
+        "avg_contrast": 0.018518518518518517,
+        "avg_improvement_from_best_value": 0.006944444444444444,
+        "flip_rate": 0.3055555555555556,
+        "observations": 9
+      },
+      {
+        "dimension": "optimization_level",
+        "driver_score": 0.006944444444444444,
+        "avg_contrast": 0.015873015873015872,
+        "avg_improvement_from_best_value": 0.006944444444444444,
+        "flip_rate": 0.3055555555555556,
+        "observations": 9
+      }
+    ]
+  },
+  "rq3_cost_tradeoff": {
+    "stability_vs_cost_rows": [
+      {
+        "experiment_id": "compilation_only:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 1024,
+        "n_eval": 16,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.8063923194655636,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "compilation_only:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.01",
+        "shots": 1024,
+        "n_eval": 16,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.8063923194655636,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "compilation_only:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 1024,
+        "n_eval": 16,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.8063923194655636,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 16,
+        "n_eval": 7,
+        "stability_hat": 0.42857142857142855,
+        "stability_ci_low": 0.15821985525146975,
+        "stability_ci_high": 0.7495416354723428,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 64,
+        "n_eval": 3,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.4385029682449546,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 256,
+        "n_eval": 2,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.01",
+        "shots": 16,
+        "n_eval": 7,
+        "stability_hat": 0.14285714285714285,
+        "stability_ci_low": 0.025679624344743524,
+        "stability_ci_high": 0.5131278292743189,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.01",
+        "shots": 64,
+        "n_eval": 3,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.4385029682449546,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.01",
+        "shots": 256,
+        "n_eval": 2,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 16,
+        "n_eval": 7,
+        "stability_hat": 0.14285714285714285,
+        "stability_ci_low": 0.025679624344743524,
+        "stability_ci_high": 0.5131278292743189,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 64,
+        "n_eval": 3,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.4385029682449546,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 256,
+        "n_eval": 2,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 64,
+        "n_eval": 5,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.5655175352168255,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 256,
+        "n_eval": 4,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.5101091635454028,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 1024,
+        "n_eval": 5,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.5655175352168255,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.01",
+        "shots": 64,
+        "n_eval": 5,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.5655175352168255,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.01",
+        "shots": 256,
+        "n_eval": 4,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.5101091635454028,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.01",
+        "shots": 1024,
+        "n_eval": 5,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.5655175352168255,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 64,
+        "n_eval": 5,
+        "stability_hat": 0.8,
+        "stability_ci_low": 0.37553462976252533,
+        "stability_ci_high": 0.9637758913675698,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 256,
+        "n_eval": 4,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.5101091635454028,
+        "stability_ci_high": 0.9999999999999999,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "combined_light:QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 1024,
+        "n_eval": 5,
+        "stability_hat": 1.0,
+        "stability_ci_low": 0.5655175352168255,
+        "stability_ci_high": 1.0,
+        "decision": "inconclusive",
+        "minimum_shots_for_stable": null
+      }
+    ]
+  },
+  "rq4_adaptive_sampling": {
+    "adaptive_sampling": [],
+    "decision_agreement_rate_vs_full_factorial": null
+  },
+  "naive_baseline_comparison": {
+    "counts": {
+      "naive_overclaim": 1,
+      "naive_underclaim": 0,
+      "agree": 8,
+      "naive_uninformative": 0
+    }
+  },
+  "decision_counts_overall": {
+    "stable": 0,
+    "unstable": 3,
+    "inconclusive": 6
+  }
+}

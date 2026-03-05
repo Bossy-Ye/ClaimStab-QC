@@ -1,0 +1,295 @@
+{
+  "rq1_prevalence": {
+    "task": "maxcut",
+    "by_space_and_claim_type": {
+      "sampling_only": {
+        "ranking": {
+          "stable": 0,
+          "unstable": 3,
+          "inconclusive": 0,
+          "total": 3
+        }
+      }
+    }
+  },
+  "rq2_drivers": {
+    "top_dimensions": [
+      {
+        "dimension": "seed_simulator",
+        "driver_score": 0.10251402918069583,
+        "avg_contrast": 0.20666666666666664,
+        "avg_improvement_from_best_value": 0.10251402918069583,
+        "flip_rate": 0.3180695847362514,
+        "observations": 3
+      },
+      {
+        "dimension": "shots",
+        "driver_score": 0.06473625140291807,
+        "avg_contrast": 0.12152046783625732,
+        "avg_improvement_from_best_value": 0.06473625140291807,
+        "flip_rate": 0.3180695847362514,
+        "observations": 3
+      },
+      {
+        "dimension": "seed_transpiler",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.3180695847362514,
+        "observations": 3
+      }
+    ],
+    "all_dimensions": [
+      {
+        "dimension": "seed_simulator",
+        "driver_score": 0.10251402918069583,
+        "avg_contrast": 0.20666666666666664,
+        "avg_improvement_from_best_value": 0.10251402918069583,
+        "flip_rate": 0.3180695847362514,
+        "observations": 3
+      },
+      {
+        "dimension": "shots",
+        "driver_score": 0.06473625140291807,
+        "avg_contrast": 0.12152046783625732,
+        "avg_improvement_from_best_value": 0.06473625140291807,
+        "flip_rate": 0.3180695847362514,
+        "observations": 3
+      },
+      {
+        "dimension": "seed_transpiler",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.3180695847362514,
+        "observations": 3
+      },
+      {
+        "dimension": "optimization_level",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.3180695847362514,
+        "observations": 3
+      },
+      {
+        "dimension": "layout_method",
+        "driver_score": 0.0,
+        "avg_contrast": 0.0,
+        "avg_improvement_from_best_value": 0.0,
+        "flip_rate": 0.3180695847362514,
+        "observations": 3
+      }
+    ]
+  },
+  "rq3_cost_tradeoff": {
+    "stability_vs_cost_rows": [
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 16,
+        "n_eval": 570,
+        "stability_hat": 0.6614035087719298,
+        "stability_ci_low": 0.6215887343791289,
+        "stability_ci_high": 0.6990573206795971,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 32,
+        "n_eval": 570,
+        "stability_hat": 0.6824561403508772,
+        "stability_ci_low": 0.6431268675611309,
+        "stability_ci_high": 0.719342585983516,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 64,
+        "n_eval": 570,
+        "stability_hat": 0.7017543859649122,
+        "stability_ci_low": 0.6629483999209531,
+        "stability_ci_high": 0.7378591689024545,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 256,
+        "n_eval": 570,
+        "stability_hat": 0.7543859649122807,
+        "stability_ci_low": 0.7174230074402345,
+        "stability_ci_high": 0.7879430575979752,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.0",
+        "shots": 1024,
+        "n_eval": 570,
+        "stability_hat": 0.8789473684210526,
+        "stability_ci_low": 0.8496020080494624,
+        "stability_ci_high": 0.9032191646971117,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.01",
+        "shots": 16,
+        "n_eval": 570,
+        "stability_hat": 0.6070175438596491,
+        "stability_ci_low": 0.566333441956366,
+        "stability_ci_high": 0.646268833680398,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.01",
+        "shots": 32,
+        "n_eval": 570,
+        "stability_hat": 0.6596491228070176,
+        "stability_ci_low": 0.6197977766431938,
+        "stability_ci_high": 0.6973629952083723,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.01",
+        "shots": 64,
+        "n_eval": 570,
+        "stability_hat": 0.6894736842105263,
+        "stability_ci_low": 0.6503258319270097,
+        "stability_ci_high": 0.7260847544462775,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.01",
+        "shots": 256,
+        "n_eval": 570,
+        "stability_hat": 0.7192982456140351,
+        "stability_ci_low": 0.6810363569821383,
+        "stability_ci_high": 0.75462404391287,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.01",
+        "shots": 1024,
+        "n_eval": 570,
+        "stability_hat": 0.8701754385964913,
+        "stability_ci_low": 0.8400858728588639,
+        "stability_ci_high": 0.8953088838519102,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 16,
+        "n_eval": 570,
+        "stability_hat": 0.6070175438596491,
+        "stability_ci_low": 0.566333441956366,
+        "stability_ci_high": 0.646268833680398,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 32,
+        "n_eval": 570,
+        "stability_hat": 0.6333333333333333,
+        "stability_ci_low": 0.5930027263544261,
+        "stability_ci_high": 0.671878797389739,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 64,
+        "n_eval": 570,
+        "stability_hat": 0.643859649122807,
+        "stability_ci_low": 0.6037053283315449,
+        "stability_ci_high": 0.6820878946555805,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 256,
+        "n_eval": 570,
+        "stability_hat": 0.6824561403508772,
+        "stability_ci_low": 0.6431268675611309,
+        "stability_ci_high": 0.719342585983516,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      },
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "claim_type": "ranking",
+        "delta": "0.05",
+        "shots": 1024,
+        "n_eval": 570,
+        "stability_hat": 0.7947368421052632,
+        "stability_ci_low": 0.7596589090423977,
+        "stability_ci_high": 0.8258686697604933,
+        "decision": "unstable",
+        "minimum_shots_for_stable": null
+      }
+    ]
+  },
+  "rq4_adaptive_sampling": {
+    "adaptive_sampling": [
+      {
+        "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
+        "target_ci_width": 0.03,
+        "achieved_ci_width": 0.034425066672725047,
+        "selected_configurations_with_baseline": 100,
+        "evaluated_configurations_without_baseline": 99,
+        "stop_reason": "max_budget_reached"
+      }
+    ],
+    "decision_agreement_rate_vs_full_factorial": null
+  },
+  "naive_baseline_comparison": {
+    "counts": {
+      "naive_overclaim": 0,
+      "naive_underclaim": 0,
+      "agree": 3,
+      "naive_uninformative": 0
+    }
+  },
+  "decision_counts_overall": {
+    "stable": 0,
+    "unstable": 3,
+    "inconclusive": 0
+  }
+}
