@@ -36,6 +36,12 @@ SUITE_ALIASES = {
     "day2_large": "large",
 }
 
+LEGACY_SUITE_ALIASES = {
+    "day1",
+    "day2",
+    "day2_large",
+}
+
 SPACE_ALIASES = {
     "baseline": "baseline",
     "compilation_only": "compilation_only",
@@ -129,11 +135,13 @@ def parse_claim_pairs(raw: str) -> list[tuple[str, str]]:
 
 
 def canonical_suite_name(name: str) -> str:
-    key = name.strip()
+    key = name.strip().lower()
     canonical = SUITE_ALIASES.get(key)
     if canonical is None:
         valid = ", ".join(sorted({k for k in SUITE_ALIASES if not k.startswith("day")}))
         raise ValueError(f"Unknown suite '{name}'. Use one of: {valid}.")
+    if key in LEGACY_SUITE_ALIASES:
+        print(f"[WARN] Suite alias '{name}' is deprecated; using '{canonical}'.")
     return canonical
 
 
@@ -481,6 +489,7 @@ def try_load_spec(path: str | None) -> dict:
 
 def main() -> None:
     args = parse_args()
+    args.suite = canonical_suite_name(args.suite)
     deltas = parse_deltas(args.deltas)
     transpile_space = canonical_space_name(args.transpile_space)
     noisy_space = canonical_space_name(args.noisy_space)
@@ -490,7 +499,8 @@ def main() -> None:
         spec_payload.get("task") if isinstance(spec_payload, dict) else None,
         default_suite=args.suite,
     )
-    suite_name = str(spec_payload.get("suite", task_suite)).strip() if isinstance(spec_payload, dict) else str(task_suite)
+    suite_raw = str(spec_payload.get("suite", task_suite)).strip() if isinstance(spec_payload, dict) else str(task_suite)
+    suite_name = canonical_suite_name(suite_raw)
     suite = task_plugin.instances(suite_name)
     if not suite:
         raise ValueError(f"Task '{getattr(task_plugin, 'name', 'unknown')}' returned an empty suite for '{suite_name}'.")

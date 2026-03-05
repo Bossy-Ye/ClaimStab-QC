@@ -45,6 +45,8 @@ def load_suite(name: str, *, data_dir: str | Path | None = None) -> list[Problem
         "day2_large": "large",
     }
     canonical = alias.get(key, key)
+    if key in alias:
+        print(f"[WARN] Suite alias '{name}' is deprecated; using '{canonical}'.")
 
     base_dir = Path(data_dir) if data_dir is not None else _default_data_dir()
     candidate = base_dir / f"{canonical}.json"
