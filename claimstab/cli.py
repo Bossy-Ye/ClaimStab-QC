@@ -263,6 +263,8 @@ def _build_main_command(spec_path: Path, spec: dict[str, Any], args: argparse.Na
         if sampling.get("step_size") is not None:
             cmd.extend(["--step-size", str(sampling["step_size"])])
 
+    if args.debug_attribution:
+        cmd.append("--debug-attribution")
     if args.cache_db:
         cmd.extend(["--cache-db", str(args.cache_db)])
     if args.events_out:
@@ -742,6 +744,11 @@ def build_parser() -> argparse.ArgumentParser:
     run_p.add_argument("--events-out", default=None, help="Optional JSONL output path for execution events")
     run_p.add_argument("--trace-out", default=None, help="Optional JSONL output path for trace records")
     run_p.add_argument("--replay-trace", default=None, help="Replay mode: reuse an existing trace JSONL instead of executing")
+    run_p.add_argument(
+        "--debug-attribution",
+        action="store_true",
+        help="Print intermediate RQ2 attribution aggregation diagnostics during run.",
+    )
     run_p.add_argument("--dry-run", action="store_true", help="Print resolved command without executing")
     run_p.set_defaults(func=cmd_run)
 

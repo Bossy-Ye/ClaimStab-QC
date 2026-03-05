@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import math
+import sys
 from collections import defaultdict
-from typing import Any
+from typing import Any, TextIO
 
 
 def _as_float(value: Any, default: float = 0.0) -> float:
@@ -27,19 +29,213 @@ def _decision_counts(rows: list[dict[str, Any]]) -> dict[str, int]:
     return out
 
 
-def _build_rq2_drivers(experiments: list[dict[str, Any]]) -> dict[str, Any]:
+def _build_rq5_conditional_robustness(experiments: list[dict[str, Any]]) -> dict[str, Any]:
+    robust_core_rows: list[dict[str, Any]] = []
+    failure_frontier_rows: list[dict[str, Any]] = []
+    minimal_lockdown_rows: list[dict[str, Any]] = []
+    experiments_with_map = 0
+
+    for exp in experiments:
+        overall = exp.get("overall", {})
+        robustness = overall.get("conditional_robustness")
+        if not isinstance(robustness, dict):
+            continue
+        experiments_with_map += 1
+        exp_id = str(exp.get("experiment_id"))
+        claim = exp.get("claim", {})
+        claim_type = str(claim.get("type", "ranking"))
+
+        for delta, rows in robustness.get("robust_core_by_delta", {}).items():
+            if not isinstance(rows, list):
+                continue
+            for row in rows[:3]:
+                if not isinstance(row, dict):
+                    continue
+                robust_core_rows.append(
+                    {
+                        "experiment_id": exp_id,
+                        "claim_type": claim_type,
+                        "delta": str(delta),
+                        "conditions": row.get("conditions", {}),
+                        "n_eval": _as_int(row.get("n_eval"), 0),
+                        "stability_hat": _as_float(row.get("stability_hat"), 0.0),
+                        "stability_ci_low": _as_float(row.get("stability_ci_low"), 0.0),
+                        "stability_ci_high": _as_float(row.get("stability_ci_high"), 0.0),
+                        "decision": str(row.get("decision", "inconclusive")),
+                    }
+                )
+
+        for delta, rows in robustness.get("failure_frontier_by_delta", {}).items():
+            if not isinstance(rows, list):
+                continue
+            for row in rows[:3]:
+                if not isinstance(row, dict):
+                    continue
+                failure_frontier_rows.append(
+                    {
+                        "experiment_id": exp_id,
+                        "claim_type": claim_type,
+                        "delta": str(delta),
+                        "changed_dimension": row.get("changed_dimension"),
+                        "stable_conditions": row.get("stable_conditions", {}),
+                        "unstable_conditions": row.get("unstable_conditions", {}),
+                        "stable_n_eval": _as_int(row.get("stable_n_eval"), 0),
+                        "unstable_n_eval": _as_int(row.get("unstable_n_eval"), 0),
+                    }
+                )
+
+        for delta, payload in robustness.get("minimal_lockdown_set_by_delta", {}).items():
+            if not isinstance(payload, dict):
+                continue
+            best = payload.get("best")
+            if not isinstance(best, dict):
+                continue
+            minimal_lockdown_rows.append(
+                {
+                    "experiment_id": exp_id,
+                    "claim_type": claim_type,
+                    "delta": str(delta),
+                    "lock_dimensions": best.get("lock_dimensions", []),
+                    "conditions": best.get("conditions", {}),
+                    "n_eval": _as_int(best.get("n_eval"), 0),
+                    "stability_hat": _as_float(best.get("stability_hat"), 0.0),
+                    "stability_ci_low": _as_float(best.get("stability_ci_low"), 0.0),
+                    "stability_ci_high": _as_float(best.get("stability_ci_high"), 0.0),
+                    "decision": str(best.get("decision", "inconclusive")),
+                }
+            )
+
+    robust_core_rows.sort(
+        key=lambda row: (
+            row.get("decision") == "stable",
+            _as_int(row.get("n_eval"), 0),
+            _as_float(row.get("stability_ci_low"), 0.0),
+        ),
+        reverse=True,
+    )
+    minimal_lockdown_rows.sort(
+        key=lambda row: (
+            len(row.get("lock_dimensions", [])),
+            -_as_int(row.get("n_eval"), 0),
+            -_as_float(row.get("stability_ci_low"), 0.0),
+        ),
+    )
+    failure_frontier_rows.sort(
+        key=lambda row: min(_as_int(row.get("stable_n_eval"), 0), _as_int(row.get("unstable_n_eval"), 0)),
+        reverse=True,
+    )
+
+    return {
+        "experiments_with_map": experiments_with_map,
+        "robust_core_examples": robust_core_rows[:20],
+        "failure_frontier_examples": failure_frontier_rows[:20],
+        "minimal_lockdown_examples": minimal_lockdown_rows[:20],
+    }
+
+
+def _weighted_std(values: list[float], weights: list[float]) -> float:
+    if not values or not weights:
+        return 0.0
+    denom = sum(weights)
+    if denom <= 0.0:
+        return 0.0
+    mean = sum(v * w for v, w in zip(values, weights)) / denom
+    variance = sum(w * (v - mean) ** 2 for v, w in zip(values, weights)) / denom
+    return math.sqrt(max(0.0, variance))
+
+
+def _emit_rq2_debug(accum: dict[str, dict[str, float]], ranked_dims: list[dict[str, Any]], stream: TextIO) -> None:
+    print("[RQ2 attribution debug] Driver metric: weighted std of per-value flip rates.", file=stream)
+    print(
+        "[RQ2 attribution debug] driver_score = sqrt(sum_v w_v*(r_v-r_bar)^2 / sum_v w_v), "
+        "r_v=flips_v/total_v, w_v=total_v",
+        file=stream,
+    )
+    print(
+        "[RQ2 attribution debug] flip contribution rate field in output = total_flips / total_configs_considered.",
+        file=stream,
+    )
+    print("[RQ2 attribution debug] per-dimension normalization to sum=1: False", file=stream)
+    print(
+        "[RQ2 attribution debug] averaged after per-instance normalization: False "
+        "(weighted by total evaluations per observation).",
+        file=stream,
+    )
+
+    for dim_name in sorted(accum.keys()):
+        stats = accum[dim_name]
+        total_evals = stats["total_evals"]
+        total_flips = stats["total_flips"]
+        flip_contribution_rate = 0.0 if total_evals <= 0 else total_flips / total_evals
+        observations = int(stats["observations"])
+        value_groups = int(stats["value_groups"])
+        mean_unweighted_gap = 0.0 if observations == 0 else stats["unweighted_gap_sum"] / float(observations)
+        mean_weighted_gap = 0.0 if observations == 0 else stats["weighted_gap_sum"] / float(observations)
+        print(
+            "[RQ2 attribution debug] "
+            f"dimension={dim_name} "
+            f"total_configs_considered={int(round(total_evals))} "
+            f"total_flips_counted={int(round(total_flips))} "
+            f"value_groups={value_groups} "
+            f"observations={observations} "
+            f"flip_contribution_rate={flip_contribution_rate:.6f} "
+            f"(= {total_flips:.0f}/{total_evals:.0f}) "
+            f"mean_unweighted_gap_to_global={mean_unweighted_gap:.6f} "
+            f"mean_weighted_gap_to_global={mean_weighted_gap:.6f}",
+            file=stream,
+        )
+
+    flip_rates = [float(row.get("flip_rate", 0.0)) for row in ranked_dims]
+    driver_scores = [float(row.get("driver_score", 0.0)) for row in ranked_dims]
+    eval_totals = [float(stats["total_evals"]) for stats in accum.values() if stats["total_evals"] > 0]
+    unweighted_gaps = [
+        (stats["unweighted_gap_sum"] / stats["observations"]) if stats["observations"] > 0 else 0.0
+        for stats in accum.values()
+    ]
+
+    pattern_a = bool(unweighted_gaps) and max(unweighted_gaps) <= 1e-6
+    pattern_b = False
+    pattern_c = (
+        len(eval_totals) > 1
+        and (max(eval_totals) - min(eval_totals)) <= 1e-9
+        and len(flip_rates) > 1
+        and (max(flip_rates) - min(flip_rates)) <= 1e-12
+    )
+    pattern_d = len(driver_scores) > 1 and (max(driver_scores) - min(driver_scores)) <= 1e-12
+
+    print(f"[RQ2 attribution debug] Pattern A (mean(rate_by_value) ~= global_rate): {pattern_a}", file=stream)
+    print(f"[RQ2 attribution debug] Pattern B (within-dimension normalization): {pattern_b}", file=stream)
+    print(
+        "[RQ2 attribution debug] Pattern C (flip contribution collapses to global rate): "
+        f"{pattern_c}",
+        file=stream,
+    )
+    print(f"[RQ2 attribution debug] Pattern D (same scalar reused for all dimensions): {pattern_d}", file=stream)
+
+
+def _build_rq2_drivers(
+    experiments: list[dict[str, Any]],
+    *,
+    debug_attribution: bool = False,
+    debug_stream: TextIO | None = None,
+) -> dict[str, Any]:
     # NOTE:
     # Summing flips/total across each dimension partition leads to identical rates
-    # across dimensions (a partition identity). Instead we score dimensions by how
-    # much the flip rate changes across their values (contrast) and by achievable
-    # improvement from locking to the best value.
+    # across dimensions (a partition identity). We therefore score dimensions by
+    # how much value-level flip rates spread within each dimension.
     accum: dict[str, dict[str, float]] = defaultdict(
         lambda: {
+            "std_weighted_sum": 0.0,
             "contrast_weighted_sum": 0.0,
             "improvement_weighted_sum": 0.0,
             "global_flip_weighted_sum": 0.0,
             "weight_sum": 0.0,
             "observations": 0.0,
+            "value_groups": 0.0,
+            "total_flips": 0.0,
+            "total_evals": 0.0,
+            "unweighted_gap_sum": 0.0,
+            "weighted_gap_sum": 0.0,
         }
     )
 
@@ -55,6 +251,7 @@ def _build_rq2_drivers(experiments: list[dict[str, Any]]) -> dict[str, Any]:
                 if not isinstance(values, dict) or not values:
                     continue
                 rates: list[float] = []
+                weights: list[float] = []
                 flips_total = 0.0
                 eval_total = 0.0
                 for _, stats in values.items():
@@ -65,6 +262,7 @@ def _build_rq2_drivers(experiments: list[dict[str, Any]]) -> dict[str, Any]:
                     if total <= 0:
                         continue
                     rates.append(flips / total)
+                    weights.append(total)
                     flips_total += flips
                     eval_total += total
                 if not rates or eval_total <= 0:
@@ -72,33 +270,44 @@ def _build_rq2_drivers(experiments: list[dict[str, Any]]) -> dict[str, Any]:
                 min_rate = min(rates)
                 max_rate = max(rates)
                 global_rate = flips_total / eval_total
+                weighted_mean_by_value = sum(r * w for r, w in zip(rates, weights)) / eval_total
+                unweighted_mean_by_value = sum(rates) / float(len(rates))
+                spread_std = _weighted_std(rates, weights)
                 contrast = max_rate - min_rate
                 improvement = max(0.0, global_rate - min_rate)
                 weight = eval_total
 
                 slot = accum[dim_name]
+                slot["std_weighted_sum"] += spread_std * weight
                 slot["contrast_weighted_sum"] += contrast * weight
                 slot["improvement_weighted_sum"] += improvement * weight
                 slot["global_flip_weighted_sum"] += global_rate * weight
                 slot["weight_sum"] += weight
                 slot["observations"] += 1.0
+                slot["value_groups"] += float(len(rates))
+                slot["total_flips"] += flips_total
+                slot["total_evals"] += eval_total
+                slot["unweighted_gap_sum"] += abs(unweighted_mean_by_value - global_rate)
+                slot["weighted_gap_sum"] += abs(weighted_mean_by_value - global_rate)
 
     ranked_dims: list[dict[str, Any]] = []
     for dim_name, stats in accum.items():
         w = stats["weight_sum"]
         if w <= 0:
             continue
+        avg_std = stats["std_weighted_sum"] / w
         avg_contrast = stats["contrast_weighted_sum"] / w
         avg_improvement = stats["improvement_weighted_sum"] / w
         mean_global_flip = stats["global_flip_weighted_sum"] / w
         ranked_dims.append(
             {
                 "dimension": dim_name,
-                "driver_score": avg_improvement,
+                "driver_score": avg_std,
                 "avg_contrast": avg_contrast,
                 "avg_improvement_from_best_value": avg_improvement,
                 "flip_rate": mean_global_flip,
                 "observations": int(stats["observations"]),
+                "value_groups": int(stats["value_groups"]),
             }
         )
 
@@ -110,10 +319,24 @@ def _build_rq2_drivers(experiments: list[dict[str, Any]]) -> dict[str, Any]:
         ),
         reverse=True,
     )
-    return {"top_dimensions": ranked_dims[:3], "all_dimensions": ranked_dims}
+    if debug_attribution:
+        _emit_rq2_debug(accum, ranked_dims, debug_stream or sys.stdout)
+    return {
+        "metric_name": "std_flip_rate_across_values",
+        "metric_label": "driver score (std of flip rate across knob values)",
+        "metric_formula": "driver_score = sqrt(sum_v w_v*(r_v-r_bar)^2 / sum_v w_v), r_v=flips_v/total_v, w_v=total_v",
+        "metric_note": "Higher score means changing this knob shifts flip-rate behavior more across its values.",
+        "top_dimensions": ranked_dims[:3],
+        "all_dimensions": ranked_dims,
+    }
 
 
-def build_rq_summary(payload: dict[str, Any]) -> dict[str, Any]:
+def build_rq_summary(
+    payload: dict[str, Any],
+    *,
+    debug_attribution: bool = False,
+    debug_stream: TextIO | None = None,
+) -> dict[str, Any]:
     experiments = payload.get("experiments", [])
     comparative_rows = payload.get("comparative", {}).get("space_claim_delta", [])
     task_name = str(payload.get("meta", {}).get("task", "unknown"))
@@ -135,7 +358,7 @@ def build_rq_summary(payload: dict[str, Any]) -> dict[str, Any]:
         "by_space_and_claim_type": rq1_by_space_and_claim,
     }
 
-    rq2 = _build_rq2_drivers(experiments)
+    rq2 = _build_rq2_drivers(experiments, debug_attribution=debug_attribution, debug_stream=debug_stream)
 
     cost_rows: list[dict[str, Any]] = []
     for exp in experiments:
@@ -188,6 +411,7 @@ def build_rq_summary(payload: dict[str, Any]) -> dict[str, Any]:
         "adaptive_sampling": adaptive_rows,
         "decision_agreement_rate_vs_full_factorial": None,
     }
+    rq5 = _build_rq5_conditional_robustness(experiments)
 
     naive_counts = {"naive_overclaim": 0, "naive_underclaim": 0, "agree": 0, "naive_uninformative": 0}
     for row in comparative_rows:
@@ -203,6 +427,7 @@ def build_rq_summary(payload: dict[str, Any]) -> dict[str, Any]:
         "rq2_drivers": rq2,
         "rq3_cost_tradeoff": rq3,
         "rq4_adaptive_sampling": rq4,
+        "rq5_conditional_robustness": rq5,
         "naive_baseline_comparison": baseline_compare,
         "decision_counts_overall": _decision_counts(comparative_rows),
     }

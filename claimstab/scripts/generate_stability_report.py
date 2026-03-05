@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from claimstab.figures.style import SERIF_FALLBACK
 from claimstab.results.report_sections import available_sections_text, is_section_enabled, parse_sections_arg
 
 
@@ -22,6 +23,29 @@ def _numeric_sort_key(value: Any) -> tuple[int, float | str]:
         return (0, float(text))
     except Exception:
         return (1, text)
+
+
+def _report_plot_rc() -> dict[str, Any]:
+    return {
+        "figure.facecolor": "#fbfaf7",
+        "axes.facecolor": "#f7f5ef",
+        "font.family": "serif",
+        "font.serif": SERIF_FALLBACK,
+        "mathtext.fontset": "stix",
+        "axes.titleweight": "semibold",
+        "axes.grid": True,
+        "grid.linestyle": "-",
+        "grid.color": "#b2b2b2",
+        "grid.linewidth": 0.75,
+        "grid.alpha": 0.24,
+        "legend.frameon": True,
+        "legend.framealpha": 0.95,
+        "legend.facecolor": "white",
+        "legend.edgecolor": "#c7c7c7",
+        "legend.fancybox": False,
+        "pdf.fonttype": 42,
+        "ps.fonttype": 42,
+    }
 
 
 def _decision_badge(value: Any) -> str:
@@ -413,6 +437,12 @@ def _render_rq_summary(rq: dict[str, Any]) -> str:
     rq1 = rq.get("rq1_prevalence", {})
     out.append(f"<p><b>RQ1 prevalence:</b> {html.escape(str(rq1.get('by_space_and_claim_type', {})))}</p>")
     rq2 = rq.get("rq2_drivers", {})
+    metric_label = rq2.get("metric_label")
+    metric_note = rq2.get("metric_note")
+    if metric_label:
+        out.append(f"<p><b>RQ2 metric:</b> {html.escape(str(metric_label))}.</p>")
+    if metric_note:
+        out.append(f"<p><i>{html.escape(str(metric_note))}</i></p>")
     out.append(f"<p><b>RQ2 top drivers:</b> {html.escape(str(rq2.get('top_dimensions', [])))}</p>")
     rq3 = rq.get("rq3_cost_tradeoff", {})
     rows = rq3.get("stability_vs_cost_rows", [])
@@ -421,6 +451,10 @@ def _render_rq_summary(rq: dict[str, Any]) -> str:
     out.append(
         f"<p><b>RQ4 adaptive runs:</b> {len(rq4.get('adaptive_sampling', [])) if isinstance(rq4, dict) else 0}</p>"
     )
+    rq5 = rq.get("rq5_conditional_robustness", {})
+    if isinstance(rq5, dict):
+        out.append(f"<p><b>RQ5 robustness maps:</b> {rq5.get('experiments_with_map', 0)} experiments.</p>")
+        out.append(f"<p><b>RQ5 minimal lockdown examples:</b> {len(rq5.get('minimal_lockdown_examples', []))}</p>")
     return "".join(out)
 
 
@@ -518,18 +552,7 @@ def _plot_delta_curve(delta_rows: list[dict[str, Any]], out_path: Path) -> None:
     ymin = [float(r.get("flip_rate_min", y)) for r, y in zip(ordered, ys)]
     ymax = [float(r.get("flip_rate_max", y)) for r, y in zip(ordered, ys)]
 
-    with plt.rc_context(
-        {
-            "figure.facecolor": "#fbfaf7",
-            "axes.facecolor": "#f7f5ef",
-            "font.family": "DejaVu Sans",
-            "axes.titleweight": "bold",
-            "axes.grid": True,
-            "grid.linestyle": (0, (1, 3)),
-            "grid.color": "#b2b2b2",
-            "grid.linewidth": 0.7,
-        }
-    ):
+    with plt.rc_context(_report_plot_rc()):
         fig, ax = plt.subplots(figsize=(7.1, 4.25))
         ax.plot(xs, ys, marker="o", markersize=6.8, color="#2f5f89", linewidth=2.2, label="mean flip rate")
         band = ax.fill_between(xs, ymin, ymax, color="#7aa6c2", alpha=0.24)
@@ -538,7 +561,7 @@ def _plot_delta_curve(delta_rows: list[dict[str, Any]], out_path: Path) -> None:
         band.set_linewidth(0.0)
         ax.set_xlabel("delta", fontweight="semibold")
         ax.set_ylabel("mean flip rate", fontweight="semibold")
-        ax.set_title("Delta Sweep: Ranking Flip Rate", fontfamily="DejaVu Serif")
+        ax.set_title("Delta Sweep: Ranking Flip Rate")
         y_min_data = float(np.nanmin(ymin))
         y_max_data = float(np.nanmax(ymax))
         y_span = y_max_data - y_min_data
@@ -561,7 +584,7 @@ def _plot_delta_curve(delta_rows: list[dict[str, Any]], out_path: Path) -> None:
 
         fig.tight_layout()
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(out_path, dpi=240, bbox_inches="tight")
+        fig.savefig(out_path, dpi=320, bbox_inches="tight")
         plt.close(fig)
 
 
@@ -571,7 +594,33 @@ def _plot_shots_curve(shots_rows: list[dict[str, Any]], out_path: Path, *, thres
     import numpy as np
     import matplotlib.pyplot as plt
 
-    ordered = sorted(shots_rows, key=lambda r: int(r.get("shots", 0)))
+    bucket: dict[int, list[dict[str, Any]]] = {}
+    for row in shots_rows:
+        shot = int(row.get("shots", 0))
+        bucket.setdefault(shot, []).append(row)
+
+    ordered: list[dict[str, Any]] = []
+    decision_order = {"stable": 3, "inconclusive": 2, "unstable": 1}
+    for shot in sorted(bucket.keys()):
+        rows = bucket[shot]
+        n = len(rows)
+        mean_hat = sum(float(r.get("stability_hat", 0.0)) for r in rows) / n
+        mean_low = sum(float(r.get("stability_ci_low", 0.0)) for r in rows) / n
+        mean_high = sum(float(r.get("stability_ci_high", 0.0)) for r in rows) / n
+        mean_eval = int(round(sum(float(r.get("n_eval", 0.0)) for r in rows) / n))
+        labels = [str(r.get("decision", "inconclusive")) for r in rows]
+        labels.sort(key=lambda x: decision_order.get(x, 0), reverse=True)
+        ordered.append(
+            {
+                "shots": shot,
+                "stability_hat": mean_hat,
+                "stability_ci_low": mean_low,
+                "stability_ci_high": mean_high,
+                "n_eval": mean_eval,
+                "decision": labels[0] if labels else "inconclusive",
+            }
+        )
+
     xs = [int(r["shots"]) for r in ordered]
     ys = [float(r["stability_hat"]) for r in ordered]
     lows = [float(r["stability_ci_low"]) for r in ordered]
@@ -579,18 +628,7 @@ def _plot_shots_curve(shots_rows: list[dict[str, Any]], out_path: Path, *, thres
     decisions = [str(r.get("decision", "inconclusive")) for r in ordered]
     eval_counts = [int(r.get("n_eval", 0)) for r in ordered]
 
-    with plt.rc_context(
-        {
-            "figure.facecolor": "#fbfaf7",
-            "axes.facecolor": "#f7f5ef",
-            "font.family": "DejaVu Sans",
-            "axes.titleweight": "bold",
-            "axes.grid": True,
-            "grid.linestyle": (0, (1, 3)),
-            "grid.color": "#b2b2b2",
-            "grid.linewidth": 0.7,
-        }
-    ):
+    with plt.rc_context(_report_plot_rc()):
         fig, ax = plt.subplots(figsize=(7.1, 4.25))
         band = ax.fill_between(xs, lows, highs, color="#8ab6d6", alpha=0.24)
         band.set_hatch("\\\\\\\\")
@@ -630,21 +668,19 @@ def _plot_shots_curve(shots_rows: list[dict[str, Any]], out_path: Path, *, thres
         ax.axhline(threshold, color="#6b6b6b", linewidth=1.2, linestyle=(0, (4, 3)), label="stability threshold")
         ax.set_xlabel("shots", fontweight="semibold")
         ax.set_ylabel("stability (CI)", fontweight="semibold")
-        ax.set_title("Stability vs Cost (Shots)", fontfamily="DejaVu Serif")
+        ax.set_title("Stability vs Cost (Shots)")
+        ax.set_xscale("log", base=2)
         lo = max(0.0, float(np.nanmin(lows)) - 0.04)
         hi = min(1.0, float(np.nanmax(highs)) + 0.03)
         if hi - lo < 0.12:
             lo = max(0.0, hi - 0.12)
         ax.set_ylim(lo, hi)
         ax.set_xticks(xs)
+        ax.set_xticklabels([str(x) for x in xs])
         if len(xs) == 1:
             x = xs[0]
             pad = max(1.0, 0.06 * x)
             ax.set_xlim(x - pad, x + pad)
-        else:
-            xspan = max(xs) - min(xs)
-            xpad = max(2.0, 0.05 * xspan)
-            ax.set_xlim(min(xs) - xpad, max(xs) + xpad)
 
         y_annot_top = ax.get_ylim()[1]
         for x, low, decision, n_eval in zip(xs, lows, decisions, eval_counts):
@@ -661,7 +697,7 @@ def _plot_shots_curve(shots_rows: list[dict[str, Any]], out_path: Path, *, thres
         ax.legend(loc="lower right")
         fig.tight_layout()
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(out_path, dpi=240, bbox_inches="tight")
+        fig.savefig(out_path, dpi=320, bbox_inches="tight")
         plt.close(fig)
     return True
 
@@ -686,17 +722,7 @@ def _plot_factor_attribution(
     if not dimensions:
         return False
 
-    with plt.rc_context(
-        {
-            "figure.facecolor": "#fbfaf7",
-            "axes.facecolor": "#f7f5ef",
-            "font.family": "DejaVu Sans",
-            "axes.grid": True,
-            "grid.linestyle": (0, (1, 3)),
-            "grid.color": "#b2b2b2",
-            "grid.linewidth": 0.7,
-        }
-    ):
+    with plt.rc_context(_report_plot_rc()):
         fig, axes = plt.subplots(len(dimensions), 1, figsize=(7.8, 2.9 * len(dimensions)))
         if len(dimensions) == 1:
             axes = [axes]
@@ -737,12 +763,12 @@ def _plot_factor_attribution(
             ax.set_xticks(x)
             ax.set_xticklabels([str(v) for v in labels])
             ax.set_ylabel("flip rate", fontweight="semibold")
-            ax.set_title(f"{graph_id}: {dim} (delta={selected_delta})", fontfamily="DejaVu Serif", fontsize=11.2)
+            ax.set_title(f"{graph_id}: {dim} (delta={selected_delta})", fontsize=11.2)
 
         axes[-1].set_xlabel("dimension value", fontweight="semibold")
         fig.tight_layout()
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(out_path, dpi=240, bbox_inches="tight")
+        fig.savefig(out_path, dpi=320, bbox_inches="tight")
         plt.close(fig)
     return True
 
@@ -796,13 +822,13 @@ def main() -> None:
             "<style>"
             ":root{--bg:#f8f6f2;--panel:#fffdf8;--ink:#1e1f22;--line:#c8c2b6;--muted:#6a6a6a;"
             "--stable:#2d7f5e;--unstable:#b0413e;--inconclusive:#8a6f2f;}"
-            "body{font-family:'Trebuchet MS',Verdana,sans-serif;margin:24px;color:var(--ink);"
+            "body{font-family:'Times New Roman',Times,'Nimbus Roman',serif;margin:24px;color:var(--ink);"
             "background:radial-gradient(circle at top right,#f2ece0 0%,var(--bg) 42%,#f7f4ee 100%);line-height:1.38;}"
             "table{border-collapse:collapse;margin:10px 0 16px 0;width:100%;background:var(--panel);}"
             "th,td{border:1px solid var(--line);padding:7px 10px;vertical-align:top;}"
-            "th{background:#ece7da;font-family:'Palatino Linotype',Georgia,serif;font-size:0.94rem;letter-spacing:0.2px;}"
+            "th{background:#ece7da;font-family:'Times New Roman',Times,'Nimbus Roman',serif;font-size:0.94rem;letter-spacing:0.2px;}"
             "tr:nth-child(even) td{background:#fbf8f1;}"
-            "h1,h2,h3,h4,h5{font-family:'Palatino Linotype',Georgia,serif;margin:11px 0 7px 0;letter-spacing:0.2px;}"
+            "h1,h2,h3,h4,h5{font-family:'Times New Roman',Times,'Nimbus Roman',serif;margin:11px 0 7px 0;letter-spacing:0.2px;}"
             "h1{font-size:2rem;border-bottom:2px solid #d8cfbd;padding-bottom:6px;}"
             "code{background:#eee8dd;padding:2px 5px;border-radius:4px;border:1px solid #d6cec0;}"
             "p{margin:4px 0 10px 0;}"

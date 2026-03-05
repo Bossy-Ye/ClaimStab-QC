@@ -15,6 +15,7 @@ from qiskit.transpiler import CouplingMap
 from claimstab.claims.decision import decision_in_top_k, evaluate_decision_claim
 from claimstab.claims.diagnostics import (
     aggregate_lockdown_recommendations,
+    build_conditional_robustness_summary,
     compute_stability_vs_shots,
     conditional_rank_flip_summary,
     minimum_shots_for_stable,
@@ -155,6 +156,11 @@ def parse_args() -> argparse.Namespace:
         "--use-operator-shim",
         action="store_true",
         help="Use perturbation operator shim to generate config pool (backward-compatible opt-in).",
+    )
+    ap.add_argument(
+        "--debug-attribution",
+        action="store_true",
+        help="Print intermediate RQ2 attribution aggregation diagnostics.",
     )
     return ap.parse_args()
 
@@ -841,6 +847,7 @@ def evaluate_claim_on_rows(
     factor_attribution: dict[str, dict[str, object]] = {}
     lockdown_recommendation: dict[str, dict[str, object]] = {}
     conditional_stability: dict[str, list[dict[str, object]]] = {}
+    flip_observations_by_delta: dict[str, list[dict[str, object]]] = {}
 
     for delta in deltas:
         claim = RankingClaim(
@@ -868,8 +875,32 @@ def evaluate_claim_on_rows(
         ).value
         baseline_holds = claim.holds(baseline_a, baseline_b)
         baseline_relation = claim.relation(baseline_a, baseline_b)
+        baseline_margin = (baseline_a - baseline_b) if higher_is_better else (baseline_b - baseline_a)
         claim_holds_count = sum(1 for pair in paired_scores.values() if claim.holds(*pair))
         claim_holds_rate = claim_holds_count / len(paired_scores) if paired_scores else 0.0
+
+        delta_flip_observations: list[dict[str, object]] = []
+        for key, (score_a, score_b) in paired_scores.items():
+            if key == baseline_key:
+                continue
+            perturbed_relation = claim.relation(score_a, score_b)
+            margin = (score_a - score_b) if higher_is_better else (score_b - score_a)
+            delta_flip_observations.append(
+                {
+                    "seed_transpiler": int(key[0]),
+                    "optimization_level": int(key[1]),
+                    "layout_method": key[2],
+                    "shots": int(key[3]),
+                    "seed_simulator": int(key[4]) if key[4] is not None else None,
+                    "baseline_relation": baseline_relation.value,
+                    "perturbed_relation": perturbed_relation.value,
+                    "is_flip": perturbed_relation != baseline_relation,
+                    "margin": margin,
+                    "margin_to_threshold": margin - float(delta),
+                    "margin_shift_vs_baseline": margin - baseline_margin,
+                }
+            )
+        flip_observations_by_delta[str(delta)] = delta_flip_observations
 
         delta_record = {
             "delta": delta,
@@ -932,6 +963,7 @@ def evaluate_claim_on_rows(
         "factor_attribution": factor_attribution,
         "lockdown_recommendation": lockdown_recommendation,
         "conditional_stability": conditional_stability,
+        "flip_observations_by_delta": flip_observations_by_delta,
         "by_delta_flip": by_delta_flip,
         "by_delta_decision": by_delta_decision,
         "paired_scores": paired_scores,
@@ -1322,6 +1354,7 @@ def main() -> None:
             by_delta_baseline_holds_totals: dict[float, int] = defaultdict(int)
             paired_scores_by_graph: dict[str, dict[tuple[int, int, str | None, int, int | None], tuple[float, float]]] = {}
             method_scores_by_graph: dict[str, dict[tuple[int, int, str | None, int, int | None], dict[str, float]]] = {}
+            robustness_observations_by_delta: dict[str, list[dict[str, object]]] = defaultdict(list)
             for graph_id, graph_rows in space_rows.items():
                 paired_scores_by_graph[graph_id] = collect_paired_scores(graph_rows, method_a, method_b)
 
@@ -1363,6 +1396,14 @@ def main() -> None:
                     "lockdown_recommendation": graph_eval["lockdown_recommendation"],
                     "conditional_stability": graph_eval["conditional_stability"],
                 }
+                for delta_key, obs_rows in graph_eval["flip_observations_by_delta"].items():
+                    for obs_row in obs_rows:
+                        robustness_observations_by_delta[delta_key].append(
+                            {
+                                **obs_row,
+                                "graph_id": graph_id,
+                            }
+                        )
                 for delta in claim_deltas:
                     by_delta_flip[delta].extend(graph_eval["by_delta_flip"][delta])
                     by_delta_decision[delta].extend(graph_eval["by_delta_decision"][delta])
@@ -1458,6 +1499,16 @@ def main() -> None:
                 deltas=claim_deltas,
                 top_k=args.top_k_unstable,
             )
+            conditional_robustness_summary = build_conditional_robustness_summary(
+                observations_by_delta=robustness_observations_by_delta,
+                stability_threshold=args.stability_threshold,
+                confidence_level=args.confidence_level,
+                context_conditions={
+                    "space_preset": space_name,
+                    "device_mode": resolved_device.profile.mode,
+                    "noise_model": noise_model_mode,
+                },
+            )
 
             stability_vs_cost_by_delta: dict[str, list[dict[str, object]]] = {}
             minimum_shots_by_delta: dict[str, int | None] = {}
@@ -1531,6 +1582,7 @@ def main() -> None:
                     "graphs": len(per_graph_summary),
                     "delta_sweep": overall_delta,
                     "diagnostics": diagnostics_summary,
+                    "conditional_robustness": conditional_robustness_summary,
                     "stability_vs_cost": {
                         "cost_metric": "shots",
                         "by_delta": stability_vs_cost_by_delta,
@@ -1756,7 +1808,7 @@ def main() -> None:
         if isinstance(m, dict) and isinstance(m.get("deprecated_field_used"), list):
             payload["meta"]["deprecated_field_used"] = [str(x) for x in m.get("deprecated_field_used", [])]
 
-    rq_summary = build_rq_summary(payload)
+    rq_summary = build_rq_summary(payload, debug_attribution=args.debug_attribution)
     payload["rq_summary"] = rq_summary
 
     if len(experiments) == 1:

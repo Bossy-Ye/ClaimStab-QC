@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 from collections import defaultdict
 from typing import Any, Dict, Mapping, Sequence
 
@@ -255,6 +256,257 @@ def aggregate_lockdown_recommendations(
         reverse=True,
     )
     return rows[:max(0, top_k)]
+
+
+def _shots_bucket(shots: int) -> str:
+    if shots <= 64:
+        return "low"
+    if shots <= 256:
+        return "medium"
+    return "high"
+
+
+def _observed_condition_cell(
+    observation: Mapping[str, Any],
+    *,
+    context_conditions: Mapping[str, Any] | None,
+    cell_dimensions: Sequence[str],
+) -> dict[str, Any]:
+    cell: dict[str, Any] = {}
+    for dim in cell_dimensions:
+        if dim == "shots_bucket":
+            cell["shots_bucket"] = _shots_bucket(int(observation.get("shots", 0)))
+            continue
+        cell[dim] = observation.get(dim)
+    if context_conditions:
+        for k, v in context_conditions.items():
+            cell[k] = v
+    return cell
+
+
+def _cell_key(cell: Mapping[str, Any], *, key_order: Sequence[str]) -> tuple[Any, ...]:
+    return tuple(cell.get(k) for k in key_order)
+
+
+def _cell_stats_from_counts(
+    *,
+    conditions: Mapping[str, Any],
+    flips: int,
+    total: int,
+    confidence_level: float,
+    stability_threshold: float,
+) -> dict[str, Any]:
+    stable = max(0, total - flips)
+    estimate = estimate_binomial_rate(
+        successes=stable,
+        total=max(1, total),
+        confidence=confidence_level,
+    )
+    decision = conservative_stability_decision(
+        estimate=estimate,
+        stability_threshold=stability_threshold,
+    ).value
+    return {
+        "conditions": dict(conditions),
+        "n_eval": int(total),
+        "flip_count": int(flips),
+        "stable_count": int(stable),
+        "flip_rate": 0.0 if total <= 0 else flips / total,
+        "stability_hat": estimate.rate,
+        "stability_ci_low": estimate.ci_low,
+        "stability_ci_high": estimate.ci_high,
+        "decision": decision,
+    }
+
+
+def _hamming_one_diff(
+    left: Mapping[str, Any],
+    right: Mapping[str, Any],
+    *,
+    varying_dimensions: Sequence[str],
+) -> str | None:
+    changed: list[str] = []
+    for dim in varying_dimensions:
+        if left.get(dim) != right.get(dim):
+            changed.append(dim)
+            if len(changed) > 1:
+                return None
+    return changed[0] if len(changed) == 1 else None
+
+
+def _build_minimal_lockdown_set(
+    observations: Sequence[Mapping[str, Any]],
+    *,
+    varying_dimensions: Sequence[str],
+    context_conditions: Mapping[str, Any] | None,
+    confidence_level: float,
+    stability_threshold: float,
+    max_lock_dims: int,
+    top_k: int,
+) -> dict[str, Any]:
+    if not observations:
+        return {"best": None, "candidates": []}
+
+    all_candidates: list[dict[str, Any]] = []
+    max_depth = min(max_lock_dims, len(varying_dimensions))
+    for depth in range(1, max_depth + 1):
+        for dims in itertools.combinations(varying_dimensions, depth):
+            grouped: dict[tuple[Any, ...], dict[str, int]] = defaultdict(lambda: {"total": 0, "flips": 0})
+            conditions_by_key: dict[tuple[Any, ...], dict[str, Any]] = {}
+            for obs in observations:
+                cond = _observed_condition_cell(
+                    obs,
+                    context_conditions=context_conditions,
+                    cell_dimensions=dims,
+                )
+                key_order = list(dims)
+                if context_conditions:
+                    key_order.extend(context_conditions.keys())
+                key = _cell_key(cond, key_order=key_order)
+                grouped[key]["total"] += 1
+                grouped[key]["flips"] += 1 if bool(obs.get("is_flip", False)) else 0
+                conditions_by_key[key] = cond
+            for key, counts in grouped.items():
+                stats = _cell_stats_from_counts(
+                    conditions=conditions_by_key[key],
+                    flips=counts["flips"],
+                    total=counts["total"],
+                    confidence_level=confidence_level,
+                    stability_threshold=stability_threshold,
+                )
+                if stats["decision"] != "stable":
+                    continue
+                all_candidates.append(
+                    {
+                        "lock_dimensions": list(dims),
+                        **stats,
+                    }
+                )
+        # Minimal lockdown means the first depth where stable candidates exist.
+        if all_candidates:
+            break
+
+    if not all_candidates:
+        return {"best": None, "candidates": []}
+
+    all_candidates.sort(
+        key=lambda row: (
+            -int(row["n_eval"]),
+            -float(row["stability_ci_low"]),
+            -float(row["stability_hat"]),
+        )
+    )
+    return {
+        "best": all_candidates[0],
+        "candidates": all_candidates[: max(0, top_k)],
+    }
+
+
+def build_conditional_robustness_summary(
+    *,
+    observations_by_delta: Mapping[str, Sequence[Mapping[str, Any]]],
+    stability_threshold: float,
+    confidence_level: float,
+    context_conditions: Mapping[str, Any] | None = None,
+    cell_dimensions: Sequence[str] = ("optimization_level", "layout_method", "shots_bucket"),
+    max_lock_dims: int = 2,
+    top_k: int = 5,
+) -> dict[str, Any]:
+    cells_by_delta: dict[str, list[dict[str, Any]]] = {}
+    robust_core_by_delta: dict[str, list[dict[str, Any]]] = {}
+    failure_frontier_by_delta: dict[str, list[dict[str, Any]]] = {}
+    minimal_lockdown_set_by_delta: dict[str, dict[str, Any]] = {}
+
+    for delta, observations in observations_by_delta.items():
+        grouped: dict[tuple[Any, ...], dict[str, int]] = defaultdict(lambda: {"total": 0, "flips": 0})
+        conditions_by_key: dict[tuple[Any, ...], dict[str, Any]] = {}
+        key_order = list(cell_dimensions)
+        if context_conditions:
+            key_order.extend(context_conditions.keys())
+
+        for obs in observations:
+            cond = _observed_condition_cell(
+                obs,
+                context_conditions=context_conditions,
+                cell_dimensions=cell_dimensions,
+            )
+            key = _cell_key(cond, key_order=key_order)
+            grouped[key]["total"] += 1
+            grouped[key]["flips"] += 1 if bool(obs.get("is_flip", False)) else 0
+            conditions_by_key[key] = cond
+
+        cells: list[dict[str, Any]] = []
+        for key, counts in grouped.items():
+            cells.append(
+                _cell_stats_from_counts(
+                    conditions=conditions_by_key[key],
+                    flips=counts["flips"],
+                    total=counts["total"],
+                    confidence_level=confidence_level,
+                    stability_threshold=stability_threshold,
+                )
+            )
+        cells.sort(
+            key=lambda row: (
+                -int(row["n_eval"]),
+                -float(row["stability_ci_low"]),
+                float(row["flip_rate"]),
+            )
+        )
+        cells_by_delta[str(delta)] = cells
+
+        stable_cells = [row for row in cells if str(row["decision"]) == "stable"]
+        robust_core_by_delta[str(delta)] = stable_cells[: max(0, top_k)]
+
+        frontier: list[dict[str, Any]] = []
+        unstable_cells = [row for row in cells if str(row["decision"]) == "unstable"]
+        for stable in stable_cells:
+            for unstable in unstable_cells:
+                changed_dim = _hamming_one_diff(
+                    stable["conditions"],
+                    unstable["conditions"],
+                    varying_dimensions=cell_dimensions,
+                )
+                if changed_dim is None:
+                    continue
+                frontier.append(
+                    {
+                        "changed_dimension": changed_dim,
+                        "stable_conditions": stable["conditions"],
+                        "unstable_conditions": unstable["conditions"],
+                        "stable_ci_low": stable["stability_ci_low"],
+                        "unstable_ci_high": unstable["stability_ci_high"],
+                        "stable_n_eval": stable["n_eval"],
+                        "unstable_n_eval": unstable["n_eval"],
+                    }
+                )
+        frontier.sort(
+            key=lambda row: (
+                -min(int(row["stable_n_eval"]), int(row["unstable_n_eval"])),
+                -float(row["stable_ci_low"]),
+                float(row["unstable_ci_high"]),
+            )
+        )
+        failure_frontier_by_delta[str(delta)] = frontier[: max(0, top_k)]
+
+        minimal_lockdown_set_by_delta[str(delta)] = _build_minimal_lockdown_set(
+            observations,
+            varying_dimensions=cell_dimensions,
+            context_conditions=context_conditions,
+            confidence_level=confidence_level,
+            stability_threshold=stability_threshold,
+            max_lock_dims=max_lock_dims,
+            top_k=top_k,
+        )
+
+    return {
+        "condition_dimensions": list(cell_dimensions),
+        "context_conditions": dict(context_conditions or {}),
+        "cells_by_delta": cells_by_delta,
+        "robust_core_by_delta": robust_core_by_delta,
+        "failure_frontier_by_delta": failure_frontier_by_delta,
+        "minimal_lockdown_set_by_delta": minimal_lockdown_set_by_delta,
+    }
 
 
 def compute_stability_vs_shots(

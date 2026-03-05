@@ -2,6 +2,7 @@ import unittest
 
 from claimstab.claims.diagnostics import (
     aggregate_lockdown_recommendations,
+    build_conditional_robustness_summary,
     conditional_rank_flip_summary,
     rank_flip_root_cause_by_dimension,
     single_knob_lockdown_recommendation,
@@ -100,6 +101,50 @@ class TestDiagnostics(unittest.TestCase):
         self.assertEqual(rows[0]["dimension"], "shots")
         self.assertEqual(rows[0]["value"], 1024)
         self.assertAlmostEqual(rows[0]["avg_flip_rate_improvement"], 0.25)
+
+    def test_conditional_robustness_summary_extracts_core_frontier_and_lockdown(self) -> None:
+        observations = []
+        for _ in range(120):
+            observations.append(
+                {
+                    "optimization_level": 1,
+                    "layout_method": "sabre",
+                    "shots": 1024,
+                    "is_flip": False,
+                }
+            )
+            observations.append(
+                {
+                    "optimization_level": 1,
+                    "layout_method": "sabre",
+                    "shots": 64,
+                    "is_flip": True,
+                }
+            )
+
+        summary = build_conditional_robustness_summary(
+            observations_by_delta={"0.0": observations},
+            stability_threshold=0.95,
+            confidence_level=0.95,
+            context_conditions={"space_preset": "sampling_only"},
+        )
+
+        cells = summary["cells_by_delta"]["0.0"]
+        self.assertGreaterEqual(len(cells), 2)
+        robust_core = summary["robust_core_by_delta"]["0.0"]
+        self.assertGreaterEqual(len(robust_core), 1)
+        self.assertEqual(robust_core[0]["decision"], "stable")
+        self.assertEqual(robust_core[0]["conditions"]["shots_bucket"], "high")
+
+        frontier = summary["failure_frontier_by_delta"]["0.0"]
+        self.assertGreaterEqual(len(frontier), 1)
+        self.assertEqual(frontier[0]["changed_dimension"], "shots_bucket")
+
+        lockdown = summary["minimal_lockdown_set_by_delta"]["0.0"]["best"]
+        self.assertIsNotNone(lockdown)
+        self.assertEqual(lockdown["lock_dimensions"], ["shots_bucket"])
+        self.assertEqual(lockdown["conditions"]["shots_bucket"], "high")
+        self.assertEqual(lockdown["decision"], "stable")
 
 
 if __name__ == "__main__":
