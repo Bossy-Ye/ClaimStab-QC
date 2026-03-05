@@ -19,11 +19,22 @@ def plot_naive_vs_claimstab(df_compare: pd.DataFrame, out_path: str | Path) -> d
     counts = df_compare["comparison"].value_counts().to_dict()
     labels = ["naive_overclaim", "naive_underclaim", "agree", "naive_uninformative"]
     values = [int(counts.get(label, 0)) for label in labels]
+    colors = ["#d73027", "#fc8d59", "#1a9850", "#999999"]
 
     apply_style()
-    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
-    ax.bar(labels, values)
-    ax.set_ylabel("count")
+    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H), layout="constrained")
+    bars = ax.bar(labels, values, color=colors, edgecolor="#2f2f2f", linewidth=0.55)
+    ax.set_ylabel("Count")
     ax.set_title("Naive Baseline vs ClaimStab")
-    ax.tick_params(axis="x", rotation=20)
+    ax.tick_params(axis="x", rotation=14)
+    ax.set_ylim(0, max(values + [1]) * 1.2)
+    for bar, v in zip(bars, values):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2.0,
+            bar.get_height() + max(values + [1]) * 0.03,
+            str(v),
+            ha="center",
+            va="bottom",
+            fontsize=8.5,
+        )
     return save_fig(fig, out_path)
