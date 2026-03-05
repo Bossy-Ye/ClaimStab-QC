@@ -101,6 +101,37 @@ def _write_csv(rows: list[dict[str, Any]], out_path: Path) -> None:
             writer.writerow({k: _csv_safe(row.get(k)) for k in fieldnames})
 
 
+def _build_naive_policy_delta_snapshot(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    counts: dict[tuple[str, str, str], int] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        delta = str(row.get("delta"))
+        for field_name, policy_default in (
+            ("naive_baseline", "legacy_strict_all"),
+            ("naive_baseline_realistic", "default_researcher_v1"),
+        ):
+            naive = row.get(field_name)
+            if not isinstance(naive, dict):
+                continue
+            policy = str(naive.get("naive_policy", policy_default))
+            comparison = str(naive.get("comparison", "naive_uninformative"))
+            key = (delta, policy, comparison)
+            counts[key] = counts.get(key, 0) + 1
+
+    out: list[dict[str, Any]] = []
+    for (delta, policy, comparison), count in sorted(counts.items(), key=lambda x: (x[0][0], x[0][1], x[0][2])):
+        out.append(
+            {
+                "delta": delta,
+                "naive_policy": policy,
+                "comparison": comparison,
+                "count": count,
+            }
+        )
+    return out
+
+
 def _resolve_input_dir(input_root: Path, which: str) -> Path:
     candidate = input_root / which
     if candidate.exists() and candidate.is_dir():
@@ -198,6 +229,9 @@ def main() -> None:
     )
     space_csv_path = tables_dir / "space_claim_delta.csv"
     _write_csv(space_rows, space_csv_path)
+    naive_snapshot_rows = _build_naive_policy_delta_snapshot(primary_rows)
+    naive_snapshot_csv_path = tables_dir / "naive_policy_delta_snapshot.csv"
+    _write_csv(naive_snapshot_rows, naive_snapshot_csv_path)
 
     # Build rq_summary.csv from all runs in selected family.
     rq_rows: list[dict[str, Any]] = []
@@ -343,8 +377,10 @@ def main() -> None:
             "tables": {
                 "space_claim_delta_csv": str(space_csv_path.resolve()),
                 "rq_summary_csv": str(rq_csv_path.resolve()),
+                "naive_policy_delta_snapshot_csv": str(naive_snapshot_csv_path.resolve()),
                 "space_claim_delta_rows": len(space_rows),
                 "rq_summary_rows": len(rq_rows),
+                "naive_policy_delta_snapshot_rows": len(naive_snapshot_rows),
             },
             "figures": figure_meta,
             "paper_claims": paper_claims_meta,

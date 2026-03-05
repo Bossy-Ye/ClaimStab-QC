@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
 from claimstab.core import ArtifactManifest, ExecutionEvent, JsonlEventLogger, TraceIndex
-from claimstab.io.writers import write_scores_csv
+from claimstab.pipelines.emit import write_rows_csv as _write_rows_csv
 from claimstab.perturbations.space import CompilationPerturbation, ExecutionPerturbation, PerturbationConfig, PerturbationSpace
 from claimstab.runners.matrix_runner import ScoreRow
 from claimstab.spec import load_spec
@@ -306,4 +306,4 @@ def load_rows_from_trace_by_batch(
 
 
 def write_rows_csv(rows: Iterable[ScoreRow], out_csv: Path) -> None:
-    write_scores_csv(rows, out_csv)
+    _write_rows_csv(rows, out_csv)

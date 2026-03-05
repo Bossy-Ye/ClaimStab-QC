@@ -208,6 +208,51 @@ class TestRQDrivers(unittest.TestCase):
         self.assertGreaterEqual(len(rq7["top_interactions"]), 1)
         self.assertEqual(rq7["top_interactions"][0]["dimensions"], ["shots_bucket", "layout_method"])
 
+    def test_naive_comparison_tracks_legacy_and_realistic(self) -> None:
+        payload = {
+            "meta": {"task": "maxcut"},
+            "experiments": [],
+            "comparative": {
+                "space_claim_delta": [
+                    {
+                        "space_preset": "sampling_only",
+                        "claim_type": "ranking",
+                        "claim_pair": "A>B",
+                        "metric_name": "objective",
+                        "delta": 0.0,
+                        "decision": "inconclusive",
+                        "naive_baseline": {"comparison": "naive_overclaim", "naive_policy": "legacy_strict_all"},
+                        "naive_baseline_realistic": {
+                            "comparison": "agree",
+                            "naive_policy": "default_researcher_v1",
+                        },
+                    },
+                    {
+                        "space_preset": "sampling_only",
+                        "claim_type": "ranking",
+                        "claim_pair": "C>D",
+                        "metric_name": "objective",
+                        "delta": 0.01,
+                        "decision": "stable",
+                        "naive_baseline": {"comparison": "agree", "naive_policy": "legacy_strict_all"},
+                        "naive_baseline_realistic": {
+                            "comparison": "naive_underclaim",
+                            "naive_policy": "default_researcher_v1",
+                        },
+                    },
+                ]
+            },
+        }
+        rq = build_rq_summary(payload)
+        legacy = rq["naive_baseline_comparison"]
+        realistic = rq["naive_baseline_realistic_comparison"]
+        self.assertEqual(legacy["policy"], "legacy_strict_all")
+        self.assertEqual(realistic["policy"], "default_researcher_v1")
+        self.assertEqual(int(legacy["counts"]["naive_overclaim"]), 1)
+        self.assertEqual(int(legacy["counts"]["agree"]), 1)
+        self.assertEqual(int(realistic["counts"]["agree"]), 1)
+        self.assertEqual(int(realistic["counts"]["naive_underclaim"]), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

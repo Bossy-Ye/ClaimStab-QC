@@ -31,6 +31,7 @@ nav:
       - Claims: concepts/claims.md
       - Perturbations: concepts/perturbations.md
       - Formal Definitions: concepts/formal_definitions.md
+      - Naive Baseline Policy: concepts/naive_baseline_policy.md
       - Threats to Validity: concepts/threats_to_validity.md
       - Extending: concepts/extending.md
   - Results:

@@ -34,12 +34,22 @@ class TestExportPaperPack(unittest.TestCase):
                                 "claim_pair": "QAOA_p2>RandomBaseline",
                                 "delta": 0.0,
                                 "decision": "stable",
+                                "naive_baseline": {"comparison": "agree", "naive_policy": "legacy_strict_all"},
+                                "naive_baseline_realistic": {
+                                    "comparison": "naive_underclaim",
+                                    "naive_policy": "default_researcher_v1",
+                                },
                             },
                             {
                                 "space_preset": "sampling_only",
                                 "claim_pair": "QAOA_p2>RandomBaseline",
                                 "delta": 0.01,
                                 "decision": "inconclusive",
+                                "naive_baseline": {"comparison": "naive_overclaim", "naive_policy": "legacy_strict_all"},
+                                "naive_baseline_realistic": {
+                                    "comparison": "agree",
+                                    "naive_policy": "default_researcher_v1",
+                                },
                             },
                         ]
                     },
@@ -92,9 +102,11 @@ class TestExportPaperPack(unittest.TestCase):
 
             space_csv = out_dir / "tables" / "space_claim_delta.csv"
             rq_csv = out_dir / "tables" / "rq_summary.csv"
+            naive_snapshot_csv = out_dir / "tables" / "naive_policy_delta_snapshot.csv"
             manifest_path = out_dir / "paper_pack_manifest.json"
             self.assertTrue(space_csv.exists())
             self.assertTrue(rq_csv.exists())
+            self.assertTrue(naive_snapshot_csv.exists())
             self.assertTrue(manifest_path.exists())
 
             with space_csv.open("r", encoding="utf-8") as fh:
@@ -105,11 +117,18 @@ class TestExportPaperPack(unittest.TestCase):
             with rq_csv.open("r", encoding="utf-8") as fh:
                 rq_rows = list(csv.DictReader(fh))
             self.assertEqual(len(rq_rows), 2)
+            with naive_snapshot_csv.open("r", encoding="utf-8") as fh:
+                naive_rows = list(csv.DictReader(fh))
+            self.assertGreaterEqual(len(naive_rows), 2)
 
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             self.assertEqual(manifest.get("schema_version"), "paper_pack_v1")
             self.assertIn("git_commit", manifest)
             self.assertEqual(manifest.get("outputs", {}).get("tables", {}).get("space_claim_delta_rows"), 2)
+            self.assertGreaterEqual(
+                int(manifest.get("outputs", {}).get("tables", {}).get("naive_policy_delta_snapshot_rows", 0)),
+                2,
+            )
             self.assertEqual(manifest.get("outputs", {}).get("figures", {}).get("skipped"), True)
             primary = manifest.get("source", {}).get("primary_space_claim_source")
             self.assertIsInstance(primary, str)

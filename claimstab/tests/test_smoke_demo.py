@@ -48,6 +48,10 @@ class TestSmokeDemo(unittest.TestCase):
         self.assertEqual(payload.get("meta", {}).get("evidence_chain", {}).get("protocol"), "cep_v1")
         first = payload.get("experiments", [])[0]
         self.assertIn("cep", first.get("evidence", {}))
+        comparative = payload.get("comparative", {}).get("space_claim_delta", [])
+        self.assertTrue(comparative)
+        self.assertIn("naive_baseline", comparative[0])
+        self.assertIn("naive_baseline_realistic", comparative[0])
 
     def test_bv_decision_smoke(self) -> None:
         payload = self._run_demo(task="bv")

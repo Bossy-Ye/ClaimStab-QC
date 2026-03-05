@@ -138,6 +138,7 @@ claimstab validate-atlas --atlas-root atlas
 - Paper scope lock: [`PAPER_SCOPE.md`](./PAPER_SCOPE.md)
 - Contributing: [`CONTRIBUTING.md`](./CONTRIBUTING.md)
 - Extension guide: [`docs/concepts/extending.md`](./docs/concepts/extending.md)
+- Naive baseline policies: [`docs/concepts/naive_baseline_policy.md`](./docs/concepts/naive_baseline_policy.md)
 - Architecture: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
 - Implementation catalog: [`docs/generated/implementation_catalog.md`](./docs/generated/implementation_catalog.md)
 - Experiment playbook: [`docs/EXPERIMENT_PLAYBOOK.md`](./docs/EXPERIMENT_PLAYBOOK.md)

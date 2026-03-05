@@ -116,6 +116,7 @@ class TestReportSections(unittest.TestCase):
                         "clustered_decision": "inconclusive",
                         "decision_counts": {"stable": 0, "unstable": 0, "inconclusive": 1},
                         "naive_baseline": {"comparison": "agree"},
+                        "naive_baseline_realistic": {"comparison": "naive_underclaim"},
                     }
                 ]
             },
@@ -162,6 +163,8 @@ class TestReportSections(unittest.TestCase):
     def test_default_includes_naive_and_delta_sections(self) -> None:
         html = self._run_report(self._payload())
         self.assertIn("Naive Baseline vs ClaimStab", html)
+        self.assertIn("Legacy Baseline (strict)", html)
+        self.assertIn("Realistic Default Baseline", html)
         self.assertIn("Delta Sweep Summary", html)
         self.assertIn("Stability vs Cost (Shots)", html)
         self.assertIn("RQ6 stratified runs", html)
