@@ -30,3 +30,7 @@ site/
 
 # OS cruft
 .DS_Store
+
+# Ad-hoc generated documentation snapshots
+docs/generated/repo_summary.md
+docs/generated/repo_summary.html

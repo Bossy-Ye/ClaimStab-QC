@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import csv
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
 from claimstab.core import ArtifactManifest, ExecutionEvent, JsonlEventLogger, TraceIndex
+from claimstab.io.writers import write_scores_csv
 from claimstab.perturbations.space import CompilationPerturbation, ExecutionPerturbation, PerturbationConfig, PerturbationSpace
 from claimstab.runners.matrix_runner import ScoreRow
 from claimstab.spec import load_spec
@@ -30,27 +30,6 @@ SPACE_ALIASES: dict[str, str] = {
     "combined_light": "combined_light",
     "day1_default": "baseline",
 }
-
-CSV_COLUMNS: tuple[str, ...] = (
-    "instance_id",
-    "seed_transpiler",
-    "optimization_level",
-    "layout_method",
-    "seed_simulator",
-    "shots",
-    "method",
-    "score",
-    "transpiled_depth",
-    "transpiled_size",
-    "device_provider",
-    "device_name",
-    "device_mode",
-    "device_snapshot_fingerprint",
-    "circuit_depth",
-    "two_qubit_count",
-    "swap_count",
-)
-
 
 def parse_csv_tokens(raw: str) -> list[str]:
     return [token.strip() for token in str(raw).split(",") if token.strip()]
@@ -327,29 +306,4 @@ def load_rows_from_trace_by_batch(
 
 
 def write_rows_csv(rows: Iterable[ScoreRow], out_csv: Path) -> None:
-    out_csv.parent.mkdir(parents=True, exist_ok=True)
-    with out_csv.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.writer(handle)
-        writer.writerow(list(CSV_COLUMNS))
-        for row in rows:
-            writer.writerow(
-                [
-                    row.instance_id,
-                    row.seed_transpiler,
-                    row.optimization_level,
-                    row.layout_method,
-                    row.seed_simulator,
-                    row.shots,
-                    row.method,
-                    row.score,
-                    row.transpiled_depth,
-                    row.transpiled_size,
-                    row.device_provider,
-                    row.device_name,
-                    row.device_mode,
-                    row.device_snapshot_fingerprint,
-                    row.circuit_depth,
-                    row.two_qubit_count,
-                    row.swap_count,
-                ]
-            )
+    write_scores_csv(rows, out_csv)
