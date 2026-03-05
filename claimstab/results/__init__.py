@@ -1,3 +1,3 @@
-from .schema import BaselineSpec, ClaimEvaluationResult, ClaimSpec, GraphSummary
+"""Reserved package for future result-model APIs."""
 
-__all__ = ["ClaimSpec", "BaselineSpec", "GraphSummary", "ClaimEvaluationResult"]
+__all__: list[str] = []
