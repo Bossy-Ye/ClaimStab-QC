@@ -7,6 +7,7 @@ This page is the single source of truth for where commands write artifacts.
 - `output/paper_artifact/`: one-command full paper reproduction package.
 - `output/presentation/`: curated core package for presentation and quick inspection.
 - `output/presentation_large/`: curated extended package (large runs + adaptive add-ons).
+- `output/paper_pack/`: lightweight paper-facing export (tables + figures + reproducibility manifest).
 
 Legacy ad-hoc paths (`output/exp_*`) are still supported, but not preferred for submission packaging.
 
@@ -15,6 +16,7 @@ Legacy ad-hoc paths (`output/exp_*`) are still supported, but not preferred for 
 | Entry point | Recommended command | Output directory |
 |---|---|---|
 | Full paper reproduction | `make reproduce-paper` | `output/paper_artifact/` |
+| Paper pack export (Task 0) | `python -m claimstab.scripts.export_paper_pack --input-root output/presentation_large --which large --out output/paper_pack` | `output/paper_pack/{tables,figures,paper_pack_manifest.json}` |
 | Calibration batch | `examples/exp_comprehensive_calibration.py --out-dir output/presentation_large/calibration` | `output/presentation_large/calibration/{maxcut_ranking,bv_decision,ghz_structural}` |
 | Large batch | `examples/exp_comprehensive_large.py --out-dir output/presentation_large/large` | `output/presentation_large/large/{maxcut_ranking,bv_decision,ghz_structural}` |
 | Structural benchmark only | `examples/exp_structural_compilation.py --out-dir output/paper_artifact/structural` | `output/paper_artifact/structural/` |

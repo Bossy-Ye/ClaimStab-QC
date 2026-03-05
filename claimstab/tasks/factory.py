@@ -23,6 +23,11 @@ def _default_methods(task_kind: str = "maxcut") -> list[MethodSpec]:
             MethodSpec(name="BVOracle", kind="bv"),
             MethodSpec(name="RandomBaseline", kind="random_baseline"),
         ]
+    if task_key == "grover":
+        return [
+            MethodSpec(name="GroverOracle", kind="grover"),
+            MethodSpec(name="UniformBaseline", kind="uniform"),
+        ]
     if task_key == "ghz":
         return [
             MethodSpec(name="GHZ_Linear", kind="ghz_linear"),

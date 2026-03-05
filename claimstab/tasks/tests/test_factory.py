@@ -14,6 +14,10 @@ class TestTaskFactory(unittest.TestCase):
         methods = parse_methods({}, task_kind="bv")
         self.assertEqual([m.name for m in methods], ["BVOracle", "RandomBaseline"])
 
+    def test_parse_methods_default_grover(self) -> None:
+        methods = parse_methods({}, task_kind="grover")
+        self.assertEqual([m.name for m in methods], ["GroverOracle", "UniformBaseline"])
+
     def test_make_task_builtin_maxcut(self) -> None:
         task, suite = make_task(None, default_suite="core")
         self.assertEqual(getattr(task, "name", None), "maxcut")

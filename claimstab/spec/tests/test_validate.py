@@ -80,6 +80,31 @@ class TestSpecValidation(unittest.TestCase):
         self.assertNotIn("repeats", normalized["baseline"])
         self.assertIn("repeats", normalized["meta"]["deprecated_field_used"])
 
+    def test_validate_distribution_claim_fields(self) -> None:
+        spec = {
+            "spec_version": 1,
+            "suite": "core",
+            "task": {"kind": "grover", "suite": "core"},
+            "methods": [
+                {"name": "GroverOracle", "kind": "grover"},
+                {"name": "UniformBaseline", "kind": "uniform"},
+            ],
+            "claims": [
+                {
+                    "type": "distribution",
+                    "method": "GroverOracle",
+                    "epsilon": 0.05,
+                    "primary_distance": "js",
+                    "sanity_distance": "tvd",
+                    "reference_shots": "max",
+                    "metric_name": "objective",
+                }
+            ],
+            "sampling": {"mode": "random_k", "sample_size": 8, "seed": 1},
+            "decision_rule": {"threshold": 0.95, "confidence_level": 0.95},
+        }
+        validate_spec(spec)
+
 
 if __name__ == "__main__":
     unittest.main()

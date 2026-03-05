@@ -73,7 +73,17 @@
               "label": {"type": ["string", "null"]},
               "label_meta_key": {"type": "string"},
               "metric_name": {"type": "string"},
-              "higher_is_better": {"type": "boolean"}
+              "higher_is_better": {"type": "boolean"},
+              "epsilon": {"type": "number", "minimum": 0},
+              "primary_distance": {"type": "string", "enum": ["js", "tvd"]},
+              "sanity_distance": {"type": "string", "enum": ["js", "tvd"]},
+              "reference_shots": {
+                "oneOf": [
+                  {"type": "integer", "minimum": 1},
+                  {"type": "string"},
+                  {"type": "null"}
+                ]
+              }
             },
             "additionalProperties": false
           }

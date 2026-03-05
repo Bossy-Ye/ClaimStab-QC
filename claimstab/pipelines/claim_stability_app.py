@@ -486,7 +486,72 @@ def parse_decision_claims_from_spec(spec_payload: dict[str, Any]) -> list[dict[s
                     "label_meta_key": str(item.get("label_meta_key", "target_label")),
                 }
             )
+    elif isinstance(claims, dict):
+        decision = claims.get("decision")
+        if isinstance(decision, dict):
+            method = decision.get("method")
+            if isinstance(method, str) and method.strip():
+                out.append(
+                    {
+                        "type": "decision",
+                        "method": method.strip(),
+                        "top_k": int(decision.get("top_k", decision.get("k", 1))),
+                        "label": decision.get("label"),
+                        "label_meta_key": str(decision.get("label_meta_key", "target_label")),
+                    }
+                )
     return out
+
+
+def parse_distribution_claims_from_spec(spec_payload: dict[str, Any]) -> list[dict[str, Any]]:
+    claims = spec_payload.get("claims")
+    out: list[dict[str, Any]] = []
+    if isinstance(claims, list):
+        for item in claims:
+            if not isinstance(item, dict):
+                continue
+            if str(item.get("type", "")).strip().lower() != "distribution":
+                continue
+            method = item.get("method")
+            if not isinstance(method, str) or not method.strip():
+                continue
+            out.append(
+                {
+                    "type": "distribution",
+                    "method": method.strip(),
+                    "epsilon": float(item.get("epsilon", 0.2)),
+                    "primary_distance": str(item.get("primary_distance", "js")).strip().lower() or "js",
+                    "sanity_distance": str(item.get("sanity_distance", "tvd")).strip().lower() or "tvd",
+                    "reference_shots": item.get("reference_shots", "max"),
+                    "metric_name": str(item.get("metric_name", "objective")).strip() or "objective",
+                }
+            )
+    elif isinstance(claims, dict):
+        distribution = claims.get("distribution")
+        if isinstance(distribution, dict):
+            method = distribution.get("method")
+            if isinstance(method, str) and method.strip():
+                out.append(
+                    {
+                        "type": "distribution",
+                        "method": method.strip(),
+                        "epsilon": float(distribution.get("epsilon", 0.2)),
+                        "primary_distance": str(distribution.get("primary_distance", "js")).strip().lower() or "js",
+                        "sanity_distance": str(distribution.get("sanity_distance", "tvd")).strip().lower() or "tvd",
+                        "reference_shots": distribution.get("reference_shots", "max"),
+                        "metric_name": str(distribution.get("metric_name", "objective")).strip() or "objective",
+                    }
+                )
+    return out
+
+
+def has_explicit_claims(spec_payload: dict[str, Any]) -> bool:
+    claims = spec_payload.get("claims")
+    if isinstance(claims, list):
+        return any(isinstance(item, dict) for item in claims)
+    if isinstance(claims, dict):
+        return bool(claims)
+    return False
 
 
 class BoundTask:
@@ -1067,6 +1132,129 @@ def evaluate_decision_claim_on_rows(
     }
 
 
+def evaluate_distribution_claim_on_rows(
+    rows: list[ScoreRow],
+    *,
+    method: str,
+    baseline_key: tuple[int, int, str | None, int, int | None],
+    epsilon: float,
+    primary_distance: str,
+    sanity_distance: str,
+    reference_shots: int | str | None,
+    stability_threshold: float,
+    confidence_level: float,
+) -> dict[str, object]:
+    method_rows = [row for row in rows if row.method == method and isinstance(row.counts, dict) and row.counts]
+    counts_by_key: dict[tuple[int, int, str | None, int, int | None], dict[str, int]] = {}
+    for row in method_rows:
+        key = perturbation_key(row)
+        counts_by_key[key] = {str(k): int(v) for k, v in (row.counts or {}).items()}
+
+    if not counts_by_key:
+        estimate = estimate_binomial_rate(successes=0, total=0, confidence=confidence_level)
+        return {
+            "accepted": 0,
+            "total": 0,
+            "flip_rate": 0.0,
+            "holds_rate": estimate.rate,
+            "ci_low": estimate.ci_low,
+            "ci_high": estimate.ci_high,
+            "decision": conservative_stability_decision(
+                estimate=estimate,
+                stability_threshold=stability_threshold,
+            ).value,
+            "reference_config": None,
+            "reference_shots": reference_shots,
+            "top_violations": [],
+            "distance_observations": [],
+        }
+
+    reference_key: tuple[int, int, str | None, int, int | None] | None = None
+    if isinstance(reference_shots, int):
+        candidates = [key for key in counts_by_key if int(key[3]) == int(reference_shots)]
+        if candidates:
+            reference_key = sorted(candidates, key=key_sort_value)[0]
+    elif isinstance(reference_shots, str):
+        token = reference_shots.strip().lower()
+        if token == "baseline" and baseline_key in counts_by_key:
+            reference_key = baseline_key
+        elif token == "max":
+            max_shots = max(int(key[3]) for key in counts_by_key)
+            candidates = [key for key in counts_by_key if int(key[3]) == max_shots]
+            reference_key = sorted(candidates, key=key_sort_value)[0]
+
+    if reference_key is None and baseline_key in counts_by_key:
+        reference_key = baseline_key
+    if reference_key is None:
+        # Fallback to highest-shot configuration as a practical reference distribution.
+        max_shots = max(int(key[3]) for key in counts_by_key)
+        candidates = [key for key in counts_by_key if int(key[3]) == max_shots]
+        reference_key = sorted(candidates, key=key_sort_value)[0]
+
+    reference_counts = counts_by_key[reference_key]
+
+    outcomes: list[bool] = []
+    distance_rows: list[dict[str, object]] = []
+    violations: list[dict[str, object]] = []
+    for key, observed_counts in counts_by_key.items():
+        if key == reference_key:
+            continue
+        dist_res = evaluate_distribution_claim(
+            observed_counts=observed_counts,
+            reference_counts=reference_counts,
+            epsilon=epsilon,
+            primary_distance=primary_distance,
+            sanity_distance=sanity_distance,
+        )
+        holds = bool(dist_res.primary_holds)
+        outcomes.append(holds)
+        obs = {
+            "seed_transpiler": int(key[0]),
+            "optimization_level": int(key[1]),
+            "layout_method": key[2],
+            "shots": int(key[3]),
+            "seed_simulator": int(key[4]) if key[4] is not None else None,
+            "primary_distance": dist_res.primary_distance,
+            "primary_value": float(dist_res.primary_value),
+            "primary_holds": bool(dist_res.primary_holds),
+            "sanity_distance": dist_res.sanity_distance,
+            "sanity_value": float(dist_res.sanity_value),
+            "sanity_holds": bool(dist_res.sanity_holds),
+            "distances_agree": bool(dist_res.distances_agree),
+        }
+        distance_rows.append(obs)
+        if not holds:
+            violations.append({**obs, "observed_counts": dict(observed_counts)})
+
+    accepted = sum(1 for flag in outcomes if flag)
+    total = len(outcomes)
+    estimate = estimate_binomial_rate(successes=accepted, total=total, confidence=confidence_level)
+    decision = conservative_stability_decision(
+        estimate=estimate,
+        stability_threshold=stability_threshold,
+    ).value
+    violations.sort(key=lambda row: float(row.get("primary_value", 0.0)), reverse=True)
+    return {
+        "accepted": accepted,
+        "total": total,
+        "flip_rate": (1.0 - estimate.rate) if total > 0 else 0.0,
+        "holds_rate": estimate.rate,
+        "ci_low": estimate.ci_low,
+        "ci_high": estimate.ci_high,
+        "decision": decision,
+        "reference_config": {
+            "seed_transpiler": int(reference_key[0]),
+            "optimization_level": int(reference_key[1]),
+            "layout_method": reference_key[2],
+            "shots": int(reference_key[3]),
+            "seed_simulator": int(reference_key[4]) if reference_key[4] is not None else None,
+        },
+        "reference_shots": int(reference_key[3]),
+        "top_violations": violations[:5],
+        "distance_observations": distance_rows,
+    }
+
+
 def load_rows_from_trace(
     trace_path: Path,
 ) -> tuple[
@@ -1115,6 +1303,7 @@ def main() -> None:
     methods = parse_methods(spec_payload if isinstance(spec_payload, dict) else {}, task_kind=task_kind)
     method_names = {m.name for m in methods}
     decision_claims = parse_decision_claims_from_spec(spec_payload if isinstance(spec_payload, dict) else {})
+    distribution_claims = parse_distribution_claims_from_spec(spec_payload if isinstance(spec_payload, dict) else {})
     if task_kind == "bv" and not decision_claims:
         method_for_decision = methods[0].name if methods else "BVOracle"
         decision_claims = [
@@ -1132,6 +1321,19 @@ def main() -> None:
                 "label": None,
                 "label_meta_key": "target_label",
             },
+        ]
+    if task_kind == "grover" and not distribution_claims:
+        method_for_distribution = methods[0].name if methods else "GroverOracle"
+        distribution_claims = [
+            {
+                "type": "distribution",
+                "method": method_for_distribution,
+                "epsilon": 0.20,
+                "primary_distance": "js",
+                "sanity_distance": "tvd",
+                "reference_shots": "max",
+                "metric_name": "objective",
+            }
         ]
     spec_ranking_jobs = parse_ranking_claims_from_spec(
         spec_payload if isinstance(spec_payload, dict) else {},
@@ -1153,6 +1355,8 @@ def main() -> None:
     elif spec_ranking_jobs:
         ranking_jobs = spec_ranking_jobs
     elif task_kind == "bv" and decision_claims:
+        ranking_jobs = []
+    elif has_explicit_claims(spec_payload if isinstance(spec_payload, dict) else {}) and not spec_ranking_jobs:
         ranking_jobs = []
     elif task_kind == "ghz":
         ranking_jobs = [
@@ -1201,6 +1405,28 @@ def main() -> None:
     metrics_needed = list(ranking_metric_names)
     if decision_claims and decision_metric_name not in metrics_needed:
         metrics_needed.append(decision_metric_name)
+    for distribution_claim in distribution_claims:
+        metric_name = str(distribution_claim.get("metric_name", "objective"))
+        if metric_name not in allowed_metrics:
+            raise ValueError(
+                f"Unsupported distribution metric '{metric_name}'. Use one of: {sorted(allowed_metrics)}"
+            )
+        method_name = str(distribution_claim.get("method", ""))
+        if method_name not in method_names:
+            raise ValueError(f"Unknown distribution claim method '{method_name}'. Available: {sorted(method_names)}")
+        primary_distance = str(distribution_claim.get("primary_distance", "js")).lower()
+        sanity_distance = str(distribution_claim.get("sanity_distance", "tvd")).lower()
+        if primary_distance not in {"js", "tvd"} or sanity_distance not in {"js", "tvd"}:
+            raise ValueError("Distribution claim distances must be in {'js','tvd'}.")
+        epsilon = float(distribution_claim.get("epsilon", 0.2))
+        if epsilon < 0.0:
+            raise ValueError(f"Distribution claim epsilon must be >= 0, got {epsilon}")
+        distribution_claim["epsilon"] = epsilon
+        distribution_claim["primary_distance"] = primary_distance
+        distribution_claim["sanity_distance"] = sanity_distance
+        distribution_claim["metric_name"] = metric_name
+        if metric_name not in metrics_needed:
+            metrics_needed.append(metric_name)
 
     sampling_policy = SamplingPolicy(
         mode=args.sampling_mode,
@@ -1317,7 +1543,7 @@ def main() -> None:
                             noise_model_mode=noise_model_mode,
                             device_snapshot_fingerprint=resolved_device.snapshot_fingerprint,
                             device_snapshot_summary=resolved_device.snapshot,
-                            store_counts=bool(decision_claims),
+                            store_counts=bool(decision_claims or distribution_claims),
                             cache_store=cache_store,
                             runtime_context=runtime_context,
                             event_logger=event_logger,
@@ -1848,6 +2074,153 @@ def main() -> None:
                         space_name=space_name,
                         metric_name=decision_metric_name,
                         claim=decision_claim_payload,
+                        artifact_manifest=artifact_manifest,
+                    ),
+                }
+            )
+
+        for distribution_claim in distribution_claims:
+            method = str(distribution_claim.get("method"))
+            epsilon = float(distribution_claim.get("epsilon", 0.2))
+            primary_distance = str(distribution_claim.get("primary_distance", "js")).lower()
+            sanity_distance = str(distribution_claim.get("sanity_distance", "tvd")).lower()
+            reference_shots = distribution_claim.get("reference_shots", "max")
+            metric_name = str(distribution_claim.get("metric_name", "objective"))
+
+            distribution_space_rows = rows_by_space_metric_graph[space_name][metric_name]
+            per_graph_summary: dict[str, dict[str, object]] = {}
+            accepted_total = 0
+            eval_total = 0
+            flip_rates: list[float] = []
+            decisions: list[str] = []
+            all_violations: list[dict[str, object]] = []
+            reference_shots_used: list[int] = []
+
+            for graph_id, graph_rows in distribution_space_rows.items():
+                graph_eval = evaluate_distribution_claim_on_rows(
+                    graph_rows,
+                    method=method,
+                    baseline_key=baseline_key,
+                    epsilon=epsilon,
+                    primary_distance=primary_distance,
+                    sanity_distance=sanity_distance,
+                    reference_shots=reference_shots,
+                    stability_threshold=args.stability_threshold,
+                    confidence_level=args.confidence_level,
+                )
+                per_graph_summary[graph_id] = graph_eval
+                accepted_total += int(graph_eval.get("accepted", 0))
+                eval_total += int(graph_eval.get("total", 0))
+                flip_rates.append(float(graph_eval.get("flip_rate", 0.0)))
+                decisions.append(str(graph_eval.get("decision", "inconclusive")))
+                ref_shots_used = graph_eval.get("reference_shots")
+                if isinstance(ref_shots_used, int):
+                    reference_shots_used.append(ref_shots_used)
+                for violation in graph_eval.get("top_violations", []):
+                    if not isinstance(violation, dict):
+                        continue
+                    all_violations.append({"graph_id": graph_id, **violation})
+
+            stability_estimate = estimate_binomial_rate(
+                successes=accepted_total,
+                total=eval_total,
+                confidence=args.confidence_level,
+            )
+            aggregate_decision = conservative_stability_decision(
+                estimate=stability_estimate,
+                stability_threshold=args.stability_threshold,
+            ).value
+            all_violations.sort(key=lambda row: float(row.get("primary_value", 0.0)), reverse=True)
+
+            summary_row = {
+                "delta": None,
+                "n_instances": len(per_graph_summary),
+                "n_claim_evals": eval_total,
+                "flip_rate_mean": (sum(flip_rates) / len(flip_rates)) if flip_rates else 0.0,
+                "flip_rate_max": max(flip_rates) if flip_rates else 0.0,
+                "flip_rate_min": min(flip_rates) if flip_rates else 0.0,
+                "holds_rate_mean": stability_estimate.rate,
+                "holds_rate_ci_low": stability_estimate.ci_low,
+                "holds_rate_ci_high": stability_estimate.ci_high,
+                "stability_hat": stability_estimate.rate,
+                "stability_ci_low": stability_estimate.ci_low,
+                "stability_ci_high": stability_estimate.ci_high,
+                "decision": aggregate_decision,
+                "epsilon": epsilon,
+                "primary_distance": primary_distance,
+                "sanity_distance": sanity_distance,
+                "reference_shots": (max(reference_shots_used) if reference_shots_used else None),
+                "decision_counts": {
+                    "stable": sum(1 for d in decisions if d == "stable"),
+                    "unstable": sum(1 for d in decisions if d == "unstable"),
+                    "inconclusive": sum(1 for d in decisions if d == "inconclusive"),
+                },
+            }
+            naive = evaluate_naive_baseline(
+                claim_type="distribution",
+                baseline_holds=True,
+                claimstab_decision=aggregate_decision,
+                stability_ci_low=stability_estimate.ci_low,
+                stability_ci_high=stability_estimate.ci_high,
+                threshold=args.stability_threshold,
+            )
+            summary_row["naive_baseline"] = naive
+
+            comparative_rows.append(
+                {
+                    "space_preset": space_name,
+                    "claim_pair": f"{method}:dist<={epsilon}",
+                    "claim_type": "distribution",
+                    "metric_name": metric_name,
+                    **summary_row,
+                }
+            )
+
+            distribution_claim_payload = {
+                "type": "distribution",
+                "method": method,
+                "epsilon": epsilon,
+                "primary_distance": primary_distance,
+                "sanity_distance": sanity_distance,
+                "reference_shots": reference_shots,
+                "metric_name": metric_name,
+            }
+            experiments.append(
+                {
+                    "experiment_id": f"{space_name}:{method}:distribution",
+                    "claim": distribution_claim_payload,
+                    "baseline": baseline_by_space[space_name],
+                    "stability_rule": {
+                        "threshold": args.stability_threshold,
+                        "confidence_level": args.confidence_level,
+                        "decision": "stable iff CI lower bound >= threshold",
+                    },
+                    "sampling": sampling_by_space[space_name],
+                    "backend": {
+                        "engine": args.backend_engine,
+                        "noise_model": noise_model_mode,
+                        "spot_check_noise": args.spot_check_noise,
+                    },
+                    "device_profile": {
+                        "enabled": resolved_device.profile.enabled,
+                        "provider": resolved_device.profile.provider,
+                        "name": resolved_device.profile.name,
+                        "mode": resolved_device.profile.mode,
+                        "snapshot_fingerprint": resolved_device.snapshot_fingerprint,
+                        "snapshot": resolved_device.snapshot,
+                    },
+                    "per_graph": per_graph_summary,
+                    "overall": {
+                        "graphs": len(per_graph_summary),
+                        "delta_sweep": [summary_row],
+                        "distribution_violations": all_violations[:12],
+                    },
+                    "naive_baseline": naive,
+                    "evidence": build_evidence_ref(
+                        suite_name=suite_name,
+                        space_name=space_name,
+                        metric_name=metric_name,
+                        claim=distribution_claim_payload,
                         artifact_manifest=artifact_manifest,
                     ),
                 }

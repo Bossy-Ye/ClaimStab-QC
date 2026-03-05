@@ -141,6 +141,7 @@ Preferred artifact roots:
 - `examples/exp_comprehensive_large.py`: paper large-scale batch.
 - `examples/exp_structural_compilation.py`: structural/compilation track.
 - `claimstab/pipelines/multidevice_app.py`: device-aware transpile/noisy extension.
+- `claimstab/scripts/export_paper_pack.py`: package an existing run family into paper tables/figures + hash manifest.
 
 ## Specs You Can Run Immediately
 - [`specs/paper_main.yml`](./specs/paper_main.yml): main paper track.

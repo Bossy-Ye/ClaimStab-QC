@@ -199,9 +199,32 @@ def _validate_fallback(spec: dict[str, Any]) -> list[str]:
                 "label_meta_key",
                 "metric_name",
                 "higher_is_better",
+                "epsilon",
+                "primary_distance",
+                "sanity_distance",
+                "reference_shots",
             }
             if unknown:
                 errors.append(f"claims[{idx}]: unknown keys {sorted(unknown)}")
+            if ctype == "distribution":
+                epsilon = claim.get("epsilon")
+                if epsilon is not None:
+                    try:
+                        if float(epsilon) < 0.0:
+                            errors.append(f"claims[{idx}].epsilon: must be >= 0")
+                    except Exception:
+                        errors.append(f"claims[{idx}].epsilon: must be numeric")
+                primary_distance = claim.get("primary_distance")
+                if primary_distance is not None and str(primary_distance).strip().lower() not in {"js", "tvd"}:
+                    errors.append(f"claims[{idx}].primary_distance: unsupported value '{primary_distance}'")
+                sanity_distance = claim.get("sanity_distance")
+                if sanity_distance is not None and str(sanity_distance).strip().lower() not in {"js", "tvd"}:
+                    errors.append(f"claims[{idx}].sanity_distance: unsupported value '{sanity_distance}'")
+                reference_shots = claim.get("reference_shots")
+                if reference_shots is not None and not isinstance(reference_shots, (int, str)):
+                    errors.append(f"claims[{idx}].reference_shots: must be int|string|null")
+                if isinstance(reference_shots, int) and reference_shots <= 0:
+                    errors.append(f"claims[{idx}].reference_shots: must be >= 1 when integer")
     elif isinstance(claims, dict):
         ranking = claims.get("ranking")
         if ranking is not None and not isinstance(ranking, dict):
