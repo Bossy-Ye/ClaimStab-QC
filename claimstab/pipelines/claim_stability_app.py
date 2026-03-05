@@ -1211,7 +1211,11 @@ def main() -> None:
         min_sample_size=args.min_sample_size,
         step_size=args.step_size,
     )
-    runtime_meta = collect_runtime_metadata()
+    runtime_meta = collect_runtime_metadata(
+        include_dependencies=not bool(args.replay_trace),
+        include_environment_flags=not bool(args.replay_trace),
+        include_git=not bool(args.replay_trace),
+    )
     runtime_context: Mapping[str, Any] = {
         "python_version": runtime_meta.get("python_version"),
         "git_commit": runtime_meta.get("git_commit"),

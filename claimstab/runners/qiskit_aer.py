@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import os
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
 from qiskit import QuantumCircuit, transpile
 from qiskit.providers.basic_provider import BasicSimulator
@@ -96,6 +96,8 @@ class QiskitAerRunner:
         spot_check_noise: bool = False,
         one_qubit_error: float = 0.001,
         two_qubit_error: float = 0.01,
+        cache_transpilation: bool = True,
+        cache_backends: bool = True,
     ) -> None:
         requested_engine = (engine or os.getenv("CLAIMSTAB_SIMULATOR", "auto")).lower()
         if requested_engine not in {"auto", "aer", "basic"}:
@@ -111,6 +113,11 @@ class QiskitAerRunner:
             self.engine = "aer" if AerSimulator is not None else "basic"
         else:
             self.engine = requested_engine
+
+        self.cache_transpilation = bool(cache_transpilation)
+        self.cache_backends = bool(cache_backends)
+        self._transpile_cache: dict[tuple[object, ...], QuantumCircuit] = {}
+        self._backend_cache: dict[tuple[object, ...], object] = {}
 
         self.noise_model = None
         if spot_check_noise:
@@ -149,6 +156,180 @@ class QiskitAerRunner:
             if op_name == "swap":
                 swap_count += 1
         return two_qubit_count, swap_count
+
+    @staticmethod
+    def _backend_identity(backend: object | None) -> tuple[str, str | None, int | None]:
+        if backend is None:
+            return ("none", None, None)
+        backend_type = f"{type(backend).__module__}.{type(backend).__qualname__}"
+        backend_name: str | None = None
+        for attr in ("name", "backend_name"):
+            value = getattr(backend, attr, None)
+            if callable(value):
+                try:
+                    value = value()
+                except Exception:
+                    value = None
+            if value is not None:
+                backend_name = str(value)
+                break
+        num_qubits_raw = getattr(backend, "num_qubits", None)
+        try:
+            num_qubits = int(num_qubits_raw) if num_qubits_raw is not None else None
+        except Exception:
+            num_qubits = None
+        return (backend_type, backend_name, num_qubits)
+
+    @staticmethod
+    def _coupling_map_fingerprint(coupling_map: object | None) -> object | None:
+        if coupling_map is None:
+            return None
+        edges: object | None = None
+        get_edges = getattr(coupling_map, "get_edges", None)
+        if callable(get_edges):
+            try:
+                edges = get_edges()
+            except Exception:
+                edges = None
+        elif isinstance(coupling_map, (list, tuple)):
+            edges = coupling_map
+
+        if edges is not None:
+            normalized_edges: list[tuple[str, str]] = []
+            try:
+                for edge in edges:
+                    if isinstance(edge, (list, tuple)) and len(edge) == 2:
+                        normalized_edges.append((str(edge[0]), str(edge[1])))
+                if normalized_edges:
+                    return tuple(sorted(normalized_edges))
+            except Exception:
+                pass
+        return repr(coupling_map)
+
+    def _transpile_cache_key(
+        self,
+        circuit: QuantumCircuit,
+        cfg: AerRunConfig,
+        *,
+        backend,
+        device_profile: DeviceProfile | None,
+        device_backend,
+    ) -> tuple[object, ...] | None:
+        if not self.cache_transpilation:
+            return None
+        # Do not cache when transpiler seed is intentionally unset, preserving
+        # stochastic transpilation behavior for repeated calls.
+        if cfg.seed_transpiler is None:
+            return None
+
+        profile_enabled = bool(device_profile is not None and device_profile.enabled)
+        target_backend = device_backend if profile_enabled and device_backend is not None else backend
+        op_counts = tuple(
+            sorted((str(op_name), int(op_count)) for op_name, op_count in dict(circuit.count_ops()).items())
+        )
+        return (
+            id(circuit),
+            int(getattr(circuit, "num_qubits", 0)),
+            int(getattr(circuit, "num_clbits", 0)),
+            int(circuit.size()),
+            int(circuit.depth()),
+            op_counts,
+            int(cfg.optimization_level),
+            int(cfg.seed_transpiler),
+            cfg.layout_method,
+            tuple(cfg.basis_gates) if cfg.basis_gates is not None else None,
+            self._coupling_map_fingerprint(cfg.coupling_map),
+            profile_enabled,
+            getattr(device_profile, "provider", None) if profile_enabled else None,
+            getattr(device_profile, "name", None) if profile_enabled else None,
+            getattr(device_profile, "mode", None) if profile_enabled else None,
+            self._backend_identity(target_backend),
+        )
+
+    def _get_cached_backend(self, key: tuple[object, ...], factory: Callable[[], object]) -> object:
+        if not self.cache_backends:
+            return factory()
+        cached = self._backend_cache.get(key)
+        if cached is not None:
+            return cached
+        created = factory()
+        self._backend_cache[key] = created
+        return created
+
+    def _resolve_backend_and_run_kwargs(
+        self,
+        cfg: AerRunConfig,
+        *,
+        profile: DeviceProfile,
+        device_backend,
+        noise_model_mode: str,
+    ) -> tuple[object, dict[str, Any]]:
+        if profile.enabled and profile.mode == "noisy_sim" and device_backend is not None:
+            if self.engine != "aer":
+                raise ValueError("device_profile.mode=noisy_sim requires Aer engine.")
+            if noise_model_mode == "from_device_profile":
+                backend = self._get_cached_backend(
+                    ("aer_from_backend", self._backend_identity(device_backend)),
+                    lambda: AerSimulator.from_backend(device_backend),
+                )
+            else:
+                backend = self._get_cached_backend(
+                    ("aer_noisy_sim", cfg.seed_simulator, id(self.noise_model)),
+                    lambda: AerSimulator(seed_simulator=cfg.seed_simulator),
+                )
+            run_kwargs = {"shots": cfg.shots, "seed_simulator": cfg.seed_simulator}
+            return backend, run_kwargs
+
+        if self.engine == "aer":
+            backend = self._get_cached_backend(
+                ("aer_default", cfg.seed_simulator, id(self.noise_model)),
+                lambda: AerSimulator(seed_simulator=cfg.seed_simulator, noise_model=self.noise_model),
+            )
+            run_kwargs = {"shots": cfg.shots}
+            return backend, run_kwargs
+
+        backend = self._get_cached_backend(("basic_default",), BasicSimulator)
+        run_kwargs = {"shots": cfg.shots, "seed_simulator": cfg.seed_simulator}
+        return backend, run_kwargs
+
+    def _get_transpiled_circuit(
+        self,
+        circuit: QuantumCircuit,
+        cfg: AerRunConfig,
+        *,
+        backend,
+        device_profile: DeviceProfile | None,
+        device_backend,
+    ) -> QuantumCircuit:
+        key = self._transpile_cache_key(
+            circuit,
+            cfg,
+            backend=backend,
+            device_profile=device_profile,
+            device_backend=device_backend,
+        )
+        if key is None:
+            return self._transpile_with_profile(
+                circuit,
+                cfg,
+                backend=backend,
+                device_profile=device_profile,
+                device_backend=device_backend,
+            )
+
+        cached = self._transpile_cache.get(key)
+        if cached is not None:
+            return cached
+
+        transpiled = self._transpile_with_profile(
+            circuit,
+            cfg,
+            backend=backend,
+            device_profile=device_profile,
+            device_backend=device_backend,
+        )
+        self._transpile_cache[key] = transpiled
+        return transpiled
 
     def _transpile_with_profile(
         self,
@@ -215,7 +396,7 @@ class QiskitAerRunner:
         """
         profile = device_profile if device_profile is not None else DeviceProfile(enabled=False, provider="none")
         if profile.enabled and profile.mode == "transpile_only":
-            transpiled = self._transpile_with_profile(
+            transpiled = self._get_transpiled_circuit(
                 circuit,
                 cfg,
                 backend=None,
@@ -224,35 +405,19 @@ class QiskitAerRunner:
             )
             counts: Counts | None = None
         else:
-            if profile.enabled and profile.mode == "noisy_sim" and device_backend is not None:
-                if self.engine != "aer":
-                    raise ValueError("device_profile.mode=noisy_sim requires Aer engine.")
-                if noise_model_mode == "from_device_profile":
-                    backend = AerSimulator.from_backend(device_backend)
-                else:
-                    backend = AerSimulator(seed_simulator=cfg.seed_simulator)
-                run_kwargs = {"shots": cfg.shots, "seed_simulator": cfg.seed_simulator}
-                transpiled = self._transpile_with_profile(
-                    circuit,
-                    cfg,
-                    backend=backend,
-                    device_profile=profile,
-                    device_backend=device_backend,
-                )
-            else:
-                if self.engine == "aer":
-                    backend = AerSimulator(seed_simulator=cfg.seed_simulator, noise_model=self.noise_model)
-                    run_kwargs = {"shots": cfg.shots}
-                else:
-                    backend = BasicSimulator()
-                    run_kwargs = {"shots": cfg.shots, "seed_simulator": cfg.seed_simulator}
-                transpiled = self._transpile_with_profile(
-                    circuit,
-                    cfg,
-                    backend=backend,
-                    device_profile=profile if profile.enabled else None,
-                    device_backend=device_backend,
-                )
+            backend, run_kwargs = self._resolve_backend_and_run_kwargs(
+                cfg,
+                profile=profile,
+                device_backend=device_backend,
+                noise_model_mode=noise_model_mode,
+            )
+            transpiled = self._get_transpiled_circuit(
+                circuit,
+                cfg,
+                backend=backend,
+                device_profile=profile if profile.enabled else None,
+                device_backend=device_backend,
+            )
 
             job = backend.run(transpiled, **run_kwargs)
             result = job.result()

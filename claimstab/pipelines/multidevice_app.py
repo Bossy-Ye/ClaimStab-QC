@@ -352,7 +352,11 @@ def main() -> None:
     deltas = parse_deltas(args.deltas)
     transpile_space = canonical_space_name(args.transpile_space)
     noisy_space = canonical_space_name(args.noisy_space)
-    runtime_meta = collect_runtime_metadata()
+    runtime_meta = collect_runtime_metadata(
+        include_dependencies=not bool(args.replay_trace),
+        include_environment_flags=not bool(args.replay_trace),
+        include_git=not bool(args.replay_trace),
+    )
     spec_payload = try_load_spec(args.spec)
     task_plugin, task_suite = make_task(
         spec_payload.get("task") if isinstance(spec_payload, dict) else None,

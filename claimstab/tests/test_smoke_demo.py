@@ -122,6 +122,10 @@ class TestSmokeDemo(unittest.TestCase):
                 replay_payload.get("meta", {}).get("artifacts", {}).get("replay_trace"),
                 str(trace_path),
             )
+            replay_runtime = replay_payload.get("meta", {}).get("runtime", {})
+            self.assertEqual(replay_runtime.get("dependencies"), {})
+            self.assertIsNone(replay_runtime.get("git_commit"))
+            self.assertIsNone(replay_runtime.get("git_dirty"))
 
             subprocess.run(
                 [

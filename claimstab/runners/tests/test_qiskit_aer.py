@@ -1,5 +1,6 @@
 import unittest
 import sys
+from unittest import mock
 
 from qiskit import QuantumCircuit
 
@@ -39,6 +40,37 @@ class TestQiskitAerRunner(unittest.TestCase):
         self.assertIsNone(res.device_provider)
         self.assertIsNone(res.device_name)
         self.assertIsNone(res.device_mode)
+
+    def test_transpile_cache_reuses_compile_for_execution_only_changes(self) -> None:
+        runner = QiskitAerRunner(engine="basic", cache_transpilation=True)
+        qc = self._toy_circuit()
+        cfg_a = AerRunConfig(shots=32, optimization_level=1, seed_transpiler=0, seed_simulator=0, layout_method="sabre")
+        cfg_b = AerRunConfig(shots=128, optimization_level=1, seed_transpiler=0, seed_simulator=7, layout_method="sabre")
+
+        with mock.patch.object(
+            runner,
+            "_transpile_with_profile",
+            wraps=runner._transpile_with_profile,
+        ) as transpile_spy:
+            runner.run_counts(qc, cfg=cfg_a)
+            runner.run_counts(qc, cfg=cfg_b)
+
+        self.assertEqual(transpile_spy.call_count, 1)
+
+    def test_transpile_cache_bypassed_when_seed_transpiler_unset(self) -> None:
+        runner = QiskitAerRunner(engine="basic", cache_transpilation=True)
+        qc = self._toy_circuit()
+        cfg = AerRunConfig(shots=64, optimization_level=1, seed_transpiler=None, seed_simulator=0, layout_method="sabre")
+
+        with mock.patch.object(
+            runner,
+            "_transpile_with_profile",
+            wraps=runner._transpile_with_profile,
+        ) as transpile_spy:
+            runner.run_counts(qc, cfg=cfg)
+            runner.run_counts(qc, cfg=cfg)
+
+        self.assertEqual(transpile_spy.call_count, 2)
 
     def test_transpile_only_returns_structural_stats(self) -> None:
         profile = parse_device_profile(
