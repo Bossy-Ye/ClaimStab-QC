@@ -36,3 +36,7 @@ Additional tracks used for generality:
 ## Artifacts
 - Comparative JSON/CSV matrix is available in experiment outputs.
 - Report HTML contains per-experiment CI and decision summaries.
+- Naive baseline reporting is dual-policy:
+  - `naive_baseline` (`legacy_strict_all`) keeps historical comparability.
+  - `naive_baseline_realistic` (`default_researcher_v1`) reflects default-practice interpretation.
+  - Policy-by-delta counts are exported in `output/paper_pack/tables/naive_policy_delta_snapshot.csv`.
