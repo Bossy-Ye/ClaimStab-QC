@@ -14,42 +14,34 @@ from claimstab.cache.store import CacheStore
 from claimstab.claims.evaluation import collect_paired_scores
 from claimstab.claims.ranking import HigherIsBetter, RankingClaim, compute_rank_flip_summary
 from claimstab.claims.stability import conservative_stability_decision, estimate_binomial_rate
-from claimstab.core import ArtifactManifest, ExecutionEvent, JsonlEventLogger, TraceIndex, TraceRecord
+from claimstab.core import ArtifactManifest, TraceIndex, TraceRecord
 from claimstab.devices.registry import parse_device_profile, parse_noise_model_mode, resolve_device_profile
 from claimstab.evidence import build_cep_protocol_meta, build_experiment_cep_record
 from claimstab.io.runtime_meta import collect_runtime_metadata
 from claimstab.methods.spec import MethodSpec
+from claimstab.pipelines.common import (
+    baseline_from_keys as _baseline_from_keys,
+    build_baseline_config as _build_baseline_config,
+    build_evidence_ref as _build_evidence_ref,
+    canonical_space_name as _canonical_space_name,
+    canonical_suite_name as _canonical_suite_name,
+    config_from_key as _config_from_key,
+    key_sort_value as _key_sort_value,
+    load_rows_from_trace_by_batch as _load_rows_from_trace_by_batch,
+    make_event_logger as _make_event_logger,
+    make_space as _make_space,
+    parse_claim_pairs as _parse_claim_pairs,
+    parse_csv_tokens as _parse_csv_tokens,
+    parse_deltas as _parse_deltas,
+    try_load_spec as _try_load_spec,
+    write_rows_csv as _write_rows_csv,
+)
 from claimstab.perturbations.sampling import SamplingPolicy, ensure_config_included, sample_configs
-from claimstab.perturbations.space import CompilationPerturbation, ExecutionPerturbation, PerturbationConfig, PerturbationSpace
+from claimstab.perturbations.space import PerturbationConfig, PerturbationSpace
 from claimstab.runners.matrix_runner import MatrixRunner, ScoreRow
 from claimstab.runners.qiskit_aer import QiskitAerRunner
-from claimstab.spec import load_spec
 from claimstab.tasks.base import BuiltWorkflow
 from claimstab.tasks.factory import make_task, parse_methods
-
-
-SUITE_ALIASES = {
-    "core": "core",
-    "standard": "standard",
-    "large": "large",
-    "day1": "core",
-    "day2": "standard",
-    "day2_large": "large",
-}
-
-LEGACY_SUITE_ALIASES = {
-    "day1",
-    "day2",
-    "day2_large",
-}
-
-SPACE_ALIASES = {
-    "baseline": "baseline",
-    "compilation_only": "compilation_only",
-    "sampling_only": "sampling_only",
-    "combined_light": "combined_light",
-    "day1_default": "baseline",
-}
 
 EVIDENCE_LOOKUP_FIELDS = [
     "suite",
@@ -119,67 +111,27 @@ def parse_args() -> argparse.Namespace:
 
 
 def parse_csv_tokens(raw: str) -> list[str]:
-    return [token.strip() for token in raw.split(",") if token.strip()]
+    return _parse_csv_tokens(raw)
 
 
 def parse_deltas(raw: str) -> list[float]:
-    vals = [float(t) for t in parse_csv_tokens(raw)]
-    if not vals:
-        raise ValueError("At least one delta must be provided.")
-    return vals
+    return _parse_deltas(raw)
 
 
 def parse_claim_pairs(raw: str) -> list[tuple[str, str]]:
-    pairs: list[tuple[str, str]] = []
-    for token in parse_csv_tokens(raw):
-        if ">" in token:
-            left, right = token.split(">", 1)
-        elif ":" in token:
-            left, right = token.split(":", 1)
-        else:
-            raise ValueError(f"Invalid claim pair token '{token}'. Use MethodA>MethodB.")
-        a = left.strip()
-        b = right.strip()
-        if not a or not b:
-            raise ValueError(f"Invalid claim pair token '{token}'.")
-        if a == b:
-            raise ValueError("Claim pair must compare different methods.")
-        pairs.append((a, b))
-    if not pairs:
-        raise ValueError("At least one claim pair is required.")
-    return pairs
+    return _parse_claim_pairs(raw, require_distinct=True, empty_error="At least one claim pair is required.")
 
 
 def canonical_suite_name(name: str) -> str:
-    key = name.strip().lower()
-    canonical = SUITE_ALIASES.get(key)
-    if canonical is None:
-        valid = ", ".join(sorted({k for k in SUITE_ALIASES if not k.startswith("day")}))
-        raise ValueError(f"Unknown suite '{name}'. Use one of: {valid}.")
-    if key in LEGACY_SUITE_ALIASES:
-        print(f"[WARN] Suite alias '{name}' is deprecated; using '{canonical}'.")
-    return canonical
+    return _canonical_suite_name(name)
 
 
 def canonical_space_name(name: str) -> str:
-    key = name.strip()
-    canonical = SPACE_ALIASES.get(key)
-    if canonical is None:
-        valid = ", ".join(sorted({k for k in SPACE_ALIASES if not k.startswith("day")}))
-        raise ValueError(f"Unknown space '{name}'. Use one of: {valid}.")
-    return canonical
+    return _canonical_space_name(name, space_label="space")
 
 
 def make_space(name: str) -> PerturbationSpace:
-    if name == "baseline":
-        return PerturbationSpace.conf_level_default()
-    if name == "compilation_only":
-        return PerturbationSpace.compilation_only()
-    if name == "sampling_only":
-        return PerturbationSpace.sampling_only()
-    if name == "combined_light":
-        return PerturbationSpace.combined_light()
-    raise ValueError(f"Unknown space '{name}'")
+    return _make_space(name)
 
 
 class BoundTask:
@@ -211,72 +163,22 @@ class BoundTask:
 
 
 def build_baseline(space: PerturbationSpace):
-    first = next(space.iter_configs())
-    baseline_pc = PerturbationConfig(
-        compilation=CompilationPerturbation(
-            seed_transpiler=first.compilation.seed_transpiler,
-            optimization_level=first.compilation.optimization_level,
-            layout_method=first.compilation.layout_method,
-        ),
-        execution=ExecutionPerturbation(
-            shots=first.execution.shots,
-            seed_simulator=first.execution.seed_simulator,
-        ),
-    )
-    baseline_key = (
-        first.compilation.seed_transpiler,
-        first.compilation.optimization_level,
-        first.compilation.layout_method,
-        first.execution.shots,
-        first.execution.seed_simulator,
-    )
-    baseline_dict = {
-        "seed_transpiler": first.compilation.seed_transpiler,
-        "optimization_level": first.compilation.optimization_level,
-        "layout_method": first.compilation.layout_method,
-        "shots": first.execution.shots,
-        "seed_simulator": first.execution.seed_simulator,
-    }
+    baseline_dict, baseline_pc, baseline_key = _build_baseline_config(space)
     return baseline_pc, baseline_key, baseline_dict
 
 
 def key_sort_value(key: tuple[int, int, str | None, int, int | None]) -> tuple[int, int, str, int, int]:
-    return (
-        int(key[0]),
-        int(key[1]),
-        "" if key[2] is None else str(key[2]),
-        int(key[3]),
-        -1 if key[4] is None else int(key[4]),
-    )
+    return _key_sort_value(key)
 
 
 def config_from_key(key: tuple[int, int, str | None, int, int | None]) -> PerturbationConfig:
-    return PerturbationConfig(
-        compilation=CompilationPerturbation(
-            seed_transpiler=int(key[0]),
-            optimization_level=int(key[1]),
-            layout_method=str(key[2]) if key[2] is not None else None,
-        ),
-        execution=ExecutionPerturbation(
-            shots=int(key[3]),
-            seed_simulator=None if key[4] is None else int(key[4]),
-        ),
-    )
+    return _config_from_key(key)
 
 
 def baseline_from_keys(
     keys: set[tuple[int, int, str | None, int, int | None]],
 ) -> tuple[tuple[int, int, str | None, int, int | None], dict[str, int | str | None]]:
-    if not keys:
-        raise ValueError("Cannot infer baseline from empty key set.")
-    baseline_key = sorted(keys, key=key_sort_value)[0]
-    baseline_dict: dict[str, int | str | None] = {
-        "seed_transpiler": int(baseline_key[0]),
-        "optimization_level": int(baseline_key[1]),
-        "layout_method": baseline_key[2],
-        "shots": int(baseline_key[3]),
-        "seed_simulator": None if baseline_key[4] is None else int(baseline_key[4]),
-    }
+    baseline_dict, baseline_key = _baseline_from_keys(keys)
     return baseline_key, baseline_dict
 
 
@@ -288,27 +190,14 @@ def build_evidence_ref(
     claim: dict[str, Any],
     artifact_manifest: ArtifactManifest,
 ) -> dict[str, Any]:
-    methods: list[str] = []
-    for key in ("method_a", "method_b", "method"):
-        value = claim.get(key)
-        if isinstance(value, str) and value:
-            methods.append(value)
-    return {
-        "trace_query": {
-            "suite": suite_name,
-            "space_preset": space_name,
-            "metric_name": metric_name,
-            "methods": sorted(set(methods)),
-        },
-        "artifacts": {
-            "trace_jsonl": artifact_manifest.trace_jsonl,
-            "events_jsonl": artifact_manifest.events_jsonl,
-            "cache_db": artifact_manifest.cache_db,
-        },
-        "lookup_fields": [
-            *EVIDENCE_LOOKUP_FIELDS,
-        ],
-    }
+    return _build_evidence_ref(
+        suite_name=suite_name,
+        space_name=space_name,
+        metric_name=metric_name,
+        claim=claim,
+        artifact_manifest=artifact_manifest,
+        lookup_fields=EVIDENCE_LOOKUP_FIELDS,
+    )
 
 
 def evidence_chain_meta() -> dict[str, Any]:
@@ -322,21 +211,7 @@ def evidence_chain_meta() -> dict[str, Any]:
 
 
 def make_event_logger(path: Path) -> Callable[[dict[str, Any]], None]:
-    sink = JsonlEventLogger(path)
-
-    def _log(payload: dict[str, Any]) -> None:
-        core_keys = {"event_type", "instance_id", "method", "metric_name", "config"}
-        event = ExecutionEvent.build(
-            event_type=str(payload.get("event_type", "unknown")),
-            instance_id=str(payload.get("instance_id", "unknown")),
-            method=str(payload.get("method", "unknown")),
-            metric_name=str(payload.get("metric_name", "objective")),
-            config=dict(payload.get("config", {}) or {}),
-            details={k: v for k, v in payload.items() if k not in core_keys},
-        )
-        sink.log(event)
-
-    return _log
+    return _make_event_logger(path)
 
 
 def load_rows_from_trace(
@@ -347,34 +222,7 @@ def load_rows_from_trace(
     dict[str, set[tuple[int, int, str | None, int, int | None]]],
     dict[str, str],
 ]:
-    trace_index = TraceIndex.load_jsonl(trace_path)
-    rows_by_batch: dict[str, dict[str, dict[str, dict[str, list[ScoreRow]]]]] = {}
-    keys_by_batch: dict[str, set[tuple[int, int, str | None, int, int | None]]] = defaultdict(set)
-    space_by_batch: dict[str, str] = {}
-    suites: set[str] = set()
-
-    for rec in trace_index.records:
-        row = rec.to_score_row()
-        suites.add(str(rec.suite or "replay"))
-        batch_mode = str(row.device_mode or "unknown")
-        device_name = str(row.device_name or "unknown_device")
-        metric_name = str(row.metric_name or "objective")
-        space_name = str(rec.space_preset or "baseline")
-
-        rows_by_batch.setdefault(batch_mode, {}).setdefault(device_name, {}).setdefault(metric_name, {}).setdefault(row.instance_id, []).append(row)
-        keys_by_batch[batch_mode].add(
-            (
-                row.seed_transpiler,
-                row.optimization_level,
-                row.layout_method,
-                row.shots,
-                row.seed_simulator,
-            )
-        )
-        space_by_batch.setdefault(batch_mode, space_name)
-
-    suite_name = sorted(suites)[0] if suites else "replay"
-    return suite_name, rows_by_batch, keys_by_batch, space_by_batch
+    return _load_rows_from_trace_by_batch(trace_path)
 
 
 def evaluate_rows_for_claim(
@@ -491,57 +339,11 @@ def evaluate_rows_for_claim(
 
 
 def write_rows_csv(rows: Iterable[ScoreRow], out_csv: Path) -> None:
-    fields = [
-        "instance_id",
-        "seed_transpiler",
-        "optimization_level",
-        "layout_method",
-        "seed_simulator",
-        "shots",
-        "method",
-        "score",
-        "transpiled_depth",
-        "transpiled_size",
-        "device_provider",
-        "device_name",
-        "device_mode",
-        "device_snapshot_fingerprint",
-        "circuit_depth",
-        "two_qubit_count",
-        "swap_count",
-    ]
-    out_csv.parent.mkdir(parents=True, exist_ok=True)
-    with out_csv.open("w", newline="", encoding="utf-8") as f:
-        w = csv.writer(f)
-        w.writerow(fields)
-        for r in rows:
-            w.writerow(
-                [
-                    r.instance_id,
-                    r.seed_transpiler,
-                    r.optimization_level,
-                    r.layout_method,
-                    r.seed_simulator,
-                    r.shots,
-                    r.method,
-                    r.score,
-                    r.transpiled_depth,
-                    r.transpiled_size,
-                    r.device_provider,
-                    r.device_name,
-                    r.device_mode,
-                    r.device_snapshot_fingerprint,
-                    r.circuit_depth,
-                    r.two_qubit_count,
-                    r.swap_count,
-                ]
-            )
+    _write_rows_csv(rows, out_csv)
 
 
 def try_load_spec(path: str | None) -> dict:
-    if not path:
-        return {}
-    return load_spec(path, validate=False)
+    return _try_load_spec(path)
 
 
 def main() -> None:

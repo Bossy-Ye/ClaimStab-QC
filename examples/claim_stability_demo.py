@@ -36,41 +36,33 @@ from claimstab.io.runtime_meta import collect_runtime_metadata
 from claimstab.analysis.rq import build_rq_summary
 from claimstab.baselines.naive import evaluate_naive_baseline
 from claimstab.cache.store import CacheStore
-from claimstab.core import ArtifactManifest, ExecutionEvent, JsonlEventLogger, TraceIndex, TraceRecord
+from claimstab.core import ArtifactManifest, TraceIndex, TraceRecord
 from claimstab.devices.registry import parse_device_profile, parse_noise_model_mode, resolve_device_profile
 from claimstab.evidence import build_cep_protocol_meta, build_experiment_cep_record
 from claimstab.methods.spec import MethodSpec
+from claimstab.pipelines.common import (
+    baseline_from_keys as _baseline_from_keys,
+    build_baseline_config as _build_baseline_config,
+    build_evidence_ref as _build_evidence_ref,
+    canonical_space_name as _canonical_space_name,
+    canonical_suite_name as _canonical_suite_name,
+    config_from_key as _config_from_key,
+    config_key as _config_key,
+    key_sort_value as _key_sort_value,
+    load_rows_from_trace_by_space as _load_rows_from_trace_by_space,
+    make_event_logger as _make_event_logger,
+    make_space as _make_space,
+    parse_claim_pairs as _parse_claim_pairs,
+    parse_csv_tokens as _parse_csv_tokens,
+    parse_deltas as _parse_deltas,
+    try_load_spec as _try_load_spec,
+)
 from claimstab.perturbations.sampling import SamplingPolicy, adaptive_sample_configs, ensure_config_included, sample_configs
-from claimstab.perturbations.space import CompilationPerturbation, ExecutionPerturbation, PerturbationConfig, PerturbationSpace
+from claimstab.perturbations.space import PerturbationConfig, PerturbationSpace
 from claimstab.runners.matrix_runner import MatrixRunner, ScoreRow
 from claimstab.runners.qiskit_aer import QiskitAerRunner
-from claimstab.spec import load_spec
 from claimstab.tasks.base import BuiltWorkflow
 from claimstab.tasks.factory import make_task, parse_methods
-
-
-SUITE_ALIASES = {
-    "core": "core",
-    "standard": "standard",
-    "large": "large",
-    "day1": "core",
-    "day2": "standard",
-    "day2_large": "large",
-}
-
-LEGACY_SUITE_ALIASES = {
-    "day1",
-    "day2",
-    "day2_large",
-}
-
-SPACE_ALIASES = {
-    "baseline": "baseline",
-    "compilation_only": "compilation_only",
-    "sampling_only": "sampling_only",
-    "combined_light": "combined_light",
-    "day1_default": "baseline",
-}
 
 EVIDENCE_LOOKUP_FIELDS = [
     "suite",
@@ -181,15 +173,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def parse_deltas(raw: str) -> list[float]:
-    deltas = []
-    for token in raw.split(","):
-        token = token.strip()
-        if not token:
-            continue
-        deltas.append(float(token))
-    if not deltas:
-        raise ValueError("At least one delta must be provided")
-    return deltas
+    return _parse_deltas(raw, error_message="At least one delta must be provided")
 
 
 def _as_bool(value: Any, default: bool = True) -> bool:
@@ -208,55 +192,28 @@ def _as_bool(value: Any, default: bool = True) -> bool:
 
 
 def parse_csv_tokens(raw: str) -> list[str]:
-    items = [item.strip() for item in raw.split(",") if item.strip()]
-    return items
+    return _parse_csv_tokens(raw)
 
 
 def try_load_spec(path: str | None) -> dict:
-    if not path:
-        return {}
-    return load_spec(path, validate=False)
+    return _try_load_spec(path)
 
 
 def parse_claim_pairs(raw: str, fallback_pair: tuple[str, str]) -> list[tuple[str, str]]:
-    if not raw.strip():
-        return [fallback_pair]
-    pairs: list[tuple[str, str]] = []
-    for token in parse_csv_tokens(raw):
-        if ">" in token:
-            left, right = token.split(">", 1)
-        elif ":" in token:
-            left, right = token.split(":", 1)
-        else:
-            raise ValueError(f"Invalid claim pair token '{token}'. Use MethodA>MethodB.")
-        method_a = left.strip()
-        method_b = right.strip()
-        if not method_a or not method_b:
-            raise ValueError(f"Invalid claim pair token '{token}'.")
-        pairs.append((method_a, method_b))
-    if not pairs:
-        raise ValueError("At least one claim pair must be provided")
-    return pairs
+    return _parse_claim_pairs(
+        raw,
+        fallback_pair=fallback_pair,
+        require_distinct=False,
+        empty_error="At least one claim pair must be provided",
+    )
 
 
 def canonical_suite_name(name: str) -> str:
-    key = name.strip().lower()
-    canonical = SUITE_ALIASES.get(key)
-    if canonical is None:
-        valid = ", ".join(sorted({k for k in SUITE_ALIASES if not k.startswith("day")}))
-        raise ValueError(f"Unknown suite '{name}'. Use one of: {valid}.")
-    if key in LEGACY_SUITE_ALIASES:
-        print(f"[WARN] Suite alias '{name}' is deprecated; using '{canonical}'.")
-    return canonical
+    return _canonical_suite_name(name)
 
 
 def canonical_space_name(name: str) -> str:
-    key = name.strip()
-    canonical = SPACE_ALIASES.get(key)
-    if canonical is None:
-        valid = ", ".join(sorted({k for k in SPACE_ALIASES if not k.startswith("day")}))
-        raise ValueError(f"Unknown space preset '{name}'. Use one of: {valid}.")
-    return canonical
+    return _canonical_space_name(name, space_label="space preset")
 
 
 def build_evidence_ref(
@@ -267,27 +224,14 @@ def build_evidence_ref(
     claim: dict[str, Any],
     artifact_manifest: ArtifactManifest,
 ) -> dict[str, Any]:
-    methods: list[str] = []
-    for key in ("method_a", "method_b", "method"):
-        value = claim.get(key)
-        if isinstance(value, str) and value:
-            methods.append(value)
-    return {
-        "trace_query": {
-            "suite": suite_name,
-            "space_preset": space_name,
-            "metric_name": metric_name,
-            "methods": sorted(set(methods)),
-        },
-        "artifacts": {
-            "trace_jsonl": artifact_manifest.trace_jsonl,
-            "events_jsonl": artifact_manifest.events_jsonl,
-            "cache_db": artifact_manifest.cache_db,
-        },
-        "lookup_fields": [
-            *EVIDENCE_LOOKUP_FIELDS,
-        ],
-    }
+    return _build_evidence_ref(
+        suite_name=suite_name,
+        space_name=space_name,
+        metric_name=metric_name,
+        claim=claim,
+        artifact_manifest=artifact_manifest,
+        lookup_fields=EVIDENCE_LOOKUP_FIELDS,
+    )
 
 
 DIMENSION_NAMES = [
@@ -357,121 +301,35 @@ def write_scores_csv(rows: Iterable[tuple[str, str, ScoreRow]], path: Path) -> N
 
 
 def make_space(preset: str) -> PerturbationSpace:
-    if preset == "baseline":
-        return PerturbationSpace.conf_level_default()
-    if preset == "compilation_only":
-        return PerturbationSpace.compilation_only()
-    if preset == "sampling_only":
-        return PerturbationSpace.sampling_only()
-    if preset == "combined_light":
-        # Keep combined perturbations small but include multiple shot budgets so
-        # the stability-vs-cost section can estimate a trend instead of a single point.
-        return PerturbationSpace(
-            seeds_transpiler=list(range(10)),
-            opt_levels=[0, 1, 2, 3],
-            layout_methods=["trivial", "sabre"],
-            shots_list=[64, 256, 1024],
-            seeds_simulator=[0, 1, 2],
-        )
-    raise ValueError(f"Unknown preset: {preset}")
+    # Keep combined perturbations small but include multiple shot budgets so
+    # the stability-vs-cost section can estimate a trend instead of a single point.
+    return _make_space(preset, combined_light_shots=[64, 256, 1024])
 
 
 def build_baseline_config(space: PerturbationSpace) -> tuple[dict[str, int | str], PerturbationConfig, tuple[int, int, str | None, int, int | None]]:
-    first = next(space.iter_configs())
-    baseline_cfg = {
-        "seed_transpiler": first.compilation.seed_transpiler,
-        "optimization_level": first.compilation.optimization_level,
-        "layout_method": first.compilation.layout_method,
-        "shots": first.execution.shots,
-        "seed_simulator": first.execution.seed_simulator,
-    }
-    baseline_pc = PerturbationConfig(
-        compilation=CompilationPerturbation(
-            seed_transpiler=baseline_cfg["seed_transpiler"],
-            optimization_level=baseline_cfg["optimization_level"],
-            layout_method=str(baseline_cfg["layout_method"]),
-        ),
-        execution=ExecutionPerturbation(
-            shots=baseline_cfg["shots"],
-            seed_simulator=baseline_cfg["seed_simulator"],
-        ),
-    )
-    baseline_key = (
-        baseline_cfg["seed_transpiler"],
-        baseline_cfg["optimization_level"],
-        baseline_cfg["layout_method"],
-        baseline_cfg["shots"],
-        baseline_cfg["seed_simulator"],
-    )
-    return baseline_cfg, baseline_pc, baseline_key
+    return _build_baseline_config(space)
 
 
 def config_key(pc: PerturbationConfig) -> tuple[int, int, str | None, int, int | None]:
-    return (
-        pc.compilation.seed_transpiler,
-        pc.compilation.optimization_level,
-        pc.compilation.layout_method,
-        pc.execution.shots,
-        pc.execution.seed_simulator,
-    )
+    return _config_key(pc)
 
 
 def key_sort_value(key: tuple[int, int, str | None, int, int | None]) -> tuple[int, int, str, int, int]:
-    return (
-        int(key[0]),
-        int(key[1]),
-        "" if key[2] is None else str(key[2]),
-        int(key[3]),
-        -1 if key[4] is None else int(key[4]),
-    )
+    return _key_sort_value(key)
 
 
 def config_from_key(key: tuple[int, int, str | None, int, int | None]) -> PerturbationConfig:
-    return PerturbationConfig(
-        compilation=CompilationPerturbation(
-            seed_transpiler=int(key[0]),
-            optimization_level=int(key[1]),
-            layout_method=str(key[2]) if key[2] is not None else None,
-        ),
-        execution=ExecutionPerturbation(
-            shots=int(key[3]),
-            seed_simulator=None if key[4] is None else int(key[4]),
-        ),
-    )
+    return _config_from_key(key)
 
 
 def baseline_from_keys(
     keys: set[tuple[int, int, str | None, int, int | None]],
 ) -> tuple[dict[str, int | str | None], tuple[int, int, str | None, int, int | None]]:
-    if not keys:
-        raise ValueError("Cannot infer baseline from empty key set.")
-    baseline_key = sorted(keys, key=key_sort_value)[0]
-    baseline_cfg: dict[str, int | str | None] = {
-        "seed_transpiler": int(baseline_key[0]),
-        "optimization_level": int(baseline_key[1]),
-        "layout_method": baseline_key[2],
-        "shots": int(baseline_key[3]),
-        "seed_simulator": None if baseline_key[4] is None else int(baseline_key[4]),
-    }
-    return baseline_cfg, baseline_key
+    return _baseline_from_keys(keys)
 
 
 def make_event_logger(path: Path) -> Callable[[dict[str, Any]], None]:
-    sink = JsonlEventLogger(path)
-
-    def _log(payload: dict[str, Any]) -> None:
-        core_keys = {"event_type", "instance_id", "method", "metric_name", "config"}
-        event = ExecutionEvent.build(
-            event_type=str(payload.get("event_type", "unknown")),
-            instance_id=str(payload.get("instance_id", "unknown")),
-            method=str(payload.get("method", "unknown")),
-            metric_name=str(payload.get("metric_name", "objective")),
-            config=dict(payload.get("config", {}) or {}),
-            details={k: v for k, v in payload.items() if k not in core_keys},
-        )
-        sink.log(event)
-
-    return _log
+    return _make_event_logger(path)
 
 
 def filter_rows_by_keys(
@@ -1216,20 +1074,7 @@ def load_rows_from_trace(
     dict[str, dict[str, dict[str, list[ScoreRow]]]],
     dict[str, set[tuple[int, int, str | None, int, int | None]]],
 ]:
-    trace_index = TraceIndex.load_jsonl(trace_path)
-    all_rows: list[tuple[str, str, ScoreRow]] = []
-    rows_by_space_metric_graph: dict[str, dict[str, dict[str, list[ScoreRow]]]] = {}
-    keys_by_space: dict[str, set[tuple[int, int, str | None, int, int | None]]] = defaultdict(set)
-
-    for rec in trace_index.records:
-        suite_name = str(rec.suite or "replay")
-        space_name = str(rec.space_preset or "baseline")
-        row = rec.to_score_row()
-        all_rows.append((suite_name, space_name, row))
-        rows_by_space_metric_graph.setdefault(space_name, {}).setdefault(row.metric_name, {}).setdefault(row.instance_id, []).append(row)
-        keys_by_space[space_name].add(perturbation_key(row))
-
-    return all_rows, rows_by_space_metric_graph, keys_by_space
+    return _load_rows_from_trace_by_space(trace_path)
 
 
 def main() -> None:

@@ -20,8 +20,14 @@ Evaluates claim truth/flip behavior and computes stability decisions.
 6. `devices/`
 Resolves optional device profiles for transpile-only and noisy simulation modes.
 
-7. `scripts/`
-Transforms JSON outputs into report artifacts and plots.
+7. `pipelines/`
+Shared execution helpers used by CLI examples (suite/space parsing, baseline/key helpers, trace replay loaders).
+
+8. `results/`
+Report composition modules (`report_builder`, renderers, plot helpers, section registry).
+
+9. `scripts/`
+Thin command entrypoints that delegate to `results/*` and other reusable modules.
 
 ## Data Flow
 ```mermaid
