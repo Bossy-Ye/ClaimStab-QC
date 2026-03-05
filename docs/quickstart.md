@@ -94,6 +94,7 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.generate_stability_report \
 Template specs are available in:
 - `examples/specs/claim_spec.yaml`
 - `examples/specs/perturbation_spec.yaml`
+- `specs/atlas_bv_demo.yml` (small end-to-end publishable example)
 
 Example run with a spec file:
 
@@ -102,6 +103,14 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --suite core \
   --spec examples/specs/claim_spec.yaml \
   --out-dir output/spec_run
+```
+
+Minimal publish path from a spec run:
+
+```bash
+claimstab validate-spec --spec specs/atlas_bv_demo.yml
+claimstab run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_demo --report
+claimstab publish-result --run-dir output/atlas_demo --atlas-root atlas --contributor your_name
 ```
 
 Plot-enabled report:

@@ -32,6 +32,58 @@ Optional checks:
 - `claimstab validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json`
 - `make reproduce-paper`
 
+## Contribute Your Dataset (3-Minute Path)
+
+Required input contract for `claimstab publish-result`:
+- `--run-dir` must contain `claim_stability.json` (required).
+- Optional but recommended files in the same directory:
+  - `scores.csv`
+  - `rq_summary.json`
+  - `stability_report.html`
+
+Minimal spec template (required fields):
+
+```yaml
+spec_version: 1
+pipeline: main
+task:
+  kind: bv
+  suite: core
+methods:
+  - name: BVOracle
+    kind: bv
+  - name: RandomBaseline
+    kind: random_baseline
+claims:
+  - type: decision
+    method: BVOracle
+    top_k: 1
+    label_meta_key: target_label
+perturbations:
+  preset: sampling_only
+sampling:
+  mode: random_k
+  sample_size: 10
+  seed: 7
+decision_rule:
+  threshold: 0.95
+  confidence_level: 0.95
+backend:
+  engine: basic
+```
+
+Copy-paste contributor flow:
+
+```bash
+claimstab validate-spec --spec specs/atlas_bv_demo.yml
+claimstab run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_demo --report
+claimstab publish-result --run-dir output/atlas_demo --atlas-root atlas --contributor your_name
+claimstab validate-atlas --atlas-root atlas
+claimstab export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
+```
+
+See full dataset documentation: [`docs/atlas.md`](./docs/atlas.md).
+
 More docs:
 - Project website: [ClaimStab-QC](https://bossy-ye.github.io/ClaimStab-QC/)
 - Docs quickstart: [Quickstart](https://bossy-ye.github.io/ClaimStab-QC/quickstart/)

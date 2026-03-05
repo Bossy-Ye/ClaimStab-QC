@@ -18,6 +18,47 @@ Submission contract (required for registry-quality entries):
 - what decisions/results were obtained,
 - how to reproduce and cite the submission.
 
+## Input Contract (Strict)
+
+`claimstab publish-result --run-dir <dir>` expects:
+- Required: `<dir>/claim_stability.json`
+- Optional: `<dir>/scores.csv`
+- Optional: `<dir>/rq_summary.json`
+- Optional: `<dir>/stability_report.html`
+
+If `claim_stability.json` is missing, publish will fail.
+
+Minimal spec example (dataset-friendly):
+
+```yaml
+spec_version: 1
+pipeline: main
+task:
+  kind: bv
+  suite: core
+methods:
+  - name: BVOracle
+    kind: bv
+  - name: RandomBaseline
+    kind: random_baseline
+claims:
+  - type: decision
+    method: BVOracle
+    top_k: 1
+    label_meta_key: target_label
+perturbations:
+  preset: sampling_only
+sampling:
+  mode: random_k
+  sample_size: 10
+  seed: 7
+decision_rule:
+  threshold: 0.95
+  confidence_level: 0.95
+backend:
+  engine: basic
+```
+
 ## Contributor Flow
 
 1. Run experiment (built-in or custom task):
