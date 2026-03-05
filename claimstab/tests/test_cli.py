@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 
 from claimstab import cli
+from claimstab.evidence import build_cep_protocol_meta, build_experiment_cep_record
 
 
 class TestCLI(unittest.TestCase):
@@ -52,6 +53,101 @@ class TestCLI(unittest.TestCase):
                 encoding="utf-8",
             )
             rc = cli.main(["validate-spec", "--spec", str(spec_path)])
+            self.assertEqual(rc, 0)
+
+    def test_validate_evidence_subcommand(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            td_path = Path(td)
+            trace_path = td_path / "trace.jsonl"
+            trace_row = {
+                "suite": "core",
+                "space_preset": "sampling_only",
+                "instance_id": "g0",
+                "method": "A",
+                "metric_name": "objective",
+                "seed_transpiler": 0,
+                "optimization_level": 1,
+                "layout_method": "sabre",
+                "seed_simulator": 0,
+                "shots": 1024,
+                "score": 1.0,
+                "transpiled_depth": 12,
+                "transpiled_size": 18,
+            }
+            trace_path.write_text(json.dumps(trace_row) + "\n", encoding="utf-8")
+
+            evidence = {
+                "trace_query": {
+                    "suite": "core",
+                    "space_preset": "sampling_only",
+                    "metric_name": "objective",
+                    "methods": ["A", "B"],
+                },
+                "artifacts": {"trace_jsonl": str(trace_path), "events_jsonl": None, "cache_db": None},
+                "lookup_fields": [
+                    "suite",
+                    "space_preset",
+                    "instance_id",
+                    "method",
+                    "metric_name",
+                    "seed_transpiler",
+                    "optimization_level",
+                    "layout_method",
+                    "shots",
+                    "seed_simulator",
+                ],
+            }
+            exp = {
+                "experiment_id": "sampling_only:A>B",
+                "claim": {"type": "ranking", "method_a": "A", "method_b": "B", "deltas": [0.0]},
+                "sampling": {
+                    "suite": "core",
+                    "space_preset": "sampling_only",
+                    "mode": "random_k",
+                    "sample_size": 16,
+                    "seed": 7,
+                    "perturbation_space_size": 100,
+                },
+                "stability_rule": {"threshold": 0.95, "confidence_level": 0.95},
+                "backend": {"engine": "basic", "noise_model": "none"},
+                "device_profile": {"enabled": False, "provider": "none", "name": None, "mode": "transpile_only"},
+                "baseline": {
+                    "seed_transpiler": 0,
+                    "optimization_level": 1,
+                    "layout_method": "sabre",
+                    "shots": 16,
+                    "seed_simulator": 0,
+                },
+                "evidence": evidence,
+            }
+            evidence["cep"] = build_experiment_cep_record(
+                experiment=exp,
+                runtime_meta={"git_commit": "abc123", "git_dirty": False, "dependencies": {"qiskit": "2.2.3"}},
+                evidence=evidence,
+            )
+
+            payload = {
+                "meta": {
+                    "artifacts": {
+                        "trace_jsonl": str(trace_path),
+                        "events_jsonl": None,
+                        "cache_db": None,
+                        "replay_trace": None,
+                    },
+                    "evidence_chain": build_cep_protocol_meta(
+                        lookup_fields=evidence["lookup_fields"],
+                        decision_provenance=(
+                            "each experiment includes evidence.trace_query + evidence.cep blocks "
+                            "that can be matched against trace records for reproducible decision provenance"
+                        ),
+                    ),
+                },
+                "experiments": [exp],
+            }
+            json_path = td_path / "claim_stability.json"
+            json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+            rc = cli.main(["validate-evidence", "--json", str(json_path)])
             self.assertEqual(rc, 0)
 
     def test_run_dry_run_main(self) -> None:

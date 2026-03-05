@@ -18,11 +18,13 @@ Preferred artifact roots for paper/submission:
 ```bash
 claimstab validate-spec --spec specs/paper_main.yml
 claimstab run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
+claimstab validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
 ```
 
 Expected artifacts:
 - `output/presentation_large/large/maxcut_ranking/claim_stability.json`
 - `output/presentation_large/large/maxcut_ranking/scores.csv`
+- `output/presentation_large/large/maxcut_ranking/robustness_map.json`
 - `output/presentation_large/large/maxcut_ranking/rq_summary.json`
 - `output/presentation_large/large/maxcut_ranking/stability_report.html`
 
@@ -31,11 +33,13 @@ Expected artifacts:
 ```bash
 claimstab validate-spec --spec specs/paper_structural.yml
 PYTHONPATH=. ./venv/bin/python examples/exp_structural_compilation.py --out-dir output/paper_artifact/structural
+claimstab validate-evidence --json output/paper_artifact/structural/claim_stability.json
 ```
 
 Expected artifacts:
 - `output/paper_artifact/structural/claim_stability.json`
 - `output/paper_artifact/structural/scores.csv`
+- `output/paper_artifact/structural/robustness_map.json`
 - `output/paper_artifact/structural/rq_summary.json`
 
 ## 2) Device-aware extension

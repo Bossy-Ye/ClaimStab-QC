@@ -59,6 +59,8 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.generate_stability_report \
   --json output/presentation_large/large/maxcut_ranking/claim_stability.json \
   --out output/presentation_large/large/maxcut_ranking/stability_report.html \
   --with-plots
+
+claimstab validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
 ```
 
 ## Output Path Convention

@@ -35,12 +35,18 @@ class TestSmokeDemo(unittest.TestCase):
             subprocess.run(cmd, check=True)
             payload = json.loads((out_dir / "claim_stability.json").read_text(encoding="utf-8"))
             self.assertTrue((out_dir / "rq_summary.json").exists())
+            self.assertTrue((out_dir / "robustness_map.json").exists())
+            robustness_payload = json.loads((out_dir / "robustness_map.json").read_text(encoding="utf-8"))
+            self.assertIn("cells", robustness_payload)
             return payload
 
     def test_maxcut_ranking_smoke(self) -> None:
         payload = self._run_demo(task="maxcut")
         self.assertIn("experiments", payload)
         self.assertGreater(len(payload["experiments"]), 0)
+        self.assertEqual(payload.get("meta", {}).get("evidence_chain", {}).get("protocol"), "cep_v1")
+        first = payload.get("experiments", [])[0]
+        self.assertIn("cep", first.get("evidence", {}))
 
     def test_bv_decision_smoke(self) -> None:
         payload = self._run_demo(task="bv")
@@ -112,6 +118,18 @@ class TestSmokeDemo(unittest.TestCase):
             self.assertEqual(
                 replay_payload.get("meta", {}).get("artifacts", {}).get("replay_trace"),
                 str(trace_path),
+            )
+
+            subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "claimstab.cli",
+                    "validate-evidence",
+                    "--json",
+                    str(replay_dir / "claim_stability.json"),
+                ],
+                check=True,
             )
 
 

@@ -64,3 +64,10 @@ PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py \
 - `events.jsonl`: execution event stream.
 - `cache.sqlite`: fingerprint-based cell cache.
 - Replay mode recomputes claims/reports from trace without rerunning circuits.
+
+## 5) Validate CEP evidence links
+
+```bash
+claimstab validate-evidence --json output/demo_main_replay/claim_stability.json
+claimstab validate-evidence --json output/multidevice_demo_replay/combined_summary.json --no-trace-check
+```

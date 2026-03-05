@@ -311,6 +311,190 @@ def _render_lockdown_recommendations(rows: list[dict[str, Any]]) -> str:
     return f"<table>{header}{''.join(body)}</table>"
 
 
+def _render_conditional_robustness(
+    robustness: dict[str, Any],
+    *,
+    delta_rows: list[dict[str, Any]],
+) -> str:
+    if not isinstance(robustness, dict) or not robustness:
+        return "<p>No conditional robustness map available.</p>"
+
+    robust_core = robustness.get("robust_core_by_delta", {})
+    failure_frontier = robustness.get("failure_frontier_by_delta", {})
+    lockdown = robustness.get("minimal_lockdown_set_by_delta", {})
+    cells = robustness.get("cells_by_delta", {})
+
+    deltas = [str(r.get("delta")) for r in delta_rows if r.get("delta") is not None]
+    if not deltas:
+        keys = set()
+        if isinstance(robust_core, dict):
+            keys.update(str(k) for k in robust_core.keys())
+        if isinstance(failure_frontier, dict):
+            keys.update(str(k) for k in failure_frontier.keys())
+        deltas = sorted(keys, key=_numeric_sort_key)
+
+    out: list[str] = []
+    for delta in deltas:
+        core_rows = robust_core.get(delta, []) if isinstance(robust_core, dict) else []
+        frontier_rows = failure_frontier.get(delta, []) if isinstance(failure_frontier, dict) else []
+        lock_payload = lockdown.get(delta, {}) if isinstance(lockdown, dict) else {}
+        lock_best = lock_payload.get("best", {}) if isinstance(lock_payload, dict) else {}
+        cell_rows = cells.get(delta, []) if isinstance(cells, dict) else []
+
+        out.append(f"<h4>delta={html.escape(delta)}</h4>")
+        out.append(
+            "<p>"
+            f"cells={len(cell_rows) if isinstance(cell_rows, list) else 0}, "
+            f"robust_core={len(core_rows) if isinstance(core_rows, list) else 0}, "
+            f"failure_frontier={len(frontier_rows) if isinstance(frontier_rows, list) else 0}"
+            "</p>"
+        )
+
+        if isinstance(core_rows, list) and core_rows:
+            top = core_rows[0] if isinstance(core_rows[0], dict) else {}
+            out.append(
+                "<p><b>Robust core example:</b> "
+                f"conditions={html.escape(str(top.get('conditions', {})))}, "
+                f"CI_low={html.escape(str(top.get('stability_ci_low')))}, "
+                f"decision={html.escape(str(top.get('decision')))}</p>"
+            )
+        if isinstance(frontier_rows, list) and frontier_rows:
+            top = frontier_rows[0] if isinstance(frontier_rows[0], dict) else {}
+            out.append(
+                "<p><b>Failure frontier example:</b> "
+                f"changed_dimension={html.escape(str(top.get('changed_dimension')))}, "
+                f"stable={html.escape(str(top.get('stable_conditions', {})))}, "
+                f"unstable={html.escape(str(top.get('unstable_conditions', {})))}</p>"
+            )
+        if isinstance(lock_best, dict) and lock_best:
+            out.append(
+                "<p><b>Minimal lockdown set:</b> "
+                f"lock_dimensions={html.escape(str(lock_best.get('lock_dimensions', [])))}, "
+                f"conditions={html.escape(str(lock_best.get('conditions', {})))}, "
+                f"decision={html.escape(str(lock_best.get('decision')))}</p>"
+            )
+
+    return "".join(out) if out else "<p>No conditional robustness map available.</p>"
+
+
+def _render_stratified_stability(
+    stratified: dict[str, Any],
+    *,
+    delta_rows: list[dict[str, Any]],
+) -> str:
+    if not isinstance(stratified, dict) or not stratified:
+        return "<p>No stratified stability summary available.</p>"
+    by_delta = stratified.get("by_delta", {})
+    if not isinstance(by_delta, dict):
+        return "<p>No stratified stability summary available.</p>"
+
+    deltas = [str(r.get("delta")) for r in delta_rows if r.get("delta") is not None]
+    if not deltas:
+        deltas = sorted([str(k) for k in by_delta.keys()], key=_numeric_sort_key)
+
+    out: list[str] = []
+    dims = stratified.get("strata_dimensions", [])
+    if isinstance(dims, list) and dims:
+        out.append(f"<p><b>Strata dimensions:</b> {html.escape(', '.join(str(x) for x in dims))}</p>")
+
+    header = (
+        "<tr><th>conditions</th><th>decision</th><th>n_instances</th><th>n_eval</th>"
+        "<th>flip_rate</th><th>stability_ci_low</th><th>stability_ci_high</th></tr>"
+    )
+    for delta in deltas:
+        rows = by_delta.get(delta, [])
+        if not isinstance(rows, list) or not rows:
+            continue
+        body = []
+        for row in rows[:6]:
+            if not isinstance(row, dict):
+                continue
+            body.append(
+                "<tr>"
+                f"<td><code>{html.escape(str(row.get('conditions', {})))}</code></td>"
+                f"<td>{_decision_badge(row.get('decision'))}</td>"
+                f"<td>{html.escape(str(row.get('n_instances')))}</td>"
+                f"<td>{html.escape(str(row.get('n_eval')))}</td>"
+                f"<td>{html.escape(str(row.get('flip_rate')))}</td>"
+                f"<td>{html.escape(str(row.get('stability_ci_low')))}</td>"
+                f"<td>{html.escape(str(row.get('stability_ci_high')))}</td>"
+                "</tr>"
+            )
+        if body:
+            out.append(f"<h4>delta={html.escape(delta)}</h4>")
+            out.append("<table>" + header + "".join(body) + "</table>")
+
+    return "".join(out) if out else "<p>No stratified stability summary available.</p>"
+
+
+def _render_effect_diagnostics(
+    effects: dict[str, Any],
+    *,
+    delta_rows: list[dict[str, Any]],
+) -> str:
+    if not isinstance(effects, dict) or not effects:
+        return "<p>No effect diagnostics available.</p>"
+    by_delta = effects.get("by_delta", {})
+    if not isinstance(by_delta, dict):
+        return "<p>No effect diagnostics available.</p>"
+
+    deltas = [str(r.get("delta")) for r in delta_rows if r.get("delta") is not None]
+    if not deltas:
+        deltas = sorted([str(k) for k in by_delta.keys()], key=_numeric_sort_key)
+
+    out: list[str] = []
+    for delta in deltas:
+        payload = by_delta.get(delta, {})
+        if not isinstance(payload, dict):
+            continue
+        main_effects = payload.get("main_effects", [])
+        interactions = payload.get("interaction_effects", [])
+        out.append(f"<h4>delta={html.escape(delta)}</h4>")
+
+        if isinstance(main_effects, list) and main_effects:
+            main_header = "<tr><th>dimension</th><th>effect_score</th><th>n_levels</th><th>n_eval</th></tr>"
+            main_rows = []
+            for row in main_effects[:5]:
+                if not isinstance(row, dict):
+                    continue
+                main_rows.append(
+                    "<tr>"
+                    f"<td>{html.escape(str(row.get('dimension')))}</td>"
+                    f"<td>{html.escape(str(row.get('effect_score')))}</td>"
+                    f"<td>{html.escape(str(row.get('n_levels')))}</td>"
+                    f"<td>{html.escape(str(row.get('n_eval')))}</td>"
+                    "</tr>"
+                )
+            if main_rows:
+                out.append("<p><b>Main effects</b></p>")
+                out.append("<table>" + main_header + "".join(main_rows) + "</table>")
+
+        if isinstance(interactions, list) and interactions:
+            int_header = (
+                "<tr><th>dimensions</th><th>interaction_score</th><th>joint_spread</th>"
+                "<th>reference_main_effect</th><th>n_cells</th><th>n_eval</th></tr>"
+            )
+            int_rows = []
+            for row in interactions[:5]:
+                if not isinstance(row, dict):
+                    continue
+                int_rows.append(
+                    "<tr>"
+                    f"<td>{html.escape(str(row.get('dimensions')))}</td>"
+                    f"<td>{html.escape(str(row.get('interaction_score')))}</td>"
+                    f"<td>{html.escape(str(row.get('joint_spread')))}</td>"
+                    f"<td>{html.escape(str(row.get('reference_main_effect')))}</td>"
+                    f"<td>{html.escape(str(row.get('n_cells')))}</td>"
+                    f"<td>{html.escape(str(row.get('n_eval')))}</td>"
+                    "</tr>"
+                )
+            if int_rows:
+                out.append("<p><b>Top interactions</b></p>")
+                out.append("<table>" + int_header + "".join(int_rows) + "</table>")
+
+    return "".join(out) if out else "<p>No effect diagnostics available.</p>"
+
+
 def _render_shots_curve_table(rows: list[dict[str, Any]]) -> str:
     if not rows:
         return "<p>No shots-by-stability data.</p>"
@@ -497,6 +681,18 @@ def _render_evidence_chain(
             parts.append("<table><tr><th>artifact</th><th>path</th></tr>" + "".join(rows) + "</table>")
 
     if isinstance(evidence_meta, dict):
+        protocol = evidence_meta.get("protocol")
+        schema_id = evidence_meta.get("schema_id")
+        required_fields = evidence_meta.get("required_evidence_fields")
+        if protocol:
+            parts.append(f"<p><b>CEP protocol:</b> {html.escape(str(protocol))}</p>")
+        if schema_id:
+            parts.append(f"<p><b>CEP schema:</b> <code>{html.escape(str(schema_id))}</code></p>")
+        if isinstance(required_fields, list) and required_fields:
+            parts.append(
+                "<p><b>Required evidence fields:</b> "
+                f"{html.escape(', '.join(str(x) for x in required_fields))}</p>"
+            )
         lookup_fields = evidence_meta.get("lookup_fields")
         if isinstance(lookup_fields, list) and lookup_fields:
             parts.append(
@@ -513,15 +709,27 @@ def _render_evidence_chain(
         if not isinstance(evidence, dict):
             continue
         trace_query = evidence.get("trace_query", {})
+        cep_hash = ""
+        cep = evidence.get("cep")
+        if isinstance(cep, dict):
+            cf = cep.get("config_fingerprint")
+            if isinstance(cf, dict):
+                cep_hash = str(cf.get("hash", ""))
+        cep_short = cep_hash[:12] if cep_hash else ""
         exp_rows.append(
             "<tr>"
             f"<td>{html.escape(str(exp.get('experiment_id')))}</td>"
             f"<td><code>{html.escape(str(trace_query))}</code></td>"
+            f"<td><code>{html.escape(cep_short)}</code></td>"
             "</tr>"
         )
     if exp_rows:
         parts.append("<h3>Experiment-to-Trace Queries</h3>")
-        parts.append("<table><tr><th>experiment_id</th><th>trace_query</th></tr>" + "".join(exp_rows) + "</table>")
+        parts.append(
+            "<table><tr><th>experiment_id</th><th>trace_query</th><th>config_fingerprint(hash)</th></tr>"
+            + "".join(exp_rows)
+            + "</table>"
+        )
 
     if not parts:
         return "<p>No explicit evidence-chain references found in this artifact.</p>"
@@ -884,7 +1092,7 @@ def main() -> None:
 
     rq_summary = payload.get("rq_summary", {})
     if isinstance(rq_summary, dict) and rq_summary and is_section_enabled("rq_summary", selected_sections):
-        html_body.append("<h2>RQ Summary (RQ1-RQ4)</h2>")
+        html_body.append("<h2>RQ Summary (RQ1-RQ7)</h2>")
         html_body.append(_render_rq_summary(rq_summary))
 
     for idx, experiment in enumerate(experiments):
@@ -1006,6 +1214,29 @@ def main() -> None:
                 html_body.append(_render_dimension_breakdown(dim_by_delta.get(delta, {})))
                 html_body.append("<h5>Top Lock-Down Drivers (Fix knob to improve stability)</h5>")
                 html_body.append(_render_lockdown_recommendations(lockdown_by_delta.get(delta, [])))
+
+        if claim_type == "ranking" and is_section_enabled("robustness_map", selected_sections):
+            html_body.append("<h3>Conditional Robustness Map (RQ5-RQ7)</h3>")
+            html_body.append(
+                _render_conditional_robustness(
+                    overall.get("conditional_robustness", {}),
+                    delta_rows=delta_rows,
+                )
+            )
+            html_body.append("<h3>Stratified Stability</h3>")
+            html_body.append(
+                _render_stratified_stability(
+                    overall.get("stratified_stability", {}),
+                    delta_rows=delta_rows,
+                )
+            )
+            html_body.append("<h3>Main + Interaction Effects</h3>")
+            html_body.append(
+                _render_effect_diagnostics(
+                    overall.get("effect_diagnostics", {}),
+                    delta_rows=delta_rows,
+                )
+            )
 
         if is_section_enabled("auxiliary_claims", selected_sections):
             html_body.append("<h3>Decision + Distribution Examples</h3>")

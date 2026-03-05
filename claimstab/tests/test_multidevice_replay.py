@@ -77,6 +77,19 @@ class TestMultideviceReplaySmoke(unittest.TestCase):
                 str(trace_path),
             )
 
+            subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "claimstab.cli",
+                    "validate-evidence",
+                    "--json",
+                    str(replay_dir / "combined_summary.json"),
+                    "--no-trace-check",
+                ],
+                check=True,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

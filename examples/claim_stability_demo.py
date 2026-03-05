@@ -38,6 +38,7 @@ from claimstab.baselines.naive import evaluate_naive_baseline
 from claimstab.cache.store import CacheStore
 from claimstab.core import ArtifactManifest, ExecutionEvent, JsonlEventLogger, TraceIndex, TraceRecord
 from claimstab.devices.registry import parse_device_profile, parse_noise_model_mode, resolve_device_profile
+from claimstab.evidence import build_cep_protocol_meta, build_experiment_cep_record
 from claimstab.methods.spec import MethodSpec
 from claimstab.perturbations.sampling import SamplingPolicy, adaptive_sample_configs, ensure_config_included, sample_configs
 from claimstab.perturbations.space import CompilationPerturbation, ExecutionPerturbation, PerturbationConfig, PerturbationSpace
@@ -70,6 +71,19 @@ SPACE_ALIASES = {
     "combined_light": "combined_light",
     "day1_default": "baseline",
 }
+
+EVIDENCE_LOOKUP_FIELDS = [
+    "suite",
+    "space_preset",
+    "instance_id",
+    "method",
+    "metric_name",
+    "seed_transpiler",
+    "optimization_level",
+    "layout_method",
+    "shots",
+    "seed_simulator",
+]
 
 
 def parse_args() -> argparse.Namespace:
@@ -271,16 +285,7 @@ def build_evidence_ref(
             "cache_db": artifact_manifest.cache_db,
         },
         "lookup_fields": [
-            "suite",
-            "space_preset",
-            "instance_id",
-            "method",
-            "metric_name",
-            "seed_transpiler",
-            "optimization_level",
-            "layout_method",
-            "shots",
-            "seed_simulator",
+            *EVIDENCE_LOOKUP_FIELDS,
         ],
     }
 
@@ -914,6 +919,84 @@ def evaluate_auxiliary_claim_examples(
             "decision": decision_res.decision.value,
         },
         "distribution_example": distribution_payload,
+    }
+
+
+def build_robustness_map_artifact(experiments: list[dict[str, Any]]) -> dict[str, Any]:
+    cells: list[dict[str, Any]] = []
+    by_experiment: dict[str, dict[str, list[dict[str, Any]]]] = {}
+    for exp in experiments:
+        if not isinstance(exp, dict):
+            continue
+        exp_id = str(exp.get("experiment_id", "unknown"))
+        claim = exp.get("claim", {})
+        if not isinstance(claim, dict) or str(claim.get("type", "ranking")) != "ranking":
+            continue
+        overall = exp.get("overall", {})
+        if not isinstance(overall, dict):
+            continue
+        robustness = overall.get("conditional_robustness", {})
+        if not isinstance(robustness, dict):
+            continue
+        by_delta = robustness.get("cells_by_delta", {})
+        if not isinstance(by_delta, dict):
+            continue
+        exp_rows: dict[str, list[dict[str, Any]]] = {}
+        for delta, rows in by_delta.items():
+            if not isinstance(rows, list):
+                continue
+            dkey = str(delta)
+            mapped_rows: list[dict[str, Any]] = []
+            for row in rows:
+                if not isinstance(row, dict):
+                    continue
+                out_row = {
+                    "experiment_id": exp_id,
+                    "delta": dkey,
+                    "conditions": row.get("conditions", {}),
+                    "n_eval": int(row.get("n_eval", 0)),
+                    "flip_rate": float(row.get("flip_rate", 0.0)),
+                    "stability_hat": float(row.get("stability_hat", 0.0)),
+                    "stability_ci_low": float(row.get("stability_ci_low", 0.0)),
+                    "stability_ci_high": float(row.get("stability_ci_high", 0.0)),
+                    "decision": str(row.get("decision", "inconclusive")),
+                }
+                mapped_rows.append(out_row)
+                cells.append(out_row)
+            mapped_rows.sort(
+                key=lambda item: (
+                    item["decision"] == "stable",
+                    int(item["n_eval"]),
+                    float(item["stability_ci_low"]),
+                ),
+                reverse=True,
+            )
+            exp_rows[dkey] = mapped_rows
+        by_experiment[exp_id] = exp_rows
+
+    cells.sort(
+        key=lambda item: (
+            str(item["experiment_id"]),
+            float(item["delta"]),
+            str(item["decision"]) == "stable",
+            int(item["n_eval"]),
+        ),
+        reverse=True,
+    )
+    return {
+        "schema_version": "robustness_map_v1",
+        "cell_fields": [
+            "experiment_id",
+            "delta",
+            "conditions",
+            "n_eval",
+            "stability_hat",
+            "stability_ci_low",
+            "stability_ci_high",
+            "decision",
+        ],
+        "cells": cells,
+        "by_experiment_delta": by_experiment,
     }
 
 
@@ -1923,11 +2006,24 @@ def main() -> None:
 
     write_scores_csv(all_rows, out_csv)
 
+    for exp in experiments:
+        if not isinstance(exp, dict):
+            continue
+        evidence = exp.get("evidence")
+        if not isinstance(evidence, dict):
+            continue
+        evidence["cep"] = build_experiment_cep_record(
+            experiment=exp,
+            runtime_meta=runtime_meta,
+            evidence=evidence,
+        )
+
     meta_deltas = (
         sorted({float(delta) for job in ranking_jobs for delta in job.get("deltas", [])})
         if ranking_jobs
         else list(deltas)
     )
+    robustness_map_artifact = build_robustness_map_artifact(experiments)
     payload = {
         "meta": {
             "suite": suite_name,
@@ -1942,23 +2038,16 @@ def main() -> None:
                 "events_jsonl": artifact_manifest.events_jsonl,
                 "cache_db": artifact_manifest.cache_db,
                 "replay_trace": str(args.replay_trace) if args.replay_trace else None,
+                "robustness_map_json": str((out_dir / "robustness_map.json").resolve()),
             },
             "evidence_chain": {
-                "trace_source": "trace_jsonl",
-                "events_source": "events_jsonl",
-                "lookup_fields": [
-                    "suite",
-                    "space_preset",
-                    "instance_id",
-                    "method",
-                    "metric_name",
-                    "seed_transpiler",
-                    "optimization_level",
-                    "layout_method",
-                    "shots",
-                    "seed_simulator",
-                ],
-                "decision_provenance": "each experiment includes an evidence.trace_query block that can be matched against trace records",
+                **build_cep_protocol_meta(
+                    lookup_fields=EVIDENCE_LOOKUP_FIELDS,
+                    decision_provenance=(
+                        "each experiment includes evidence.trace_query + evidence.cep blocks "
+                        "that can be matched against trace records for reproducible decision provenance"
+                    ),
+                ),
             },
         },
         "device_profile": {
@@ -2006,11 +2095,13 @@ def main() -> None:
 
     out_dir.mkdir(parents=True, exist_ok=True)
     out_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    (out_dir / "robustness_map.json").write_text(json.dumps(robustness_map_artifact, indent=2), encoding="utf-8")
     (out_dir / "rq_summary.json").write_text(json.dumps(rq_summary, indent=2), encoding="utf-8")
 
     print("Wrote:")
     print(" ", out_csv.resolve())
     print(" ", out_json.resolve())
+    print(" ", (out_dir / "robustness_map.json").resolve())
     print("Batch:", payload["batch"])
 
 

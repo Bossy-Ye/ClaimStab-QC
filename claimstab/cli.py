@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any, Sequence
 
 from claimstab.atlas import build_dataset_registry_markdown, compare_claim_outputs, publish_result, validate_atlas
+from claimstab.evidence import validate_evidence_file
 from claimstab.spec import load_spec, validate_spec
 
 
@@ -475,6 +476,42 @@ def cmd_validate_spec(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_validate_evidence(args: argparse.Namespace) -> int:
+    try:
+        result = validate_evidence_file(
+            args.json,
+            base_dir=args.base_dir,
+            trace_jsonl=args.trace_jsonl,
+            check_trace=not args.no_trace_check,
+        )
+    except Exception as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+
+    print(f"Evidence JSON: {Path(args.json).resolve()}")
+    print(f"Schema valid: {result.schema_valid}")
+    print(f"Trace checked: {result.trace_checked}")
+    print(
+        "Experiments checked: "
+        f"{result.experiments_checked} "
+        f"(trace matches: {result.experiments_with_trace_match})"
+    )
+    if result.warnings:
+        print("Warnings:")
+        for line in result.warnings:
+            print(f"- {line}")
+    if result.errors:
+        print("Errors:", file=sys.stderr)
+        for line in result.errors:
+            print(f"- {line}", file=sys.stderr)
+        return 2
+    if args.strict_warnings and result.warnings:
+        print("Validation failed because --strict-warnings is enabled.", file=sys.stderr)
+        return 2
+    print("Evidence validation passed.")
+    return 0
+
+
 def cmd_examples(_: argparse.Namespace) -> int:
     print("Ready-to-run examples:")
     print("  claimstab init-external-task --name my_problem --out-dir examples/my_problem_demo")
@@ -486,6 +523,7 @@ def cmd_examples(_: argparse.Namespace) -> int:
     print("  PYTHONPATH=. ./venv/bin/python examples/atlas_bv_workflow.py --contributor your_name")
     print("  claimstab report --json output/paper_main/claim_stability.json --out output/paper_main/stability_report.html")
     print("  claimstab validate-spec --spec specs/paper_main.yml")
+    print("  claimstab validate-evidence --json output/paper_main/claim_stability.json")
     print("  claimstab export-definitions --out docs/generated/definitions.md")
     print("  claimstab publish-result --run-dir output/paper_main --atlas-root atlas --contributor your_name")
     print("  claimstab validate-atlas --atlas-root atlas")
@@ -761,6 +799,30 @@ def build_parser() -> argparse.ArgumentParser:
     validate_p = sub.add_parser("validate-spec", help="Validate a spec file against schema v1")
     validate_p.add_argument("--spec", required=True, help="Path to YAML/JSON spec")
     validate_p.set_defaults(func=cmd_validate_spec)
+
+    validate_evidence_p = sub.add_parser("validate-evidence", help="Validate Claim Evidence Protocol links in output JSON")
+    validate_evidence_p.add_argument("--json", required=True, help="Path to claim_stability.json or batch summary JSON")
+    validate_evidence_p.add_argument(
+        "--base-dir",
+        default=None,
+        help="Base directory for resolving relative artifact paths (default: JSON parent directory)",
+    )
+    validate_evidence_p.add_argument(
+        "--trace-jsonl",
+        default=None,
+        help="Optional explicit trace JSONL path override",
+    )
+    validate_evidence_p.add_argument(
+        "--no-trace-check",
+        action="store_true",
+        help="Skip trace-file loading and query-match checks",
+    )
+    validate_evidence_p.add_argument(
+        "--strict-warnings",
+        action="store_true",
+        help="Treat warnings as failure",
+    )
+    validate_evidence_p.set_defaults(func=cmd_validate_evidence)
 
     ex_p = sub.add_parser("examples", help="Print ready-to-run example commands")
     ex_p.set_defaults(func=cmd_examples)

@@ -58,4 +58,4 @@ claimstab = "claimstab.cli:main"
 include = ["claimstab*"]
 
 [tool.setuptools.package-data]
-claimstab = ["spec/*.json", "templates/*.py"]
+claimstab = ["spec/*.json", "evidence/*.json", "templates/*.py"]

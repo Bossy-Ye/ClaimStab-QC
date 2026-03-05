@@ -20,6 +20,9 @@ Additional tracks used for generality:
 - `compilation_only` is the most stable regime overall.
 - `sampling_only` is the dominant instability source.
 - `combined_light` still exposes fragility for close method pairings.
+- Conditional robustness maps (RQ5) isolate stable cores and unstable frontiers instead of only reporting a single global verdict.
+- Stratified stability and effect diagnostics (RQ6/RQ7) identify which instance strata and knob interactions are most failure-prone.
+- All reported decisions are trace-linked through CEP evidence blocks and can be checked with `claimstab validate-evidence`.
 
 ## Snapshot Rows
 

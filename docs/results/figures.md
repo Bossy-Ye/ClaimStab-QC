@@ -29,6 +29,9 @@ This is the same target used by `make figures`.
 
 - Flip-rate heatmaps (per perturbation space).
 - Perturbation-attribution bar chart.
+- Robustness-map cell-decision chart (RQ5).
+- Stratified-decision count chart (RQ6).
+- Main-effect ranking chart (RQ7).
 - Stability-vs-shots curve (CI-aware).
 - CI-width shrink curve (adaptive sampling, when available).
 - Naive baseline vs ClaimStab comparison plot.

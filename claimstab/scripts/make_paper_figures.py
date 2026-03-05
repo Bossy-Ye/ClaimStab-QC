@@ -13,6 +13,7 @@ from claimstab.figures.ci_shrink import plot_ci_width_vs_budget
 from claimstab.figures.cost_curve import plot_stability_vs_shots
 from claimstab.figures.heatmap import plot_fliprate_heatmap
 from claimstab.figures.loaders import comparative_dataframe, load_claim_json
+from claimstab.figures.robustness import plot_rq5_robustness_map, plot_rq6_decision_counts, plot_rq7_top_main_effects
 
 
 def _collect_naive_rows(payload: dict[str, Any]) -> pd.DataFrame:
@@ -111,6 +112,23 @@ def main() -> None:
             ref = plot_top_attribution_bars(attr_df, output_dir / f"fig_attribution_top_{in_dir.name}")
             if ref:
                 manifests["figures"][f"attribution_{in_dir.name}"] = ref
+            ref = plot_rq5_robustness_map(payload, output_dir / f"fig_rq5_robustness_map_{in_dir.name}")
+            if ref:
+                manifests["figures"][f"rq5_robustness_map_{in_dir.name}"] = ref
+            rq6 = rq.get("rq6_stratified_stability", {})
+            ref = plot_rq6_decision_counts(
+                rq6 if isinstance(rq6, dict) else {},
+                output_dir / f"fig_rq6_decisions_{in_dir.name}",
+            )
+            if ref:
+                manifests["figures"][f"rq6_decisions_{in_dir.name}"] = ref
+            rq7 = rq.get("rq7_effect_diagnostics", {})
+            ref = plot_rq7_top_main_effects(
+                rq7 if isinstance(rq7, dict) else {},
+                output_dir / f"fig_rq7_main_effects_{in_dir.name}",
+            )
+            if ref:
+                manifests["figures"][f"rq7_effects_{in_dir.name}"] = ref
 
         shots_df = _collect_shots_rows(payload, threshold=args.threshold)
         ref = plot_stability_vs_shots(shots_df, output_dir / f"fig_stability_vs_shots_{in_dir.name}", threshold=args.threshold)

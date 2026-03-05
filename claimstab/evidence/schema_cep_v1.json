@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claimstab-qc.dev/schema/cep_v1.json",
+  "title": "Claim Evidence Protocol v1",
+  "type": "object",
+  "required": ["meta"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["artifacts", "evidence_chain"],
+      "properties": {
+        "artifacts": {
+          "type": "object",
+          "required": ["trace_jsonl"],
+          "properties": {
+            "trace_jsonl": {
+              "type": ["string", "null"]
+            },
+            "events_jsonl": {
+              "type": ["string", "null"]
+            },
+            "cache_db": {
+              "type": ["string", "null"]
+            },
+            "replay_trace": {
+              "type": ["string", "null"]
+            }
+          },
+          "additionalProperties": true
+        },
+        "evidence_chain": {
+          "type": "object",
+          "required": [
+            "protocol",
+            "schema_id",
+            "trace_source",
+            "lookup_fields",
+            "decision_provenance",
+            "required_evidence_fields"
+          ],
+          "properties": {
+            "protocol": { "type": "string" },
+            "schema_id": { "type": "string" },
+            "trace_source": { "type": "string" },
+            "events_source": { "type": "string" },
+            "lookup_fields": {
+              "type": "array",
+              "items": { "type": "string" },
+              "minItems": 1
+            },
+            "decision_provenance": { "type": "string" },
+            "required_evidence_fields": {
+              "type": "array",
+              "items": { "type": "string" },
+              "minItems": 1
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "experiments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["experiment_id", "evidence"],
+        "properties": {
+          "experiment_id": { "type": "string" },
+          "evidence": {
+            "type": "object",
+            "required": ["trace_query", "artifacts", "lookup_fields", "cep"],
+            "properties": {
+              "trace_query": {
+                "type": "object",
+                "required": ["suite", "space_preset", "metric_name", "methods"],
+                "properties": {
+                  "suite": { "type": "string" },
+                  "space_preset": { "type": "string" },
+                  "metric_name": { "type": "string" },
+                  "methods": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "minItems": 1
+                  }
+                },
+                "additionalProperties": true
+              },
+              "artifacts": {
+                "type": "object",
+                "required": ["trace_jsonl"],
+                "properties": {
+                  "trace_jsonl": { "type": ["string", "null"] },
+                  "events_jsonl": { "type": ["string", "null"] },
+                  "cache_db": { "type": ["string", "null"] }
+                },
+                "additionalProperties": true
+              },
+              "lookup_fields": {
+                "type": "array",
+                "items": { "type": "string" },
+                "minItems": 1
+              },
+              "cep": {
+                "type": "object",
+                "required": [
+                  "protocol_version",
+                  "config_fingerprint",
+                  "perturbation_space",
+                  "sampling_strategy",
+                  "observation",
+                  "inference"
+                ],
+                "properties": {
+                  "protocol_version": { "type": "string" },
+                  "config_fingerprint": {
+                    "type": "object",
+                    "required": ["algorithm", "hash"],
+                    "properties": {
+                      "algorithm": { "type": "string" },
+                      "hash": { "type": "string" },
+                      "components": { "type": "object" }
+                    },
+                    "additionalProperties": true
+                  },
+                  "perturbation_space": { "type": "object" },
+                  "sampling_strategy": { "type": "object" },
+                  "observation": { "type": "object" },
+                  "inference": { "type": "object" }
+                },
+                "additionalProperties": true
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

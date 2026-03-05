@@ -72,3 +72,29 @@ For ranking flips, ClaimStab reports factor-level attribution by perturbation di
 - per-value flip rates,
 - top unstable configurations,
 - lock-down recommendations (which knob/value most reduces flips under one-knob fixing).
+
+## 9) Conditional Robustness Map
+
+For a condition cell `c` (for example a tuple of knob buckets), define:
+
+`s_θ(c) = Pr[C_θ(x)=1 | x in c]`.
+
+ClaimStab reports per-cell estimate and CI:
+- `P(stable | c)` estimate (`stability_hat`) and confidence interval,
+- conservative cell decision (`stable`, `unstable`, `inconclusive`).
+
+Derived summaries:
+- **robust core**: high-confidence stable cells,
+- **failure frontier**: near-neighbor condition transitions from stable to unstable,
+- **minimal lockdown set**: smallest knob-fixing set that restores stability.
+
+## 10) Claim Evidence Protocol (CEP)
+
+Each experiment decision is linked to a CEP evidence block with five required components:
+- `config_fingerprint`: reproducibility fingerprint of runtime/toolchain/device context,
+- `perturbation_space`: evaluated space and baseline context,
+- `sampling_strategy`: mode, budgets, and adaptive stopping metadata (if used),
+- `observation`: trace query + artifact references for raw observations,
+- `inference`: claim and decision rule used for final stability judgment.
+
+The protocol is machine-validated via `claimstab validate-evidence`.

@@ -16,6 +16,7 @@ from claimstab.claims.ranking import HigherIsBetter, RankingClaim, compute_rank_
 from claimstab.claims.stability import conservative_stability_decision, estimate_binomial_rate
 from claimstab.core import ArtifactManifest, ExecutionEvent, JsonlEventLogger, TraceIndex, TraceRecord
 from claimstab.devices.registry import parse_device_profile, parse_noise_model_mode, resolve_device_profile
+from claimstab.evidence import build_cep_protocol_meta, build_experiment_cep_record
 from claimstab.io.runtime_meta import collect_runtime_metadata
 from claimstab.methods.spec import MethodSpec
 from claimstab.perturbations.sampling import SamplingPolicy, ensure_config_included, sample_configs
@@ -49,6 +50,21 @@ SPACE_ALIASES = {
     "combined_light": "combined_light",
     "day1_default": "baseline",
 }
+
+EVIDENCE_LOOKUP_FIELDS = [
+    "suite",
+    "space_preset",
+    "instance_id",
+    "method",
+    "metric_name",
+    "seed_transpiler",
+    "optimization_level",
+    "layout_method",
+    "shots",
+    "seed_simulator",
+    "device_name",
+    "device_mode",
+]
 
 
 def parse_args() -> argparse.Namespace:
@@ -290,42 +306,19 @@ def build_evidence_ref(
             "cache_db": artifact_manifest.cache_db,
         },
         "lookup_fields": [
-            "suite",
-            "space_preset",
-            "instance_id",
-            "method",
-            "metric_name",
-            "seed_transpiler",
-            "optimization_level",
-            "layout_method",
-            "shots",
-            "seed_simulator",
-            "device_name",
-            "device_mode",
+            *EVIDENCE_LOOKUP_FIELDS,
         ],
     }
 
 
 def evidence_chain_meta() -> dict[str, Any]:
-    return {
-        "trace_source": "trace_jsonl",
-        "events_source": "events_jsonl",
-        "lookup_fields": [
-            "suite",
-            "space_preset",
-            "instance_id",
-            "method",
-            "metric_name",
-            "seed_transpiler",
-            "optimization_level",
-            "layout_method",
-            "shots",
-            "seed_simulator",
-            "device_name",
-            "device_mode",
-        ],
-        "decision_provenance": "each experiment includes an evidence.trace_query block that can be matched against trace records",
-    }
+    return build_cep_protocol_meta(
+        lookup_fields=EVIDENCE_LOOKUP_FIELDS,
+        decision_provenance=(
+            "each experiment includes evidence.trace_query + evidence.cep blocks "
+            "that can be matched against trace records for reproducible decision provenance"
+        ),
+    )
 
 
 def make_event_logger(path: Path) -> Callable[[dict[str, Any]], None]:
@@ -760,6 +753,13 @@ def main() -> None:
                                 artifact_manifest=artifact_manifest,
                             ),
                         }
+                        evidence = exp.get("evidence")
+                        if isinstance(evidence, dict):
+                            evidence["cep"] = build_experiment_cep_record(
+                                experiment=exp,
+                                runtime_meta=runtime_meta,
+                                evidence=evidence,
+                            )
                         batch_experiments.append(exp)
                         for row in overall:
                             summary_row = {
@@ -957,6 +957,13 @@ def main() -> None:
                                     artifact_manifest=artifact_manifest,
                                 ),
                             }
+                            evidence = exp.get("evidence")
+                            if isinstance(evidence, dict):
+                                evidence["cep"] = build_experiment_cep_record(
+                                    experiment=exp,
+                                    runtime_meta=runtime_meta,
+                                    evidence=evidence,
+                                )
                             batch_experiments.append(exp)
                             for row in overall:
                                 summary_row = {

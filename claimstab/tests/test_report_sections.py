@@ -11,7 +11,23 @@ from pathlib import Path
 class TestReportSections(unittest.TestCase):
     def _payload(self) -> dict:
         return {
-            "meta": {"reproduce_command": "demo"},
+            "meta": {
+                "reproduce_command": "demo",
+                "artifacts": {
+                    "trace_jsonl": "/tmp/trace.jsonl",
+                    "events_jsonl": None,
+                    "cache_db": None,
+                    "replay_trace": None,
+                },
+                "evidence_chain": {
+                    "protocol": "cep_v1",
+                    "schema_id": "claimstab/evidence/schema_cep_v1.json",
+                    "trace_source": "trace_jsonl",
+                    "lookup_fields": ["suite"],
+                    "decision_provenance": "test",
+                    "required_evidence_fields": ["config_fingerprint"],
+                },
+            },
             "experiments": [
                 {
                     "experiment_id": "exp:1",
@@ -67,6 +83,17 @@ class TestReportSections(unittest.TestCase):
                         },
                     },
                     "auxiliary_claims": {},
+                    "evidence": {
+                        "trace_query": {
+                            "suite": "core",
+                            "space_preset": "sampling_only",
+                            "metric_name": "objective",
+                            "methods": ["A", "B"],
+                        },
+                        "artifacts": {"trace_jsonl": "/tmp/trace.jsonl"},
+                        "lookup_fields": ["suite"],
+                        "cep": {"config_fingerprint": {"hash": "abcdef1234567890"}},
+                    },
                 }
             ],
             "comparative": {
@@ -139,6 +166,8 @@ class TestReportSections(unittest.TestCase):
         self.assertIn("Stability vs Cost (Shots)", html)
         self.assertIn("RQ6 stratified runs", html)
         self.assertIn("RQ7 effect diagnostics", html)
+        self.assertIn("Conditional Robustness Map (RQ5-RQ7)", html)
+        self.assertIn("CEP protocol", html)
 
     def test_custom_sections_can_hide_naive(self) -> None:
         html = self._run_report(
@@ -147,6 +176,7 @@ class TestReportSections(unittest.TestCase):
         )
         self.assertNotIn("Naive Baseline vs ClaimStab", html)
         self.assertIn("Delta Sweep Summary", html)
+        self.assertNotIn("Conditional Robustness Map (RQ5-RQ7)", html)
 
 
 if __name__ == "__main__":

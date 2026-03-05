@@ -13,6 +13,7 @@ REPORT_SECTION_IDS: Final[tuple[str, ...]] = (
     "delta_sweep",
     "cost_curve",
     "diagnostics",
+    "robustness_map",
     "auxiliary_claims",
 )
 
@@ -28,4 +29,3 @@ def parse_sections_arg(raw: str) -> set[str] | None:
 
 def is_section_enabled(section_id: str, selected: set[str] | None) -> bool:
     return selected is None or section_id in selected
-
