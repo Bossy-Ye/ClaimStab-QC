@@ -1,4 +1,4 @@
-.PHONY: docs-serve docs-build figures atlas-validate dataset-registry reproduce-paper gen-catalog
+.PHONY: docs-serve docs-build figures atlas-validate dataset-registry reproduce-paper gen-catalog clean-local
 
 PYTHON ?= python3
 MKDOCS_PY := $(if $(wildcard ./venv/bin/python),./venv/bin/python,$(PYTHON))
@@ -23,3 +23,6 @@ dataset-registry:
 
 reproduce-paper:
 	PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.reproduce_paper --out-root output/paper_artifact --backend-engine basic
+
+clean-local:
+	PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.clean_workspace --root . --apply

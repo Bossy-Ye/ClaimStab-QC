@@ -9,6 +9,7 @@ Canonical entrypoints:
 - `generate_stability_report.py`: render HTML report from `claim_stability.json`.
 - `generate_implementation_catalog.py`: regenerate docs implementation catalog.
 - `check_expected.py`: lightweight output expectation check used by docs/workflows.
+- `clean_workspace.py`: delete local caches/generated scratch artifacts (safe for regeneration).
 
 Guidelines:
 - Prefer calling reusable library modules from scripts (avoid embedding pipeline logic here).
