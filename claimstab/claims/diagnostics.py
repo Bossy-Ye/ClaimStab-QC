@@ -509,6 +509,117 @@ def build_conditional_robustness_summary(
     }
 
 
+def compute_effect_diagnostics(
+    *,
+    observations_by_delta: Mapping[str, Sequence[Mapping[str, Any]]],
+    varying_dimensions: Sequence[str] = (
+        "seed_transpiler",
+        "optimization_level",
+        "layout_method",
+        "shots_bucket",
+        "seed_simulator",
+    ),
+    context_conditions: Mapping[str, Any] | None = None,
+    top_k: int = 5,
+) -> dict[str, Any]:
+    by_delta: dict[str, dict[str, Any]] = {}
+
+    for delta, observations in observations_by_delta.items():
+        main_effects: list[dict[str, Any]] = []
+        spread_by_dim: dict[str, float] = {}
+
+        for dim in varying_dimensions:
+            grouped: dict[Any, dict[str, int]] = defaultdict(lambda: {"total": 0, "flips": 0})
+            for obs in observations:
+                cond = _observed_condition_cell(
+                    obs,
+                    context_conditions=context_conditions,
+                    cell_dimensions=[dim],
+                )
+                value = cond.get(dim)
+                grouped[value]["total"] += 1
+                grouped[value]["flips"] += 1 if bool(obs.get("is_flip", False)) else 0
+            if not grouped:
+                continue
+            rows = []
+            rates: list[float] = []
+            total_eval = 0
+            for value, counts in grouped.items():
+                total = int(counts["total"])
+                flips = int(counts["flips"])
+                rate = 0.0 if total <= 0 else flips / total
+                rows.append({"value": value, "n_eval": total, "flip_rate": rate})
+                rates.append(rate)
+                total_eval += total
+            spread = (max(rates) - min(rates)) if rates else 0.0
+            spread_by_dim[dim] = spread
+            rows.sort(key=lambda row: int(row["n_eval"]), reverse=True)
+            main_effects.append(
+                {
+                    "dimension": dim,
+                    "effect_score": spread,
+                    "n_levels": len(rows),
+                    "n_eval": total_eval,
+                    "by_value": rows[: max(1, top_k)],
+                }
+            )
+        main_effects.sort(key=lambda row: float(row["effect_score"]), reverse=True)
+
+        interaction_effects: list[dict[str, Any]] = []
+        for dim_a, dim_b in itertools.combinations(varying_dimensions, 2):
+            grouped_pair: dict[tuple[Any, Any], dict[str, int]] = defaultdict(lambda: {"total": 0, "flips": 0})
+            for obs in observations:
+                cond = _observed_condition_cell(
+                    obs,
+                    context_conditions=context_conditions,
+                    cell_dimensions=[dim_a, dim_b],
+                )
+                key = (cond.get(dim_a), cond.get(dim_b))
+                grouped_pair[key]["total"] += 1
+                grouped_pair[key]["flips"] += 1 if bool(obs.get("is_flip", False)) else 0
+            if not grouped_pair:
+                continue
+            pair_rates = []
+            total_eval = 0
+            for counts in grouped_pair.values():
+                total = int(counts["total"])
+                flips = int(counts["flips"])
+                pair_rates.append(0.0 if total <= 0 else flips / total)
+                total_eval += total
+            joint_spread = (max(pair_rates) - min(pair_rates)) if pair_rates else 0.0
+            main_ref = max(spread_by_dim.get(dim_a, 0.0), spread_by_dim.get(dim_b, 0.0))
+            interaction_score = max(0.0, joint_spread - main_ref)
+            interaction_effects.append(
+                {
+                    "dimensions": [dim_a, dim_b],
+                    "interaction_score": interaction_score,
+                    "joint_spread": joint_spread,
+                    "reference_main_effect": main_ref,
+                    "n_cells": len(grouped_pair),
+                    "n_eval": total_eval,
+                }
+            )
+        interaction_effects.sort(
+            key=lambda row: (
+                float(row["interaction_score"]),
+                float(row["joint_spread"]),
+                int(row["n_eval"]),
+            ),
+            reverse=True,
+        )
+
+        by_delta[str(delta)] = {
+            "main_effects": main_effects[: max(0, top_k)],
+            "interaction_effects": interaction_effects[: max(0, top_k)],
+        }
+
+    return {
+        "dimensions": list(varying_dimensions),
+        "context_conditions": dict(context_conditions or {}),
+        "by_delta": by_delta,
+    }
+
+
 def compute_stability_vs_shots(
     score_rows: Sequence[ScoreRow],
     claim_spec: RankingClaim | Mapping[str, Any],

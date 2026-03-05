@@ -17,6 +17,7 @@ from claimstab.claims.diagnostics import (
     aggregate_lockdown_recommendations,
     build_conditional_robustness_summary,
     compute_stability_vs_shots,
+    compute_effect_diagnostics,
     conditional_rank_flip_summary,
     minimum_shots_for_stable,
     rank_flip_root_cause_by_dimension,
@@ -720,6 +721,106 @@ def build_method_scores_by_key(rows: list[ScoreRow]) -> dict[tuple[int, int, str
     return by_key
 
 
+def _bucket_problem_size(value: int) -> str:
+    if value <= 6:
+        return "small"
+    if value <= 10:
+        return "medium"
+    return "large"
+
+
+def _bucket_density(value: float) -> str:
+    if value <= 0.25:
+        return "sparse"
+    if value <= 0.45:
+        return "mid"
+    return "dense"
+
+
+def _bucket_transpiled_depth(depth: int | None) -> str | None:
+    if depth is None:
+        return None
+    if depth <= 40:
+        return "depth_low"
+    if depth <= 120:
+        return "depth_mid"
+    return "depth_high"
+
+
+def _bucket_two_qubit_count(two_q: int | None) -> str | None:
+    if two_q is None:
+        return None
+    if two_q <= 20:
+        return "twoq_low"
+    if two_q <= 60:
+        return "twoq_mid"
+    return "twoq_high"
+
+
+def _derive_instance_strata(
+    *,
+    task_kind: str,
+    graph_id: str,
+    instance: Any | None,
+    graph_rows: list[ScoreRow],
+    method_name: str,
+    baseline_key: tuple[int, int, str | None, int, int | None],
+) -> dict[str, object]:
+    strata: dict[str, object] = {}
+
+    payload = getattr(instance, "payload", None) if instance is not None else None
+    meta = getattr(instance, "meta", None) if instance is not None else None
+
+    if task_kind == "maxcut":
+        n_nodes = getattr(payload, "num_nodes", None)
+        edges = getattr(payload, "edges", None)
+        if isinstance(n_nodes, int) and n_nodes > 0:
+            strata["graph_size_bucket"] = _bucket_problem_size(int(n_nodes))
+        if isinstance(n_nodes, int) and n_nodes > 1 and isinstance(edges, list):
+            density = (2.0 * len(edges)) / float(n_nodes * (n_nodes - 1))
+            strata["edge_density_bucket"] = _bucket_density(density)
+        if str(graph_id).startswith("ring"):
+            strata["instance_family"] = "ring"
+        elif str(graph_id).startswith("er_"):
+            strata["instance_family"] = "erdos_renyi"
+        else:
+            strata["instance_family"] = "other_graph"
+    elif task_kind == "bv":
+        hidden = getattr(payload, "hidden_string", None)
+        if isinstance(hidden, str) and hidden:
+            strata["input_size_bucket"] = _bucket_problem_size(len(hidden))
+        strata["instance_family"] = "bv"
+    elif task_kind == "ghz":
+        n_qubits = getattr(payload, "num_qubits", None)
+        if not isinstance(n_qubits, int) and isinstance(meta, dict):
+            mq = meta.get("num_qubits")
+            if isinstance(mq, int):
+                n_qubits = mq
+        if isinstance(n_qubits, int) and n_qubits > 0:
+            strata["input_size_bucket"] = _bucket_problem_size(n_qubits)
+        strata["instance_family"] = "ghz"
+
+    baseline_depth: int | None = None
+    baseline_twoq: int | None = None
+    for row in graph_rows:
+        if row.method != method_name:
+            continue
+        if perturbation_key(row) != baseline_key:
+            continue
+        baseline_depth = int(row.transpiled_depth)
+        baseline_twoq = int(row.two_qubit_count) if row.two_qubit_count is not None else None
+        break
+    depth_bucket = _bucket_transpiled_depth(baseline_depth)
+    twoq_bucket = _bucket_two_qubit_count(baseline_twoq)
+    if depth_bucket is not None:
+        strata["transpiled_depth_bucket"] = depth_bucket
+    if twoq_bucket is not None:
+        strata["two_qubit_count_bucket"] = twoq_bucket
+    if not strata:
+        strata["instance_family"] = "all"
+    return strata
+
+
 def evaluate_auxiliary_claim_examples(
     *,
     method_scores_by_key: dict[tuple[int, int, str | None, int, int | None], dict[str, float]],
@@ -1355,6 +1456,17 @@ def main() -> None:
             paired_scores_by_graph: dict[str, dict[tuple[int, int, str | None, int, int | None], tuple[float, float]]] = {}
             method_scores_by_graph: dict[str, dict[tuple[int, int, str | None, int, int | None], dict[str, float]]] = {}
             robustness_observations_by_delta: dict[str, list[dict[str, object]]] = defaultdict(list)
+            stratified_counts_by_delta: dict[str, dict[tuple[tuple[str, object], ...], dict[str, object]]] = defaultdict(
+                lambda: defaultdict(
+                    lambda: {
+                        "total": 0,
+                        "flips": 0,
+                        "instance_ids": set(),
+                        "conditions": {},
+                    }
+                )
+            )
+            strata_dimension_names: set[str] = set()
             for graph_id, graph_rows in space_rows.items():
                 paired_scores_by_graph[graph_id] = collect_paired_scores(graph_rows, method_a, method_b)
 
@@ -1389,6 +1501,17 @@ def main() -> None:
                 )
                 method_scores_by_graph[graph_id] = build_method_scores_by_key(eval_rows)
                 paired_scores_by_graph[graph_id] = graph_eval["paired_scores"]
+                instance = suite_by_id.get(graph_id)
+                instance_strata = _derive_instance_strata(
+                    task_kind=task_kind,
+                    graph_id=graph_id,
+                    instance=instance,
+                    graph_rows=eval_rows,
+                    method_name=method_a,
+                    baseline_key=baseline_key,
+                )
+                strata_dimension_names.update(instance_strata.keys())
+                strata_key = tuple(sorted(instance_strata.items(), key=lambda kv: kv[0]))
                 per_graph_summary[graph_id] = {
                     "sampled_configurations": graph_eval["sampled_configurations"],
                     "delta_sweep": graph_eval["delta_sweep"],
@@ -1415,6 +1538,12 @@ def main() -> None:
                     by_delta_claim_holds_totals[delta_key] += int(record["claim_total_count"])
                     by_delta_baseline_holds_successes[delta_key] += 1 if bool(record["baseline_holds"]) else 0
                     by_delta_baseline_holds_totals[delta_key] += 1
+                    dkey = str(record["delta"])
+                    strat_slot = stratified_counts_by_delta[dkey][strata_key]
+                    strat_slot["total"] += int(record["total"])
+                    strat_slot["flips"] += int(record["flips"])
+                    strat_slot["instance_ids"].add(graph_id)
+                    strat_slot["conditions"] = instance_strata
 
             all_selected_rows = [
                 row
@@ -1509,6 +1638,54 @@ def main() -> None:
                     "noise_model": noise_model_mode,
                 },
             )
+            effect_diagnostics_summary = compute_effect_diagnostics(
+                observations_by_delta=robustness_observations_by_delta,
+                context_conditions={
+                    "space_preset": space_name,
+                    "device_mode": resolved_device.profile.mode,
+                    "noise_model": noise_model_mode,
+                },
+                top_k=max(3, args.top_k_unstable),
+            )
+            stratified_stability_by_delta: dict[str, list[dict[str, object]]] = {}
+            for delta in claim_deltas:
+                dkey = str(delta)
+                rows: list[dict[str, object]] = []
+                for entry in stratified_counts_by_delta.get(dkey, {}).values():
+                    total = int(entry["total"])
+                    if total <= 0:
+                        continue
+                    flips = int(entry["flips"])
+                    estimate = estimate_binomial_rate(
+                        successes=total - flips,
+                        total=total,
+                        confidence=args.confidence_level,
+                    )
+                    decision = conservative_stability_decision(
+                        estimate=estimate,
+                        stability_threshold=args.stability_threshold,
+                    ).value
+                    rows.append(
+                        {
+                            "conditions": dict(entry["conditions"]),
+                            "n_instances": len(entry["instance_ids"]),
+                            "n_eval": total,
+                            "flip_rate": flips / total,
+                            "stability_hat": estimate.rate,
+                            "stability_ci_low": estimate.ci_low,
+                            "stability_ci_high": estimate.ci_high,
+                            "decision": decision,
+                        }
+                    )
+                rows.sort(
+                    key=lambda row: (
+                        str(row["decision"]) == "stable",
+                        int(row["n_eval"]),
+                        float(row["stability_ci_low"]),
+                    ),
+                    reverse=True,
+                )
+                stratified_stability_by_delta[dkey] = rows
 
             stability_vs_cost_by_delta: dict[str, list[dict[str, object]]] = {}
             minimum_shots_by_delta: dict[str, int | None] = {}
@@ -1583,6 +1760,11 @@ def main() -> None:
                     "delta_sweep": overall_delta,
                     "diagnostics": diagnostics_summary,
                     "conditional_robustness": conditional_robustness_summary,
+                    "stratified_stability": {
+                        "strata_dimensions": sorted(strata_dimension_names),
+                        "by_delta": stratified_stability_by_delta,
+                    },
+                    "effect_diagnostics": effect_diagnostics_summary,
                     "stability_vs_cost": {
                         "cost_metric": "shots",
                         "by_delta": stability_vs_cost_by_delta,
