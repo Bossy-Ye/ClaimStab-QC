@@ -4,8 +4,8 @@ This page is auto-generated from tracked repository files.
 
 ## Summary
 
-- Tracked files: `246`
-- Python files: `137`
+- Tracked files: `248`
+- Python files: `139`
 - Markdown files: `36`
 - YAML files: `14`
 - JSON files: `31`
@@ -544,9 +544,19 @@ This page is auto-generated from tracked repository files.
 - Classes: _none_
 - Top-level functions: _none_
 
+### `claimstab/pipelines/claim_stability_app.py`
+- Classes:
+  - `BoundTask` (methods: __init__, build, infer_num_qubits)
+- Top-level functions: parse_args, parse_deltas, _as_bool, parse_csv_tokens, try_load_spec, parse_claim_pairs, canonical_suite_name, canonical_space_name, build_evidence_ref, write_scores_csv, make_space, build_baseline_config, config_key, key_sort_value, config_from_key, baseline_from_keys, make_event_logger, filter_rows_by_keys, select_adaptive_keys, parse_ranking_claims_from_spec, parse_decision_claims_from_spec, build_coupling_map, aggregate_factor_attribution, build_method_scores_by_key, _bucket_problem_size, _bucket_density, _bucket_transpiled_depth, _bucket_two_qubit_count, _derive_instance_strata, evaluate_auxiliary_claim_examples, build_robustness_map_artifact, evaluate_claim_on_rows, evaluate_decision_claim_on_rows, load_rows_from_trace, main
+
 ### `claimstab/pipelines/common.py`
 - Classes: _none_
 - Top-level functions: parse_csv_tokens, parse_deltas, parse_claim_pairs, try_load_spec, canonical_suite_name, canonical_space_name, make_space, build_baseline_config, config_key, key_sort_value, config_from_key, baseline_from_keys, build_evidence_ref, make_event_logger, _key_from_row, load_rows_from_trace_by_space, load_rows_from_trace_by_batch, write_rows_csv
+
+### `claimstab/pipelines/multidevice_app.py`
+- Classes:
+  - `BoundTask` (methods: __init__, build, infer_num_qubits)
+- Top-level functions: parse_args, parse_csv_tokens, parse_deltas, parse_claim_pairs, canonical_suite_name, canonical_space_name, make_space, build_baseline, key_sort_value, config_from_key, baseline_from_keys, build_evidence_ref, evidence_chain_meta, make_event_logger, load_rows_from_trace, evaluate_rows_for_claim, write_rows_csv, try_load_spec, main
 
 ### `claimstab/results/__init__.py`
 - Classes: _none_

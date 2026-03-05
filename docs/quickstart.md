@@ -22,7 +22,7 @@ python -m pip install -e ".[aer,ibm,docs,dev]"
 Run a small claim-stability demo:
 
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
+PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --suite core \
   --sampling-mode random_k \
   --sample-size 8 \
@@ -51,7 +51,7 @@ PYTHONPATH=. ./venv/bin/python examples/exp_structural_compilation.py
 
 Device-targeted extension:
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py --run all --suite standard --out-dir output/multidevice_full
+PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app --run all --suite standard --out-dir output/multidevice_full
 ```
 
 External task plugin demo:
@@ -98,7 +98,7 @@ Template specs are available in:
 Example run with a spec file:
 
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
+PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --suite core \
   --spec examples/specs/claim_spec.yaml \
   --out-dir output/spec_run

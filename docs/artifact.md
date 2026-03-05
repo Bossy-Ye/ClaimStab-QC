@@ -30,12 +30,12 @@ PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py --out-dir out
 
 Legacy/core smoke:
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --suite core --out-dir output/core
+PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app --suite core --out-dir output/core
 ```
 
 Comprehensive:
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
+PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --suite large \
   --space-presets compilation_only,sampling_only,combined_light \
   --claim-pairs "QAOA_p2>RandomBaseline,QAOA_p2>QAOA_p1,QAOA_p1>RandomBaseline" \
@@ -47,7 +47,7 @@ PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
 
 Device-aware extension:
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py --run all --suite standard --out-dir output/multidevice
+PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app --run all --suite standard --out-dir output/multidevice
 ```
 
 ## Validate Outputs

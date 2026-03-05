@@ -14,7 +14,8 @@ class TestSmokeDemo(unittest.TestCase):
             out_dir = Path(td) / task
             cmd = [
                 sys.executable,
-                "examples/claim_stability_demo.py",
+                "-m",
+                "claimstab.pipelines.claim_stability_app",
                 "--task",
                 task,
                 "--suite",
@@ -69,7 +70,8 @@ class TestSmokeDemo(unittest.TestCase):
 
             cmd_first = [
                 sys.executable,
-                "examples/claim_stability_demo.py",
+                "-m",
+                "claimstab.pipelines.claim_stability_app",
                 "--task",
                 "maxcut",
                 "--suite",
@@ -94,7 +96,8 @@ class TestSmokeDemo(unittest.TestCase):
 
             cmd_replay = [
                 sys.executable,
-                "examples/claim_stability_demo.py",
+                "-m",
+                "claimstab.pipelines.claim_stability_app",
                 "--task",
                 "maxcut",
                 "--suite",

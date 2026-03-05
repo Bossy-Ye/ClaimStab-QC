@@ -92,8 +92,8 @@ This generates experiment outputs, HTML reports, paper figures, and a run manife
 ## 7) Trace / Cache / Replay workflow
 
 See [Trace Cache Replay](trace_cache_replay.md) for copy-paste commands for both:
-- `examples/claim_stability_demo.py`
-- `examples/multidevice_demo.py`
+- `claimstab/pipelines/claim_stability_app.py`
+- `claimstab/pipelines/multidevice_app.py`
 
 ## Runtime Expectations
 - `core` smoke runs: short.

@@ -85,7 +85,7 @@ claimstab run --spec examples/my_problem_demo/spec_my_problem.yml --out-dir outp
 
 ### C) Multi-Device Extension
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py \
+PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app \
   --run all \
   --suite standard \
   --out-dir output/multidevice
@@ -136,11 +136,11 @@ Preferred artifact roots:
 `output/exp_*` paths are still supported for ad-hoc local runs, but are considered legacy for paper packaging.
 
 ## Main Scripts and Their Roles
-- `examples/claim_stability_demo.py`: general claim-stability runner (main local entry).
+- `claimstab/pipelines/claim_stability_app.py`: general claim-stability runner (main local entry).
 - `examples/exp_comprehensive_calibration.py`: paper calibration batch.
 - `examples/exp_comprehensive_large.py`: paper large-scale batch.
 - `examples/exp_structural_compilation.py`: structural/compilation track.
-- `examples/multidevice_demo.py`: device-aware transpile/noisy extension.
+- `claimstab/pipelines/multidevice_app.py`: device-aware transpile/noisy extension.
 
 ## Specs You Can Run Immediately
 - [`specs/paper_main.yml`](./specs/paper_main.yml): main paper track.

@@ -20,7 +20,8 @@ class TestMultideviceReplaySmoke(unittest.TestCase):
 
             cmd_first = [
                 sys.executable,
-                "examples/multidevice_demo.py",
+                "-m",
+                "claimstab.pipelines.multidevice_app",
                 "--run",
                 "transpile_only",
                 "--suite",
@@ -47,7 +48,8 @@ class TestMultideviceReplaySmoke(unittest.TestCase):
 
             cmd_replay = [
                 sys.executable,
-                "examples/multidevice_demo.py",
+                "-m",
+                "claimstab.pipelines.multidevice_app",
                 "--run",
                 "transpile_only",
                 "--suite",

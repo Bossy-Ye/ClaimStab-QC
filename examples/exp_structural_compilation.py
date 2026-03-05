@@ -20,7 +20,8 @@ def main() -> None:
     args = parse_args()
     cmd = [
         sys.executable,
-        "examples/claim_stability_demo.py",
+        "-m",
+        "claimstab.pipelines.claim_stability_app",
         "--suite",
         "standard",
         "--task",
@@ -50,4 +51,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

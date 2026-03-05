@@ -199,7 +199,8 @@ def _build_main_command(spec_path: Path, spec: dict[str, Any], args: argparse.Na
 
     cmd = [
         sys.executable,
-        "examples/claim_stability_demo.py",
+        "-m",
+        "claimstab.pipelines.claim_stability_app",
         "--suite",
         _suite_name(spec),
         space_flag,
@@ -294,7 +295,8 @@ def _build_multidevice_command(spec_path: Path, spec: dict[str, Any], args: argp
 
     cmd = [
         sys.executable,
-        "examples/multidevice_demo.py",
+        "-m",
+        "claimstab.pipelines.multidevice_app",
         "--run",
         run_mode,
         "--suite",

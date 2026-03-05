@@ -7,7 +7,7 @@ For the canonical command-to-directory mapping, see [Output Directory Map](outpu
 Use this before editing report scripts or claim logic.
 
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
+PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --suite core \
   --sampling-mode random_k \
   --sample-size 8 \
@@ -18,7 +18,7 @@ PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
 Use `standard` suite and full-factorial to verify behavior and diagnostics.
 
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
+PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --suite standard \
   --space-presets compilation_only,sampling_only,combined_light \
   --claim-pairs "QAOA_p2>RandomBaseline,QAOA_p2>QAOA_p1,QAOA_p1>RandomBaseline" \
@@ -31,7 +31,7 @@ PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
 Use `large` suite with random-k for broader evidence at practical cost.
 
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
+PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --suite large \
   --space-presets compilation_only,sampling_only,combined_light \
   --claim-pairs "QAOA_p2>RandomBaseline,QAOA_p2>QAOA_p1,QAOA_p1>RandomBaseline" \
@@ -46,7 +46,7 @@ PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
 Requires `qiskit-ibm-runtime` and `qiskit-aer`.
 
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py \
+PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app \
   --run all \
   --suite standard \
   --out-dir output/multidevice

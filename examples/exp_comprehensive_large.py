@@ -26,7 +26,8 @@ def main() -> None:
     args = parse_args()
     base_cmd = [
         sys.executable,
-        "examples/claim_stability_demo.py",
+        "-m",
+        "claimstab.pipelines.claim_stability_app",
         "--suite",
         "large",
         "--space-presets",

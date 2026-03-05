@@ -6,7 +6,7 @@ This page gives concrete run commands and representative output snippets.
 
 Command:
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py \
+PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --suite core \
   --sampling-mode random_k \
   --sample-size 8 \
@@ -19,7 +19,7 @@ Output snippet (`output/website_repro/claim_stability.json`):
 {
   "meta": {
     "suite": "core",
-    "reproduce_command": "PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --suite core --sampling-mode random_k --sample-size 8 --sample-seed 1 --out-dir output/website_repro"
+    "reproduce_command": "PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app --suite core --sampling-mode random_k --sample-size 8 --sample-seed 1 --out-dir output/website_repro"
   },
   "overall": {
     "delta_sweep": [
@@ -39,7 +39,7 @@ Output snippet (`output/website_repro/claim_stability.json`):
 
 Command:
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py \
+PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app \
   --run all \
   --suite standard \
   --out-dir output/multidevice_full

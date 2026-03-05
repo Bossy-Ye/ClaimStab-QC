@@ -415,7 +415,7 @@ def main() -> None:
             "meta": {
                 "suite": suite_name,
                 "batch_mode": batch_mode,
-                "generated_by": "examples/multidevice_demo.py",
+                "generated_by": "claimstab/pipelines/multidevice_app.py",
                 "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
                 "runtime": runtime_meta,
                 "artifacts": {
@@ -580,7 +580,7 @@ def main() -> None:
                         "suite": suite_name,
                         "batch_mode": batch_mode,
                         "device_name": device_name,
-                        "generated_by": "examples/multidevice_demo.py",
+                        "generated_by": "claimstab/pipelines/multidevice_app.py",
                         "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
                         "runtime": runtime_meta,
                         "artifacts": {
@@ -784,7 +784,7 @@ def main() -> None:
                             "suite": suite_name,
                             "batch_mode": batch_mode,
                             "device_name": device_name,
-                            "generated_by": "examples/multidevice_demo.py",
+                            "generated_by": "claimstab/pipelines/multidevice_app.py",
                             "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
                             "runtime": runtime_meta,
                             "artifacts": {
@@ -811,7 +811,7 @@ def main() -> None:
             "meta": {
                 "suite": suite_name,
                 "batch_mode": batch_mode,
-                "generated_by": "examples/multidevice_demo.py",
+                "generated_by": "claimstab/pipelines/multidevice_app.py",
                 "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
                 "runtime": runtime_meta,
                 "artifacts": {
@@ -909,7 +909,7 @@ def main() -> None:
         final_summary = {
             "meta": {
                 "suite": suite_name,
-                "generated_by": "examples/multidevice_demo.py",
+                "generated_by": "claimstab/pipelines/multidevice_app.py",
                 "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
                 "runtime": runtime_meta,
                 "artifacts": {

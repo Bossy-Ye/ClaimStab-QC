@@ -69,7 +69,7 @@ PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py --out-dir out
 Device-aware extension:
 
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/multidevice_demo.py --run all --suite standard --out-dir output/multidevice_full
+PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app --run all --suite standard --out-dir output/multidevice_full
 ```
 
 ## Project Links

@@ -1875,7 +1875,7 @@ def main() -> None:
             "task": task_kind,
             "deltas": meta_deltas,
             "methods_available": sorted(method_names),
-            "generated_by": "examples/claim_stability_demo.py",
+            "generated_by": "claimstab/pipelines/claim_stability_app.py",
             "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
             "runtime": runtime_meta,
             "artifacts": {

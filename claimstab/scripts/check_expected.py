@@ -22,7 +22,8 @@ def parse_args() -> argparse.Namespace:
 def run_tiny_experiment(out_dir: Path) -> None:
     cmd = [
         sys.executable,
-        "examples/claim_stability_demo.py",
+        "-m",
+        "claimstab.pipelines.claim_stability_app",
         "--suite",
         "standard",
         "--space-preset",
