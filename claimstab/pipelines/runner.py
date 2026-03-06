@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from typing import Any, Callable
 
 from qiskit.transpiler import CouplingMap
@@ -104,6 +105,61 @@ def select_adaptive_keys(
             "selected_configurations_with_baseline": 1,
             "evaluated_configurations_without_baseline": 0,
         }
+
+    adaptive = adaptive_sample_configs(
+        ordered_non_baseline,
+        evaluate_prefix=eval_prefix,
+        target_ci_width=target_ci_width,
+        min_sample_size=min_sample_size,
+        step_size=step_size,
+        max_sample_size=len(ordered_non_baseline),
+    )
+    selected_keys = {config_key(pc) for pc in adaptive.selected_configs}
+    selected_keys.add(baseline_key)
+    return selected_keys, {
+        "enabled": True,
+        "target_ci_width": adaptive.target_ci_width,
+        "achieved_ci_width": adaptive.achieved_ci_width,
+        "stop_reason": adaptive.stop_reason,
+        "selected_configurations_without_baseline": adaptive.evaluated_configs,
+        "selected_configurations_with_baseline": len(selected_keys),
+        "evaluated_configurations_without_baseline": len(ordered_non_baseline),
+        "min_sample_size": min_sample_size,
+        "step_size": step_size,
+    }
+
+
+def select_adaptive_keys_with_width_evaluator(
+    *,
+    sampled_configs: list[PerturbationConfig],
+    baseline_key: tuple[int, int, str | None, int, int | None],
+    evaluate_ci_width_for_keys: Callable[[set[tuple[int, int, str | None, int, int | None]]], float],
+    target_ci_width: float,
+    min_sample_size: int,
+    step_size: int,
+) -> tuple[set[tuple[int, int, str | None, int, int | None]], dict[str, object]]:
+    """Select adaptive perturbation keys for any claim type via CI-width callback."""
+
+    ordered_non_baseline = [pc for pc in sampled_configs if config_key(pc) != baseline_key]
+    if not ordered_non_baseline:
+        return {baseline_key}, {
+            "enabled": True,
+            "target_ci_width": target_ci_width,
+            "achieved_ci_width": None,
+            "stop_reason": "no_candidate_configs",
+            "selected_configurations_without_baseline": 0,
+            "selected_configurations_with_baseline": 1,
+            "evaluated_configurations_without_baseline": 0,
+            "min_sample_size": min_sample_size,
+            "step_size": step_size,
+        }
+
+    def eval_prefix(prefix_cfgs: list[PerturbationConfig]) -> tuple[float, float]:
+        prefix_keys = {config_key(pc) for pc in prefix_cfgs}
+        width = float(evaluate_ci_width_for_keys(prefix_keys))
+        if not math.isfinite(width) or width < 0.0:
+            width = 1.0
+        return 0.0, width
 
     adaptive = adaptive_sample_configs(
         ordered_non_baseline,

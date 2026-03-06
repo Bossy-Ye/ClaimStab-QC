@@ -4,6 +4,7 @@ import json
 import subprocess
 import sys
 import tempfile
+import textwrap
 import unittest
 from pathlib import Path
 
@@ -65,6 +66,76 @@ class TestSmokeDemo(unittest.TestCase):
             }
         )
         self.assertEqual(top_ks, [1, 3])
+
+    def test_bv_decision_adaptive_sampling_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            td_path = Path(td)
+            spec_path = td_path / "spec.yml"
+            out_dir = td_path / "adaptive_bv"
+            spec_path.write_text(
+                textwrap.dedent(
+                    """
+                    spec_version: 1
+                    task:
+                      kind: bv
+                      suite: core
+                      params:
+                        hidden_strings: ["0001", "0011", "0101"]
+                    methods:
+                      - name: BVOracle
+                        kind: bv
+                      - name: RandomBaseline
+                        kind: random_baseline
+                    claims:
+                      - type: decision
+                        method: BVOracle
+                        top_k: 1
+                        label_meta_key: target_label
+                    """
+                ).strip()
+                + "\n",
+                encoding="utf-8",
+            )
+            subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "claimstab.pipelines.claim_stability_app",
+                    "--spec",
+                    str(spec_path),
+                    "--space-preset",
+                    "sampling_only",
+                    "--sampling-mode",
+                    "adaptive_ci",
+                    "--target-ci-width",
+                    "0.10",
+                    "--max-sample-size",
+                    "16",
+                    "--min-sample-size",
+                    "4",
+                    "--step-size",
+                    "4",
+                    "--sample-seed",
+                    "7",
+                    "--backend-engine",
+                    "basic",
+                    "--out-dir",
+                    str(out_dir),
+                ],
+                check=True,
+            )
+            payload = json.loads((out_dir / "claim_stability.json").read_text(encoding="utf-8"))
+            decision_experiments = [
+                exp for exp in payload.get("experiments", []) if str(exp.get("claim", {}).get("type")) == "decision"
+            ]
+            self.assertTrue(decision_experiments)
+            for exp in decision_experiments:
+                sampling = exp.get("sampling", {})
+                self.assertEqual(str(sampling.get("mode")), "adaptive_ci")
+                adaptive = sampling.get("adaptive_stopping")
+                self.assertIsInstance(adaptive, dict)
+                self.assertTrue(bool(adaptive.get("enabled")))
+                self.assertIsNotNone(adaptive.get("stop_reason"))
 
     def test_replay_trace_smoke(self) -> None:
         with tempfile.TemporaryDirectory() as td:

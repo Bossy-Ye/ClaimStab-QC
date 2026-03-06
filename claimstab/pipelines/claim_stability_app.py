@@ -20,6 +20,7 @@ from claimstab.claims.diagnostics import (
 from claimstab.claims.evaluation import collect_paired_scores
 from claimstab.claims.ranking import HigherIsBetter, RankingClaim
 from claimstab.claims.stability import (
+    ci_width,
     conservative_stability_decision,
     estimate_binomial_rate,
     estimate_clustered_stability,
@@ -66,6 +67,7 @@ from claimstab.pipelines.runner import (
     build_coupling_map as _build_coupling_map,
     filter_rows_by_keys as _filter_rows_by_keys,
     select_adaptive_keys as _select_adaptive_keys,
+    select_adaptive_keys_with_width_evaluator as _select_adaptive_keys_with_width_evaluator,
 )
 from claimstab.perturbations.sampling import SamplingPolicy, ensure_config_included, sample_configs
 from claimstab.perturbations.space import PerturbationConfig, PerturbationSpace
@@ -316,6 +318,25 @@ def select_adaptive_keys(
         deltas=deltas,
         baseline_key=baseline_key,
         confidence_level=confidence_level,
+        target_ci_width=target_ci_width,
+        min_sample_size=min_sample_size,
+        step_size=step_size,
+    )
+
+
+def select_adaptive_keys_with_width_evaluator(
+    *,
+    sampled_configs: list[PerturbationConfig],
+    baseline_key: tuple[int, int, str | None, int, int | None],
+    evaluate_ci_width_for_keys: Callable[[set[tuple[int, int, str | None, int, int | None]]], float],
+    target_ci_width: float,
+    min_sample_size: int,
+    step_size: int,
+) -> tuple[set[tuple[int, int, str | None, int, int | None]], dict[str, object]]:
+    return _select_adaptive_keys_with_width_evaluator(
+        sampled_configs=sampled_configs,
+        baseline_key=baseline_key,
+        evaluate_ci_width_for_keys=evaluate_ci_width_for_keys,
         target_ci_width=target_ci_width,
         min_sample_size=min_sample_size,
         step_size=step_size,
@@ -1305,8 +1326,49 @@ def main() -> None:
             accepted_total = 0
             eval_total = 0
             all_failures: list[dict[str, object]] = []
+            adaptive_info: dict[str, object] = {"enabled": False}
+            allowed_keys: set[tuple[int, int, str | None, int, int | None]] | None = None
+            if sampling_policy.mode == "adaptive_ci":
+                def _decision_ci_width_for_keys(prefix_keys: set[tuple[int, int, str | None, int, int | None]]) -> float:
+                    selected_keys = set(prefix_keys)
+                    selected_keys.add(baseline_key)
+                    successes = 0
+                    total = 0
+                    for graph_id, graph_rows in decision_space_rows.items():
+                        inst = suite_by_id.get(graph_id)
+                        label = fixed_label
+                        if label is None and inst is not None and isinstance(inst.meta, dict):
+                            label = inst.meta.get(label_meta_key)
+                        if not isinstance(label, str) or not label:
+                            continue
+                        eval_rows = filter_rows_by_keys(graph_rows, selected_keys)
+                        graph_eval = evaluate_decision_claim_on_rows(
+                            eval_rows,
+                            method=method,
+                            top_k=top_k,
+                            instance_target_label=label,
+                            stability_threshold=args.stability_threshold,
+                            confidence_level=args.confidence_level,
+                        )
+                        successes += int(graph_eval["accepted"])
+                        total += int(graph_eval["total"])
+                    if total <= 0:
+                        return 1.0
+                    estimate = estimate_binomial_rate(
+                        successes=successes,
+                        total=total,
+                        confidence=args.confidence_level,
+                    )
+                    return ci_width(estimate)
 
-            all_selected_rows = [row for graph_rows in decision_space_rows.values() for row in graph_rows]
+                allowed_keys, adaptive_info = select_adaptive_keys_with_width_evaluator(
+                    sampled_configs=sampled_configs_by_space[space_name],
+                    baseline_key=baseline_key,
+                    evaluate_ci_width_for_keys=_decision_ci_width_for_keys,
+                    target_ci_width=float(sampling_policy.target_ci_width or 0.02),
+                    min_sample_size=max(1, int(sampling_policy.min_sample_size)),
+                    step_size=max(1, int(sampling_policy.step_size)),
+                )
             for graph_id, graph_rows in decision_space_rows.items():
                 inst = suite_by_id.get(graph_id)
                 label = fixed_label
@@ -1314,8 +1376,9 @@ def main() -> None:
                     label = inst.meta.get(label_meta_key)
                 if not isinstance(label, str) or not label:
                     continue
+                eval_rows = graph_rows if allowed_keys is None else filter_rows_by_keys(graph_rows, allowed_keys)
                 graph_eval = evaluate_decision_claim_on_rows(
-                    graph_rows,
+                    eval_rows,
                     method=method,
                     top_k=top_k,
                     instance_target_label=label,
@@ -1401,7 +1464,9 @@ def main() -> None:
                 "label_meta_key": label_meta_key,
                 "metric_name": decision_metric_name,
             }
-
+            sampling_payload: dict[str, object] = dict(sampling_by_space[space_name])
+            if adaptive_info.get("enabled"):
+                sampling_payload["adaptive_stopping"] = adaptive_info
             experiments.append(
                 {
                     "experiment_id": f"{space_name}:{method}:decision_top{top_k}",
@@ -1412,7 +1477,7 @@ def main() -> None:
                         "confidence_level": args.confidence_level,
                         "decision": "stable iff CI lower bound >= threshold",
                     },
-                    "sampling": sampling_by_space[space_name],
+                    "sampling": sampling_payload,
                     "backend": {
                         "engine": args.backend_engine,
                         "noise_model": noise_model_mode,
@@ -1459,10 +1524,51 @@ def main() -> None:
             decisions: list[str] = []
             all_violations: list[dict[str, object]] = []
             reference_shots_used: list[int] = []
+            adaptive_info: dict[str, object] = {"enabled": False}
+            allowed_keys: set[tuple[int, int, str | None, int, int | None]] | None = None
+            if sampling_policy.mode == "adaptive_ci":
+                def _distribution_ci_width_for_keys(prefix_keys: set[tuple[int, int, str | None, int, int | None]]) -> float:
+                    selected_keys = set(prefix_keys)
+                    selected_keys.add(baseline_key)
+                    successes = 0
+                    total = 0
+                    for graph_rows in distribution_space_rows.values():
+                        eval_rows = filter_rows_by_keys(graph_rows, selected_keys)
+                        graph_eval = evaluate_distribution_claim_on_rows(
+                            eval_rows,
+                            method=method,
+                            baseline_key=baseline_key,
+                            epsilon=epsilon,
+                            primary_distance=primary_distance,
+                            sanity_distance=sanity_distance,
+                            reference_shots=reference_shots,
+                            stability_threshold=args.stability_threshold,
+                            confidence_level=args.confidence_level,
+                        )
+                        successes += int(graph_eval.get("accepted", 0))
+                        total += int(graph_eval.get("total", 0))
+                    if total <= 0:
+                        return 1.0
+                    estimate = estimate_binomial_rate(
+                        successes=successes,
+                        total=total,
+                        confidence=args.confidence_level,
+                    )
+                    return ci_width(estimate)
+
+                allowed_keys, adaptive_info = select_adaptive_keys_with_width_evaluator(
+                    sampled_configs=sampled_configs_by_space[space_name],
+                    baseline_key=baseline_key,
+                    evaluate_ci_width_for_keys=_distribution_ci_width_for_keys,
+                    target_ci_width=float(sampling_policy.target_ci_width or 0.02),
+                    min_sample_size=max(1, int(sampling_policy.min_sample_size)),
+                    step_size=max(1, int(sampling_policy.step_size)),
+                )
 
             for graph_id, graph_rows in distribution_space_rows.items():
+                eval_rows = graph_rows if allowed_keys is None else filter_rows_by_keys(graph_rows, allowed_keys)
                 graph_eval = evaluate_distribution_claim_on_rows(
-                    graph_rows,
+                    eval_rows,
                     method=method,
                     baseline_key=baseline_key,
                     epsilon=epsilon,
@@ -1563,6 +1669,9 @@ def main() -> None:
                 "reference_shots": reference_shots,
                 "metric_name": metric_name,
             }
+            sampling_payload: dict[str, object] = dict(sampling_by_space[space_name])
+            if adaptive_info.get("enabled"):
+                sampling_payload["adaptive_stopping"] = adaptive_info
             experiments.append(
                 {
                     "experiment_id": f"{space_name}:{method}:distribution",
@@ -1573,7 +1682,7 @@ def main() -> None:
                         "confidence_level": args.confidence_level,
                         "decision": "stable iff CI lower bound >= threshold",
                     },
-                    "sampling": sampling_by_space[space_name],
+                    "sampling": sampling_payload,
                     "backend": {
                         "engine": args.backend_engine,
                         "noise_model": noise_model_mode,

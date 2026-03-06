@@ -83,6 +83,78 @@ class TestDistributionPipelineEndToEnd(unittest.TestCase):
             self.assertIsInstance(violations, list)
             self.assertGreater(len(violations), 0)
 
+    def test_grover_distribution_adaptive_sampling_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            td_path = Path(td)
+            spec_path = td_path / "spec.yml"
+            out_dir = td_path / "out"
+            spec_path.write_text(
+                textwrap.dedent(
+                    """
+                    spec_version: 1
+                    task:
+                      kind: grover
+                      suite: core
+                      params:
+                        min_qubits: 6
+                        max_qubits: 6
+                        instances_per_qubit: 1
+                    methods:
+                      - name: GroverOracle
+                        kind: grover
+                      - name: UniformBaseline
+                        kind: uniform
+                    claims:
+                      - type: distribution
+                        method: GroverOracle
+                        epsilon: 0.10
+                        primary_distance: js
+                        sanity_distance: tvd
+                        reference_shots: max
+                        metric_name: objective
+                    """
+                ).strip()
+                + "\n",
+                encoding="utf-8",
+            )
+
+            cmd = [
+                sys.executable,
+                "-m",
+                "claimstab.pipelines.claim_stability_app",
+                "--spec",
+                str(spec_path),
+                "--space-preset",
+                "sampling_only",
+                "--sampling-mode",
+                "adaptive_ci",
+                "--target-ci-width",
+                "0.20",
+                "--max-sample-size",
+                "8",
+                "--min-sample-size",
+                "4",
+                "--step-size",
+                "2",
+                "--sample-seed",
+                "11",
+                "--backend-engine",
+                "basic",
+                "--out-dir",
+                str(out_dir),
+            ]
+            subprocess.run(cmd, check=True)
+
+            payload = json.loads((out_dir / "claim_stability.json").read_text(encoding="utf-8"))
+            experiments = [exp for exp in payload.get("experiments", []) if exp.get("claim", {}).get("type") == "distribution"]
+            self.assertTrue(experiments)
+            sampling = experiments[0].get("sampling", {})
+            self.assertEqual(str(sampling.get("mode")), "adaptive_ci")
+            adaptive = sampling.get("adaptive_stopping")
+            self.assertIsInstance(adaptive, dict)
+            self.assertTrue(bool(adaptive.get("enabled")))
+            self.assertIsNotNone(adaptive.get("stop_reason"))
+
 
 if __name__ == "__main__":
     unittest.main()
