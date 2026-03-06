@@ -1,26 +1,93 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="980" height="170" viewBox="0 0 980 170">
-  <style>
-    .b { fill:#ecfeff; stroke:#0f766e; stroke-width:2; rx:10; ry:10; }
-    .t { font-family:Arial, sans-serif; font-size:16px; fill:#134e4a; font-weight:600; }
-    .a { stroke:#0f766e; stroke-width:2; marker-end:url(#m); }
-  </style>
+<svg xmlns="http://www.w3.org/2000/svg" width="1540" height="390" viewBox="0 0 1540 390">
   <defs>
-    <marker id="m" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
-      <path d="M0,0 L8,3 L0,6 z" fill="#0f766e"/>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 24px; font-weight: 700; fill: #0f172a; }
+      .subtitle { font-family: Arial, sans-serif; font-size: 14px; fill: #334155; }
+      .box { fill: #f8fafc; stroke: #475569; stroke-width: 1.8; rx: 12; ry: 12; }
+      .head { font-family: Arial, sans-serif; font-size: 16px; font-weight: 700; fill: #0f172a; }
+      .line { font-family: Arial, sans-serif; font-size: 13px; fill: #334155; }
+      .artifact { fill: #ecfeff; stroke: #0891b2; stroke-width: 1.8; rx: 12; ry: 12; }
+      .atlas { fill: #fef3c7; stroke: #d97706; stroke-width: 1.8; rx: 12; ry: 12; }
+      .arrow { stroke: #1f2937; stroke-width: 2; marker-end: url(#arrow); }
+      .darrow { stroke: #0f766e; stroke-width: 2; marker-end: url(#arrow2); stroke-dasharray: 6 5; }
+      .hint { font-family: Arial, sans-serif; font-size: 12px; fill: #0f766e; font-weight: 700; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#1f2937" />
+    </marker>
+    <marker id="arrow2" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#0f766e" />
     </marker>
   </defs>
-  <rect class="b" x="20" y="50" width="170" height="60"/>
-  <text class="t" x="37" y="86">Claim Definition</text>
-  <rect class="b" x="220" y="50" width="210" height="60"/>
-  <text class="t" x="238" y="86">Perturbation Sampling</text>
-  <rect class="b" x="460" y="50" width="170" height="60"/>
-  <text class="t" x="486" y="86">Matrix Run</text>
-  <rect class="b" x="660" y="50" width="140" height="60"/>
-  <text class="t" x="674" y="86">CI Decision</text>
-  <rect class="b" x="830" y="50" width="130" height="60"/>
-  <text class="t" x="848" y="86">Report</text>
-  <line class="a" x1="190" y1="80" x2="220" y2="80"/>
-  <line class="a" x1="430" y1="80" x2="460" y2="80"/>
-  <line class="a" x1="630" y1="80" x2="660" y2="80"/>
-  <line class="a" x1="800" y1="80" x2="830" y2="80"/>
+
+  <text x="24" y="36" class="title">ClaimStab-QC End-to-End Workflow (ICSE Methodology Figure)</text>
+  <text x="24" y="58" class="subtitle">From executable spec to auditable stability decision and publishable artifacts</text>
+
+  <rect x="24" y="90" width="190" height="132" class="box"/>
+  <text x="38" y="116" class="head">1) YAML Spec</text>
+  <text x="38" y="138" class="line">- claim type + params</text>
+  <text x="38" y="156" class="line">- perturbation preset</text>
+  <text x="38" y="174" class="line">- sampling policy</text>
+  <text x="38" y="192" class="line">- threshold + confidence</text>
+
+  <rect x="238" y="90" width="170" height="132" class="box"/>
+  <text x="252" y="116" class="head">2) CLI Run</text>
+  <text x="252" y="138" class="line">claimstab run</text>
+  <text x="252" y="156" class="line">validate-spec</text>
+  <text x="252" y="174" class="line">validate-evidence</text>
+  <text x="252" y="192" class="line">trace/cache/replay</text>
+
+  <rect x="432" y="90" width="205" height="132" class="box"/>
+  <text x="446" y="116" class="head">3) Matrix Runner</text>
+  <text x="446" y="138" class="line">methods x configs x instances</text>
+  <text x="446" y="156" class="line">execute/transpile</text>
+  <text x="446" y="174" class="line">collect scores/counts</text>
+  <text x="446" y="192" class="line">record events + trace</text>
+
+  <rect x="661" y="90" width="195" height="132" class="box"/>
+  <text x="675" y="116" class="head">4) Outcome Encoding</text>
+  <text x="675" y="138" class="line">per-config outcome y_x</text>
+  <text x="675" y="156" class="line">ranking: baseline-anchored</text>
+  <text x="675" y="174" class="line">decision/distribution:</text>
+  <text x="675" y="192" class="line">accept / violate</text>
+
+  <rect x="880" y="90" width="205" height="132" class="box"/>
+  <text x="894" y="116" class="head">5) Aggregation + CI</text>
+  <text x="894" y="138" class="line">estimate s-hat from {y_x}</text>
+  <text x="894" y="156" class="line">Wilson/Beta interval</text>
+  <text x="894" y="174" class="line">adaptive CI stop (optional)</text>
+  <text x="894" y="192" class="line">cost-confidence diagnostics</text>
+
+  <rect x="1109" y="90" width="190" height="132" class="box"/>
+  <text x="1123" y="116" class="head">6) Decision</text>
+  <text x="1123" y="138" class="line">stable if CI_low >= tau</text>
+  <text x="1123" y="156" class="line">unstable if CI_high &lt; tau</text>
+  <text x="1123" y="174" class="line">else inconclusive</text>
+
+  <rect x="1323" y="90" width="192" height="132" class="artifact"/>
+  <text x="1337" y="116" class="head">7) Artifacts</text>
+  <text x="1337" y="138" class="line">claim_stability.json</text>
+  <text x="1337" y="156" class="line">rq_summary.json</text>
+  <text x="1337" y="174" class="line">stability_report.html</text>
+  <text x="1337" y="192" class="line">scores.csv + paper_pack</text>
+
+  <line x1="214" y1="156" x2="238" y2="156" class="arrow"/>
+  <line x1="408" y1="156" x2="432" y2="156" class="arrow"/>
+  <line x1="637" y1="156" x2="661" y2="156" class="arrow"/>
+  <line x1="856" y1="156" x2="880" y2="156" class="arrow"/>
+  <line x1="1085" y1="156" x2="1109" y2="156" class="arrow"/>
+  <line x1="1299" y1="156" x2="1323" y2="156" class="arrow"/>
+
+  <rect x="1080" y="258" width="435" height="102" class="atlas"/>
+  <text x="1094" y="286" class="head">Optional Community Path: ClaimAtlas Publish</text>
+  <text x="1094" y="308" class="line">publish-result -> atlas/submissions -> validate-atlas -> dataset registry export</text>
+  <text x="1094" y="328" class="line">links decisions to versioned evidence packages for external reuse</text>
+
+  <line x1="1420" y1="222" x2="1420" y2="258" class="darrow"/>
+  <text x="1306" y="246" class="hint">reproducibility and sharing layer</text>
+
+  <rect x="24" y="258" width="1030" height="102" class="artifact"/>
+  <text x="38" y="286" class="head">Reproducibility Metadata (embedded in outputs)</text>
+  <text x="38" y="308" class="line">git commit, reproduce command, input hashes, CEP evidence block, trace/event/cache pointers</text>
+  <text x="38" y="328" class="line">enables post-hoc validation of decision provenance and replayability</text>
 </svg>

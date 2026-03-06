@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="520" viewBox="0 0 1500 520">
+  <!-- solid background (avoid checkerboard/transparent export artifacts) -->
+  <rect x="0" y="0" width="1500" height="520" fill="#ffffff"/>
+
+  <defs>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 24px; font-weight: 700; fill: #0f172a; }
+      .subtitle { font-family: Arial, sans-serif; font-size: 14px; fill: #334155; }
+      .axis { stroke: #0f172a; stroke-width: 2; }
+      .label { font-family: Arial, sans-serif; font-size: 13px; fill: #334155; }
+      .head { font-family: Arial, sans-serif; font-size: 16px; font-weight: 700; fill: #0f172a; }
+      .box { fill: #f8fafc; stroke: #475569; stroke-width: 1.7; rx: 12; ry: 12; }
+      .presetA { fill: rgba(34,197,94,0.20); stroke: #16a34a; stroke-width: 2; }
+      .presetB { fill: rgba(59,130,246,0.20); stroke: #2563eb; stroke-width: 2; }
+      .presetC { fill: rgba(217,119,6,0.22); stroke: #d97706; stroke-width: 2; }
+      .hintbox { fill: #ffffff; stroke: #0f766e; stroke-width: 2; rx: 12; ry: 12; }
+      .hint { font-family: Arial, sans-serif; font-size: 12px; fill: #0f766e; font-weight: 700; }
+      .path { stroke: #7c3aed; stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+    </style>
+  </defs>
+
+  <text x="24" y="36" class="title">Perturbation presets as condition sets X, with sampling overlays</text>
+  <text x="24" y="58" class="subtitle">Conceptual view: presets define subspaces; sampling policy selects evaluated configurations within each preset</text>
+
+  <!-- left main panel -->
+  <rect x="24" y="84" width="980" height="400" class="box"/>
+
+  <!-- axes -->
+  <line x1="110" y1="430" x2="910" y2="430" class="axis"/>
+  <line x1="110" y1="430" x2="110" y2="140" class="axis"/>
+  <polygon points="910,430 898,424 898,436" fill="#0f172a"/>
+  <polygon points="110,140 104,152 116,152" fill="#0f172a"/>
+
+  <text x="560" y="462" class="head">Compilation variability</text>
+  <text x="56" y="276" transform="rotate(-90 56 276)" class="head">Sampling variability</text>
+
+  <text x="126" y="448" class="label">low</text>
+  <text x="865" y="448" class="label">high</text>
+  <text x="74" y="418" class="label">low</text>
+  <text x="74" y="162" class="label">high</text>
+
+  <!-- presets (repositioned to avoid overlap) -->
+  <!-- sampling_only (left, high sampling variability) -->
+  <rect x="150" y="170" width="200" height="240" class="presetB"/>
+  <text x="166" y="200" class="head">sampling_only</text>
+  <text x="166" y="222" class="label">vary shots + sim seed;</text>
+  <text x="166" y="242" class="label">fix compilation</text>
+
+  <!-- combined_light (middle, moderate both) -->
+  <rect x="520" y="250" width="320" height="120" class="presetC"/>
+  <text x="536" y="280" class="head">combined_light</text>
+  <text x="536" y="302" class="label">vary compilation + limited sampling</text>
+  <text x="536" y="322" class="label">(e.g., fixed shots bucket, few seeds)</text>
+
+  <!-- compilation_only (bottom, low sampling variability, wider compilation variability) -->
+  <rect x="360" y="385" width="520" height="45" class="presetA"/>
+  <text x="376" y="412" class="head">compilation_only</text>
+  <text x="560" y="412" class="label">vary transpiler seed, opt level, layout; fix shots + sim seed</text>
+
+  <!-- sampling overlay illustration (kept inside left panel) -->
+  <path d="M 560 340 L 640 320 L 720 300" class="path"/>
+
+  <!-- callout bubble (moved INSIDE left panel; no border collisions) -->
+  <rect x="740" y="205" width="240" height="58" class="hintbox"/>
+  <text x="756" y="230" class="hint">adaptive_ci: grow prefix until</text>
+  <text x="756" y="248" class="hint">CI-width target is met</text>
+  <line x1="740" y1="240" x2="720" y2="300" stroke="#0f766e" stroke-width="2"/>
+
+  <!-- right side panels -->
+  <rect x="1030" y="84" width="446" height="192" class="box"/>
+  <text x="1048" y="112" class="head">Preset factor definitions</text>
+  <text x="1048" y="136" class="label">Compilation knobs: seed_transpiler, optimization_level, layout_method</text>
+  <text x="1048" y="156" class="label">Sampling knobs: shots, seed_simulator</text>
+  <text x="1048" y="176" class="label">Condition set: X = product_j V_j under selected preset</text>
+  <text x="1048" y="196" class="label">Baseline config is force-included for baseline-relative claims</text>
+  <text x="1048" y="216" class="label">Reported with: sampled count, achieved CI width, stop reason</text>
+  <text x="1048" y="236" class="label">This makes cost-confidence tradeoff explicit and reproducible.</text>
+
+  <rect x="1030" y="292" width="446" height="192" class="box"/>
+  <text x="1048" y="320" class="head">Sampling policy overlay</text>
+  <text x="1048" y="344" class="label">full_factorial: evaluate all x in X</text>
+  <text x="1048" y="364" class="label">random_k: seeded uniform sample without replacement</text>
+  <text x="1048" y="384" class="label">adaptive_ci: evaluate prefixes; stop if CI width &lt;= target</text>
+  <text x="1048" y="404" class="label">or when max budget is exhausted</text>
+</svg>

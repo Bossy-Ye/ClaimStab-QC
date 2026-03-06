@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="460" viewBox="0 0 1480 460">
+  <defs>
+    <style>
+      .title { font-family: Arial, sans-serif; font-size: 24px; font-weight: 700; fill: #0f172a; }
+      .subtitle { font-family: Arial, sans-serif; font-size: 14px; fill: #334155; }
+      .panel { fill: #f8fafc; stroke: #475569; stroke-width: 1.8; rx: 12; ry: 12; }
+      .rank { fill: #ecfeff; stroke: #0891b2; stroke-width: 2; rx: 12; ry: 12; }
+      .dec { fill: #eef2ff; stroke: #4f46e5; stroke-width: 2; rx: 12; ry: 12; }
+      .dist { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; rx: 12; ry: 12; }
+      .head { font-family: Arial, sans-serif; font-size: 17px; font-weight: 700; fill: #0f172a; }
+      .line { font-family: Arial, sans-serif; font-size: 13px; fill: #334155; }
+      .eq { font-family: 'Courier New', monospace; font-size: 13px; fill: #111827; }
+      .arrow { stroke: #1f2937; stroke-width: 2; marker-end: url(#arrow); }
+      .badge { font-family: Arial, sans-serif; font-size: 12px; font-weight: 700; fill: #0f766e; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#1f2937" />
+    </marker>
+  </defs>
+
+  <text x="24" y="38" class="title">Claim-Centric Core: From Observable to Bernoulli Outcome y_x</text>
+  <text x="24" y="60" class="subtitle">All claim types map configuration-level evidence to y_x in {0,1}, then share the same CI-based inference stage</text>
+
+  <rect x="24" y="84" width="460" height="240" class="rank"/>
+  <text x="42" y="112" class="head">Ranking Claim C_rank(A, B, delta, dir)</text>
+  <text x="42" y="136" class="line">Observable:</text>
+  <text x="42" y="156" class="eq">m_A(x), m_B(x)  -> relation R_x in {A&gt;B, A=B, A&lt;B}</text>
+  <text x="42" y="180" class="line">Baseline anchor:</text>
+  <text x="42" y="200" class="eq">R_b from baseline config b</text>
+  <text x="42" y="224" class="line">Outcome mapping:</text>
+  <text x="42" y="244" class="eq">y_x = 1[R_x = R_b]</text>
+  <text x="42" y="268" class="line">Interpretation: stability means conclusion consistency, not raw-score averaging.</text>
+  <text x="42" y="292" class="badge">NOVELTY HOOK: baseline-anchored claim preservation</text>
+
+  <rect x="510" y="84" width="460" height="240" class="dec"/>
+  <text x="528" y="112" class="head">Decision Claim C_dec(M, k, l)</text>
+  <text x="528" y="136" class="line">Observable:</text>
+  <text x="528" y="156" class="eq">scores_x from counts (label frequencies)</text>
+  <text x="528" y="180" class="line">Decision set:</text>
+  <text x="528" y="200" class="eq">TopK_k(scores_x)</text>
+  <text x="528" y="224" class="line">Outcome mapping:</text>
+  <text x="528" y="244" class="eq">y_x = 1[l in TopK_k(scores_x)]</text>
+  <text x="528" y="268" class="line">Interpretation: intended label remains among dominant outcomes.</text>
+
+  <rect x="996" y="84" width="460" height="240" class="dist"/>
+  <text x="1014" y="112" class="head">Distribution Claim C_dist(M, epsilon, D_p, D_s, ref)</text>
+  <text x="1014" y="136" class="line">Observable:</text>
+  <text x="1014" y="156" class="eq">P_x from normalized counts, P_ref from reference policy</text>
+  <text x="1014" y="180" class="line">Primary acceptance:</text>
+  <text x="1014" y="200" class="eq">y_x = 1[D_p(P_x, P_ref) &lt;= epsilon]</text>
+  <text x="1014" y="224" class="line">Sanity diagnostic:</text>
+  <text x="1014" y="244" class="eq">log D_s(P_x, P_ref)</text>
+  <text x="1014" y="268" class="line">Interpretation: distributional consistency within tolerance.</text>
+
+  <line x1="254" y1="324" x2="254" y2="358" class="arrow"/>
+  <line x1="740" y1="324" x2="740" y2="358" class="arrow"/>
+  <line x1="1226" y1="324" x2="1226" y2="358" class="arrow"/>
+
+  <rect x="24" y="358" width="1432" height="82" class="panel"/>
+  <text x="44" y="388" class="head">Common Inference and Decision Layer (shared by all claim types)</text>
+  <text x="44" y="410" class="eq">s-hat = mean(y_x), CI = interval(s-hat), decision in {stable, unstable, inconclusive}</text>
+  <text x="44" y="430" class="line">Default policy: Wilson CI with conservative thresholding; alternative Bayesian beta policy supported.</text>
+</svg>

@@ -40,6 +40,8 @@ Built-in benchmark classes:
 | Worst observed | `sampling_only`, `QAOA_p2 > QAOA_p1`, `delta=0.05`, flip-rate ≈ `0.2831` |
 
 ![ClaimStab Pipeline](assets/pipeline.svg)
+![Claim-Centric Core](assets/claim_model_core.svg)
+![Perturbation Presets and Sampling](assets/perturbation_sampling.svg)
 
 ## Public Dataset Access
 

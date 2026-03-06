@@ -8,19 +8,23 @@ ClaimStab-QC is a claim-centric validation framework for checking whether paper-
 
 ## Quickstart (Paper-First)
 
-Install:
+Environment setup (required once):
 ```bash
+python -m venv .venv
+source .venv/bin/activate
 python -m pip install -e .
 ```
 
+To avoid PATH issues, this README uses `python -m claimstab.cli ...` as the canonical CLI form.
+
 1) Validate paper spec:
 ```bash
-claimstab validate-spec --spec specs/paper_main.yml
+python -m claimstab.cli validate-spec --spec specs/paper_main.yml
 ```
 
 2) Run paper preset + HTML report:
 ```bash
-claimstab run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
+python -m claimstab.cli run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
 ```
 
 3) Export paper pack (tables/figures/manifest):
@@ -29,12 +33,47 @@ python -m claimstab.scripts.export_paper_pack --input-root output/presentation_l
 ```
 
 Optional checks:
-- `claimstab validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json`
+- `python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json`
 - `make reproduce-paper`
+
+### Check Adaptive Sampling (CLI Smoke)
+
+Run adaptive CI-width smoke tests:
+
+```bash
+# Ranking claim (MaxCut)
+python -m claimstab.cli validate-spec --spec examples/specs/adaptive_maxcut_smoke.yml
+python -m claimstab.cli run --spec examples/specs/adaptive_maxcut_smoke.yml --out-dir output/adaptive_maxcut_smoke --report
+
+# Decision claim (BV)
+python -m claimstab.cli validate-spec --spec examples/specs/adaptive_bv_smoke.yml
+python -m claimstab.cli run --spec examples/specs/adaptive_bv_smoke.yml --out-dir output/adaptive_bv_smoke --report
+```
+
+Verify adaptive fields exist in output:
+
+```bash
+python - <<'PY'
+import json
+from pathlib import Path
+for path in [
+    Path("output/adaptive_maxcut_smoke/claim_stability.json"),
+    Path("output/adaptive_bv_smoke/claim_stability.json"),
+]:
+    d = json.loads(path.read_text())
+    for e in d.get("experiments", []):
+        s = e.get("sampling", {})
+        a = s.get("adaptive_stopping", {})
+        print(path.name, e.get("experiment_id"), s.get("mode"), a.get("enabled"), a.get("target_ci_width"), a.get("achieved_ci_width"), a.get("stop_reason"))
+        assert s.get("mode") == "adaptive_ci"
+        assert a.get("enabled") is True
+        assert a.get("stop_reason") in {"target_ci_width_reached", "max_budget_reached", "no_candidate_configs"}
+PY
+```
 
 ## Contribute Your Dataset (3-Minute Path)
 
-Required input contract for `claimstab publish-result`:
+Required input contract for `python -m claimstab.cli publish-result`:
 - `--run-dir` must contain `claim_stability.json` (required).
 - Optional but recommended files in the same directory:
   - `scores.csv`
@@ -75,11 +114,11 @@ backend:
 Copy-paste contributor flow:
 
 ```bash
-claimstab validate-spec --spec specs/atlas_bv_demo.yml
-claimstab run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_demo --report
-claimstab publish-result --run-dir output/atlas_demo --atlas-root atlas --contributor your_name
-claimstab validate-atlas --atlas-root atlas
-claimstab export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
+python -m claimstab.cli validate-spec --spec specs/atlas_bv_demo.yml
+python -m claimstab.cli run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_demo --report
+python -m claimstab.cli publish-result --run-dir output/atlas_demo --atlas-root atlas --contributor your_name
+python -m claimstab.cli validate-atlas --atlas-root atlas
+python -m claimstab.cli export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
 ```
 
 See full dataset documentation: [`docs/atlas.md`](./docs/atlas.md).
@@ -178,12 +217,12 @@ Use trace/cache for reproducible incremental runs:
 
 Export website dataset registry page:
 ```bash
-claimstab export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
+python -m claimstab.cli export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
 ```
 
 Validate dataset integrity:
 ```bash
-claimstab validate-atlas --atlas-root atlas
+python -m claimstab.cli validate-atlas --atlas-root atlas
 ```
 
 ## Community and Contribution
