@@ -49,4 +49,4 @@ This page maps each paper claim to concrete artifacts in `output/paper_pack/` so
 
 ## Reproducibility contract
 - CEP metadata and trace links are included per experiment in `claim_stability.json -> experiments[*].evidence.cep`.
-- Use `claimstab validate-evidence --json <claim_stability.json>` for integrity checks.
+- Use `python -m claimstab.cli validate-evidence --json <claim_stability.json>` for integrity checks.

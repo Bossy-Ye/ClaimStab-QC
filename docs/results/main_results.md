@@ -22,7 +22,7 @@ Additional tracks used for generality:
 - `combined_light` still exposes fragility for close method pairings.
 - Conditional robustness maps (RQ5) isolate stable cores and unstable frontiers instead of only reporting a single global verdict.
 - Stratified stability and effect diagnostics (RQ6/RQ7) identify which instance strata and knob interactions are most failure-prone.
-- All reported decisions are trace-linked through CEP evidence blocks and can be checked with `claimstab validate-evidence`.
+- All reported decisions are trace-linked through CEP evidence blocks and can be checked with `python -m claimstab.cli validate-evidence`.
 
 ## Snapshot Rows
 
@@ -40,3 +40,7 @@ Additional tracks used for generality:
   - `naive_baseline` (`legacy_strict_all`) keeps historical comparability.
   - `naive_baseline_realistic` (`default_researcher_v1`) reflects default-practice interpretation.
   - Policy-by-delta counts are exported in `output/paper_pack/tables/naive_policy_delta_snapshot.csv`.
+
+## Scope Note (Output Consistency)
+- Full RQ1-RQ7 and dual-naive baseline fields are guaranteed in the `large/maxcut_ranking` track and in `output/paper_pack`.
+- Other tracks can contain an intentional subset of sections depending on claim type and experiment objective (for example decision/distribution-only runs).

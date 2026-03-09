@@ -425,7 +425,7 @@ Citation: [https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/CITATION.cff](http
 
 ## How To Add New Dataset Rows
 
-1. `claimstab run --spec <your_spec.yml> --out-dir output/<run_name> --report`
-2. `claimstab publish-result --run-dir output/<run_name> --atlas-root atlas --contributor <you>`
+1. `python -m claimstab.cli run --spec <your_spec.yml> --out-dir output/<run_name> --report`
+2. `python -m claimstab.cli publish-result --run-dir output/<run_name> --atlas-root atlas --contributor <you>`
 3. Rebuild docs after regenerating this page.
 

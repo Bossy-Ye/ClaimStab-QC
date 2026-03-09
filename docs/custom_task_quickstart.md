@@ -17,7 +17,7 @@ ClaimStab handles:
 ## Step 1: Generate starter files
 
 ```bash
-claimstab init-external-task --name my_problem --out-dir examples/my_problem_demo
+python -m claimstab.cli init-external-task --name my_problem --out-dir examples/my_problem_demo
 ```
 
 Generated files:
@@ -35,8 +35,8 @@ Edit `my_problem_task.py`:
 ## Step 3: Run claim-stability evaluation
 
 ```bash
-claimstab validate-spec --spec examples/my_problem_demo/spec_my_problem.yml
-claimstab run --spec examples/my_problem_demo/spec_my_problem.yml --out-dir output/my_problem --report
+python -m claimstab.cli validate-spec --spec examples/my_problem_demo/spec_my_problem.yml
+python -m claimstab.cli run --spec examples/my_problem_demo/spec_my_problem.yml --out-dir output/my_problem --report
 ```
 
 Outputs:
@@ -48,8 +48,8 @@ Outputs:
 ## Step 4: Publish to ClaimAtlas dataset
 
 ```bash
-claimstab publish-result --run-dir output/my_problem --atlas-root atlas --contributor your_name
-claimstab validate-atlas --atlas-root atlas
+python -m claimstab.cli publish-result --run-dir output/my_problem --atlas-root atlas --contributor your_name
+python -m claimstab.cli validate-atlas --atlas-root atlas
 ```
 
 Published record:

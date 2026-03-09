@@ -36,9 +36,9 @@ Expected outputs:
 
 Equivalent CLI run from spec:
 ```bash
-claimstab validate-spec --spec specs/paper_main.yml
-claimstab run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
-claimstab validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
+python -m claimstab.cli validate-spec --spec specs/paper_main.yml
+python -m claimstab.cli run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
+python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
 ```
 
 ## Evaluation Tracks
@@ -56,17 +56,17 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app --run all 
 
 External task plugin demo:
 ```bash
-claimstab run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy
+python -m claimstab.cli run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy
 ```
 
 Generate your own external-task starter:
 ```bash
-claimstab init-external-task --name my_problem --out-dir examples/my_problem_demo
+python -m claimstab.cli init-external-task --name my_problem --out-dir examples/my_problem_demo
 ```
 
 Then run it:
 ```bash
-claimstab run --spec examples/my_problem_demo/spec_my_problem.yml --out-dir output/my_problem --report
+python -m claimstab.cli run --spec examples/my_problem_demo/spec_my_problem.yml --out-dir output/my_problem --report
 ```
 
 One-command artifact build (experiments + reports + figures):
@@ -108,9 +108,9 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
 Minimal publish path from a spec run:
 
 ```bash
-claimstab validate-spec --spec specs/atlas_bv_demo.yml
-claimstab run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_demo --report
-claimstab publish-result --run-dir output/atlas_demo --atlas-root atlas --contributor your_name
+python -m claimstab.cli validate-spec --spec specs/atlas_bv_demo.yml
+python -m claimstab.cli run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_demo --report
+python -m claimstab.cli publish-result --run-dir output/atlas_demo --atlas-root atlas --contributor your_name
 ```
 
 Plot-enabled report:

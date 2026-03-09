@@ -37,6 +37,6 @@ python -m pip install -e ".[aer,ibm]"
 PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_calibration.py
 PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py
 PYTHONPATH=. ./venv/bin/python examples/exp_structural_compilation.py
-claimstab validate-evidence --json output/paper_artifact/large/maxcut_ranking/claim_stability.json
+python -m claimstab.cli validate-evidence --json output/paper_artifact/large/maxcut_ranking/claim_stability.json
 make reproduce-paper
 ```

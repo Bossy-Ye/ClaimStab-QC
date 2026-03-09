@@ -18,6 +18,7 @@
 
     Recommended examples:
     - `output/presentation_large/large/maxcut_ranking/claim_stability.json`
+    - `output/presentation_large/grover_dist/claim_stability.json`
     - `output/adaptive_bv_smoke/claim_stability.json`
 
     Minimum structure:
@@ -30,22 +31,58 @@
     - `claim_type`: `ranking` | `decision` | `distribution`
     - `adaptive_stopping.stop_reason`: `target_ci_width_reached` | `max_budget_reached` | `no_candidate_configs`
 
-    Minimal paste example:
+    Variation-rich demo example (recommended for this page):
 
     ```json
     {
-      "meta": { "suite": "demo", "task": "maxcut", "deltas": [0.0], "generated_by": "example" },
+      "meta": {
+        "suite": "demo_mixed",
+        "task": "mixed_claims",
+        "deltas": [0.0, 0.01, 0.05],
+        "generated_by": "explorer_demo_v2"
+      },
       "experiments": [
         {
-          "experiment_id": "sampling_only:A>B",
+          "experiment_id": "compilation_only:QAOA_p2>RandomBaseline",
+          "claim": { "type": "ranking" },
+          "sampling": { "mode": "random_k", "sample_size": 64 }
+        },
+        {
+          "experiment_id": "sampling_only:QAOA_p2>QAOA_p1",
           "claim": { "type": "ranking" },
           "sampling": {
             "mode": "adaptive_ci",
             "adaptive_stopping": {
               "enabled": true,
               "target_ci_width": 0.1,
-              "achieved_ci_width": 0.08,
+              "achieved_ci_width": 0.12,
+              "stop_reason": "max_budget_reached"
+            }
+          }
+        },
+        {
+          "experiment_id": "sampling_only:BVOracle:decision_top1",
+          "claim": { "type": "decision" },
+          "sampling": {
+            "mode": "adaptive_ci",
+            "adaptive_stopping": {
+              "enabled": true,
+              "target_ci_width": 0.08,
+              "achieved_ci_width": 0.07,
               "stop_reason": "target_ci_width_reached"
+            }
+          }
+        },
+        {
+          "experiment_id": "combined_light:GroverOracle:distribution",
+          "claim": { "type": "distribution" },
+          "sampling": {
+            "mode": "adaptive_ci",
+            "adaptive_stopping": {
+              "enabled": true,
+              "target_ci_width": 0.05,
+              "achieved_ci_width": null,
+              "stop_reason": "no_candidate_configs"
             }
           }
         }
@@ -53,12 +90,76 @@
       "comparative": {
         "space_claim_delta": [
           {
+            "space_preset": "compilation_only",
+            "claim_pair": "QAOA_p2>RandomBaseline",
+            "claim_type": "ranking",
+            "delta": 0.0,
+            "decision": "stable",
+            "flip_rate_mean": 0.03
+          },
+          {
+            "space_preset": "compilation_only",
+            "claim_pair": "QAOA_p2>RandomBaseline",
+            "claim_type": "ranking",
+            "delta": 0.05,
+            "decision": "inconclusive",
+            "flip_rate_mean": 0.11
+          },
+          {
             "space_preset": "sampling_only",
-            "claim_pair": "A>B",
+            "claim_pair": "QAOA_p2>QAOA_p1",
             "claim_type": "ranking",
             "delta": 0.0,
             "decision": "unstable",
-            "flip_rate_mean": 0.27
+            "flip_rate_mean": 0.29
+          },
+          {
+            "space_preset": "sampling_only",
+            "claim_pair": "QAOA_p2>QAOA_p1",
+            "claim_type": "ranking",
+            "delta": 0.05,
+            "decision": "unstable",
+            "flip_rate_mean": 0.38
+          },
+          {
+            "space_preset": "combined_light",
+            "claim_pair": "QAOA_p1>RandomBaseline",
+            "claim_type": "ranking",
+            "delta": 0.01,
+            "decision": "stable",
+            "flip_rate_mean": 0.09
+          },
+          {
+            "space_preset": "sampling_only",
+            "claim_pair": "BVOracle:top_k=1",
+            "claim_type": "decision",
+            "delta": null,
+            "decision": "stable",
+            "flip_rate_mean": 0.04
+          },
+          {
+            "space_preset": "combined_light",
+            "claim_pair": "BVOracle:top_k=3",
+            "claim_type": "decision",
+            "delta": null,
+            "decision": "inconclusive",
+            "flip_rate_mean": 0.13
+          },
+          {
+            "space_preset": "sampling_only",
+            "claim_pair": "GroverOracle:dist<=0.06",
+            "claim_type": "distribution",
+            "delta": null,
+            "decision": "unstable",
+            "flip_rate_mean": 0.42
+          },
+          {
+            "space_preset": "combined_light",
+            "claim_pair": "GroverOracle:dist<=0.06",
+            "claim_type": "distribution",
+            "delta": null,
+            "decision": "inconclusive",
+            "flip_rate_mean": 0.18
           }
         ]
       }

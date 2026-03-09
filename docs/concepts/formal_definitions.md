@@ -97,4 +97,4 @@ Each experiment decision is linked to a CEP evidence block with five required co
 - `observation`: trace query + artifact references for raw observations,
 - `inference`: claim and decision rule used for final stability judgment.
 
-The protocol is machine-validated via `claimstab validate-evidence`.
+The protocol is machine-validated via `python -m claimstab.cli validate-evidence`.

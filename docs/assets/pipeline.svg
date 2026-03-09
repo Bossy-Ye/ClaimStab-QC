@@ -32,7 +32,7 @@
 
   <rect x="238" y="90" width="170" height="132" class="box"/>
   <text x="252" y="116" class="head">2) CLI Run</text>
-  <text x="252" y="138" class="line">claimstab run</text>
+  <text x="252" y="138" class="line">python -m claimstab.cli run</text>
   <text x="252" y="156" class="line">validate-spec</text>
   <text x="252" y="174" class="line">validate-evidence</text>
   <text x="252" y="192" class="line">trace/cache/replay</text>

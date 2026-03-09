@@ -68,6 +68,6 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app \
 ## 5) Validate CEP evidence links
 
 ```bash
-claimstab validate-evidence --json output/demo_main_replay/claim_stability.json
-claimstab validate-evidence --json output/multidevice_demo_replay/combined_summary.json --no-trace-check
+python -m claimstab.cli validate-evidence --json output/demo_main_replay/claim_stability.json
+python -m claimstab.cli validate-evidence --json output/multidevice_demo_replay/combined_summary.json --no-trace-check
 ```

@@ -21,11 +21,11 @@ Legacy ad-hoc paths (`output/exp_*`) are still supported, but not preferred for 
 | Calibration batch | `examples/exp_comprehensive_calibration.py --out-dir output/presentation_large/calibration` | `output/presentation_large/calibration/{maxcut_ranking,bv_decision,ghz_structural}` |
 | Large batch | `examples/exp_comprehensive_large.py --out-dir output/presentation_large/large` | `output/presentation_large/large/{maxcut_ranking,bv_decision,ghz_structural}` |
 | Structural benchmark only | `examples/exp_structural_compilation.py --out-dir output/paper_artifact/structural` | `output/paper_artifact/structural/` |
-| Main spec run | `claimstab run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report` | `output/presentation_large/large/maxcut_ranking/` |
-| Structural spec run | `claimstab run --spec specs/paper_structural.yml --out-dir output/paper_artifact/structural --report` | `output/paper_artifact/structural/` |
-| Device spec run | `claimstab run --spec specs/paper_device.yml --out-dir output/presentation/device_extension` | `output/presentation/device_extension/` |
-| BV + Atlas demo | `claimstab run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_bv_demo --report` | `output/atlas_bv_demo/` |
-| External task demo | `claimstab run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/sample_problem_demo_run --report` | `output/sample_problem_demo_run/` |
+| Main spec run | `python -m claimstab.cli run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report` | `output/presentation_large/large/maxcut_ranking/` |
+| Structural spec run | `python -m claimstab.cli run --spec specs/paper_structural.yml --out-dir output/paper_artifact/structural --report` | `output/paper_artifact/structural/` |
+| Device spec run | `python -m claimstab.cli run --spec specs/paper_device.yml --out-dir output/presentation/device_extension` | `output/presentation/device_extension/` |
+| BV + Atlas demo | `python -m claimstab.cli run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_bv_demo --report` | `output/atlas_bv_demo/` |
+| External task demo | `python -m claimstab.cli run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/sample_problem_demo_run --report` | `output/sample_problem_demo_run/` |
 
 ## Figure Generation Targets
 
@@ -49,7 +49,7 @@ Each run directory typically contains:
 
 - Publish command:
 ```bash
-claimstab publish-result --run-dir <run_dir> --atlas-root atlas --contributor <name>
+python -m claimstab.cli publish-result --run-dir <run_dir> --atlas-root atlas --contributor <name>
 ```
 - Dataset index:
   - `atlas/index.json`

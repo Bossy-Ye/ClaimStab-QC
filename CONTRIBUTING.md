@@ -41,9 +41,9 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.generate_stability_report \
 
 For public results dataset submissions, run:
 ```bash
-claimstab publish-result --run-dir output/paper_main --atlas-root atlas --contributor your_name
-claimstab validate-atlas --atlas-root atlas
-claimstab export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
+python -m claimstab.cli publish-result --run-dir output/paper_main --atlas-root atlas --contributor your_name
+python -m claimstab.cli validate-atlas --atlas-root atlas
+python -m claimstab.cli export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
 ```
 
 ## Commit Style

@@ -99,7 +99,7 @@ In this environment (Python 3.13), noisy simulation is skipped with explicit rea
 
 Command:
 ```bash
-claimstab run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy
+python -m claimstab.cli run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy
 ```
 
 Spec entrypoint:
@@ -136,8 +136,8 @@ Published artifacts:
 
 Command:
 ```bash
-claimstab run --spec examples/community_contrib_demo/spec_portfolio.yml --out-dir output/community_portfolio_demo --report
-claimstab publish-result --run-dir output/community_portfolio_demo --atlas-root atlas --contributor your_name
+python -m claimstab.cli run --spec examples/community_contrib_demo/spec_portfolio.yml --out-dir output/community_portfolio_demo --report
+python -m claimstab.cli publish-result --run-dir output/community_portfolio_demo --atlas-root atlas --contributor your_name
 ```
 
 Notes:
