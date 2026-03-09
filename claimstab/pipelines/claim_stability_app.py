@@ -64,6 +64,7 @@ from claimstab.pipelines.evaluate import (
 )
 from claimstab.pipelines.planning import resolve_main_plan
 from claimstab.pipelines.main_execution import execute_main_plan
+from claimstab.pipelines.main_aggregate_emit import build_main_outputs, write_main_outputs
 from claimstab.pipelines.runner import (
     BoundTask as _BoundTask,
     build_coupling_map as _build_coupling_map,
@@ -665,112 +666,8 @@ def main() -> None:
     noise_model_mode = plan.noise_model_mode
 
     execution_result = execute_main_plan(plan)
-    suite_name = execution_result.suite_name
-    selected_spaces = execution_result.selected_spaces
-    all_rows = execution_result.all_rows
-    experiments = execution_result.experiments
-    comparative_rows = execution_result.comparative_rows
-    artifact_manifest = execution_result.artifact_manifest
-
-    write_scores_csv(all_rows, out_csv)
-
-    for exp in experiments:
-        if not isinstance(exp, dict):
-            continue
-        evidence = exp.get("evidence")
-        if not isinstance(evidence, dict):
-            continue
-        evidence["cep"] = build_experiment_cep_record(
-            experiment=exp,
-            runtime_meta=runtime_meta,
-            evidence=evidence,
-        )
-
-    meta_deltas = (
-        sorted({float(delta) for job in ranking_jobs for delta in job.get("deltas", [])})
-        if ranking_jobs
-        else list(deltas)
-    )
-    robustness_map_artifact = build_robustness_map_artifact(experiments)
-    payload = {
-        "meta": {
-            "suite": suite_name,
-            "task": task_kind,
-            "deltas": meta_deltas,
-            "methods_available": sorted(method_names),
-            "generated_by": "claimstab/pipelines/claim_stability_app.py",
-            "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
-            "runtime": runtime_meta,
-            "artifacts": {
-                "trace_jsonl": artifact_manifest.trace_jsonl,
-                "events_jsonl": artifact_manifest.events_jsonl,
-                "cache_db": artifact_manifest.cache_db,
-                "replay_trace": str(args.replay_trace) if args.replay_trace else None,
-                "robustness_map_json": str((out_dir / "robustness_map.json").resolve()),
-            },
-            "evidence_chain": {
-                **build_cep_protocol_meta(
-                    lookup_fields=EVIDENCE_LOOKUP_FIELDS,
-                    decision_provenance=(
-                        "each experiment includes evidence.trace_query + evidence.cep blocks "
-                        "that can be matched against trace records for reproducible decision provenance"
-                    ),
-                ),
-            },
-        },
-        "device_profile": {
-            "enabled": resolved_device.profile.enabled,
-            "provider": resolved_device.profile.provider,
-            "name": resolved_device.profile.name,
-            "mode": resolved_device.profile.mode,
-            "snapshot_fingerprint": resolved_device.snapshot_fingerprint,
-            "snapshot": resolved_device.snapshot,
-        },
-        "batch": {
-            "space_presets": selected_spaces,
-            "claim_pairs": [
-                f"{job['method_a']}>{job['method_b']}[{job['metric_name']}]"
-                for job in ranking_jobs
-            ],
-            "ranking_claims": ranking_jobs,
-            "metrics_evaluated": metrics_needed or ["objective"],
-            "decision_claims": decision_claims,
-            "num_experiments": len(experiments),
-        },
-        "experiments": experiments,
-        "comparative": {
-            "space_claim_delta": comparative_rows,
-        },
-    }
-    if isinstance(spec_payload, dict):
-        m = spec_payload.get("meta")
-        if isinstance(m, dict) and isinstance(m.get("deprecated_field_used"), list):
-            payload["meta"]["deprecated_field_used"] = [str(x) for x in m.get("deprecated_field_used", [])]
-
-    rq_summary = build_rq_summary(payload, debug_attribution=args.debug_attribution)
-    payload["rq_summary"] = rq_summary
-
-    if len(experiments) == 1:
-        exp = experiments[0]
-        payload["claim"] = exp["claim"]
-        payload["baseline"] = exp["baseline"]
-        payload["stability_rule"] = exp["stability_rule"]
-        payload["sampling"] = exp["sampling"]
-        payload["backend_engine"] = exp["backend"]["engine"]
-        payload["perturbation_space_size"] = exp["sampling"]["perturbation_space_size"]
-        payload["per_graph"] = exp["per_graph"]
-        payload["overall"] = exp["overall"]
-
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    (out_dir / "robustness_map.json").write_text(json.dumps(robustness_map_artifact, indent=2), encoding="utf-8")
-    (out_dir / "rq_summary.json").write_text(json.dumps(rq_summary, indent=2), encoding="utf-8")
-
-    print("Wrote:")
-    print(" ", out_csv.resolve())
-    print(" ", out_json.resolve())
-    print(" ", (out_dir / "robustness_map.json").resolve())
-    print("Batch:", payload["batch"])
+    output_bundle = build_main_outputs(plan, execution_result)
+    write_main_outputs(output_bundle, plan, execution_result)
 
 
 if __name__ == "__main__":
