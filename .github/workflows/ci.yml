@@ -43,3 +43,34 @@ jobs:
       - name: Run tests
         run: |
           PYTHONPATH=. pytest -q
+
+  compat_guardrails:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install pytest
+
+      - name: Run refactor compatibility guardrails
+        run: |
+          PYTHONPATH=. pytest -q claimstab/tests/test_pipeline_characterization.py claimstab/tests/test_refactor_artifact_compat.py
+          PYTHONPATH=. python -m claimstab.scripts.check_refactor_compat --mode all
+
+      - name: Run paper-track smoke tests
+        run: |
+          PYTHONPATH=. pytest -q \
+            claimstab/analysis/tests/test_paper_claims.py \
+            claimstab/tests/test_figures_rq4_adaptive.py \
+            claimstab/tests/test_figures_multidevice_heatmap.py \
+            claimstab/tests/test_export_paper_pack.py \
+            claimstab/tests/test_exp_rq4_adaptive.py
