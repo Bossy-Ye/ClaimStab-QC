@@ -156,6 +156,78 @@ def _as_bool(value: Any, default: bool = True) -> bool:
     return default
 
 
+def _as_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except Exception:
+        return default
+
+
+def _as_float(value: Any, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return default
+
+
+def _effective_k_with_baseline(
+    sampling_payload: Mapping[str, Any],
+    adaptive_info: Mapping[str, Any] | None,
+) -> int | None:
+    k_used = _as_int(sampling_payload.get("sampled_configurations_with_baseline"), 0)
+    if isinstance(adaptive_info, Mapping) and bool(adaptive_info.get("enabled")):
+        selected = _as_int(adaptive_info.get("selected_configurations_with_baseline"), 0)
+        if selected > 0:
+            k_used = selected
+    return k_used if k_used > 0 else None
+
+
+def _build_evaluation_profile(
+    *,
+    sampling_payload: Mapping[str, Any],
+    adaptive_info: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    k_used = _effective_k_with_baseline(sampling_payload, adaptive_info)
+    adaptive_enabled = bool(isinstance(adaptive_info, Mapping) and adaptive_info.get("enabled"))
+    target_ci_width = (
+        adaptive_info.get("target_ci_width")
+        if adaptive_enabled and isinstance(adaptive_info, Mapping)
+        else sampling_payload.get("target_ci_width")
+    )
+    achieved_ci_width = (
+        adaptive_info.get("achieved_ci_width")
+        if adaptive_enabled and isinstance(adaptive_info, Mapping)
+        else None
+    )
+    stop_reason = (
+        str(adaptive_info.get("stop_reason"))
+        if adaptive_enabled and isinstance(adaptive_info, Mapping) and adaptive_info.get("stop_reason") is not None
+        else None
+    )
+    return {
+        "profile_version": "icse_eval_v1",
+        "sampling_mode": str(sampling_payload.get("mode", "unknown")),
+        "k_used_with_baseline": k_used,
+        "k_used_without_baseline": (k_used - 1) if isinstance(k_used, int) and k_used > 0 else None,
+        "target_ci_width": target_ci_width,
+        "adaptive_enabled": adaptive_enabled,
+        "adaptive_achieved_ci_width": achieved_ci_width,
+        "adaptive_stop_reason": stop_reason,
+    }
+
+
+def _with_common_eval_metrics(summary_row: Mapping[str, Any], eval_profile: Mapping[str, Any]) -> dict[str, Any]:
+    out = dict(summary_row)
+    ci_low = _as_float(out.get("stability_ci_low"), 0.0)
+    ci_high = _as_float(out.get("stability_ci_high"), 0.0)
+    out["stability_ci_width"] = max(0.0, ci_high - ci_low)
+    out["k_used_with_baseline"] = eval_profile.get("k_used_with_baseline")
+    out["k_used_without_baseline"] = eval_profile.get("k_used_without_baseline")
+    if eval_profile.get("target_ci_width") is not None:
+        out["target_ci_width"] = eval_profile.get("target_ci_width")
+    return out
+
+
 def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
     args = plan.args
     suite_name = plan.suite_name
@@ -369,6 +441,13 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     min_sample_size=max(1, int(sampling_policy.min_sample_size)),
                     step_size=max(1, int(sampling_policy.step_size)),
                 )
+            ranking_sampling_payload: dict[str, object] = dict(sampling_by_space[space_name])
+            if adaptive_info.get("enabled"):
+                ranking_sampling_payload["adaptive_stopping"] = adaptive_info
+            ranking_eval_profile = _build_evaluation_profile(
+                sampling_payload=ranking_sampling_payload,
+                adaptive_info=adaptive_info,
+            )
 
             for graph_id, graph_rows in space_rows.items():
                 eval_rows = graph_rows if allowed_keys is None else filter_rows_by_keys(graph_rows, allowed_keys)
@@ -483,6 +562,7 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                         "inconclusive": sum(1 for d in decisions if d == "inconclusive"),
                     },
                 }
+                row = _with_common_eval_metrics(row, ranking_eval_profile)
                 naive = evaluate_naive_baseline(
                     claim_type="ranking",
                     baseline_holds=bool(
@@ -639,7 +719,7 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     "confidence_level": args.confidence_level,
                     "decision": "stable iff CI lower bound >= threshold",
                 },
-                "sampling": sampling_by_space[space_name],
+                "sampling": ranking_sampling_payload,
                 "backend": {
                     "engine": args.backend_engine,
                     "noise_model": noise_model_mode,
@@ -671,6 +751,18 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                         "by_delta": stability_vs_cost_by_delta,
                         "minimum_shots_for_stable": minimum_shots_by_delta,
                     },
+                    "evaluation_profile": {
+                        **ranking_eval_profile,
+                        "ci_width_by_delta": [
+                            {
+                                "delta": row.get("delta"),
+                                "stability_ci_width": row.get("stability_ci_width"),
+                                "n_claim_evals": row.get("n_claim_evals"),
+                            }
+                            for row in overall_delta
+                            if isinstance(row, dict)
+                        ],
+                    },
                 },
                 "auxiliary_claims": auxiliary_claims,
                 "evidence": build_evidence_ref(
@@ -681,11 +773,6 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     artifact_manifest=artifact_manifest,
                 ),
             }
-            if adaptive_info.get("enabled"):
-                experiment["sampling"] = {
-                    **dict(sampling_by_space[space_name]),
-                    "adaptive_stopping": adaptive_info,
-                }
             experiments.append(experiment)
 
         decision_space_rows = rows_by_space_metric_graph[space_name][decision_metric_name]
@@ -741,6 +828,13 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     min_sample_size=max(1, int(sampling_policy.min_sample_size)),
                     step_size=max(1, int(sampling_policy.step_size)),
                 )
+            decision_sampling_payload: dict[str, object] = dict(sampling_by_space[space_name])
+            if adaptive_info.get("enabled"):
+                decision_sampling_payload["adaptive_stopping"] = adaptive_info
+            decision_eval_profile = _build_evaluation_profile(
+                sampling_payload=decision_sampling_payload,
+                adaptive_info=adaptive_info,
+            )
             for graph_id, graph_rows in decision_space_rows.items():
                 inst = suite_by_id.get(graph_id)
                 label = fixed_label
@@ -795,6 +889,7 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     "inconclusive": 1 if aggregate_decision == "inconclusive" else 0,
                 },
             }
+            summary_row = _with_common_eval_metrics(summary_row, decision_eval_profile)
             naive = evaluate_naive_baseline(
                 claim_type="decision",
                 baseline_holds=bool(accepted_total == eval_total and eval_total > 0),
@@ -836,9 +931,6 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                 "label_meta_key": label_meta_key,
                 "metric_name": decision_metric_name,
             }
-            sampling_payload: dict[str, object] = dict(sampling_by_space[space_name])
-            if adaptive_info.get("enabled"):
-                sampling_payload["adaptive_stopping"] = adaptive_info
             experiments.append(
                 {
                     "experiment_id": f"{space_name}:{method}:decision_top{top_k}",
@@ -849,7 +941,7 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                         "confidence_level": args.confidence_level,
                         "decision": "stable iff CI lower bound >= threshold",
                     },
-                    "sampling": sampling_payload,
+                    "sampling": decision_sampling_payload,
                     "backend": {
                         "engine": args.backend_engine,
                         "noise_model": noise_model_mode,
@@ -868,6 +960,16 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                         "graphs": len(per_graph_summary),
                         "delta_sweep": [summary_row],
                         "decision_failures": all_failures[:12],
+                        "evaluation_profile": {
+                            **decision_eval_profile,
+                            "ci_width_by_delta": [
+                                {
+                                    "delta": summary_row.get("delta"),
+                                    "stability_ci_width": summary_row.get("stability_ci_width"),
+                                    "n_claim_evals": summary_row.get("n_claim_evals"),
+                                }
+                            ],
+                        },
                     },
                     "naive_baseline": naive,
                     "evidence": build_evidence_ref(
@@ -937,6 +1039,13 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     min_sample_size=max(1, int(sampling_policy.min_sample_size)),
                     step_size=max(1, int(sampling_policy.step_size)),
                 )
+            distribution_sampling_payload: dict[str, object] = dict(sampling_by_space[space_name])
+            if adaptive_info.get("enabled"):
+                distribution_sampling_payload["adaptive_stopping"] = adaptive_info
+            distribution_eval_profile = _build_evaluation_profile(
+                sampling_payload=distribution_sampling_payload,
+                adaptive_info=adaptive_info,
+            )
 
             for graph_id, graph_rows in distribution_space_rows.items():
                 eval_rows = graph_rows if allowed_keys is None else filter_rows_by_keys(graph_rows, allowed_keys)
@@ -1000,6 +1109,7 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     "inconclusive": sum(1 for d in decisions if d == "inconclusive"),
                 },
             }
+            summary_row = _with_common_eval_metrics(summary_row, distribution_eval_profile)
             naive = evaluate_naive_baseline(
                 claim_type="distribution",
                 baseline_holds=bool(accepted_total == eval_total and eval_total > 0),
@@ -1043,9 +1153,6 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                 "reference_shots": reference_shots,
                 "metric_name": metric_name,
             }
-            sampling_payload: dict[str, object] = dict(sampling_by_space[space_name])
-            if adaptive_info.get("enabled"):
-                sampling_payload["adaptive_stopping"] = adaptive_info
             experiments.append(
                 {
                     "experiment_id": f"{space_name}:{method}:distribution",
@@ -1056,7 +1163,7 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                         "confidence_level": args.confidence_level,
                         "decision": "stable iff CI lower bound >= threshold",
                     },
-                    "sampling": sampling_payload,
+                    "sampling": distribution_sampling_payload,
                     "backend": {
                         "engine": args.backend_engine,
                         "noise_model": noise_model_mode,
@@ -1075,6 +1182,16 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                         "graphs": len(per_graph_summary),
                         "delta_sweep": [summary_row],
                         "distribution_violations": all_violations[:12],
+                        "evaluation_profile": {
+                            **distribution_eval_profile,
+                            "ci_width_by_delta": [
+                                {
+                                    "delta": summary_row.get("delta"),
+                                    "stability_ci_width": summary_row.get("stability_ci_width"),
+                                    "n_claim_evals": summary_row.get("n_claim_evals"),
+                                }
+                            ],
+                        },
                     },
                     "naive_baseline": naive,
                     "evidence": build_evidence_ref(

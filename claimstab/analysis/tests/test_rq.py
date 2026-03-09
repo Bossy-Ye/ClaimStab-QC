@@ -36,6 +36,10 @@ class TestRQDrivers(unittest.TestCase):
         self.assertGreaterEqual(len(top), 2)
         self.assertEqual(top[0]["dimension"], "shots")
         self.assertGreater(float(top[0]["driver_score"]), float(top[1]["driver_score"]))
+        by_space = rq["rq2_drivers"]["top_dimensions_by_space"]
+        self.assertIn("unknown", by_space)
+        self.assertGreaterEqual(len(by_space["unknown"]), 1)
+        self.assertEqual(by_space["unknown"][0]["dimension"], "shots")
 
     def test_rq5_conditional_robustness_collects_examples(self) -> None:
         payload = {
@@ -207,6 +211,12 @@ class TestRQDrivers(unittest.TestCase):
         self.assertEqual(rq7["top_main_effects"][0]["dimension"], "shots_bucket")
         self.assertGreaterEqual(len(rq7["top_interactions"]), 1)
         self.assertEqual(rq7["top_interactions"][0]["dimensions"], ["shots_bucket", "layout_method"])
+        self.assertIn("sampling_only", rq7["top_main_effects_by_space"])
+        self.assertIn("sampling_only", rq7["top_interactions_by_space"])
+        self.assertEqual(
+            rq7["top_main_effects_by_space"]["sampling_only"][0]["dimension"],
+            "shots_bucket",
+        )
 
     def test_naive_comparison_tracks_legacy_and_realistic(self) -> None:
         payload = {

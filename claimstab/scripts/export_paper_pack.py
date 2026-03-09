@@ -82,6 +82,13 @@ def _as_float(value: Any, default: float = 0.0) -> float:
         return default
 
 
+def _as_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except Exception:
+        return default
+
+
 def _write_csv(rows: list[dict[str, Any]], out_path: Path) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     if not rows:
@@ -129,6 +136,137 @@ def _build_naive_policy_delta_snapshot(rows: list[dict[str, Any]]) -> list[dict[
                 "count": count,
             }
         )
+    return out
+
+
+def _build_evaluation_profile_snapshot(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        out.append(
+            {
+                "space_preset": row.get("space_preset"),
+                "claim_pair": row.get("claim_pair"),
+                "claim_type": row.get("claim_type"),
+                "metric_name": row.get("metric_name"),
+                "delta": row.get("delta"),
+                "decision": row.get("decision"),
+                "k_used_with_baseline": row.get("k_used_with_baseline"),
+                "k_used_without_baseline": row.get("k_used_without_baseline"),
+                "n_claim_evals": row.get("n_claim_evals"),
+                "stability_ci_width": row.get("stability_ci_width"),
+                "target_ci_width": row.get("target_ci_width"),
+                "stability_ci_low": row.get("stability_ci_low"),
+                "stability_ci_high": row.get("stability_ci_high"),
+            }
+        )
+    out.sort(
+        key=lambda r: (
+            str(r.get("space_preset", "")),
+            str(r.get("claim_type", "")),
+            str(r.get("claim_pair", "")),
+            _as_float(r.get("delta", 0.0)),
+        )
+    )
+    return out
+
+
+def _build_rq2_by_space_rows(records: list[tuple[str, Path, dict[str, Any]]]) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for source_run, source_claim_json, rq_payload in records:
+        rq2 = rq_payload.get("rq2_drivers", {})
+        if not isinstance(rq2, dict):
+            continue
+        by_space = rq2.get("top_dimensions_by_space", {})
+        if not isinstance(by_space, dict):
+            continue
+        for space_name, rows in by_space.items():
+            if not isinstance(rows, list):
+                continue
+            for rank, row in enumerate(rows, start=1):
+                if not isinstance(row, dict):
+                    continue
+                out.append(
+                    {
+                        "source_run": source_run,
+                        "source_claim_json": str(source_claim_json.resolve()),
+                        "space_preset": str(space_name),
+                        "rank": rank,
+                        "dimension": row.get("dimension"),
+                        "driver_score": row.get("driver_score"),
+                        "avg_contrast": row.get("avg_contrast"),
+                        "avg_improvement_from_best_value": row.get("avg_improvement_from_best_value"),
+                        "flip_rate": row.get("flip_rate"),
+                        "observations": row.get("observations"),
+                        "value_groups": row.get("value_groups"),
+                    }
+                )
+    out.sort(
+        key=lambda r: (
+            str(r.get("source_run", "")),
+            str(r.get("space_preset", "")),
+            _as_int(r.get("rank"), 0),
+        )
+    )
+    return out
+
+
+def _build_rq7_by_space_rows(
+    records: list[tuple[str, Path, dict[str, Any]]],
+    *,
+    key: str,
+) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for source_run, source_claim_json, rq_payload in records:
+        rq7 = rq_payload.get("rq7_effect_diagnostics", {})
+        if not isinstance(rq7, dict):
+            continue
+        by_space = rq7.get(key, {})
+        if not isinstance(by_space, dict):
+            continue
+        for space_name, rows in by_space.items():
+            if not isinstance(rows, list):
+                continue
+            for rank, row in enumerate(rows, start=1):
+                if not isinstance(row, dict):
+                    continue
+                out_row = {
+                    "source_run": source_run,
+                    "source_claim_json": str(source_claim_json.resolve()),
+                    "space_preset": str(space_name),
+                    "rank": rank,
+                    "experiment_id": row.get("experiment_id"),
+                    "claim_type": row.get("claim_type"),
+                    "delta": row.get("delta"),
+                    "n_eval": row.get("n_eval"),
+                }
+                if key == "top_main_effects_by_space":
+                    out_row.update(
+                        {
+                            "dimension": row.get("dimension"),
+                            "effect_score": row.get("effect_score"),
+                            "n_levels": row.get("n_levels"),
+                        }
+                    )
+                else:
+                    out_row.update(
+                        {
+                            "dimensions": row.get("dimensions"),
+                            "interaction_score": row.get("interaction_score"),
+                            "joint_spread": row.get("joint_spread"),
+                            "reference_main_effect": row.get("reference_main_effect"),
+                            "n_cells": row.get("n_cells"),
+                        }
+                    )
+                out.append(out_row)
+    out.sort(
+        key=lambda r: (
+            str(r.get("source_run", "")),
+            str(r.get("space_preset", "")),
+            _as_int(r.get("rank"), 0),
+        )
+    )
     return out
 
 
@@ -232,9 +370,13 @@ def main() -> None:
     naive_snapshot_rows = _build_naive_policy_delta_snapshot(primary_rows)
     naive_snapshot_csv_path = tables_dir / "naive_policy_delta_snapshot.csv"
     _write_csv(naive_snapshot_rows, naive_snapshot_csv_path)
+    eval_profile_rows = _build_evaluation_profile_snapshot(primary_rows)
+    eval_profile_csv_path = tables_dir / "evaluation_profile_snapshot.csv"
+    _write_csv(eval_profile_rows, eval_profile_csv_path)
 
     # Build rq_summary.csv from all runs in selected family.
     rq_rows: list[dict[str, Any]] = []
+    rq_payload_records: list[tuple[str, Path, dict[str, Any]]] = []
     for path, payload in claim_payloads:
         rq_json_path = path.parent / "rq_summary.json"
         if rq_json_path.exists():
@@ -242,6 +384,7 @@ def main() -> None:
         else:
             rq_payload = payload.get("rq_summary", {})
             rq_payload = rq_payload if isinstance(rq_payload, dict) else {}
+        rq_payload_records.append((path.parent.name, path, rq_payload))
         flat = _flatten_scalars(rq_payload)
         row: dict[str, Any] = {
             "source_run": path.parent.name,
@@ -254,6 +397,18 @@ def main() -> None:
     rq_rows.sort(key=lambda r: str(r.get("source_run", "")))
     rq_csv_path = tables_dir / "rq_summary.csv"
     _write_csv(rq_rows, rq_csv_path)
+    rq2_by_space_rows = _build_rq2_by_space_rows(rq_payload_records)
+    rq2_by_space_csv_path = tables_dir / "rq2_top_dimensions_by_space.csv"
+    _write_csv(rq2_by_space_rows, rq2_by_space_csv_path)
+    rq7_main_by_space_rows = _build_rq7_by_space_rows(rq_payload_records, key="top_main_effects_by_space")
+    rq7_main_by_space_csv_path = tables_dir / "rq7_top_main_effects_by_space.csv"
+    _write_csv(rq7_main_by_space_rows, rq7_main_by_space_csv_path)
+    rq7_interaction_by_space_rows = _build_rq7_by_space_rows(
+        rq_payload_records,
+        key="top_interactions_by_space",
+    )
+    rq7_interaction_by_space_csv_path = tables_dir / "rq7_top_interactions_by_space.csv"
+    _write_csv(rq7_interaction_by_space_rows, rq7_interaction_by_space_csv_path)
 
     figure_meta: dict[str, Any] = {"skipped": bool(args.skip_figures)}
     if not args.skip_figures:
@@ -378,9 +533,17 @@ def main() -> None:
                 "space_claim_delta_csv": str(space_csv_path.resolve()),
                 "rq_summary_csv": str(rq_csv_path.resolve()),
                 "naive_policy_delta_snapshot_csv": str(naive_snapshot_csv_path.resolve()),
+                "evaluation_profile_snapshot_csv": str(eval_profile_csv_path.resolve()),
+                "rq2_top_dimensions_by_space_csv": str(rq2_by_space_csv_path.resolve()),
+                "rq7_top_main_effects_by_space_csv": str(rq7_main_by_space_csv_path.resolve()),
+                "rq7_top_interactions_by_space_csv": str(rq7_interaction_by_space_csv_path.resolve()),
                 "space_claim_delta_rows": len(space_rows),
                 "rq_summary_rows": len(rq_rows),
                 "naive_policy_delta_snapshot_rows": len(naive_snapshot_rows),
+                "evaluation_profile_snapshot_rows": len(eval_profile_rows),
+                "rq2_top_dimensions_by_space_rows": len(rq2_by_space_rows),
+                "rq7_top_main_effects_by_space_rows": len(rq7_main_by_space_rows),
+                "rq7_top_interactions_by_space_rows": len(rq7_interaction_by_space_rows),
             },
             "figures": figure_meta,
             "paper_claims": paper_claims_meta,

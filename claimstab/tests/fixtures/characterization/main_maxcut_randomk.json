@@ -69,6 +69,8 @@
         "holds_rate_ci_high": 0.43448246478317465,
         "holds_rate_ci_low": 0.0,
         "holds_rate_mean": 0.0,
+        "k_used_with_baseline": 5,
+        "k_used_without_baseline": 4,
         "metric_name": "objective",
         "n_boot": 2000,
         "n_claim_evals": 4,
@@ -109,6 +111,7 @@
         "space_preset": "baseline",
         "stability_ci_high": 0.9999999999999999,
         "stability_ci_low": 0.5101091635454028,
+        "stability_ci_width": 0.4898908364545971,
         "stability_hat": 1.0
       },
       {
@@ -132,6 +135,8 @@
         "holds_rate_ci_high": 0.43448246478317465,
         "holds_rate_ci_low": 0.0,
         "holds_rate_mean": 0.0,
+        "k_used_with_baseline": 5,
+        "k_used_without_baseline": 4,
         "metric_name": "objective",
         "n_boot": 2000,
         "n_claim_evals": 4,
@@ -172,6 +177,7 @@
         "space_preset": "baseline",
         "stability_ci_high": 0.9999999999999999,
         "stability_ci_low": 0.5101091635454028,
+        "stability_ci_width": 0.4898908364545971,
         "stability_hat": 1.0
       },
       {
@@ -195,6 +201,8 @@
         "holds_rate_ci_high": 0.43448246478317465,
         "holds_rate_ci_low": 0.0,
         "holds_rate_mean": 0.0,
+        "k_used_with_baseline": 5,
+        "k_used_without_baseline": 4,
         "metric_name": "objective",
         "n_boot": 2000,
         "n_claim_evals": 4,
@@ -235,6 +243,7 @@
         "space_preset": "baseline",
         "stability_ci_high": 0.9999999999999999,
         "stability_ci_low": 0.5101091635454028,
+        "stability_ci_width": 0.4898908364545971,
         "stability_hat": 1.0
       }
     ]
@@ -599,6 +608,8 @@
             "holds_rate_ci_high": 0.43448246478317465,
             "holds_rate_ci_low": 0.0,
             "holds_rate_mean": 0.0,
+            "k_used_with_baseline": 5,
+            "k_used_without_baseline": 4,
             "n_boot": 2000,
             "n_claim_evals": 4,
             "n_instances": 1,
@@ -637,6 +648,7 @@
             },
             "stability_ci_high": 0.9999999999999999,
             "stability_ci_low": 0.5101091635454028,
+            "stability_ci_width": 0.4898908364545971,
             "stability_hat": 1.0
           },
           {
@@ -657,6 +669,8 @@
             "holds_rate_ci_high": 0.43448246478317465,
             "holds_rate_ci_low": 0.0,
             "holds_rate_mean": 0.0,
+            "k_used_with_baseline": 5,
+            "k_used_without_baseline": 4,
             "n_boot": 2000,
             "n_claim_evals": 4,
             "n_instances": 1,
@@ -695,6 +709,7 @@
             },
             "stability_ci_high": 0.9999999999999999,
             "stability_ci_low": 0.5101091635454028,
+            "stability_ci_width": 0.4898908364545971,
             "stability_hat": 1.0
           },
           {
@@ -715,6 +730,8 @@
             "holds_rate_ci_high": 0.43448246478317465,
             "holds_rate_ci_low": 0.0,
             "holds_rate_mean": 0.0,
+            "k_used_with_baseline": 5,
+            "k_used_without_baseline": 4,
             "n_boot": 2000,
             "n_claim_evals": 4,
             "n_instances": 1,
@@ -753,6 +770,7 @@
             },
             "stability_ci_high": 0.9999999999999999,
             "stability_ci_low": 0.5101091635454028,
+            "stability_ci_width": 0.4898908364545971,
             "stability_hat": 1.0
           }
         ],
@@ -1445,6 +1463,33 @@
             "shots_bucket",
             "seed_simulator"
           ]
+        },
+        "evaluation_profile": {
+          "adaptive_achieved_ci_width": null,
+          "adaptive_enabled": false,
+          "adaptive_stop_reason": null,
+          "ci_width_by_delta": [
+            {
+              "delta": 0.0,
+              "n_claim_evals": 4,
+              "stability_ci_width": 0.4898908364545971
+            },
+            {
+              "delta": 0.01,
+              "n_claim_evals": 4,
+              "stability_ci_width": 0.4898908364545971
+            },
+            {
+              "delta": 0.05,
+              "n_claim_evals": 4,
+              "stability_ci_width": 0.4898908364545971
+            }
+          ],
+          "k_used_with_baseline": 5,
+          "k_used_without_baseline": 4,
+          "profile_version": "icse_eval_v1",
+          "sampling_mode": "random_k",
+          "target_ci_width": null
         },
         "graphs": 1,
         "stability_vs_cost": {
@@ -2427,6 +2472,8 @@
         "holds_rate_ci_high": 0.43448246478317465,
         "holds_rate_ci_low": 0.0,
         "holds_rate_mean": 0.0,
+        "k_used_with_baseline": 5,
+        "k_used_without_baseline": 4,
         "n_boot": 2000,
         "n_claim_evals": 4,
         "n_instances": 1,
@@ -2465,6 +2512,7 @@
         },
         "stability_ci_high": 0.9999999999999999,
         "stability_ci_low": 0.5101091635454028,
+        "stability_ci_width": 0.4898908364545971,
         "stability_hat": 1.0
       },
       {
@@ -2485,6 +2533,8 @@
         "holds_rate_ci_high": 0.43448246478317465,
         "holds_rate_ci_low": 0.0,
         "holds_rate_mean": 0.0,
+        "k_used_with_baseline": 5,
+        "k_used_without_baseline": 4,
         "n_boot": 2000,
         "n_claim_evals": 4,
         "n_instances": 1,
@@ -2523,6 +2573,7 @@
         },
         "stability_ci_high": 0.9999999999999999,
         "stability_ci_low": 0.5101091635454028,
+        "stability_ci_width": 0.4898908364545971,
         "stability_hat": 1.0
       },
       {
@@ -2543,6 +2594,8 @@
         "holds_rate_ci_high": 0.43448246478317465,
         "holds_rate_ci_low": 0.0,
         "holds_rate_mean": 0.0,
+        "k_used_with_baseline": 5,
+        "k_used_without_baseline": 4,
         "n_boot": 2000,
         "n_claim_evals": 4,
         "n_instances": 1,
@@ -2581,6 +2634,7 @@
         },
         "stability_ci_high": 0.9999999999999999,
         "stability_ci_low": 0.5101091635454028,
+        "stability_ci_width": 0.4898908364545971,
         "stability_hat": 1.0
       }
     ],
@@ -3273,6 +3327,33 @@
         "shots_bucket",
         "seed_simulator"
       ]
+    },
+    "evaluation_profile": {
+      "adaptive_achieved_ci_width": null,
+      "adaptive_enabled": false,
+      "adaptive_stop_reason": null,
+      "ci_width_by_delta": [
+        {
+          "delta": 0.0,
+          "n_claim_evals": 4,
+          "stability_ci_width": 0.4898908364545971
+        },
+        {
+          "delta": 0.01,
+          "n_claim_evals": 4,
+          "stability_ci_width": 0.4898908364545971
+        },
+        {
+          "delta": 0.05,
+          "n_claim_evals": 4,
+          "stability_ci_width": 0.4898908364545971
+        }
+      ],
+      "k_used_with_baseline": 5,
+      "k_used_without_baseline": 4,
+      "profile_version": "icse_eval_v1",
+      "sampling_mode": "random_k",
+      "target_ci_width": null
     },
     "graphs": 1,
     "stability_vs_cost": {
@@ -4092,6 +4173,55 @@
           "value_groups": 3
         }
       ],
+      "all_dimensions_by_space": {
+        "baseline": [
+          {
+            "avg_contrast": 0.0,
+            "avg_improvement_from_best_value": 0.0,
+            "dimension": "seed_transpiler",
+            "driver_score": 0.0,
+            "flip_rate": 0.0,
+            "observations": 3,
+            "value_groups": 12
+          },
+          {
+            "avg_contrast": 0.0,
+            "avg_improvement_from_best_value": 0.0,
+            "dimension": "optimization_level",
+            "driver_score": 0.0,
+            "flip_rate": 0.0,
+            "observations": 3,
+            "value_groups": 3
+          },
+          {
+            "avg_contrast": 0.0,
+            "avg_improvement_from_best_value": 0.0,
+            "dimension": "layout_method",
+            "driver_score": 0.0,
+            "flip_rate": 0.0,
+            "observations": 3,
+            "value_groups": 6
+          },
+          {
+            "avg_contrast": 0.0,
+            "avg_improvement_from_best_value": 0.0,
+            "dimension": "shots",
+            "driver_score": 0.0,
+            "flip_rate": 0.0,
+            "observations": 3,
+            "value_groups": 3
+          },
+          {
+            "avg_contrast": 0.0,
+            "avg_improvement_from_best_value": 0.0,
+            "dimension": "seed_simulator",
+            "driver_score": 0.0,
+            "flip_rate": 0.0,
+            "observations": 3,
+            "value_groups": 3
+          }
+        ]
+      },
       "metric_formula": "driver_score = sqrt(sum_v w_v*(r_v-r_bar)^2 / sum_v w_v), r_v=flips_v/total_v, w_v=total_v",
       "metric_label": "driver score (std of flip rate across knob values)",
       "metric_name": "std_flip_rate_across_values",
@@ -4124,7 +4254,38 @@
           "observations": 3,
           "value_groups": 6
         }
-      ]
+      ],
+      "top_dimensions_by_space": {
+        "baseline": [
+          {
+            "avg_contrast": 0.0,
+            "avg_improvement_from_best_value": 0.0,
+            "dimension": "seed_transpiler",
+            "driver_score": 0.0,
+            "flip_rate": 0.0,
+            "observations": 3,
+            "value_groups": 12
+          },
+          {
+            "avg_contrast": 0.0,
+            "avg_improvement_from_best_value": 0.0,
+            "dimension": "optimization_level",
+            "driver_score": 0.0,
+            "flip_rate": 0.0,
+            "observations": 3,
+            "value_groups": 3
+          },
+          {
+            "avg_contrast": 0.0,
+            "avg_improvement_from_best_value": 0.0,
+            "dimension": "layout_method",
+            "driver_score": 0.0,
+            "flip_rate": 0.0,
+            "observations": 3,
+            "value_groups": 6
+          }
+        ]
+      }
     },
     "rq3_cost_tradeoff": {
       "stability_vs_cost_rows": [
@@ -4279,7 +4440,8 @@
           "joint_spread": 0.0,
           "n_cells": 4,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         },
         {
           "claim_type": "ranking",
@@ -4298,7 +4460,8 @@
           "joint_spread": 0.0,
           "n_cells": 4,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         },
         {
           "claim_type": "ranking",
@@ -4317,7 +4480,8 @@
           "joint_spread": 0.0,
           "n_cells": 4,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         },
         {
           "claim_type": "ranking",
@@ -4336,7 +4500,8 @@
           "joint_spread": 0.0,
           "n_cells": 4,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         },
         {
           "claim_type": "ranking",
@@ -4355,7 +4520,8 @@
           "joint_spread": 0.0,
           "n_cells": 2,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         },
         {
           "claim_type": "ranking",
@@ -4374,7 +4540,8 @@
           "joint_spread": 0.0,
           "n_cells": 4,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         },
         {
           "claim_type": "ranking",
@@ -4393,7 +4560,8 @@
           "joint_spread": 0.0,
           "n_cells": 4,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         },
         {
           "claim_type": "ranking",
@@ -4412,7 +4580,8 @@
           "joint_spread": 0.0,
           "n_cells": 4,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         },
         {
           "claim_type": "ranking",
@@ -4431,7 +4600,8 @@
           "joint_spread": 0.0,
           "n_cells": 4,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         },
         {
           "claim_type": "ranking",
@@ -4450,7 +4620,8 @@
           "joint_spread": 0.0,
           "n_cells": 2,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         },
         {
           "claim_type": "ranking",
@@ -4469,7 +4640,8 @@
           "joint_spread": 0.0,
           "n_cells": 4,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         },
         {
           "claim_type": "ranking",
@@ -4488,7 +4660,8 @@
           "joint_spread": 0.0,
           "n_cells": 4,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         },
         {
           "claim_type": "ranking",
@@ -4507,7 +4680,8 @@
           "joint_spread": 0.0,
           "n_cells": 4,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         },
         {
           "claim_type": "ranking",
@@ -4526,7 +4700,8 @@
           "joint_spread": 0.0,
           "n_cells": 4,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         },
         {
           "claim_type": "ranking",
@@ -4545,9 +4720,314 @@
           "joint_spread": 0.0,
           "n_cells": 2,
           "n_eval": 4,
-          "reference_main_effect": 0.0
+          "reference_main_effect": 0.0,
+          "space_preset": "baseline"
         }
       ],
+      "top_interactions_by_space": {
+        "baseline": [
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.0",
+            "dimensions": [
+              "seed_transpiler",
+              "optimization_level"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 4,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          },
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.0",
+            "dimensions": [
+              "seed_transpiler",
+              "layout_method"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 4,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          },
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.0",
+            "dimensions": [
+              "seed_transpiler",
+              "shots_bucket"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 4,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          },
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.0",
+            "dimensions": [
+              "seed_transpiler",
+              "seed_simulator"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 4,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          },
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.0",
+            "dimensions": [
+              "optimization_level",
+              "layout_method"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 2,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          },
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.01",
+            "dimensions": [
+              "seed_transpiler",
+              "optimization_level"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 4,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          },
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.01",
+            "dimensions": [
+              "seed_transpiler",
+              "layout_method"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 4,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          },
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.01",
+            "dimensions": [
+              "seed_transpiler",
+              "shots_bucket"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 4,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          },
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.01",
+            "dimensions": [
+              "seed_transpiler",
+              "seed_simulator"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 4,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          },
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.01",
+            "dimensions": [
+              "optimization_level",
+              "layout_method"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 2,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          },
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.05",
+            "dimensions": [
+              "seed_transpiler",
+              "optimization_level"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 4,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          },
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.05",
+            "dimensions": [
+              "seed_transpiler",
+              "layout_method"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 4,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          },
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.05",
+            "dimensions": [
+              "seed_transpiler",
+              "shots_bucket"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 4,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          },
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.05",
+            "dimensions": [
+              "seed_transpiler",
+              "seed_simulator"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 4,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          },
+          {
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.05",
+            "dimensions": [
+              "optimization_level",
+              "layout_method"
+            ],
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "interaction_score": 0.0,
+            "joint_spread": 0.0,
+            "n_cells": 2,
+            "n_eval": 4,
+            "reference_main_effect": 0.0,
+            "space_preset": "baseline"
+          }
+        ]
+      },
       "top_main_effects": [
         {
           "by_value": [
@@ -4583,7 +5063,8 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 4
+          "n_levels": 4,
+          "space_preset": "baseline"
         },
         {
           "by_value": [
@@ -4619,7 +5100,8 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 4
+          "n_levels": 4,
+          "space_preset": "baseline"
         },
         {
           "by_value": [
@@ -4655,7 +5137,8 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 4
+          "n_levels": 4,
+          "space_preset": "baseline"
         },
         {
           "by_value": [
@@ -4681,7 +5164,8 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 2
+          "n_levels": 2,
+          "space_preset": "baseline"
         },
         {
           "by_value": [
@@ -4707,7 +5191,8 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 2
+          "n_levels": 2,
+          "space_preset": "baseline"
         },
         {
           "by_value": [
@@ -4733,7 +5218,8 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 2
+          "n_levels": 2,
+          "space_preset": "baseline"
         },
         {
           "by_value": [
@@ -4754,7 +5240,8 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 1
+          "n_levels": 1,
+          "space_preset": "baseline"
         },
         {
           "by_value": [
@@ -4775,7 +5262,8 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 1
+          "n_levels": 1,
+          "space_preset": "baseline"
         },
         {
           "by_value": [
@@ -4796,7 +5284,8 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 1
+          "n_levels": 1,
+          "space_preset": "baseline"
         },
         {
           "by_value": [
@@ -4817,7 +5306,8 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 1
+          "n_levels": 1,
+          "space_preset": "baseline"
         },
         {
           "by_value": [
@@ -4838,7 +5328,8 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 1
+          "n_levels": 1,
+          "space_preset": "baseline"
         },
         {
           "by_value": [
@@ -4859,7 +5350,8 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 1
+          "n_levels": 1,
+          "space_preset": "baseline"
         },
         {
           "by_value": [
@@ -4880,7 +5372,8 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 1
+          "n_levels": 1,
+          "space_preset": "baseline"
         },
         {
           "by_value": [
@@ -4901,7 +5394,8 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 1
+          "n_levels": 1,
+          "space_preset": "baseline"
         },
         {
           "by_value": [
@@ -4922,9 +5416,404 @@
           "effect_score": 0.0,
           "experiment_id": "baseline:QAOA_p2>RandomBaseline",
           "n_eval": 4,
-          "n_levels": 1
+          "n_levels": 1,
+          "space_preset": "baseline"
         }
-      ]
+      ],
+      "top_main_effects_by_space": {
+        "baseline": [
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": 2
+              },
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": 9
+              },
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": 1
+              },
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": 4
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.0",
+            "dimension": "seed_transpiler",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 4,
+            "space_preset": "baseline"
+          },
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": 2
+              },
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": 9
+              },
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": 1
+              },
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": 4
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.01",
+            "dimension": "seed_transpiler",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 4,
+            "space_preset": "baseline"
+          },
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": 2
+              },
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": 9
+              },
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": 1
+              },
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": 4
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.05",
+            "dimension": "seed_transpiler",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 4,
+            "space_preset": "baseline"
+          },
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 3,
+                "value": "trivial"
+              },
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": "sabre"
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.0",
+            "dimension": "layout_method",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 2,
+            "space_preset": "baseline"
+          },
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 3,
+                "value": "trivial"
+              },
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": "sabre"
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.01",
+            "dimension": "layout_method",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 2,
+            "space_preset": "baseline"
+          },
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 3,
+                "value": "trivial"
+              },
+              {
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "value": "sabre"
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.05",
+            "dimension": "layout_method",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 2,
+            "space_preset": "baseline"
+          },
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "value": 0
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.0",
+            "dimension": "optimization_level",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 1,
+            "space_preset": "baseline"
+          },
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "value": "high"
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.0",
+            "dimension": "shots_bucket",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 1,
+            "space_preset": "baseline"
+          },
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "value": 0
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.0",
+            "dimension": "seed_simulator",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 1,
+            "space_preset": "baseline"
+          },
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "value": 0
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.01",
+            "dimension": "optimization_level",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 1,
+            "space_preset": "baseline"
+          },
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "value": "high"
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.01",
+            "dimension": "shots_bucket",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 1,
+            "space_preset": "baseline"
+          },
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "value": 0
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.01",
+            "dimension": "seed_simulator",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 1,
+            "space_preset": "baseline"
+          },
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "value": 0
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.05",
+            "dimension": "optimization_level",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 1,
+            "space_preset": "baseline"
+          },
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "value": "high"
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.05",
+            "dimension": "shots_bucket",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 1,
+            "space_preset": "baseline"
+          },
+          {
+            "by_value": [
+              {
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "value": 0
+              }
+            ],
+            "claim_type": "ranking",
+            "context_conditions": {
+              "device_mode": "transpile_only",
+              "noise_model": "none",
+              "space_preset": "baseline"
+            },
+            "delta": "0.05",
+            "dimension": "seed_simulator",
+            "effect_score": 0.0,
+            "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+            "n_eval": 4,
+            "n_levels": 1,
+            "space_preset": "baseline"
+          }
+        ]
+      }
     }
   },
   "sampling": {

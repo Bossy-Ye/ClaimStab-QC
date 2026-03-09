@@ -20,6 +20,20 @@ def _as_int(value: Any, default: int = 0) -> int:
         return default
 
 
+def _space_from_experiment(exp: dict[str, Any]) -> str:
+    sampling = exp.get("sampling", {})
+    if isinstance(sampling, dict):
+        preset = sampling.get("space_preset")
+        if isinstance(preset, str) and preset.strip():
+            return preset.strip()
+    exp_id = str(exp.get("experiment_id", ""))
+    if ":" in exp_id:
+        token = exp_id.split(":", 1)[0].strip()
+        if token:
+            return token
+    return "unknown"
+
+
 def _decision_counts(rows: list[dict[str, Any]]) -> dict[str, int]:
     out = {"stable": 0, "unstable": 0, "inconclusive": 0}
     for row in rows:
@@ -226,6 +240,8 @@ def _build_rq7_effect_diagnostics(experiments: list[dict[str, Any]]) -> dict[str
     dimensions_union: set[str] = set()
     main_effect_rows: list[dict[str, Any]] = []
     interaction_rows: list[dict[str, Any]] = []
+    main_effect_rows_by_space: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    interaction_rows_by_space: dict[str, list[dict[str, Any]]] = defaultdict(list)
 
     for exp in experiments:
         overall = exp.get("overall", {})
@@ -239,6 +255,11 @@ def _build_rq7_effect_diagnostics(experiments: list[dict[str, Any]]) -> dict[str
         for dim_name in effects.get("dimensions", []):
             dimensions_union.add(str(dim_name))
         context_conditions = effects.get("context_conditions", {})
+        context_space = (
+            str(context_conditions.get("space_preset"))
+            if isinstance(context_conditions, dict) and context_conditions.get("space_preset") is not None
+            else _space_from_experiment(exp)
+        )
         exp_id = str(exp.get("experiment_id"))
         claim = exp.get("claim", {})
         claim_type = str(claim.get("type", "ranking"))
@@ -249,37 +270,39 @@ def _build_rq7_effect_diagnostics(experiments: list[dict[str, Any]]) -> dict[str
             for row in payload.get("main_effects", []):
                 if not isinstance(row, dict):
                     continue
-                main_effect_rows.append(
-                    {
-                        "experiment_id": exp_id,
-                        "claim_type": claim_type,
-                        "delta": str(delta),
-                        "context_conditions": context_conditions,
-                        "dimension": str(row.get("dimension", "")),
-                        "effect_score": _as_float(row.get("effect_score"), 0.0),
-                        "n_levels": _as_int(row.get("n_levels"), 0),
-                        "n_eval": _as_int(row.get("n_eval"), 0),
-                        "by_value": row.get("by_value", []),
-                    }
-                )
+                out_row = {
+                    "experiment_id": exp_id,
+                    "claim_type": claim_type,
+                    "delta": str(delta),
+                    "space_preset": context_space,
+                    "context_conditions": context_conditions,
+                    "dimension": str(row.get("dimension", "")),
+                    "effect_score": _as_float(row.get("effect_score"), 0.0),
+                    "n_levels": _as_int(row.get("n_levels"), 0),
+                    "n_eval": _as_int(row.get("n_eval"), 0),
+                    "by_value": row.get("by_value", []),
+                }
+                main_effect_rows.append(out_row)
+                main_effect_rows_by_space[context_space].append(out_row)
             for row in payload.get("interaction_effects", []):
                 if not isinstance(row, dict):
                     continue
                 dims = row.get("dimensions", [])
-                interaction_rows.append(
-                    {
-                        "experiment_id": exp_id,
-                        "claim_type": claim_type,
-                        "delta": str(delta),
-                        "context_conditions": context_conditions,
-                        "dimensions": [str(x) for x in dims] if isinstance(dims, list) else [],
-                        "interaction_score": _as_float(row.get("interaction_score"), 0.0),
-                        "joint_spread": _as_float(row.get("joint_spread"), 0.0),
-                        "reference_main_effect": _as_float(row.get("reference_main_effect"), 0.0),
-                        "n_cells": _as_int(row.get("n_cells"), 0),
-                        "n_eval": _as_int(row.get("n_eval"), 0),
-                    }
-                )
+                out_row = {
+                    "experiment_id": exp_id,
+                    "claim_type": claim_type,
+                    "delta": str(delta),
+                    "space_preset": context_space,
+                    "context_conditions": context_conditions,
+                    "dimensions": [str(x) for x in dims] if isinstance(dims, list) else [],
+                    "interaction_score": _as_float(row.get("interaction_score"), 0.0),
+                    "joint_spread": _as_float(row.get("joint_spread"), 0.0),
+                    "reference_main_effect": _as_float(row.get("reference_main_effect"), 0.0),
+                    "n_cells": _as_int(row.get("n_cells"), 0),
+                    "n_eval": _as_int(row.get("n_eval"), 0),
+                }
+                interaction_rows.append(out_row)
+                interaction_rows_by_space[context_space].append(out_row)
 
     main_effect_rows.sort(
         key=lambda row: (
@@ -297,12 +320,36 @@ def _build_rq7_effect_diagnostics(experiments: list[dict[str, Any]]) -> dict[str
         ),
         reverse=True,
     )
+    top_main_by_space: dict[str, list[dict[str, Any]]] = {}
+    top_interactions_by_space: dict[str, list[dict[str, Any]]] = {}
+    for space_name, rows in sorted(main_effect_rows_by_space.items()):
+        rows.sort(
+            key=lambda row: (
+                _as_float(row.get("effect_score"), 0.0),
+                _as_int(row.get("n_eval"), 0),
+                _as_int(row.get("n_levels"), 0),
+            ),
+            reverse=True,
+        )
+        top_main_by_space[space_name] = rows[:20]
+    for space_name, rows in sorted(interaction_rows_by_space.items()):
+        rows.sort(
+            key=lambda row: (
+                _as_float(row.get("interaction_score"), 0.0),
+                _as_float(row.get("joint_spread"), 0.0),
+                _as_int(row.get("n_eval"), 0),
+            ),
+            reverse=True,
+        )
+        top_interactions_by_space[space_name] = rows[:20]
 
     return {
         "experiments_with_effect_diagnostics": experiments_with_effects,
         "dimensions": sorted(dimensions_union),
         "top_main_effects": main_effect_rows[:20],
         "top_interactions": interaction_rows[:20],
+        "top_main_effects_by_space": top_main_by_space,
+        "top_interactions_by_space": top_interactions_by_space,
     }
 
 
@@ -386,6 +433,38 @@ def _emit_rq2_debug(accum: dict[str, dict[str, float]], ranked_dims: list[dict[s
     print(f"[RQ2 attribution debug] Pattern D (same scalar reused for all dimensions): {pattern_d}", file=stream)
 
 
+def _rank_rq2_dimensions(accum: dict[str, dict[str, float]]) -> list[dict[str, Any]]:
+    ranked_dims: list[dict[str, Any]] = []
+    for dim_name, stats in accum.items():
+        w = stats["weight_sum"]
+        if w <= 0:
+            continue
+        avg_std = stats["std_weighted_sum"] / w
+        avg_contrast = stats["contrast_weighted_sum"] / w
+        avg_improvement = stats["improvement_weighted_sum"] / w
+        mean_global_flip = stats["global_flip_weighted_sum"] / w
+        ranked_dims.append(
+            {
+                "dimension": dim_name,
+                "driver_score": avg_std,
+                "avg_contrast": avg_contrast,
+                "avg_improvement_from_best_value": avg_improvement,
+                "flip_rate": mean_global_flip,
+                "observations": int(stats["observations"]),
+                "value_groups": int(stats["value_groups"]),
+            }
+        )
+    ranked_dims.sort(
+        key=lambda row: (
+            float(row.get("driver_score", 0.0)),
+            float(row.get("avg_contrast", 0.0)),
+            -float(row.get("flip_rate", 0.0)),
+        ),
+        reverse=True,
+    )
+    return ranked_dims
+
+
 def _build_rq2_drivers(
     experiments: list[dict[str, Any]],
     *,
@@ -396,8 +475,8 @@ def _build_rq2_drivers(
     # Summing flips/total across each dimension partition leads to identical rates
     # across dimensions (a partition identity). We therefore score dimensions by
     # how much value-level flip rates spread within each dimension.
-    accum: dict[str, dict[str, float]] = defaultdict(
-        lambda: {
+    def _new_slot() -> dict[str, float]:
+        return {
             "std_weighted_sum": 0.0,
             "contrast_weighted_sum": 0.0,
             "improvement_weighted_sum": 0.0,
@@ -410,9 +489,12 @@ def _build_rq2_drivers(
             "unweighted_gap_sum": 0.0,
             "weighted_gap_sum": 0.0,
         }
-    )
+
+    accum: dict[str, dict[str, float]] = defaultdict(_new_slot)
+    accum_by_space: dict[str, dict[str, dict[str, float]]] = defaultdict(lambda: defaultdict(_new_slot))
 
     for exp in experiments:
+        space_name = _space_from_experiment(exp)
         diagnostics = exp.get("overall", {}).get("diagnostics", {})
         by_delta_dim = diagnostics.get("by_delta_dimension", {})
         if not isinstance(by_delta_dim, dict):
@@ -450,48 +532,27 @@ def _build_rq2_drivers(
                 improvement = max(0.0, global_rate - min_rate)
                 weight = eval_total
 
-                slot = accum[dim_name]
-                slot["std_weighted_sum"] += spread_std * weight
-                slot["contrast_weighted_sum"] += contrast * weight
-                slot["improvement_weighted_sum"] += improvement * weight
-                slot["global_flip_weighted_sum"] += global_rate * weight
-                slot["weight_sum"] += weight
-                slot["observations"] += 1.0
-                slot["value_groups"] += float(len(rates))
-                slot["total_flips"] += flips_total
-                slot["total_evals"] += eval_total
-                slot["unweighted_gap_sum"] += abs(unweighted_mean_by_value - global_rate)
-                slot["weighted_gap_sum"] += abs(weighted_mean_by_value - global_rate)
+                for slot in (accum[dim_name], accum_by_space[space_name][dim_name]):
+                    slot["std_weighted_sum"] += spread_std * weight
+                    slot["contrast_weighted_sum"] += contrast * weight
+                    slot["improvement_weighted_sum"] += improvement * weight
+                    slot["global_flip_weighted_sum"] += global_rate * weight
+                    slot["weight_sum"] += weight
+                    slot["observations"] += 1.0
+                    slot["value_groups"] += float(len(rates))
+                    slot["total_flips"] += flips_total
+                    slot["total_evals"] += eval_total
+                    slot["unweighted_gap_sum"] += abs(unweighted_mean_by_value - global_rate)
+                    slot["weighted_gap_sum"] += abs(weighted_mean_by_value - global_rate)
 
-    ranked_dims: list[dict[str, Any]] = []
-    for dim_name, stats in accum.items():
-        w = stats["weight_sum"]
-        if w <= 0:
-            continue
-        avg_std = stats["std_weighted_sum"] / w
-        avg_contrast = stats["contrast_weighted_sum"] / w
-        avg_improvement = stats["improvement_weighted_sum"] / w
-        mean_global_flip = stats["global_flip_weighted_sum"] / w
-        ranked_dims.append(
-            {
-                "dimension": dim_name,
-                "driver_score": avg_std,
-                "avg_contrast": avg_contrast,
-                "avg_improvement_from_best_value": avg_improvement,
-                "flip_rate": mean_global_flip,
-                "observations": int(stats["observations"]),
-                "value_groups": int(stats["value_groups"]),
-            }
-        )
+    ranked_dims = _rank_rq2_dimensions(accum)
+    ranked_dims_by_space: dict[str, list[dict[str, Any]]] = {}
+    top_dims_by_space: dict[str, list[dict[str, Any]]] = {}
+    for space_name, dim_slots in sorted(accum_by_space.items()):
+        ranked = _rank_rq2_dimensions(dim_slots)
+        ranked_dims_by_space[space_name] = ranked
+        top_dims_by_space[space_name] = ranked[:3]
 
-    ranked_dims.sort(
-        key=lambda row: (
-            float(row.get("driver_score", 0.0)),
-            float(row.get("avg_contrast", 0.0)),
-            -float(row.get("flip_rate", 0.0)),
-        ),
-        reverse=True,
-    )
     if debug_attribution:
         _emit_rq2_debug(accum, ranked_dims, debug_stream or sys.stdout)
     return {
@@ -501,6 +562,8 @@ def _build_rq2_drivers(
         "metric_note": "Higher score means changing this knob shifts flip-rate behavior more across its values.",
         "top_dimensions": ranked_dims[:3],
         "all_dimensions": ranked_dims,
+        "top_dimensions_by_space": top_dims_by_space,
+        "all_dimensions_by_space": ranked_dims_by_space,
     }
 
 

@@ -44,6 +44,8 @@
         "holds_rate_ci_high": 1.0,
         "holds_rate_ci_low": 0.9630065017930143,
         "holds_rate_mean": 1.0,
+        "k_used_with_baseline": 5,
+        "k_used_without_baseline": 4,
         "metric_name": "objective",
         "n_claim_evals": 100,
         "n_instances": 20,
@@ -82,7 +84,9 @@
         "space_preset": "baseline",
         "stability_ci_high": 1.0,
         "stability_ci_low": 0.9630065017930143,
-        "stability_hat": 1.0
+        "stability_ci_width": 0.03699349820698572,
+        "stability_hat": 1.0,
+        "target_ci_width": 0.1
       },
       {
         "claim_pair": "BVOracle:top_k=3",
@@ -100,6 +104,8 @@
         "holds_rate_ci_high": 1.0,
         "holds_rate_ci_low": 0.9630065017930143,
         "holds_rate_mean": 1.0,
+        "k_used_with_baseline": 5,
+        "k_used_without_baseline": 4,
         "metric_name": "objective",
         "n_claim_evals": 100,
         "n_instances": 20,
@@ -138,7 +144,9 @@
         "space_preset": "baseline",
         "stability_ci_high": 1.0,
         "stability_ci_low": 0.9630065017930143,
-        "stability_hat": 1.0
+        "stability_ci_width": 0.03699349820698572,
+        "stability_hat": 1.0,
+        "target_ci_width": 0.1
       }
     ]
   },
@@ -341,6 +349,8 @@
             "holds_rate_ci_high": 1.0,
             "holds_rate_ci_low": 0.9630065017930143,
             "holds_rate_mean": 1.0,
+            "k_used_with_baseline": 5,
+            "k_used_without_baseline": 4,
             "n_claim_evals": 100,
             "n_instances": 20,
             "naive_baseline": {
@@ -377,9 +387,28 @@
             },
             "stability_ci_high": 1.0,
             "stability_ci_low": 0.9630065017930143,
-            "stability_hat": 1.0
+            "stability_ci_width": 0.03699349820698572,
+            "stability_hat": 1.0,
+            "target_ci_width": 0.1
           }
         ],
+        "evaluation_profile": {
+          "adaptive_achieved_ci_width": 0.03699349820698572,
+          "adaptive_enabled": true,
+          "adaptive_stop_reason": "target_ci_width_reached",
+          "ci_width_by_delta": [
+            {
+              "delta": null,
+              "n_claim_evals": 100,
+              "stability_ci_width": 0.03699349820698572
+            }
+          ],
+          "k_used_with_baseline": 5,
+          "k_used_without_baseline": 4,
+          "profile_version": "icse_eval_v1",
+          "sampling_mode": "adaptive_ci",
+          "target_ci_width": 0.1
+        },
         "graphs": 20
       },
       "per_graph": {
@@ -785,6 +814,8 @@
             "holds_rate_ci_high": 1.0,
             "holds_rate_ci_low": 0.9630065017930143,
             "holds_rate_mean": 1.0,
+            "k_used_with_baseline": 5,
+            "k_used_without_baseline": 4,
             "n_claim_evals": 100,
             "n_instances": 20,
             "naive_baseline": {
@@ -821,9 +852,28 @@
             },
             "stability_ci_high": 1.0,
             "stability_ci_low": 0.9630065017930143,
-            "stability_hat": 1.0
+            "stability_ci_width": 0.03699349820698572,
+            "stability_hat": 1.0,
+            "target_ci_width": 0.1
           }
         ],
+        "evaluation_profile": {
+          "adaptive_achieved_ci_width": 0.03699349820698572,
+          "adaptive_enabled": true,
+          "adaptive_stop_reason": "target_ci_width_reached",
+          "ci_width_by_delta": [
+            {
+              "delta": null,
+              "n_claim_evals": 100,
+              "stability_ci_width": 0.03699349820698572
+            }
+          ],
+          "k_used_with_baseline": 5,
+          "k_used_without_baseline": 4,
+          "profile_version": "icse_eval_v1",
+          "sampling_mode": "adaptive_ci",
+          "target_ci_width": 0.1
+        },
         "graphs": 20
       },
       "per_graph": {
@@ -1134,11 +1184,13 @@
     },
     "rq2_drivers": {
       "all_dimensions": [],
+      "all_dimensions_by_space": {},
       "metric_formula": "driver_score = sqrt(sum_v w_v*(r_v-r_bar)^2 / sum_v w_v), r_v=flips_v/total_v, w_v=total_v",
       "metric_label": "driver score (std of flip rate across knob values)",
       "metric_name": "std_flip_rate_across_values",
       "metric_note": "Higher score means changing this knob shifts flip-rate behavior more across its values.",
-      "top_dimensions": []
+      "top_dimensions": [],
+      "top_dimensions_by_space": {}
     },
     "rq3_cost_tradeoff": {
       "stability_vs_cost_rows": []
@@ -1186,7 +1238,9 @@
       "dimensions": [],
       "experiments_with_effect_diagnostics": 0,
       "top_interactions": [],
-      "top_main_effects": []
+      "top_interactions_by_space": {},
+      "top_main_effects": [],
+      "top_main_effects_by_space": {}
     }
   }
 }

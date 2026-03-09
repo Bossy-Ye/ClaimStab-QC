@@ -103,10 +103,18 @@ class TestExportPaperPack(unittest.TestCase):
             space_csv = out_dir / "tables" / "space_claim_delta.csv"
             rq_csv = out_dir / "tables" / "rq_summary.csv"
             naive_snapshot_csv = out_dir / "tables" / "naive_policy_delta_snapshot.csv"
+            eval_profile_csv = out_dir / "tables" / "evaluation_profile_snapshot.csv"
+            rq2_by_space_csv = out_dir / "tables" / "rq2_top_dimensions_by_space.csv"
+            rq7_main_by_space_csv = out_dir / "tables" / "rq7_top_main_effects_by_space.csv"
+            rq7_interaction_by_space_csv = out_dir / "tables" / "rq7_top_interactions_by_space.csv"
             manifest_path = out_dir / "paper_pack_manifest.json"
             self.assertTrue(space_csv.exists())
             self.assertTrue(rq_csv.exists())
             self.assertTrue(naive_snapshot_csv.exists())
+            self.assertTrue(eval_profile_csv.exists())
+            self.assertTrue(rq2_by_space_csv.exists())
+            self.assertTrue(rq7_main_by_space_csv.exists())
+            self.assertTrue(rq7_interaction_by_space_csv.exists())
             self.assertTrue(manifest_path.exists())
 
             with space_csv.open("r", encoding="utf-8") as fh:
@@ -125,6 +133,7 @@ class TestExportPaperPack(unittest.TestCase):
             self.assertEqual(manifest.get("schema_version"), "paper_pack_v1")
             self.assertIn("git_commit", manifest)
             self.assertEqual(manifest.get("outputs", {}).get("tables", {}).get("space_claim_delta_rows"), 2)
+            self.assertEqual(manifest.get("outputs", {}).get("tables", {}).get("evaluation_profile_snapshot_rows"), 2)
             self.assertGreaterEqual(
                 int(manifest.get("outputs", {}).get("tables", {}).get("naive_policy_delta_snapshot_rows", 0)),
                 2,
