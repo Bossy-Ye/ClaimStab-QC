@@ -37,6 +37,11 @@ Dataset publishing/validation/comparison for ClaimAtlas submissions.
 
 12. `pipelines/`
 Shared execution helpers used by CLI examples (suite/space parsing, baseline/key helpers, trace replay loaders).
+Main pipeline orchestration is split into `planning.py`, `main_execution.py`, and
+`main_aggregate_emit.py` (entrypoint: `claim_stability_app.py`).
+Multidevice orchestration is split into `multidevice_planning.py`,
+`multidevice_execution.py`, and `multidevice_emit.py` (entrypoint:
+`multidevice_app.py`).
 
 13. `results/`
 Report composition modules (`report_builder`, renderers, plot helpers, section registry).
