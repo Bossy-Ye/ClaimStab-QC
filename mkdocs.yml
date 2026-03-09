@@ -23,8 +23,7 @@ nav:
   - Live Claim Explorer: explorer.md
   - Quickstart: quickstart.md
   - Custom Task Quickstart: custom_task_quickstart.md
-  - ClaimAtlas Dataset: atlas.md
-  - Dataset Registry: dataset_registry.md
+  - Dataset Registry (from ClaimAtlas): dataset_registry.md
   - Examples & Outputs: examples.md
   - Reproduction Contract: reproduction_contract.md
   - Concepts:
@@ -44,6 +43,7 @@ nav:
   - Trace Cache Replay: trace_cache_replay.md
   - Artifact: artifact.md
   - Appendix:
+      - ClaimAtlas Guide: atlas.md
       - Architecture: ARCHITECTURE.md
       - Experiment Playbook: EXPERIMENT_PLAYBOOK.md
       - Implementation Catalog: generated/implementation_catalog.md

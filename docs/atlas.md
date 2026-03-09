@@ -1,9 +1,10 @@
 # ClaimAtlas Dataset
 
-ClaimAtlas is the shared dataset for ClaimStab outcomes.
+ClaimAtlas is the canonical dataset store for ClaimStab outcomes.
+Use this page as the contributor/storage guide. For browsing records, use the generated registry view.
 
 Direct access:
-- [Dataset Registry](dataset_registry.md)
+- [Dataset Registry (generated view)](dataset_registry.md)
 - [GitHub `atlas/index.json`](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/index.json)
 - [GitHub `atlas/submissions`](https://github.com/Bossy-Ye/ClaimStab-QC/tree/main/atlas/submissions)
 

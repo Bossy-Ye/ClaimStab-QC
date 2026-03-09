@@ -46,7 +46,7 @@ Built-in benchmark classes:
 ## Public Dataset Access
 
 ClaimAtlas submissions are publicly visible and queryable:
-- Website page: [Dataset Registry](dataset_registry.md)
+- Website page (generated from ClaimAtlas): [Dataset Registry](dataset_registry.md)
 - GitHub JSON index: [atlas/index.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/index.json)
 - GitHub packages: [atlas/submissions](https://github.com/Bossy-Ye/ClaimStab-QC/tree/main/atlas/submissions)
 
@@ -91,7 +91,7 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app --run all 
 - [Examples & Outputs](examples.md)
 - [Output Directory Map](output_map.md)
 - [Implementation Catalog](generated/implementation_catalog.md)
-- [ClaimAtlas Dataset](atlas.md)
+- [ClaimAtlas Guide](atlas.md)
 - [Extending ClaimStab](concepts/extending.md)
 - [Threats to Validity](concepts/threats_to_validity.md)
 - [Reproduction Contract](reproduction_contract.md)
