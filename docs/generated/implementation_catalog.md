@@ -4,10 +4,10 @@ This page is auto-generated from tracked repository files.
 
 ## Summary
 
-- Tracked files: `273`
+- Tracked files: `276`
 - Python files: `158`
-- Markdown files: `40`
-- YAML files: `16`
+- Markdown files: `39`
+- YAML files: `18`
 - JSON files: `31`
 
 ## Core Abstractions
@@ -120,8 +120,10 @@ This page is auto-generated from tracked repository files.
 - `docs/ARCHITECTURE.md`
 - `docs/EXPERIMENT_PLAYBOOK.md`
 - `docs/artifact.md`
+- `docs/assets/claim_explorer.js`
+- `docs/assets/claim_model_core.svg`
 - `docs/assets/extra.css`
-- `docs/assets/interactive.js`
+- `docs/assets/perturbation_sampling.svg`
 - `docs/assets/pipeline.svg`
 - `docs/assets/results_snapshot.svg`
 - `docs/atlas.md`
@@ -135,19 +137,18 @@ This page is auto-generated from tracked repository files.
 - `docs/custom_task_quickstart.md`
 - `docs/dataset_registry.md`
 - `docs/examples.md`
+- `docs/explorer.md`
 - `docs/for_icse.md`
 - `docs/generated/.gitkeep`
 - `docs/generated/README.md`
 - `docs/generated/implementation_catalog.md`
 - `docs/index.md`
 - `docs/output_map.md`
-- `docs/playground.md`
 - `docs/quickstart.md`
 - `docs/reproduce.md`
 - `docs/reproduction_contract.md`
 - `docs/results/device_aware.md`
 - `docs/results/figures.md`
-- `docs/results/interactive_report.md`
 - `docs/results/main_results.md`
 - `docs/results/structural_benchmark.md`
 - `docs/trace_cache_replay.md`
@@ -166,6 +167,8 @@ This page is auto-generated from tracked repository files.
 - `examples/exp_structural_compilation.py`
 - `examples/grover_distribution_demo.py`
 - `examples/multidevice_demo.py`
+- `examples/specs/adaptive_bv_smoke.yml`
+- `examples/specs/adaptive_maxcut_smoke.yml`
 - `examples/specs/claim_spec.yaml`
 - `examples/specs/grover_dist_spec.yaml`
 - `examples/specs/paper_claims.yaml`
@@ -570,7 +573,7 @@ This page is auto-generated from tracked repository files.
 
 ### `claimstab/pipelines/claim_stability_app.py`
 - Classes: _none_
-- Top-level functions: parse_args, parse_deltas, _as_bool, parse_csv_tokens, try_load_spec, parse_claim_pairs, canonical_suite_name, canonical_space_name, build_evidence_ref, write_scores_csv, make_space, build_baseline_config, config_key, key_sort_value, config_from_key, baseline_from_keys, make_event_logger, filter_rows_by_keys, select_adaptive_keys, parse_ranking_claims_from_spec, parse_decision_claims_from_spec, parse_distribution_claims_from_spec, has_explicit_claims, build_coupling_map, aggregate_factor_attribution, build_method_scores_by_key, _derive_instance_strata, evaluate_auxiliary_claim_examples, build_robustness_map_artifact, evaluate_claim_on_rows, evaluate_decision_claim_on_rows, evaluate_distribution_claim_on_rows, load_rows_from_trace, main
+- Top-level functions: parse_args, parse_deltas, _as_bool, parse_csv_tokens, try_load_spec, parse_claim_pairs, canonical_suite_name, canonical_space_name, build_evidence_ref, write_scores_csv, make_space, build_baseline_config, config_key, key_sort_value, config_from_key, baseline_from_keys, make_event_logger, filter_rows_by_keys, select_adaptive_keys, select_adaptive_keys_with_width_evaluator, parse_ranking_claims_from_spec, parse_decision_claims_from_spec, parse_distribution_claims_from_spec, has_explicit_claims, build_coupling_map, aggregate_factor_attribution, build_method_scores_by_key, _derive_instance_strata, evaluate_auxiliary_claim_examples, build_robustness_map_artifact, evaluate_claim_on_rows, evaluate_decision_claim_on_rows, evaluate_distribution_claim_on_rows, load_rows_from_trace, main
 
 ### `claimstab/pipelines/common.py`
 - Classes: _none_
@@ -592,7 +595,7 @@ This page is auto-generated from tracked repository files.
 ### `claimstab/pipelines/runner.py`
 - Classes:
   - `BoundTask` (methods: __init__, build, infer_num_qubits)
-- Top-level functions: build_coupling_map, filter_rows_by_keys, select_adaptive_keys
+- Top-level functions: build_coupling_map, filter_rows_by_keys, select_adaptive_keys, select_adaptive_keys_with_width_evaluator
 
 ### `claimstab/results/__init__.py`
 - Classes: _none_
@@ -818,7 +821,7 @@ This page is auto-generated from tracked repository files.
 
 ### `claimstab/tests/test_distribution_pipeline_end_to_end.py`
 - Classes:
-  - `TestDistributionPipelineEndToEnd` (methods: test_grover_distribution_claim_smoke)
+  - `TestDistributionPipelineEndToEnd` (methods: test_grover_distribution_claim_smoke, test_grover_distribution_adaptive_sampling_metadata)
 - Top-level functions: _none_
 
 ### `claimstab/tests/test_evidence_protocol.py`
@@ -883,7 +886,7 @@ This page is auto-generated from tracked repository files.
 
 ### `claimstab/tests/test_smoke_demo.py`
 - Classes:
-  - `TestSmokeDemo` (methods: _run_demo, test_maxcut_ranking_smoke, test_bv_decision_smoke, test_replay_trace_smoke)
+  - `TestSmokeDemo` (methods: _run_demo, test_maxcut_ranking_smoke, test_bv_decision_smoke, test_bv_decision_adaptive_sampling_metadata, test_replay_trace_smoke)
 - Top-level functions: _none_
 
 ### `claimstab/tests/test_trace_cache.py`

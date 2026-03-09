@@ -25,7 +25,6 @@ nav:
   - Custom Task Quickstart: custom_task_quickstart.md
   - ClaimAtlas Dataset: atlas.md
   - Dataset Registry: dataset_registry.md
-  - Interactive Playground: playground.md
   - Examples & Outputs: examples.md
   - Reproduction Contract: reproduction_contract.md
   - Concepts:
@@ -40,7 +39,6 @@ nav:
       - Structural Benchmark: results/structural_benchmark.md
       - Device-aware Results: results/device_aware.md
       - Figures: results/figures.md
-      - Interactive Report: results/interactive_report.md
   - Reproduce: reproduce.md
   - Output Map: output_map.md
   - Trace Cache Replay: trace_cache_replay.md
@@ -64,7 +62,6 @@ markdown_extensions:
 
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-  - assets/interactive.js
   - assets/claim_explorer.js
 
 extra_css:

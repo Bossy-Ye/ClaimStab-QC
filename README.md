@@ -127,7 +127,6 @@ More docs:
 - Project website: [ClaimStab-QC](https://bossy-ye.github.io/ClaimStab-QC/)
 - Live interaction page (no local install needed): [Live Claim Explorer](https://bossy-ye.github.io/ClaimStab-QC/explorer/)
 - Docs quickstart: [Quickstart](https://bossy-ye.github.io/ClaimStab-QC/quickstart/)
-- Interactive page: [Playground](https://bossy-ye.github.io/ClaimStab-QC/playground/)
 - Public dataset registry: [Dataset Registry](https://bossy-ye.github.io/ClaimStab-QC/dataset_registry/)
 - Output directory map: [Output Map](https://bossy-ye.github.io/ClaimStab-QC/output_map/)
 - Auto-generated implementation catalog: [Implementation Catalog](https://bossy-ye.github.io/ClaimStab-QC/generated/implementation_catalog/)

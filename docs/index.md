@@ -87,7 +87,7 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app --run all 
 - [Quickstart](quickstart.md)
 - [Custom Task Quickstart](custom_task_quickstart.md)
 - [Dataset Registry](dataset_registry.md)
-- [Interactive Playground](playground.md)
+- [Live Claim Explorer](explorer.md)
 - [Examples & Outputs](examples.md)
 - [Output Directory Map](output_map.md)
 - [Implementation Catalog](generated/implementation_catalog.md)
