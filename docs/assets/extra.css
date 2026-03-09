@@ -36,6 +36,19 @@
   font-family: "Space Grotesk", "Avenir Next", "Segoe UI", sans-serif;
 }
 
+.csx-hero,
+.csx-panel,
+.csx-card {
+  max-width: 100%;
+}
+
+.csx-hero *,
+.csx-panel *,
+.csx-card * {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
 .csx-hero {
   position: relative;
   border: 1px solid #9ecfcb;
@@ -106,7 +119,7 @@
 
 .csx-shell {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 13px;
   margin: 10px 0 16px;
 }
@@ -118,6 +131,7 @@
   background: linear-gradient(165deg, #ffffff 0%, #f7fbff 100%);
   box-shadow: 0 12px 30px -24px rgba(12, 74, 110, 0.38);
   animation: csx-rise 320ms ease both;
+  overflow: hidden;
 }
 
 .csx-panel h3 {
@@ -127,7 +141,7 @@
 
 .csx-upload-grid {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 8px;
   align-items: end;
   margin-bottom: 8px;
@@ -193,6 +207,10 @@
   font-size: 13px;
 }
 
+.csx-kv-grid > div {
+  overflow-wrap: anywhere;
+}
+
 .csx-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -222,6 +240,7 @@
   font-size: 1.05rem;
   font-weight: 700;
   color: #0f172a;
+  overflow-wrap: anywhere;
 }
 
 .csx-bars {
@@ -239,6 +258,7 @@
 .csx-bar-head {
   font-weight: 700;
   font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
 .csx-bar-track {
@@ -279,6 +299,8 @@
 
 .csx-table {
   width: 100%;
+  max-width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 13px;
   background: #fff;
@@ -295,7 +317,8 @@
   border-bottom: 1px solid #dbe4ee;
   padding: 8px 9px;
   text-align: left;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .csx-table tr:hover td {
@@ -324,5 +347,12 @@
 
   .csx-hero h2 {
     font-size: 1.35rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .csx-shell,
+  .csx-card-grid {
+    grid-template-columns: 1fr;
   }
 }
