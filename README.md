@@ -125,6 +125,7 @@ See full dataset documentation: [`docs/atlas.md`](./docs/atlas.md).
 
 More docs:
 - Project website: [ClaimStab-QC](https://bossy-ye.github.io/ClaimStab-QC/)
+- Live interaction page (no local install needed): [Live Claim Explorer](https://bossy-ye.github.io/ClaimStab-QC/explorer/)
 - Docs quickstart: [Quickstart](https://bossy-ye.github.io/ClaimStab-QC/quickstart/)
 - Interactive page: [Playground](https://bossy-ye.github.io/ClaimStab-QC/playground/)
 - Public dataset registry: [Dataset Registry](https://bossy-ye.github.io/ClaimStab-QC/dataset_registry/)

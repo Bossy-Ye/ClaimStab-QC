@@ -50,6 +50,14 @@ ClaimAtlas submissions are publicly visible and queryable:
 - GitHub JSON index: [atlas/index.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/index.json)
 - GitHub packages: [atlas/submissions](https://github.com/Bossy-Ye/ClaimStab-QC/tree/main/atlas/submissions)
 
+## Try It Online
+
+Use [Live Claim Explorer](explorer.md) to upload a `claim_stability.json` file and inspect:
+- decision distribution
+- claim-type and space coverage
+- adaptive-sampling metadata coverage
+- top high-flip comparative rows
+
 ## Device-aware Snapshot
 
 | Track | Snapshot |

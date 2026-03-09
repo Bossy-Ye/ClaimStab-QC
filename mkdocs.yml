@@ -20,6 +20,7 @@ theme:
 
 nav:
   - Home: index.md
+  - Live Claim Explorer: explorer.md
   - Quickstart: quickstart.md
   - Custom Task Quickstart: custom_task_quickstart.md
   - ClaimAtlas Dataset: atlas.md
@@ -64,6 +65,7 @@ markdown_extensions:
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   - assets/interactive.js
+  - assets/claim_explorer.js
 
 extra_css:
   - assets/extra.css
