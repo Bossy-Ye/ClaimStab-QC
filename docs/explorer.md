@@ -13,6 +13,58 @@
   </div>
 </div>
 
+??? info "Input Format and Example (click to expand)"
+    Use a ClaimStab output file named `claim_stability.json`.
+
+    Recommended examples:
+    - `output/presentation_large/large/maxcut_ranking/claim_stability.json`
+    - `output/adaptive_bv_smoke/claim_stability.json`
+
+    Minimum structure:
+    - `meta`
+    - `experiments`
+    - `comparative.space_claim_delta`
+
+    Standard labels:
+    - `decision`: `stable` | `unstable` | `inconclusive`
+    - `claim_type`: `ranking` | `decision` | `distribution`
+    - `adaptive_stopping.stop_reason`: `target_ci_width_reached` | `max_budget_reached` | `no_candidate_configs`
+
+    Minimal paste example:
+
+    ```json
+    {
+      "meta": { "suite": "demo", "task": "maxcut", "deltas": [0.0], "generated_by": "example" },
+      "experiments": [
+        {
+          "experiment_id": "sampling_only:A>B",
+          "claim": { "type": "ranking" },
+          "sampling": {
+            "mode": "adaptive_ci",
+            "adaptive_stopping": {
+              "enabled": true,
+              "target_ci_width": 0.1,
+              "achieved_ci_width": 0.08,
+              "stop_reason": "target_ci_width_reached"
+            }
+          }
+        }
+      ],
+      "comparative": {
+        "space_claim_delta": [
+          {
+            "space_preset": "sampling_only",
+            "claim_pair": "A>B",
+            "claim_type": "ranking",
+            "delta": 0.0,
+            "decision": "unstable",
+            "flip_rate_mean": 0.27
+          }
+        ]
+      }
+    }
+    ```
+
 ## Load Run Output
 
 <div class="csx-shell">
