@@ -1,0 +1,1192 @@
+{
+  "batch": {
+    "claim_pairs": [],
+    "decision_claims": [
+      {
+        "label": null,
+        "label_meta_key": "target_label",
+        "method": "BVOracle",
+        "top_k": 1,
+        "type": "decision"
+      },
+      {
+        "label": null,
+        "label_meta_key": "target_label",
+        "method": "BVOracle",
+        "top_k": 3,
+        "type": "decision"
+      }
+    ],
+    "metrics_evaluated": [
+      "objective"
+    ],
+    "num_experiments": 2,
+    "ranking_claims": [],
+    "space_presets": [
+      "baseline"
+    ]
+  },
+  "comparative": {
+    "space_claim_delta": [
+      {
+        "claim_pair": "BVOracle:top_k=1",
+        "claim_type": "decision",
+        "decision": "stable",
+        "decision_counts": {
+          "inconclusive": 0,
+          "stable": 1,
+          "unstable": 0
+        },
+        "delta": null,
+        "flip_rate_max": 0.0,
+        "flip_rate_mean": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_ci_high": 1.0,
+        "holds_rate_ci_low": 0.9630065017930143,
+        "holds_rate_mean": 1.0,
+        "metric_name": "objective",
+        "n_claim_evals": 100,
+        "n_instances": 20,
+        "naive_baseline": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "decision",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": true,
+          "naive_holds_rate": 1.0,
+          "naive_policy": "legacy_strict_all",
+          "naive_sample_size": 100
+        },
+        "naive_baseline_realistic": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "decision",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": true,
+          "naive_holds_rate": 1.0,
+          "naive_policy": "default_researcher_v1",
+          "naive_sample_size": 100
+        },
+        "space_preset": "baseline",
+        "stability_ci_high": 1.0,
+        "stability_ci_low": 0.9630065017930143,
+        "stability_hat": 1.0
+      },
+      {
+        "claim_pair": "BVOracle:top_k=3",
+        "claim_type": "decision",
+        "decision": "stable",
+        "decision_counts": {
+          "inconclusive": 0,
+          "stable": 1,
+          "unstable": 0
+        },
+        "delta": null,
+        "flip_rate_max": 0.0,
+        "flip_rate_mean": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_ci_high": 1.0,
+        "holds_rate_ci_low": 0.9630065017930143,
+        "holds_rate_mean": 1.0,
+        "metric_name": "objective",
+        "n_claim_evals": 100,
+        "n_instances": 20,
+        "naive_baseline": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "decision",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": true,
+          "naive_holds_rate": 1.0,
+          "naive_policy": "legacy_strict_all",
+          "naive_sample_size": 100
+        },
+        "naive_baseline_realistic": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "decision",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": true,
+          "naive_holds_rate": 1.0,
+          "naive_policy": "default_researcher_v1",
+          "naive_sample_size": 100
+        },
+        "space_preset": "baseline",
+        "stability_ci_high": 1.0,
+        "stability_ci_low": 0.9630065017930143,
+        "stability_hat": 1.0
+      }
+    ]
+  },
+  "device_profile": {
+    "enabled": false,
+    "mode": "transpile_only",
+    "name": null,
+    "provider": "none",
+    "snapshot": null,
+    "snapshot_fingerprint": null
+  },
+  "experiments": [
+    {
+      "backend": {
+        "engine": "basic",
+        "noise_model": "none",
+        "spot_check_noise": false
+      },
+      "baseline": {
+        "layout_method": "trivial",
+        "optimization_level": 0,
+        "seed_simulator": 0,
+        "seed_transpiler": 0,
+        "shots": 1024
+      },
+      "claim": {
+        "label_meta_key": "target_label",
+        "method": "BVOracle",
+        "metric_name": "objective",
+        "top_k": 1,
+        "type": "decision"
+      },
+      "device_profile": {
+        "enabled": false,
+        "mode": "transpile_only",
+        "name": null,
+        "provider": "none",
+        "snapshot": null,
+        "snapshot_fingerprint": null
+      },
+      "evidence": {
+        "artifacts": {
+          "cache_db": null,
+          "events_jsonl": null,
+          "trace_jsonl": "trace.jsonl"
+        },
+        "cep": {
+          "config_fingerprint": {
+            "algorithm": "sha256",
+            "components": {
+              "backend": {
+                "engine": "basic",
+                "noise_model": "none",
+                "spot_check_noise": false
+              },
+              "dependencies": {},
+              "device_profile": {
+                "enabled": false,
+                "mode": "transpile_only",
+                "name": null,
+                "provider": "none",
+                "snapshot": null,
+                "snapshot_fingerprint": null
+              },
+              "git_commit": "<git_commit>",
+              "git_dirty": "<git_dirty>",
+              "sampling": {
+                "mode": "adaptive_ci",
+                "sample_size": 16,
+                "seed": 1,
+                "space_preset": "baseline",
+                "suite": "core"
+              }
+            },
+            "hash": "<config_hash>"
+          },
+          "inference": {
+            "claim": {
+              "label_meta_key": "target_label",
+              "method": "BVOracle",
+              "metric_name": "objective",
+              "top_k": 1,
+              "type": "decision"
+            },
+            "stability_rule": {
+              "confidence_level": 0.95,
+              "decision": "stable iff CI lower bound >= threshold",
+              "threshold": 0.95
+            }
+          },
+          "observation": {
+            "artifacts": {
+              "cache_db": null,
+              "events_jsonl": null,
+              "trace_jsonl": "trace.jsonl"
+            },
+            "lookup_fields": [
+              "suite",
+              "space_preset",
+              "instance_id",
+              "method",
+              "metric_name",
+              "seed_transpiler",
+              "optimization_level",
+              "layout_method",
+              "shots",
+              "seed_simulator"
+            ],
+            "trace_query": {
+              "methods": [
+                "BVOracle"
+              ],
+              "metric_name": "objective",
+              "space_preset": "baseline",
+              "suite": "core"
+            }
+          },
+          "perturbation_space": {
+            "baseline": {
+              "layout_method": "trivial",
+              "optimization_level": 0,
+              "seed_simulator": 0,
+              "seed_transpiler": 0,
+              "shots": 1024
+            },
+            "perturbation_space_size": 80,
+            "space_preset": "baseline",
+            "suite": "core"
+          },
+          "protocol_version": "cep_v1",
+          "sampling_strategy": {
+            "adaptive_stopping": {
+              "achieved_ci_width": 0.03699349820698572,
+              "enabled": true,
+              "evaluated_configurations_without_baseline": 15,
+              "min_sample_size": 4,
+              "selected_configurations_with_baseline": 5,
+              "selected_configurations_without_baseline": 4,
+              "step_size": 4,
+              "stop_reason": "target_ci_width_reached",
+              "target_ci_width": 0.1
+            },
+            "mode": "adaptive_ci",
+            "sample_size": 16,
+            "seed": 1
+          }
+        },
+        "lookup_fields": [
+          "suite",
+          "space_preset",
+          "instance_id",
+          "method",
+          "metric_name",
+          "seed_transpiler",
+          "optimization_level",
+          "layout_method",
+          "shots",
+          "seed_simulator"
+        ],
+        "trace_query": {
+          "methods": [
+            "BVOracle"
+          ],
+          "metric_name": "objective",
+          "space_preset": "baseline",
+          "suite": "core"
+        }
+      },
+      "experiment_id": "baseline:BVOracle:decision_top1",
+      "naive_baseline": {
+        "baseline_config": {
+          "layout_method": "trivial",
+          "optimization_level": 1,
+          "seed_simulator": 0,
+          "seed_transpiler": 0,
+          "shots": 1024
+        },
+        "claim_type": "decision",
+        "comparison": "agree",
+        "naive_acceptance_threshold": 0.6666666666666666,
+        "naive_holds": true,
+        "naive_holds_rate": 1.0,
+        "naive_policy": "legacy_strict_all",
+        "naive_sample_size": 100
+      },
+      "overall": {
+        "decision_failures": [],
+        "delta_sweep": [
+          {
+            "decision": "stable",
+            "decision_counts": {
+              "inconclusive": 0,
+              "stable": 1,
+              "unstable": 0
+            },
+            "delta": null,
+            "flip_rate_max": 0.0,
+            "flip_rate_mean": 0.0,
+            "flip_rate_min": 0.0,
+            "holds_rate_ci_high": 1.0,
+            "holds_rate_ci_low": 0.9630065017930143,
+            "holds_rate_mean": 1.0,
+            "n_claim_evals": 100,
+            "n_instances": 20,
+            "naive_baseline": {
+              "baseline_config": {
+                "layout_method": "trivial",
+                "optimization_level": 1,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "claim_type": "decision",
+              "comparison": "agree",
+              "naive_acceptance_threshold": 0.6666666666666666,
+              "naive_holds": true,
+              "naive_holds_rate": 1.0,
+              "naive_policy": "legacy_strict_all",
+              "naive_sample_size": 100
+            },
+            "naive_baseline_realistic": {
+              "baseline_config": {
+                "layout_method": "trivial",
+                "optimization_level": 1,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "claim_type": "decision",
+              "comparison": "agree",
+              "naive_acceptance_threshold": 0.6666666666666666,
+              "naive_holds": true,
+              "naive_holds_rate": 1.0,
+              "naive_policy": "default_researcher_v1",
+              "naive_sample_size": 100
+            },
+            "stability_ci_high": 1.0,
+            "stability_ci_low": 0.9630065017930143,
+            "stability_hat": 1.0
+          }
+        ],
+        "graphs": 20
+      },
+      "per_graph": {
+        "bv_0": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_1": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_10": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_11": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_12": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_13": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_14": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_15": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_16": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_17": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_18": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_19": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_2": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_3": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_4": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_5": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_6": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_7": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_8": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_9": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        }
+      },
+      "sampling": {
+        "adaptive_stopping": {
+          "achieved_ci_width": 0.03699349820698572,
+          "enabled": true,
+          "evaluated_configurations_without_baseline": 15,
+          "min_sample_size": 4,
+          "selected_configurations_with_baseline": 5,
+          "selected_configurations_without_baseline": 4,
+          "step_size": 4,
+          "stop_reason": "target_ci_width_reached",
+          "target_ci_width": 0.1
+        },
+        "max_sample_size": 16,
+        "min_sample_size": 4,
+        "mode": "adaptive_ci",
+        "operator_shim": false,
+        "perturbation_space_size": 80,
+        "sample_size": 16,
+        "sampled_configurations_with_baseline": 16,
+        "seed": 1,
+        "space_preset": "baseline",
+        "step_size": 4,
+        "suite": "core",
+        "target_ci_width": 0.1
+      },
+      "stability_rule": {
+        "confidence_level": 0.95,
+        "decision": "stable iff CI lower bound >= threshold",
+        "threshold": 0.95
+      }
+    },
+    {
+      "backend": {
+        "engine": "basic",
+        "noise_model": "none",
+        "spot_check_noise": false
+      },
+      "baseline": {
+        "layout_method": "trivial",
+        "optimization_level": 0,
+        "seed_simulator": 0,
+        "seed_transpiler": 0,
+        "shots": 1024
+      },
+      "claim": {
+        "label_meta_key": "target_label",
+        "method": "BVOracle",
+        "metric_name": "objective",
+        "top_k": 3,
+        "type": "decision"
+      },
+      "device_profile": {
+        "enabled": false,
+        "mode": "transpile_only",
+        "name": null,
+        "provider": "none",
+        "snapshot": null,
+        "snapshot_fingerprint": null
+      },
+      "evidence": {
+        "artifacts": {
+          "cache_db": null,
+          "events_jsonl": null,
+          "trace_jsonl": "trace.jsonl"
+        },
+        "cep": {
+          "config_fingerprint": {
+            "algorithm": "sha256",
+            "components": {
+              "backend": {
+                "engine": "basic",
+                "noise_model": "none",
+                "spot_check_noise": false
+              },
+              "dependencies": {},
+              "device_profile": {
+                "enabled": false,
+                "mode": "transpile_only",
+                "name": null,
+                "provider": "none",
+                "snapshot": null,
+                "snapshot_fingerprint": null
+              },
+              "git_commit": "<git_commit>",
+              "git_dirty": "<git_dirty>",
+              "sampling": {
+                "mode": "adaptive_ci",
+                "sample_size": 16,
+                "seed": 1,
+                "space_preset": "baseline",
+                "suite": "core"
+              }
+            },
+            "hash": "<config_hash>"
+          },
+          "inference": {
+            "claim": {
+              "label_meta_key": "target_label",
+              "method": "BVOracle",
+              "metric_name": "objective",
+              "top_k": 3,
+              "type": "decision"
+            },
+            "stability_rule": {
+              "confidence_level": 0.95,
+              "decision": "stable iff CI lower bound >= threshold",
+              "threshold": 0.95
+            }
+          },
+          "observation": {
+            "artifacts": {
+              "cache_db": null,
+              "events_jsonl": null,
+              "trace_jsonl": "trace.jsonl"
+            },
+            "lookup_fields": [
+              "suite",
+              "space_preset",
+              "instance_id",
+              "method",
+              "metric_name",
+              "seed_transpiler",
+              "optimization_level",
+              "layout_method",
+              "shots",
+              "seed_simulator"
+            ],
+            "trace_query": {
+              "methods": [
+                "BVOracle"
+              ],
+              "metric_name": "objective",
+              "space_preset": "baseline",
+              "suite": "core"
+            }
+          },
+          "perturbation_space": {
+            "baseline": {
+              "layout_method": "trivial",
+              "optimization_level": 0,
+              "seed_simulator": 0,
+              "seed_transpiler": 0,
+              "shots": 1024
+            },
+            "perturbation_space_size": 80,
+            "space_preset": "baseline",
+            "suite": "core"
+          },
+          "protocol_version": "cep_v1",
+          "sampling_strategy": {
+            "adaptive_stopping": {
+              "achieved_ci_width": 0.03699349820698572,
+              "enabled": true,
+              "evaluated_configurations_without_baseline": 15,
+              "min_sample_size": 4,
+              "selected_configurations_with_baseline": 5,
+              "selected_configurations_without_baseline": 4,
+              "step_size": 4,
+              "stop_reason": "target_ci_width_reached",
+              "target_ci_width": 0.1
+            },
+            "mode": "adaptive_ci",
+            "sample_size": 16,
+            "seed": 1
+          }
+        },
+        "lookup_fields": [
+          "suite",
+          "space_preset",
+          "instance_id",
+          "method",
+          "metric_name",
+          "seed_transpiler",
+          "optimization_level",
+          "layout_method",
+          "shots",
+          "seed_simulator"
+        ],
+        "trace_query": {
+          "methods": [
+            "BVOracle"
+          ],
+          "metric_name": "objective",
+          "space_preset": "baseline",
+          "suite": "core"
+        }
+      },
+      "experiment_id": "baseline:BVOracle:decision_top3",
+      "naive_baseline": {
+        "baseline_config": {
+          "layout_method": "trivial",
+          "optimization_level": 1,
+          "seed_simulator": 0,
+          "seed_transpiler": 0,
+          "shots": 1024
+        },
+        "claim_type": "decision",
+        "comparison": "agree",
+        "naive_acceptance_threshold": 0.6666666666666666,
+        "naive_holds": true,
+        "naive_holds_rate": 1.0,
+        "naive_policy": "legacy_strict_all",
+        "naive_sample_size": 100
+      },
+      "overall": {
+        "decision_failures": [],
+        "delta_sweep": [
+          {
+            "decision": "stable",
+            "decision_counts": {
+              "inconclusive": 0,
+              "stable": 1,
+              "unstable": 0
+            },
+            "delta": null,
+            "flip_rate_max": 0.0,
+            "flip_rate_mean": 0.0,
+            "flip_rate_min": 0.0,
+            "holds_rate_ci_high": 1.0,
+            "holds_rate_ci_low": 0.9630065017930143,
+            "holds_rate_mean": 1.0,
+            "n_claim_evals": 100,
+            "n_instances": 20,
+            "naive_baseline": {
+              "baseline_config": {
+                "layout_method": "trivial",
+                "optimization_level": 1,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "claim_type": "decision",
+              "comparison": "agree",
+              "naive_acceptance_threshold": 0.6666666666666666,
+              "naive_holds": true,
+              "naive_holds_rate": 1.0,
+              "naive_policy": "legacy_strict_all",
+              "naive_sample_size": 100
+            },
+            "naive_baseline_realistic": {
+              "baseline_config": {
+                "layout_method": "trivial",
+                "optimization_level": 1,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "claim_type": "decision",
+              "comparison": "agree",
+              "naive_acceptance_threshold": 0.6666666666666666,
+              "naive_holds": true,
+              "naive_holds_rate": 1.0,
+              "naive_policy": "default_researcher_v1",
+              "naive_sample_size": 100
+            },
+            "stability_ci_high": 1.0,
+            "stability_ci_low": 0.9630065017930143,
+            "stability_hat": 1.0
+          }
+        ],
+        "graphs": 20
+      },
+      "per_graph": {
+        "bv_0": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_1": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_10": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_11": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_12": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_13": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_14": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_15": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_16": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_17": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_18": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_19": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_2": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_3": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_4": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_5": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_6": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_7": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_8": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        },
+        "bv_9": {
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "holds_rate": 1.0,
+          "top_failures": [],
+          "total": 5
+        }
+      },
+      "sampling": {
+        "adaptive_stopping": {
+          "achieved_ci_width": 0.03699349820698572,
+          "enabled": true,
+          "evaluated_configurations_without_baseline": 15,
+          "min_sample_size": 4,
+          "selected_configurations_with_baseline": 5,
+          "selected_configurations_without_baseline": 4,
+          "step_size": 4,
+          "stop_reason": "target_ci_width_reached",
+          "target_ci_width": 0.1
+        },
+        "max_sample_size": 16,
+        "min_sample_size": 4,
+        "mode": "adaptive_ci",
+        "operator_shim": false,
+        "perturbation_space_size": 80,
+        "sample_size": 16,
+        "sampled_configurations_with_baseline": 16,
+        "seed": 1,
+        "space_preset": "baseline",
+        "step_size": 4,
+        "suite": "core",
+        "target_ci_width": 0.1
+      },
+      "stability_rule": {
+        "confidence_level": 0.95,
+        "decision": "stable iff CI lower bound >= threshold",
+        "threshold": 0.95
+      }
+    }
+  ],
+  "meta": {
+    "artifacts": {
+      "cache_db": null,
+      "events_jsonl": null,
+      "replay_trace": null,
+      "robustness_map_json": "robustness_map.json",
+      "trace_jsonl": "trace.jsonl"
+    },
+    "deltas": [
+      0.0,
+      0.01,
+      0.05
+    ],
+    "evidence_chain": {
+      "decision_provenance": "each experiment includes evidence.trace_query + evidence.cep blocks that can be matched against trace records for reproducible decision provenance",
+      "events_source": "events_jsonl",
+      "lookup_fields": [
+        "suite",
+        "space_preset",
+        "instance_id",
+        "method",
+        "metric_name",
+        "seed_transpiler",
+        "optimization_level",
+        "layout_method",
+        "shots",
+        "seed_simulator"
+      ],
+      "protocol": "cep_v1",
+      "required_evidence_fields": [
+        "config_fingerprint",
+        "perturbation_space",
+        "sampling_strategy",
+        "observation",
+        "inference"
+      ],
+      "schema_id": "claimstab/evidence/schema_cep_v1.json",
+      "trace_source": "trace_jsonl"
+    },
+    "generated_by": "claimstab/pipelines/claim_stability_app.py",
+    "methods_available": [
+      "BVOracle",
+      "RandomBaseline"
+    ],
+    "runtime": {
+      "dependencies": {},
+      "environment_flags": {},
+      "git_commit": "<git_commit>",
+      "git_dirty": "<git_dirty>",
+      "platform": "macOS-14.3-arm64-arm-64bit-Mach-O",
+      "python_version": "<python>"
+    },
+    "suite": "core",
+    "task": "bv"
+  },
+  "rq_summary": {
+    "decision_counts_overall": {
+      "inconclusive": 0,
+      "stable": 2,
+      "unstable": 0
+    },
+    "naive_baseline_comparison": {
+      "counts": {
+        "agree": 2,
+        "naive_overclaim": 0,
+        "naive_underclaim": 0,
+        "naive_uninformative": 0
+      },
+      "policy": "legacy_strict_all"
+    },
+    "naive_baseline_realistic_comparison": {
+      "counts": {
+        "agree": 2,
+        "naive_overclaim": 0,
+        "naive_underclaim": 0,
+        "naive_uninformative": 0
+      },
+      "policy": "default_researcher_v1"
+    },
+    "rq1_prevalence": {
+      "by_space_and_claim_type": {
+        "baseline": {
+          "decision": {
+            "inconclusive": 0,
+            "stable": 2,
+            "total": 2,
+            "unstable": 0
+          }
+        }
+      },
+      "task": "bv"
+    },
+    "rq2_drivers": {
+      "all_dimensions": [],
+      "metric_formula": "driver_score = sqrt(sum_v w_v*(r_v-r_bar)^2 / sum_v w_v), r_v=flips_v/total_v, w_v=total_v",
+      "metric_label": "driver score (std of flip rate across knob values)",
+      "metric_name": "std_flip_rate_across_values",
+      "metric_note": "Higher score means changing this knob shifts flip-rate behavior more across its values.",
+      "top_dimensions": []
+    },
+    "rq3_cost_tradeoff": {
+      "stability_vs_cost_rows": []
+    },
+    "rq4_adaptive_sampling": {
+      "adaptive_sampling": [
+        {
+          "achieved_ci_width": 0.03699349820698572,
+          "evaluated_configurations_without_baseline": 15,
+          "experiment_id": "baseline:BVOracle:decision_top1",
+          "selected_configurations_with_baseline": 5,
+          "stop_reason": "target_ci_width_reached",
+          "target_ci_width": 0.1
+        },
+        {
+          "achieved_ci_width": 0.03699349820698572,
+          "evaluated_configurations_without_baseline": 15,
+          "experiment_id": "baseline:BVOracle:decision_top3",
+          "selected_configurations_with_baseline": 5,
+          "stop_reason": "target_ci_width_reached",
+          "target_ci_width": 0.1
+        }
+      ],
+      "decision_agreement_rate_vs_full_factorial": null
+    },
+    "rq5_conditional_robustness": {
+      "experiments_with_map": 0,
+      "failure_frontier_examples": [],
+      "minimal_lockdown_examples": [],
+      "robust_core_examples": []
+    },
+    "rq6_stratified_stability": {
+      "decision_counts": {
+        "inconclusive": 0,
+        "stable": 0,
+        "unstable": 0
+      },
+      "experiments_with_strata": 0,
+      "inconclusive_examples": [],
+      "stable_examples": [],
+      "strata_dimensions": [],
+      "unstable_examples": []
+    },
+    "rq7_effect_diagnostics": {
+      "dimensions": [],
+      "experiments_with_effect_diagnostics": 0,
+      "top_interactions": [],
+      "top_main_effects": []
+    }
+  }
+}

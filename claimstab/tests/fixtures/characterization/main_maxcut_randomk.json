@@ -1,0 +1,4949 @@
+{
+  "backend_engine": "basic",
+  "baseline": {
+    "layout_method": "trivial",
+    "optimization_level": 0,
+    "seed_simulator": 0,
+    "seed_transpiler": 0,
+    "shots": 1024
+  },
+  "batch": {
+    "claim_pairs": [
+      "QAOA_p2>RandomBaseline[objective]"
+    ],
+    "decision_claims": [],
+    "metrics_evaluated": [
+      "objective"
+    ],
+    "num_experiments": 1,
+    "ranking_claims": [
+      {
+        "deltas": [
+          0.0,
+          0.01,
+          0.05
+        ],
+        "higher_is_better": true,
+        "method_a": "QAOA_p2",
+        "method_b": "RandomBaseline",
+        "metric_name": "objective"
+      }
+    ],
+    "space_presets": [
+      "baseline"
+    ]
+  },
+  "claim": {
+    "delta_interpretation": "delta is a practical significance threshold; increasing delta makes the claim stricter and may change both holds rate and stability.",
+    "deltas": [
+      0.0,
+      0.01,
+      0.05
+    ],
+    "higher_is_better": true,
+    "method_a": "QAOA_p2",
+    "method_b": "RandomBaseline",
+    "metric_name": "objective",
+    "type": "ranking"
+  },
+  "comparative": {
+    "space_claim_delta": [
+      {
+        "claim_pair": "QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "clustered_decision": "stable",
+        "clustered_stability_ci_high": 1.0,
+        "clustered_stability_ci_low": 1.0,
+        "clustered_stability_mean": 1.0,
+        "decision": "inconclusive",
+        "decision_counts": {
+          "inconclusive": 1,
+          "stable": 0,
+          "unstable": 0
+        },
+        "delta": 0.0,
+        "flip_rate_max": 0.0,
+        "flip_rate_mean": 0.0,
+        "flip_rate_min": 0.0,
+        "higher_is_better": true,
+        "holds_rate_ci_high": 0.43448246478317465,
+        "holds_rate_ci_low": 0.0,
+        "holds_rate_mean": 0.0,
+        "metric_name": "objective",
+        "n_boot": 2000,
+        "n_claim_evals": 4,
+        "n_instances": 1,
+        "n_instances_used": 1,
+        "naive_baseline": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "ranking",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": false,
+          "naive_holds_rate": 0.0,
+          "naive_policy": "legacy_strict_all",
+          "naive_sample_size": 1
+        },
+        "naive_baseline_realistic": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "ranking",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": false,
+          "naive_holds_rate": 0.0,
+          "naive_policy": "default_researcher_v1",
+          "naive_sample_size": 1
+        },
+        "space_preset": "baseline",
+        "stability_ci_high": 0.9999999999999999,
+        "stability_ci_low": 0.5101091635454028,
+        "stability_hat": 1.0
+      },
+      {
+        "claim_pair": "QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "clustered_decision": "stable",
+        "clustered_stability_ci_high": 1.0,
+        "clustered_stability_ci_low": 1.0,
+        "clustered_stability_mean": 1.0,
+        "decision": "inconclusive",
+        "decision_counts": {
+          "inconclusive": 1,
+          "stable": 0,
+          "unstable": 0
+        },
+        "delta": 0.01,
+        "flip_rate_max": 0.0,
+        "flip_rate_mean": 0.0,
+        "flip_rate_min": 0.0,
+        "higher_is_better": true,
+        "holds_rate_ci_high": 0.43448246478317465,
+        "holds_rate_ci_low": 0.0,
+        "holds_rate_mean": 0.0,
+        "metric_name": "objective",
+        "n_boot": 2000,
+        "n_claim_evals": 4,
+        "n_instances": 1,
+        "n_instances_used": 1,
+        "naive_baseline": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "ranking",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": false,
+          "naive_holds_rate": 0.0,
+          "naive_policy": "legacy_strict_all",
+          "naive_sample_size": 1
+        },
+        "naive_baseline_realistic": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "ranking",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": false,
+          "naive_holds_rate": 0.0,
+          "naive_policy": "default_researcher_v1",
+          "naive_sample_size": 1
+        },
+        "space_preset": "baseline",
+        "stability_ci_high": 0.9999999999999999,
+        "stability_ci_low": 0.5101091635454028,
+        "stability_hat": 1.0
+      },
+      {
+        "claim_pair": "QAOA_p2>RandomBaseline",
+        "claim_type": "ranking",
+        "clustered_decision": "stable",
+        "clustered_stability_ci_high": 1.0,
+        "clustered_stability_ci_low": 1.0,
+        "clustered_stability_mean": 1.0,
+        "decision": "inconclusive",
+        "decision_counts": {
+          "inconclusive": 1,
+          "stable": 0,
+          "unstable": 0
+        },
+        "delta": 0.05,
+        "flip_rate_max": 0.0,
+        "flip_rate_mean": 0.0,
+        "flip_rate_min": 0.0,
+        "higher_is_better": true,
+        "holds_rate_ci_high": 0.43448246478317465,
+        "holds_rate_ci_low": 0.0,
+        "holds_rate_mean": 0.0,
+        "metric_name": "objective",
+        "n_boot": 2000,
+        "n_claim_evals": 4,
+        "n_instances": 1,
+        "n_instances_used": 1,
+        "naive_baseline": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "ranking",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": false,
+          "naive_holds_rate": 0.0,
+          "naive_policy": "legacy_strict_all",
+          "naive_sample_size": 1
+        },
+        "naive_baseline_realistic": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "ranking",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": false,
+          "naive_holds_rate": 0.0,
+          "naive_policy": "default_researcher_v1",
+          "naive_sample_size": 1
+        },
+        "space_preset": "baseline",
+        "stability_ci_high": 0.9999999999999999,
+        "stability_ci_low": 0.5101091635454028,
+        "stability_hat": 1.0
+      }
+    ]
+  },
+  "device_profile": {
+    "enabled": false,
+    "mode": "transpile_only",
+    "name": null,
+    "provider": "none",
+    "snapshot": null,
+    "snapshot_fingerprint": null
+  },
+  "experiments": [
+    {
+      "auxiliary_claims": {
+        "decision_example": {
+          "acceptance_rate": 1.0,
+          "accepted": 5,
+          "ci_high": 1.0,
+          "ci_low": 0.5655175352168255,
+          "decision": "inconclusive",
+          "rule": "selected baseline winner remains in top-2 under perturbation",
+          "selected_label": "QAOA_p1",
+          "total": 5
+        },
+        "distribution_example": {},
+        "graph_id": "maxcut_test"
+      },
+      "backend": {
+        "engine": "basic",
+        "noise_model": "none",
+        "one_qubit_error": null,
+        "spot_check_noise": false,
+        "two_qubit_error": null
+      },
+      "baseline": {
+        "layout_method": "trivial",
+        "optimization_level": 0,
+        "seed_simulator": 0,
+        "seed_transpiler": 0,
+        "shots": 1024
+      },
+      "claim": {
+        "delta_interpretation": "delta is a practical significance threshold; increasing delta makes the claim stricter and may change both holds rate and stability.",
+        "deltas": [
+          0.0,
+          0.01,
+          0.05
+        ],
+        "higher_is_better": true,
+        "method_a": "QAOA_p2",
+        "method_b": "RandomBaseline",
+        "metric_name": "objective",
+        "type": "ranking"
+      },
+      "device_profile": {
+        "enabled": false,
+        "mode": "transpile_only",
+        "name": null,
+        "provider": "none",
+        "snapshot": null,
+        "snapshot_fingerprint": null
+      },
+      "evidence": {
+        "artifacts": {
+          "cache_db": null,
+          "events_jsonl": null,
+          "trace_jsonl": "trace.jsonl"
+        },
+        "cep": {
+          "config_fingerprint": {
+            "algorithm": "sha256",
+            "components": {
+              "backend": {
+                "engine": "basic",
+                "noise_model": "none",
+                "one_qubit_error": null,
+                "spot_check_noise": false,
+                "two_qubit_error": null
+              },
+              "dependencies": {},
+              "device_profile": {
+                "enabled": false,
+                "mode": "transpile_only",
+                "name": null,
+                "provider": "none",
+                "snapshot": null,
+                "snapshot_fingerprint": null
+              },
+              "git_commit": "<git_commit>",
+              "git_dirty": "<git_dirty>",
+              "sampling": {
+                "mode": "random_k",
+                "sample_size": 4,
+                "seed": 1,
+                "space_preset": "baseline",
+                "suite": "core"
+              }
+            },
+            "hash": "<config_hash>"
+          },
+          "inference": {
+            "claim": {
+              "delta_interpretation": "delta is a practical significance threshold; increasing delta makes the claim stricter and may change both holds rate and stability.",
+              "deltas": [
+                0.0,
+                0.01,
+                0.05
+              ],
+              "higher_is_better": true,
+              "method_a": "QAOA_p2",
+              "method_b": "RandomBaseline",
+              "metric_name": "objective",
+              "type": "ranking"
+            },
+            "stability_rule": {
+              "confidence_level": 0.95,
+              "decision": "stable iff CI lower bound >= threshold",
+              "threshold": 0.95
+            }
+          },
+          "observation": {
+            "artifacts": {
+              "cache_db": null,
+              "events_jsonl": null,
+              "trace_jsonl": "trace.jsonl"
+            },
+            "lookup_fields": [
+              "suite",
+              "space_preset",
+              "instance_id",
+              "method",
+              "metric_name",
+              "seed_transpiler",
+              "optimization_level",
+              "layout_method",
+              "shots",
+              "seed_simulator"
+            ],
+            "trace_query": {
+              "methods": [
+                "QAOA_p2",
+                "RandomBaseline"
+              ],
+              "metric_name": "objective",
+              "space_preset": "baseline",
+              "suite": "core"
+            }
+          },
+          "perturbation_space": {
+            "baseline": {
+              "layout_method": "trivial",
+              "optimization_level": 0,
+              "seed_simulator": 0,
+              "seed_transpiler": 0,
+              "shots": 1024
+            },
+            "perturbation_space_size": 80,
+            "space_preset": "baseline",
+            "suite": "core"
+          },
+          "protocol_version": "cep_v1",
+          "sampling_strategy": {
+            "adaptive_stopping": null,
+            "mode": "random_k",
+            "sample_size": 4,
+            "seed": 1
+          }
+        },
+        "lookup_fields": [
+          "suite",
+          "space_preset",
+          "instance_id",
+          "method",
+          "metric_name",
+          "seed_transpiler",
+          "optimization_level",
+          "layout_method",
+          "shots",
+          "seed_simulator"
+        ],
+        "trace_query": {
+          "methods": [
+            "QAOA_p2",
+            "RandomBaseline"
+          ],
+          "metric_name": "objective",
+          "space_preset": "baseline",
+          "suite": "core"
+        }
+      },
+      "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+      "overall": {
+        "conditional_robustness": {
+          "cells_by_delta": {
+            "0.0": [
+              {
+                "conditions": {
+                  "device_mode": "transpile_only",
+                  "layout_method": "trivial",
+                  "noise_model": "none",
+                  "optimization_level": 0,
+                  "shots_bucket": "high",
+                  "space_preset": "baseline"
+                },
+                "decision": "inconclusive",
+                "flip_count": 0,
+                "flip_rate": 0.0,
+                "n_eval": 3,
+                "stability_ci_high": 1.0,
+                "stability_ci_low": 0.4385029682449546,
+                "stability_hat": 1.0,
+                "stable_count": 3
+              },
+              {
+                "conditions": {
+                  "device_mode": "transpile_only",
+                  "layout_method": "sabre",
+                  "noise_model": "none",
+                  "optimization_level": 0,
+                  "shots_bucket": "high",
+                  "space_preset": "baseline"
+                },
+                "decision": "inconclusive",
+                "flip_count": 0,
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "stability_ci_high": 1.0,
+                "stability_ci_low": 0.2065493143772375,
+                "stability_hat": 1.0,
+                "stable_count": 1
+              }
+            ],
+            "0.01": [
+              {
+                "conditions": {
+                  "device_mode": "transpile_only",
+                  "layout_method": "trivial",
+                  "noise_model": "none",
+                  "optimization_level": 0,
+                  "shots_bucket": "high",
+                  "space_preset": "baseline"
+                },
+                "decision": "inconclusive",
+                "flip_count": 0,
+                "flip_rate": 0.0,
+                "n_eval": 3,
+                "stability_ci_high": 1.0,
+                "stability_ci_low": 0.4385029682449546,
+                "stability_hat": 1.0,
+                "stable_count": 3
+              },
+              {
+                "conditions": {
+                  "device_mode": "transpile_only",
+                  "layout_method": "sabre",
+                  "noise_model": "none",
+                  "optimization_level": 0,
+                  "shots_bucket": "high",
+                  "space_preset": "baseline"
+                },
+                "decision": "inconclusive",
+                "flip_count": 0,
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "stability_ci_high": 1.0,
+                "stability_ci_low": 0.2065493143772375,
+                "stability_hat": 1.0,
+                "stable_count": 1
+              }
+            ],
+            "0.05": [
+              {
+                "conditions": {
+                  "device_mode": "transpile_only",
+                  "layout_method": "trivial",
+                  "noise_model": "none",
+                  "optimization_level": 0,
+                  "shots_bucket": "high",
+                  "space_preset": "baseline"
+                },
+                "decision": "inconclusive",
+                "flip_count": 0,
+                "flip_rate": 0.0,
+                "n_eval": 3,
+                "stability_ci_high": 1.0,
+                "stability_ci_low": 0.4385029682449546,
+                "stability_hat": 1.0,
+                "stable_count": 3
+              },
+              {
+                "conditions": {
+                  "device_mode": "transpile_only",
+                  "layout_method": "sabre",
+                  "noise_model": "none",
+                  "optimization_level": 0,
+                  "shots_bucket": "high",
+                  "space_preset": "baseline"
+                },
+                "decision": "inconclusive",
+                "flip_count": 0,
+                "flip_rate": 0.0,
+                "n_eval": 1,
+                "stability_ci_high": 1.0,
+                "stability_ci_low": 0.2065493143772375,
+                "stability_hat": 1.0,
+                "stable_count": 1
+              }
+            ]
+          },
+          "condition_dimensions": [
+            "optimization_level",
+            "layout_method",
+            "shots_bucket"
+          ],
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "failure_frontier_by_delta": {
+            "0.0": [],
+            "0.01": [],
+            "0.05": []
+          },
+          "minimal_lockdown_set_by_delta": {
+            "0.0": {
+              "best": null,
+              "candidates": []
+            },
+            "0.01": {
+              "best": null,
+              "candidates": []
+            },
+            "0.05": {
+              "best": null,
+              "candidates": []
+            }
+          },
+          "robust_core_by_delta": {
+            "0.0": [],
+            "0.01": [],
+            "0.05": []
+          }
+        },
+        "delta_sweep": [
+          {
+            "clustered_decision": "stable",
+            "clustered_stability_ci_high": 1.0,
+            "clustered_stability_ci_low": 1.0,
+            "clustered_stability_mean": 1.0,
+            "decision": "inconclusive",
+            "decision_counts": {
+              "inconclusive": 1,
+              "stable": 0,
+              "unstable": 0
+            },
+            "delta": 0.0,
+            "flip_rate_max": 0.0,
+            "flip_rate_mean": 0.0,
+            "flip_rate_min": 0.0,
+            "holds_rate_ci_high": 0.43448246478317465,
+            "holds_rate_ci_low": 0.0,
+            "holds_rate_mean": 0.0,
+            "n_boot": 2000,
+            "n_claim_evals": 4,
+            "n_instances": 1,
+            "n_instances_used": 1,
+            "naive_baseline": {
+              "baseline_config": {
+                "layout_method": "trivial",
+                "optimization_level": 1,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "claim_type": "ranking",
+              "comparison": "agree",
+              "naive_acceptance_threshold": 0.6666666666666666,
+              "naive_holds": false,
+              "naive_holds_rate": 0.0,
+              "naive_policy": "legacy_strict_all",
+              "naive_sample_size": 1
+            },
+            "naive_baseline_realistic": {
+              "baseline_config": {
+                "layout_method": "trivial",
+                "optimization_level": 1,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "claim_type": "ranking",
+              "comparison": "agree",
+              "naive_acceptance_threshold": 0.6666666666666666,
+              "naive_holds": false,
+              "naive_holds_rate": 0.0,
+              "naive_policy": "default_researcher_v1",
+              "naive_sample_size": 1
+            },
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0
+          },
+          {
+            "clustered_decision": "stable",
+            "clustered_stability_ci_high": 1.0,
+            "clustered_stability_ci_low": 1.0,
+            "clustered_stability_mean": 1.0,
+            "decision": "inconclusive",
+            "decision_counts": {
+              "inconclusive": 1,
+              "stable": 0,
+              "unstable": 0
+            },
+            "delta": 0.01,
+            "flip_rate_max": 0.0,
+            "flip_rate_mean": 0.0,
+            "flip_rate_min": 0.0,
+            "holds_rate_ci_high": 0.43448246478317465,
+            "holds_rate_ci_low": 0.0,
+            "holds_rate_mean": 0.0,
+            "n_boot": 2000,
+            "n_claim_evals": 4,
+            "n_instances": 1,
+            "n_instances_used": 1,
+            "naive_baseline": {
+              "baseline_config": {
+                "layout_method": "trivial",
+                "optimization_level": 1,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "claim_type": "ranking",
+              "comparison": "agree",
+              "naive_acceptance_threshold": 0.6666666666666666,
+              "naive_holds": false,
+              "naive_holds_rate": 0.0,
+              "naive_policy": "legacy_strict_all",
+              "naive_sample_size": 1
+            },
+            "naive_baseline_realistic": {
+              "baseline_config": {
+                "layout_method": "trivial",
+                "optimization_level": 1,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "claim_type": "ranking",
+              "comparison": "agree",
+              "naive_acceptance_threshold": 0.6666666666666666,
+              "naive_holds": false,
+              "naive_holds_rate": 0.0,
+              "naive_policy": "default_researcher_v1",
+              "naive_sample_size": 1
+            },
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0
+          },
+          {
+            "clustered_decision": "stable",
+            "clustered_stability_ci_high": 1.0,
+            "clustered_stability_ci_low": 1.0,
+            "clustered_stability_mean": 1.0,
+            "decision": "inconclusive",
+            "decision_counts": {
+              "inconclusive": 1,
+              "stable": 0,
+              "unstable": 0
+            },
+            "delta": 0.05,
+            "flip_rate_max": 0.0,
+            "flip_rate_mean": 0.0,
+            "flip_rate_min": 0.0,
+            "holds_rate_ci_high": 0.43448246478317465,
+            "holds_rate_ci_low": 0.0,
+            "holds_rate_mean": 0.0,
+            "n_boot": 2000,
+            "n_claim_evals": 4,
+            "n_instances": 1,
+            "n_instances_used": 1,
+            "naive_baseline": {
+              "baseline_config": {
+                "layout_method": "trivial",
+                "optimization_level": 1,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "claim_type": "ranking",
+              "comparison": "agree",
+              "naive_acceptance_threshold": 0.6666666666666666,
+              "naive_holds": false,
+              "naive_holds_rate": 0.0,
+              "naive_policy": "legacy_strict_all",
+              "naive_sample_size": 1
+            },
+            "naive_baseline_realistic": {
+              "baseline_config": {
+                "layout_method": "trivial",
+                "optimization_level": 1,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "claim_type": "ranking",
+              "comparison": "agree",
+              "naive_acceptance_threshold": 0.6666666666666666,
+              "naive_holds": false,
+              "naive_holds_rate": 0.0,
+              "naive_policy": "default_researcher_v1",
+              "naive_sample_size": 1
+            },
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0
+          }
+        ],
+        "diagnostics": {
+          "by_delta_dimension": {
+            "0.0": {
+              "layout_method": {
+                "sabre": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                },
+                "trivial": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 3
+                }
+              },
+              "optimization_level": {
+                "0": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 4
+                }
+              },
+              "seed_simulator": {
+                "0": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 4
+                }
+              },
+              "seed_transpiler": {
+                "1": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                },
+                "2": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                },
+                "4": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                },
+                "9": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                }
+              },
+              "shots": {
+                "1024": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 4
+                }
+              }
+            },
+            "0.01": {
+              "layout_method": {
+                "sabre": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                },
+                "trivial": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 3
+                }
+              },
+              "optimization_level": {
+                "0": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 4
+                }
+              },
+              "seed_simulator": {
+                "0": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 4
+                }
+              },
+              "seed_transpiler": {
+                "1": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                },
+                "2": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                },
+                "4": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                },
+                "9": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                }
+              },
+              "shots": {
+                "1024": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 4
+                }
+              }
+            },
+            "0.05": {
+              "layout_method": {
+                "sabre": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                },
+                "trivial": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 3
+                }
+              },
+              "optimization_level": {
+                "0": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 4
+                }
+              },
+              "seed_simulator": {
+                "0": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 4
+                }
+              },
+              "seed_transpiler": {
+                "1": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                },
+                "2": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                },
+                "4": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                },
+                "9": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 1
+                }
+              },
+              "shots": {
+                "1024": {
+                  "flip_rate": 0.0,
+                  "flips": 0,
+                  "total": 4
+                }
+              }
+            }
+          },
+          "top_lockdown_recommendations_by_delta": {
+            "0.0": [
+              {
+                "avg_flip_rate": 0.0,
+                "avg_flip_rate_improvement": 0.0,
+                "avg_stability_hat": 1.0,
+                "count": 1,
+                "dimension": "optimization_level",
+                "value": 0
+              },
+              {
+                "avg_flip_rate": 0.0,
+                "avg_flip_rate_improvement": 0.0,
+                "avg_stability_hat": 1.0,
+                "count": 1,
+                "dimension": "layout_method",
+                "value": "trivial"
+              }
+            ],
+            "0.01": [
+              {
+                "avg_flip_rate": 0.0,
+                "avg_flip_rate_improvement": 0.0,
+                "avg_stability_hat": 1.0,
+                "count": 1,
+                "dimension": "optimization_level",
+                "value": 0
+              },
+              {
+                "avg_flip_rate": 0.0,
+                "avg_flip_rate_improvement": 0.0,
+                "avg_stability_hat": 1.0,
+                "count": 1,
+                "dimension": "layout_method",
+                "value": "trivial"
+              }
+            ],
+            "0.05": [
+              {
+                "avg_flip_rate": 0.0,
+                "avg_flip_rate_improvement": 0.0,
+                "avg_stability_hat": 1.0,
+                "count": 1,
+                "dimension": "optimization_level",
+                "value": 0
+              },
+              {
+                "avg_flip_rate": 0.0,
+                "avg_flip_rate_improvement": 0.0,
+                "avg_stability_hat": 1.0,
+                "count": 1,
+                "dimension": "layout_method",
+                "value": "trivial"
+              }
+            ]
+          },
+          "top_unstable_configs_by_delta": {
+            "0.0": [],
+            "0.01": [],
+            "0.05": []
+          }
+        },
+        "effect_diagnostics": {
+          "by_delta": {
+            "0.0": {
+              "interaction_effects": [
+                {
+                  "dimensions": [
+                    "seed_transpiler",
+                    "optimization_level"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 4,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                },
+                {
+                  "dimensions": [
+                    "seed_transpiler",
+                    "layout_method"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 4,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                },
+                {
+                  "dimensions": [
+                    "seed_transpiler",
+                    "shots_bucket"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 4,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                },
+                {
+                  "dimensions": [
+                    "seed_transpiler",
+                    "seed_simulator"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 4,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                },
+                {
+                  "dimensions": [
+                    "optimization_level",
+                    "layout_method"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 2,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                }
+              ],
+              "main_effects": [
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": 2
+                    },
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": 9
+                    },
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": 1
+                    },
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": 4
+                    }
+                  ],
+                  "dimension": "seed_transpiler",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 4
+                },
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 4,
+                      "value": 0
+                    }
+                  ],
+                  "dimension": "optimization_level",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 1
+                },
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 3,
+                      "value": "trivial"
+                    },
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": "sabre"
+                    }
+                  ],
+                  "dimension": "layout_method",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 2
+                },
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 4,
+                      "value": "high"
+                    }
+                  ],
+                  "dimension": "shots_bucket",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 1
+                },
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 4,
+                      "value": 0
+                    }
+                  ],
+                  "dimension": "seed_simulator",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 1
+                }
+              ]
+            },
+            "0.01": {
+              "interaction_effects": [
+                {
+                  "dimensions": [
+                    "seed_transpiler",
+                    "optimization_level"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 4,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                },
+                {
+                  "dimensions": [
+                    "seed_transpiler",
+                    "layout_method"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 4,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                },
+                {
+                  "dimensions": [
+                    "seed_transpiler",
+                    "shots_bucket"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 4,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                },
+                {
+                  "dimensions": [
+                    "seed_transpiler",
+                    "seed_simulator"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 4,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                },
+                {
+                  "dimensions": [
+                    "optimization_level",
+                    "layout_method"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 2,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                }
+              ],
+              "main_effects": [
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": 2
+                    },
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": 9
+                    },
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": 1
+                    },
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": 4
+                    }
+                  ],
+                  "dimension": "seed_transpiler",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 4
+                },
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 4,
+                      "value": 0
+                    }
+                  ],
+                  "dimension": "optimization_level",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 1
+                },
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 3,
+                      "value": "trivial"
+                    },
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": "sabre"
+                    }
+                  ],
+                  "dimension": "layout_method",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 2
+                },
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 4,
+                      "value": "high"
+                    }
+                  ],
+                  "dimension": "shots_bucket",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 1
+                },
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 4,
+                      "value": 0
+                    }
+                  ],
+                  "dimension": "seed_simulator",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 1
+                }
+              ]
+            },
+            "0.05": {
+              "interaction_effects": [
+                {
+                  "dimensions": [
+                    "seed_transpiler",
+                    "optimization_level"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 4,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                },
+                {
+                  "dimensions": [
+                    "seed_transpiler",
+                    "layout_method"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 4,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                },
+                {
+                  "dimensions": [
+                    "seed_transpiler",
+                    "shots_bucket"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 4,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                },
+                {
+                  "dimensions": [
+                    "seed_transpiler",
+                    "seed_simulator"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 4,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                },
+                {
+                  "dimensions": [
+                    "optimization_level",
+                    "layout_method"
+                  ],
+                  "interaction_score": 0.0,
+                  "joint_spread": 0.0,
+                  "n_cells": 2,
+                  "n_eval": 4,
+                  "reference_main_effect": 0.0
+                }
+              ],
+              "main_effects": [
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": 2
+                    },
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": 9
+                    },
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": 1
+                    },
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": 4
+                    }
+                  ],
+                  "dimension": "seed_transpiler",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 4
+                },
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 4,
+                      "value": 0
+                    }
+                  ],
+                  "dimension": "optimization_level",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 1
+                },
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 3,
+                      "value": "trivial"
+                    },
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 1,
+                      "value": "sabre"
+                    }
+                  ],
+                  "dimension": "layout_method",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 2
+                },
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 4,
+                      "value": "high"
+                    }
+                  ],
+                  "dimension": "shots_bucket",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 1
+                },
+                {
+                  "by_value": [
+                    {
+                      "flip_rate": 0.0,
+                      "n_eval": 4,
+                      "value": 0
+                    }
+                  ],
+                  "dimension": "seed_simulator",
+                  "effect_score": 0.0,
+                  "n_eval": 4,
+                  "n_levels": 1
+                }
+              ]
+            }
+          },
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "dimensions": [
+            "seed_transpiler",
+            "optimization_level",
+            "layout_method",
+            "shots_bucket",
+            "seed_simulator"
+          ]
+        },
+        "graphs": 1,
+        "stability_vs_cost": {
+          "by_delta": {
+            "0.0": [
+              {
+                "ci_width": 0.4898908364545971,
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "shots": 1024,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0
+              }
+            ],
+            "0.01": [
+              {
+                "ci_width": 0.4898908364545971,
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "shots": 1024,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0
+              }
+            ],
+            "0.05": [
+              {
+                "ci_width": 0.4898908364545971,
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "shots": 1024,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0
+              }
+            ]
+          },
+          "cost_metric": "shots",
+          "minimum_shots_for_stable": {
+            "0.0": null,
+            "0.01": null,
+            "0.05": null
+          }
+        },
+        "stratified_stability": {
+          "by_delta": {
+            "0.0": [
+              {
+                "conditions": {
+                  "edge_density_bucket": "dense",
+                  "graph_size_bucket": "small",
+                  "instance_family": "other_graph",
+                  "transpiled_depth_bucket": "depth_mid",
+                  "two_qubit_count_bucket": "twoq_mid"
+                },
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "n_instances": 1,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0
+              }
+            ],
+            "0.01": [
+              {
+                "conditions": {
+                  "edge_density_bucket": "dense",
+                  "graph_size_bucket": "small",
+                  "instance_family": "other_graph",
+                  "transpiled_depth_bucket": "depth_mid",
+                  "two_qubit_count_bucket": "twoq_mid"
+                },
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "n_instances": 1,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0
+              }
+            ],
+            "0.05": [
+              {
+                "conditions": {
+                  "edge_density_bucket": "dense",
+                  "graph_size_bucket": "small",
+                  "instance_family": "other_graph",
+                  "transpiled_depth_bucket": "depth_mid",
+                  "two_qubit_count_bucket": "twoq_mid"
+                },
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "n_eval": 4,
+                "n_instances": 1,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0
+              }
+            ]
+          },
+          "strata_dimensions": [
+            "edge_density_bucket",
+            "graph_size_bucket",
+            "instance_family",
+            "transpiled_depth_bucket",
+            "two_qubit_count_bucket"
+          ]
+        }
+      },
+      "per_graph": {
+        "maxcut_test": {
+          "conditional_stability": {
+            "0.0": [
+              {
+                "baseline_key_used": {
+                  "layout_method": "trivial",
+                  "optimization_level": 0,
+                  "seed_simulator": 0,
+                  "seed_transpiler": 0,
+                  "shots": 1024
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_relation": "A_LT_B",
+                "constraints": {},
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "flips": 0,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0,
+                "subset_size": 5,
+                "total": 4
+              },
+              {
+                "baseline_key_used": {
+                  "layout_method": "trivial",
+                  "optimization_level": 0,
+                  "seed_simulator": 0,
+                  "seed_transpiler": 0,
+                  "shots": 1024
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_relation": "A_LT_B",
+                "constraints": {
+                  "shots": 1024
+                },
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "flips": 0,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0,
+                "subset_size": 5,
+                "total": 4
+              },
+              {
+                "baseline_key_used": {
+                  "layout_method": "trivial",
+                  "optimization_level": 0,
+                  "seed_simulator": 0,
+                  "seed_transpiler": 0,
+                  "shots": 1024
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_relation": "A_LT_B",
+                "constraints": {
+                  "seed_simulator": 0,
+                  "shots": 1024
+                },
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "flips": 0,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0,
+                "subset_size": 5,
+                "total": 4
+              }
+            ],
+            "0.01": [
+              {
+                "baseline_key_used": {
+                  "layout_method": "trivial",
+                  "optimization_level": 0,
+                  "seed_simulator": 0,
+                  "seed_transpiler": 0,
+                  "shots": 1024
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_relation": "A_LT_B",
+                "constraints": {},
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "flips": 0,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0,
+                "subset_size": 5,
+                "total": 4
+              },
+              {
+                "baseline_key_used": {
+                  "layout_method": "trivial",
+                  "optimization_level": 0,
+                  "seed_simulator": 0,
+                  "seed_transpiler": 0,
+                  "shots": 1024
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_relation": "A_LT_B",
+                "constraints": {
+                  "shots": 1024
+                },
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "flips": 0,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0,
+                "subset_size": 5,
+                "total": 4
+              },
+              {
+                "baseline_key_used": {
+                  "layout_method": "trivial",
+                  "optimization_level": 0,
+                  "seed_simulator": 0,
+                  "seed_transpiler": 0,
+                  "shots": 1024
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_relation": "A_LT_B",
+                "constraints": {
+                  "seed_simulator": 0,
+                  "shots": 1024
+                },
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "flips": 0,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0,
+                "subset_size": 5,
+                "total": 4
+              }
+            ],
+            "0.05": [
+              {
+                "baseline_key_used": {
+                  "layout_method": "trivial",
+                  "optimization_level": 0,
+                  "seed_simulator": 0,
+                  "seed_transpiler": 0,
+                  "shots": 1024
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_relation": "A_LT_B",
+                "constraints": {},
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "flips": 0,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0,
+                "subset_size": 5,
+                "total": 4
+              },
+              {
+                "baseline_key_used": {
+                  "layout_method": "trivial",
+                  "optimization_level": 0,
+                  "seed_simulator": 0,
+                  "seed_transpiler": 0,
+                  "shots": 1024
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_relation": "A_LT_B",
+                "constraints": {
+                  "shots": 1024
+                },
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "flips": 0,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0,
+                "subset_size": 5,
+                "total": 4
+              },
+              {
+                "baseline_key_used": {
+                  "layout_method": "trivial",
+                  "optimization_level": 0,
+                  "seed_simulator": 0,
+                  "seed_transpiler": 0,
+                  "shots": 1024
+                },
+                "baseline_margin": -0.3447265625,
+                "baseline_relation": "A_LT_B",
+                "constraints": {
+                  "seed_simulator": 0,
+                  "shots": 1024
+                },
+                "decision": "inconclusive",
+                "flip_rate": 0.0,
+                "flips": 0,
+                "stability_ci_high": 0.9999999999999999,
+                "stability_ci_low": 0.5101091635454028,
+                "stability_hat": 1.0,
+                "subset_size": 5,
+                "total": 4
+              }
+            ]
+          },
+          "delta_sweep": [
+            {
+              "baseline_holds": false,
+              "baseline_relation": "A_LT_B",
+              "claim_holds_count": 0,
+              "claim_holds_rate": 0.0,
+              "claim_total_count": 5,
+              "decision": "inconclusive",
+              "delta": 0.0,
+              "flip_rate": 0.0,
+              "flips": 0,
+              "stability_ci_high": 0.9999999999999999,
+              "stability_ci_low": 0.5101091635454028,
+              "stability_hat": 1.0,
+              "total": 4
+            },
+            {
+              "baseline_holds": false,
+              "baseline_relation": "A_LT_B",
+              "claim_holds_count": 0,
+              "claim_holds_rate": 0.0,
+              "claim_total_count": 5,
+              "decision": "inconclusive",
+              "delta": 0.01,
+              "flip_rate": 0.0,
+              "flips": 0,
+              "stability_ci_high": 0.9999999999999999,
+              "stability_ci_low": 0.5101091635454028,
+              "stability_hat": 1.0,
+              "total": 4
+            },
+            {
+              "baseline_holds": false,
+              "baseline_relation": "A_LT_B",
+              "claim_holds_count": 0,
+              "claim_holds_rate": 0.0,
+              "claim_total_count": 5,
+              "decision": "inconclusive",
+              "delta": 0.05,
+              "flip_rate": 0.0,
+              "flips": 0,
+              "stability_ci_high": 0.9999999999999999,
+              "stability_ci_low": 0.5101091635454028,
+              "stability_hat": 1.0,
+              "total": 4
+            }
+          ],
+          "factor_attribution": {
+            "0.0": {
+              "baseline_relation": "A_LT_B",
+              "by_dimension": {
+                "layout_method": {
+                  "sabre": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  },
+                  "trivial": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 3
+                  }
+                },
+                "optimization_level": {
+                  "0": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 4
+                  }
+                },
+                "seed_simulator": {
+                  "0": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 4
+                  }
+                },
+                "seed_transpiler": {
+                  "1": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  },
+                  "2": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  },
+                  "4": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  },
+                  "9": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  }
+                },
+                "shots": {
+                  "1024": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 4
+                  }
+                }
+              },
+              "flip_rate": 0.0,
+              "flips": 0,
+              "top_flip_configs": [],
+              "total": 4
+            },
+            "0.01": {
+              "baseline_relation": "A_LT_B",
+              "by_dimension": {
+                "layout_method": {
+                  "sabre": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  },
+                  "trivial": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 3
+                  }
+                },
+                "optimization_level": {
+                  "0": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 4
+                  }
+                },
+                "seed_simulator": {
+                  "0": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 4
+                  }
+                },
+                "seed_transpiler": {
+                  "1": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  },
+                  "2": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  },
+                  "4": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  },
+                  "9": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  }
+                },
+                "shots": {
+                  "1024": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 4
+                  }
+                }
+              },
+              "flip_rate": 0.0,
+              "flips": 0,
+              "top_flip_configs": [],
+              "total": 4
+            },
+            "0.05": {
+              "baseline_relation": "A_LT_B",
+              "by_dimension": {
+                "layout_method": {
+                  "sabre": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  },
+                  "trivial": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 3
+                  }
+                },
+                "optimization_level": {
+                  "0": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 4
+                  }
+                },
+                "seed_simulator": {
+                  "0": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 4
+                  }
+                },
+                "seed_transpiler": {
+                  "1": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  },
+                  "2": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  },
+                  "4": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  },
+                  "9": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 1
+                  }
+                },
+                "shots": {
+                  "1024": {
+                    "flip_rate": 0.0,
+                    "flips": 0,
+                    "total": 4
+                  }
+                }
+              },
+              "flip_rate": 0.0,
+              "flips": 0,
+              "top_flip_configs": [],
+              "total": 4
+            }
+          },
+          "lockdown_recommendation": {
+            "0.0": {
+              "candidate_count": 4,
+              "global_flip_rate": 0.0,
+              "top_recommendations": [
+                {
+                  "baseline_key_used": {
+                    "layout_method": "trivial",
+                    "optimization_level": 0,
+                    "seed_simulator": 0,
+                    "seed_transpiler": 0,
+                    "shots": 1024
+                  },
+                  "baseline_margin": -0.3447265625,
+                  "baseline_relation": "A_LT_B",
+                  "constraints": {
+                    "optimization_level": 0
+                  },
+                  "decision": "inconclusive",
+                  "dimension": "optimization_level",
+                  "flip_rate": 0.0,
+                  "flip_rate_improvement": 0.0,
+                  "flips": 0,
+                  "stability_ci_high": 0.9999999999999999,
+                  "stability_ci_low": 0.5101091635454028,
+                  "stability_hat": 1.0,
+                  "subset_size": 5,
+                  "total": 4,
+                  "value": 0
+                },
+                {
+                  "baseline_key_used": {
+                    "layout_method": "trivial",
+                    "optimization_level": 0,
+                    "seed_simulator": 0,
+                    "seed_transpiler": 0,
+                    "shots": 1024
+                  },
+                  "baseline_margin": -0.3447265625,
+                  "baseline_relation": "A_LT_B",
+                  "constraints": {
+                    "layout_method": "trivial"
+                  },
+                  "decision": "inconclusive",
+                  "dimension": "layout_method",
+                  "flip_rate": 0.0,
+                  "flip_rate_improvement": 0.0,
+                  "flips": 0,
+                  "stability_ci_high": 1.0,
+                  "stability_ci_low": 0.4385029682449546,
+                  "stability_hat": 1.0,
+                  "subset_size": 4,
+                  "total": 3,
+                  "value": "trivial"
+                }
+              ]
+            },
+            "0.01": {
+              "candidate_count": 4,
+              "global_flip_rate": 0.0,
+              "top_recommendations": [
+                {
+                  "baseline_key_used": {
+                    "layout_method": "trivial",
+                    "optimization_level": 0,
+                    "seed_simulator": 0,
+                    "seed_transpiler": 0,
+                    "shots": 1024
+                  },
+                  "baseline_margin": -0.3447265625,
+                  "baseline_relation": "A_LT_B",
+                  "constraints": {
+                    "optimization_level": 0
+                  },
+                  "decision": "inconclusive",
+                  "dimension": "optimization_level",
+                  "flip_rate": 0.0,
+                  "flip_rate_improvement": 0.0,
+                  "flips": 0,
+                  "stability_ci_high": 0.9999999999999999,
+                  "stability_ci_low": 0.5101091635454028,
+                  "stability_hat": 1.0,
+                  "subset_size": 5,
+                  "total": 4,
+                  "value": 0
+                },
+                {
+                  "baseline_key_used": {
+                    "layout_method": "trivial",
+                    "optimization_level": 0,
+                    "seed_simulator": 0,
+                    "seed_transpiler": 0,
+                    "shots": 1024
+                  },
+                  "baseline_margin": -0.3447265625,
+                  "baseline_relation": "A_LT_B",
+                  "constraints": {
+                    "layout_method": "trivial"
+                  },
+                  "decision": "inconclusive",
+                  "dimension": "layout_method",
+                  "flip_rate": 0.0,
+                  "flip_rate_improvement": 0.0,
+                  "flips": 0,
+                  "stability_ci_high": 1.0,
+                  "stability_ci_low": 0.4385029682449546,
+                  "stability_hat": 1.0,
+                  "subset_size": 4,
+                  "total": 3,
+                  "value": "trivial"
+                }
+              ]
+            },
+            "0.05": {
+              "candidate_count": 4,
+              "global_flip_rate": 0.0,
+              "top_recommendations": [
+                {
+                  "baseline_key_used": {
+                    "layout_method": "trivial",
+                    "optimization_level": 0,
+                    "seed_simulator": 0,
+                    "seed_transpiler": 0,
+                    "shots": 1024
+                  },
+                  "baseline_margin": -0.3447265625,
+                  "baseline_relation": "A_LT_B",
+                  "constraints": {
+                    "optimization_level": 0
+                  },
+                  "decision": "inconclusive",
+                  "dimension": "optimization_level",
+                  "flip_rate": 0.0,
+                  "flip_rate_improvement": 0.0,
+                  "flips": 0,
+                  "stability_ci_high": 0.9999999999999999,
+                  "stability_ci_low": 0.5101091635454028,
+                  "stability_hat": 1.0,
+                  "subset_size": 5,
+                  "total": 4,
+                  "value": 0
+                },
+                {
+                  "baseline_key_used": {
+                    "layout_method": "trivial",
+                    "optimization_level": 0,
+                    "seed_simulator": 0,
+                    "seed_transpiler": 0,
+                    "shots": 1024
+                  },
+                  "baseline_margin": -0.3447265625,
+                  "baseline_relation": "A_LT_B",
+                  "constraints": {
+                    "layout_method": "trivial"
+                  },
+                  "decision": "inconclusive",
+                  "dimension": "layout_method",
+                  "flip_rate": 0.0,
+                  "flip_rate_improvement": 0.0,
+                  "flips": 0,
+                  "stability_ci_high": 1.0,
+                  "stability_ci_low": 0.4385029682449546,
+                  "stability_hat": 1.0,
+                  "subset_size": 4,
+                  "total": 3,
+                  "value": "trivial"
+                }
+              ]
+            }
+          },
+          "sampled_configurations": 5
+        }
+      },
+      "sampling": {
+        "max_sample_size": null,
+        "min_sample_size": 16,
+        "mode": "random_k",
+        "operator_shim": false,
+        "perturbation_space_size": 80,
+        "sample_size": 4,
+        "sampled_configurations_with_baseline": 5,
+        "seed": 1,
+        "space_preset": "baseline",
+        "step_size": 8,
+        "suite": "core",
+        "target_ci_width": null
+      },
+      "stability_rule": {
+        "confidence_level": 0.95,
+        "decision": "stable iff CI lower bound >= threshold",
+        "threshold": 0.95
+      }
+    }
+  ],
+  "meta": {
+    "artifacts": {
+      "cache_db": null,
+      "events_jsonl": null,
+      "replay_trace": null,
+      "robustness_map_json": "robustness_map.json",
+      "trace_jsonl": "trace.jsonl"
+    },
+    "deltas": [
+      0.0,
+      0.01,
+      0.05
+    ],
+    "evidence_chain": {
+      "decision_provenance": "each experiment includes evidence.trace_query + evidence.cep blocks that can be matched against trace records for reproducible decision provenance",
+      "events_source": "events_jsonl",
+      "lookup_fields": [
+        "suite",
+        "space_preset",
+        "instance_id",
+        "method",
+        "metric_name",
+        "seed_transpiler",
+        "optimization_level",
+        "layout_method",
+        "shots",
+        "seed_simulator"
+      ],
+      "protocol": "cep_v1",
+      "required_evidence_fields": [
+        "config_fingerprint",
+        "perturbation_space",
+        "sampling_strategy",
+        "observation",
+        "inference"
+      ],
+      "schema_id": "claimstab/evidence/schema_cep_v1.json",
+      "trace_source": "trace_jsonl"
+    },
+    "generated_by": "claimstab/pipelines/claim_stability_app.py",
+    "methods_available": [
+      "QAOA_p1",
+      "QAOA_p2",
+      "RandomBaseline"
+    ],
+    "runtime": {
+      "dependencies": {},
+      "environment_flags": {},
+      "git_commit": "<git_commit>",
+      "git_dirty": "<git_dirty>",
+      "platform": "macOS-14.3-arm64-arm-64bit-Mach-O",
+      "python_version": "<python>"
+    },
+    "suite": "core",
+    "task": "maxcut"
+  },
+  "overall": {
+    "conditional_robustness": {
+      "cells_by_delta": {
+        "0.0": [
+          {
+            "conditions": {
+              "device_mode": "transpile_only",
+              "layout_method": "trivial",
+              "noise_model": "none",
+              "optimization_level": 0,
+              "shots_bucket": "high",
+              "space_preset": "baseline"
+            },
+            "decision": "inconclusive",
+            "flip_count": 0,
+            "flip_rate": 0.0,
+            "n_eval": 3,
+            "stability_ci_high": 1.0,
+            "stability_ci_low": 0.4385029682449546,
+            "stability_hat": 1.0,
+            "stable_count": 3
+          },
+          {
+            "conditions": {
+              "device_mode": "transpile_only",
+              "layout_method": "sabre",
+              "noise_model": "none",
+              "optimization_level": 0,
+              "shots_bucket": "high",
+              "space_preset": "baseline"
+            },
+            "decision": "inconclusive",
+            "flip_count": 0,
+            "flip_rate": 0.0,
+            "n_eval": 1,
+            "stability_ci_high": 1.0,
+            "stability_ci_low": 0.2065493143772375,
+            "stability_hat": 1.0,
+            "stable_count": 1
+          }
+        ],
+        "0.01": [
+          {
+            "conditions": {
+              "device_mode": "transpile_only",
+              "layout_method": "trivial",
+              "noise_model": "none",
+              "optimization_level": 0,
+              "shots_bucket": "high",
+              "space_preset": "baseline"
+            },
+            "decision": "inconclusive",
+            "flip_count": 0,
+            "flip_rate": 0.0,
+            "n_eval": 3,
+            "stability_ci_high": 1.0,
+            "stability_ci_low": 0.4385029682449546,
+            "stability_hat": 1.0,
+            "stable_count": 3
+          },
+          {
+            "conditions": {
+              "device_mode": "transpile_only",
+              "layout_method": "sabre",
+              "noise_model": "none",
+              "optimization_level": 0,
+              "shots_bucket": "high",
+              "space_preset": "baseline"
+            },
+            "decision": "inconclusive",
+            "flip_count": 0,
+            "flip_rate": 0.0,
+            "n_eval": 1,
+            "stability_ci_high": 1.0,
+            "stability_ci_low": 0.2065493143772375,
+            "stability_hat": 1.0,
+            "stable_count": 1
+          }
+        ],
+        "0.05": [
+          {
+            "conditions": {
+              "device_mode": "transpile_only",
+              "layout_method": "trivial",
+              "noise_model": "none",
+              "optimization_level": 0,
+              "shots_bucket": "high",
+              "space_preset": "baseline"
+            },
+            "decision": "inconclusive",
+            "flip_count": 0,
+            "flip_rate": 0.0,
+            "n_eval": 3,
+            "stability_ci_high": 1.0,
+            "stability_ci_low": 0.4385029682449546,
+            "stability_hat": 1.0,
+            "stable_count": 3
+          },
+          {
+            "conditions": {
+              "device_mode": "transpile_only",
+              "layout_method": "sabre",
+              "noise_model": "none",
+              "optimization_level": 0,
+              "shots_bucket": "high",
+              "space_preset": "baseline"
+            },
+            "decision": "inconclusive",
+            "flip_count": 0,
+            "flip_rate": 0.0,
+            "n_eval": 1,
+            "stability_ci_high": 1.0,
+            "stability_ci_low": 0.2065493143772375,
+            "stability_hat": 1.0,
+            "stable_count": 1
+          }
+        ]
+      },
+      "condition_dimensions": [
+        "optimization_level",
+        "layout_method",
+        "shots_bucket"
+      ],
+      "context_conditions": {
+        "device_mode": "transpile_only",
+        "noise_model": "none",
+        "space_preset": "baseline"
+      },
+      "failure_frontier_by_delta": {
+        "0.0": [],
+        "0.01": [],
+        "0.05": []
+      },
+      "minimal_lockdown_set_by_delta": {
+        "0.0": {
+          "best": null,
+          "candidates": []
+        },
+        "0.01": {
+          "best": null,
+          "candidates": []
+        },
+        "0.05": {
+          "best": null,
+          "candidates": []
+        }
+      },
+      "robust_core_by_delta": {
+        "0.0": [],
+        "0.01": [],
+        "0.05": []
+      }
+    },
+    "delta_sweep": [
+      {
+        "clustered_decision": "stable",
+        "clustered_stability_ci_high": 1.0,
+        "clustered_stability_ci_low": 1.0,
+        "clustered_stability_mean": 1.0,
+        "decision": "inconclusive",
+        "decision_counts": {
+          "inconclusive": 1,
+          "stable": 0,
+          "unstable": 0
+        },
+        "delta": 0.0,
+        "flip_rate_max": 0.0,
+        "flip_rate_mean": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_ci_high": 0.43448246478317465,
+        "holds_rate_ci_low": 0.0,
+        "holds_rate_mean": 0.0,
+        "n_boot": 2000,
+        "n_claim_evals": 4,
+        "n_instances": 1,
+        "n_instances_used": 1,
+        "naive_baseline": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "ranking",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": false,
+          "naive_holds_rate": 0.0,
+          "naive_policy": "legacy_strict_all",
+          "naive_sample_size": 1
+        },
+        "naive_baseline_realistic": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "ranking",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": false,
+          "naive_holds_rate": 0.0,
+          "naive_policy": "default_researcher_v1",
+          "naive_sample_size": 1
+        },
+        "stability_ci_high": 0.9999999999999999,
+        "stability_ci_low": 0.5101091635454028,
+        "stability_hat": 1.0
+      },
+      {
+        "clustered_decision": "stable",
+        "clustered_stability_ci_high": 1.0,
+        "clustered_stability_ci_low": 1.0,
+        "clustered_stability_mean": 1.0,
+        "decision": "inconclusive",
+        "decision_counts": {
+          "inconclusive": 1,
+          "stable": 0,
+          "unstable": 0
+        },
+        "delta": 0.01,
+        "flip_rate_max": 0.0,
+        "flip_rate_mean": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_ci_high": 0.43448246478317465,
+        "holds_rate_ci_low": 0.0,
+        "holds_rate_mean": 0.0,
+        "n_boot": 2000,
+        "n_claim_evals": 4,
+        "n_instances": 1,
+        "n_instances_used": 1,
+        "naive_baseline": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "ranking",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": false,
+          "naive_holds_rate": 0.0,
+          "naive_policy": "legacy_strict_all",
+          "naive_sample_size": 1
+        },
+        "naive_baseline_realistic": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "ranking",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": false,
+          "naive_holds_rate": 0.0,
+          "naive_policy": "default_researcher_v1",
+          "naive_sample_size": 1
+        },
+        "stability_ci_high": 0.9999999999999999,
+        "stability_ci_low": 0.5101091635454028,
+        "stability_hat": 1.0
+      },
+      {
+        "clustered_decision": "stable",
+        "clustered_stability_ci_high": 1.0,
+        "clustered_stability_ci_low": 1.0,
+        "clustered_stability_mean": 1.0,
+        "decision": "inconclusive",
+        "decision_counts": {
+          "inconclusive": 1,
+          "stable": 0,
+          "unstable": 0
+        },
+        "delta": 0.05,
+        "flip_rate_max": 0.0,
+        "flip_rate_mean": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_ci_high": 0.43448246478317465,
+        "holds_rate_ci_low": 0.0,
+        "holds_rate_mean": 0.0,
+        "n_boot": 2000,
+        "n_claim_evals": 4,
+        "n_instances": 1,
+        "n_instances_used": 1,
+        "naive_baseline": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "ranking",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": false,
+          "naive_holds_rate": 0.0,
+          "naive_policy": "legacy_strict_all",
+          "naive_sample_size": 1
+        },
+        "naive_baseline_realistic": {
+          "baseline_config": {
+            "layout_method": "trivial",
+            "optimization_level": 1,
+            "seed_simulator": 0,
+            "seed_transpiler": 0,
+            "shots": 1024
+          },
+          "claim_type": "ranking",
+          "comparison": "agree",
+          "naive_acceptance_threshold": 0.6666666666666666,
+          "naive_holds": false,
+          "naive_holds_rate": 0.0,
+          "naive_policy": "default_researcher_v1",
+          "naive_sample_size": 1
+        },
+        "stability_ci_high": 0.9999999999999999,
+        "stability_ci_low": 0.5101091635454028,
+        "stability_hat": 1.0
+      }
+    ],
+    "diagnostics": {
+      "by_delta_dimension": {
+        "0.0": {
+          "layout_method": {
+            "sabre": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            },
+            "trivial": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 3
+            }
+          },
+          "optimization_level": {
+            "0": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 4
+            }
+          },
+          "seed_simulator": {
+            "0": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 4
+            }
+          },
+          "seed_transpiler": {
+            "1": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            },
+            "2": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            },
+            "4": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            },
+            "9": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            }
+          },
+          "shots": {
+            "1024": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 4
+            }
+          }
+        },
+        "0.01": {
+          "layout_method": {
+            "sabre": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            },
+            "trivial": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 3
+            }
+          },
+          "optimization_level": {
+            "0": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 4
+            }
+          },
+          "seed_simulator": {
+            "0": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 4
+            }
+          },
+          "seed_transpiler": {
+            "1": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            },
+            "2": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            },
+            "4": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            },
+            "9": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            }
+          },
+          "shots": {
+            "1024": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 4
+            }
+          }
+        },
+        "0.05": {
+          "layout_method": {
+            "sabre": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            },
+            "trivial": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 3
+            }
+          },
+          "optimization_level": {
+            "0": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 4
+            }
+          },
+          "seed_simulator": {
+            "0": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 4
+            }
+          },
+          "seed_transpiler": {
+            "1": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            },
+            "2": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            },
+            "4": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            },
+            "9": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 1
+            }
+          },
+          "shots": {
+            "1024": {
+              "flip_rate": 0.0,
+              "flips": 0,
+              "total": 4
+            }
+          }
+        }
+      },
+      "top_lockdown_recommendations_by_delta": {
+        "0.0": [
+          {
+            "avg_flip_rate": 0.0,
+            "avg_flip_rate_improvement": 0.0,
+            "avg_stability_hat": 1.0,
+            "count": 1,
+            "dimension": "optimization_level",
+            "value": 0
+          },
+          {
+            "avg_flip_rate": 0.0,
+            "avg_flip_rate_improvement": 0.0,
+            "avg_stability_hat": 1.0,
+            "count": 1,
+            "dimension": "layout_method",
+            "value": "trivial"
+          }
+        ],
+        "0.01": [
+          {
+            "avg_flip_rate": 0.0,
+            "avg_flip_rate_improvement": 0.0,
+            "avg_stability_hat": 1.0,
+            "count": 1,
+            "dimension": "optimization_level",
+            "value": 0
+          },
+          {
+            "avg_flip_rate": 0.0,
+            "avg_flip_rate_improvement": 0.0,
+            "avg_stability_hat": 1.0,
+            "count": 1,
+            "dimension": "layout_method",
+            "value": "trivial"
+          }
+        ],
+        "0.05": [
+          {
+            "avg_flip_rate": 0.0,
+            "avg_flip_rate_improvement": 0.0,
+            "avg_stability_hat": 1.0,
+            "count": 1,
+            "dimension": "optimization_level",
+            "value": 0
+          },
+          {
+            "avg_flip_rate": 0.0,
+            "avg_flip_rate_improvement": 0.0,
+            "avg_stability_hat": 1.0,
+            "count": 1,
+            "dimension": "layout_method",
+            "value": "trivial"
+          }
+        ]
+      },
+      "top_unstable_configs_by_delta": {
+        "0.0": [],
+        "0.01": [],
+        "0.05": []
+      }
+    },
+    "effect_diagnostics": {
+      "by_delta": {
+        "0.0": {
+          "interaction_effects": [
+            {
+              "dimensions": [
+                "seed_transpiler",
+                "optimization_level"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 4,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            },
+            {
+              "dimensions": [
+                "seed_transpiler",
+                "layout_method"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 4,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            },
+            {
+              "dimensions": [
+                "seed_transpiler",
+                "shots_bucket"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 4,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            },
+            {
+              "dimensions": [
+                "seed_transpiler",
+                "seed_simulator"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 4,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            },
+            {
+              "dimensions": [
+                "optimization_level",
+                "layout_method"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 2,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            }
+          ],
+          "main_effects": [
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": 2
+                },
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": 9
+                },
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": 1
+                },
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": 4
+                }
+              ],
+              "dimension": "seed_transpiler",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 4
+            },
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 4,
+                  "value": 0
+                }
+              ],
+              "dimension": "optimization_level",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 1
+            },
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 3,
+                  "value": "trivial"
+                },
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": "sabre"
+                }
+              ],
+              "dimension": "layout_method",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 2
+            },
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 4,
+                  "value": "high"
+                }
+              ],
+              "dimension": "shots_bucket",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 1
+            },
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 4,
+                  "value": 0
+                }
+              ],
+              "dimension": "seed_simulator",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 1
+            }
+          ]
+        },
+        "0.01": {
+          "interaction_effects": [
+            {
+              "dimensions": [
+                "seed_transpiler",
+                "optimization_level"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 4,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            },
+            {
+              "dimensions": [
+                "seed_transpiler",
+                "layout_method"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 4,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            },
+            {
+              "dimensions": [
+                "seed_transpiler",
+                "shots_bucket"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 4,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            },
+            {
+              "dimensions": [
+                "seed_transpiler",
+                "seed_simulator"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 4,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            },
+            {
+              "dimensions": [
+                "optimization_level",
+                "layout_method"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 2,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            }
+          ],
+          "main_effects": [
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": 2
+                },
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": 9
+                },
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": 1
+                },
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": 4
+                }
+              ],
+              "dimension": "seed_transpiler",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 4
+            },
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 4,
+                  "value": 0
+                }
+              ],
+              "dimension": "optimization_level",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 1
+            },
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 3,
+                  "value": "trivial"
+                },
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": "sabre"
+                }
+              ],
+              "dimension": "layout_method",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 2
+            },
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 4,
+                  "value": "high"
+                }
+              ],
+              "dimension": "shots_bucket",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 1
+            },
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 4,
+                  "value": 0
+                }
+              ],
+              "dimension": "seed_simulator",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 1
+            }
+          ]
+        },
+        "0.05": {
+          "interaction_effects": [
+            {
+              "dimensions": [
+                "seed_transpiler",
+                "optimization_level"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 4,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            },
+            {
+              "dimensions": [
+                "seed_transpiler",
+                "layout_method"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 4,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            },
+            {
+              "dimensions": [
+                "seed_transpiler",
+                "shots_bucket"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 4,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            },
+            {
+              "dimensions": [
+                "seed_transpiler",
+                "seed_simulator"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 4,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            },
+            {
+              "dimensions": [
+                "optimization_level",
+                "layout_method"
+              ],
+              "interaction_score": 0.0,
+              "joint_spread": 0.0,
+              "n_cells": 2,
+              "n_eval": 4,
+              "reference_main_effect": 0.0
+            }
+          ],
+          "main_effects": [
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": 2
+                },
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": 9
+                },
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": 1
+                },
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": 4
+                }
+              ],
+              "dimension": "seed_transpiler",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 4
+            },
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 4,
+                  "value": 0
+                }
+              ],
+              "dimension": "optimization_level",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 1
+            },
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 3,
+                  "value": "trivial"
+                },
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 1,
+                  "value": "sabre"
+                }
+              ],
+              "dimension": "layout_method",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 2
+            },
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 4,
+                  "value": "high"
+                }
+              ],
+              "dimension": "shots_bucket",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 1
+            },
+            {
+              "by_value": [
+                {
+                  "flip_rate": 0.0,
+                  "n_eval": 4,
+                  "value": 0
+                }
+              ],
+              "dimension": "seed_simulator",
+              "effect_score": 0.0,
+              "n_eval": 4,
+              "n_levels": 1
+            }
+          ]
+        }
+      },
+      "context_conditions": {
+        "device_mode": "transpile_only",
+        "noise_model": "none",
+        "space_preset": "baseline"
+      },
+      "dimensions": [
+        "seed_transpiler",
+        "optimization_level",
+        "layout_method",
+        "shots_bucket",
+        "seed_simulator"
+      ]
+    },
+    "graphs": 1,
+    "stability_vs_cost": {
+      "by_delta": {
+        "0.0": [
+          {
+            "ci_width": 0.4898908364545971,
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "n_eval": 4,
+            "shots": 1024,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0
+          }
+        ],
+        "0.01": [
+          {
+            "ci_width": 0.4898908364545971,
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "n_eval": 4,
+            "shots": 1024,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0
+          }
+        ],
+        "0.05": [
+          {
+            "ci_width": 0.4898908364545971,
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "n_eval": 4,
+            "shots": 1024,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0
+          }
+        ]
+      },
+      "cost_metric": "shots",
+      "minimum_shots_for_stable": {
+        "0.0": null,
+        "0.01": null,
+        "0.05": null
+      }
+    },
+    "stratified_stability": {
+      "by_delta": {
+        "0.0": [
+          {
+            "conditions": {
+              "edge_density_bucket": "dense",
+              "graph_size_bucket": "small",
+              "instance_family": "other_graph",
+              "transpiled_depth_bucket": "depth_mid",
+              "two_qubit_count_bucket": "twoq_mid"
+            },
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "n_eval": 4,
+            "n_instances": 1,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0
+          }
+        ],
+        "0.01": [
+          {
+            "conditions": {
+              "edge_density_bucket": "dense",
+              "graph_size_bucket": "small",
+              "instance_family": "other_graph",
+              "transpiled_depth_bucket": "depth_mid",
+              "two_qubit_count_bucket": "twoq_mid"
+            },
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "n_eval": 4,
+            "n_instances": 1,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0
+          }
+        ],
+        "0.05": [
+          {
+            "conditions": {
+              "edge_density_bucket": "dense",
+              "graph_size_bucket": "small",
+              "instance_family": "other_graph",
+              "transpiled_depth_bucket": "depth_mid",
+              "two_qubit_count_bucket": "twoq_mid"
+            },
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "n_eval": 4,
+            "n_instances": 1,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0
+          }
+        ]
+      },
+      "strata_dimensions": [
+        "edge_density_bucket",
+        "graph_size_bucket",
+        "instance_family",
+        "transpiled_depth_bucket",
+        "two_qubit_count_bucket"
+      ]
+    }
+  },
+  "per_graph": {
+    "maxcut_test": {
+      "conditional_stability": {
+        "0.0": [
+          {
+            "baseline_key_used": {
+              "layout_method": "trivial",
+              "optimization_level": 0,
+              "seed_simulator": 0,
+              "seed_transpiler": 0,
+              "shots": 1024
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_relation": "A_LT_B",
+            "constraints": {},
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "flips": 0,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0,
+            "subset_size": 5,
+            "total": 4
+          },
+          {
+            "baseline_key_used": {
+              "layout_method": "trivial",
+              "optimization_level": 0,
+              "seed_simulator": 0,
+              "seed_transpiler": 0,
+              "shots": 1024
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_relation": "A_LT_B",
+            "constraints": {
+              "shots": 1024
+            },
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "flips": 0,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0,
+            "subset_size": 5,
+            "total": 4
+          },
+          {
+            "baseline_key_used": {
+              "layout_method": "trivial",
+              "optimization_level": 0,
+              "seed_simulator": 0,
+              "seed_transpiler": 0,
+              "shots": 1024
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_relation": "A_LT_B",
+            "constraints": {
+              "seed_simulator": 0,
+              "shots": 1024
+            },
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "flips": 0,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0,
+            "subset_size": 5,
+            "total": 4
+          }
+        ],
+        "0.01": [
+          {
+            "baseline_key_used": {
+              "layout_method": "trivial",
+              "optimization_level": 0,
+              "seed_simulator": 0,
+              "seed_transpiler": 0,
+              "shots": 1024
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_relation": "A_LT_B",
+            "constraints": {},
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "flips": 0,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0,
+            "subset_size": 5,
+            "total": 4
+          },
+          {
+            "baseline_key_used": {
+              "layout_method": "trivial",
+              "optimization_level": 0,
+              "seed_simulator": 0,
+              "seed_transpiler": 0,
+              "shots": 1024
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_relation": "A_LT_B",
+            "constraints": {
+              "shots": 1024
+            },
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "flips": 0,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0,
+            "subset_size": 5,
+            "total": 4
+          },
+          {
+            "baseline_key_used": {
+              "layout_method": "trivial",
+              "optimization_level": 0,
+              "seed_simulator": 0,
+              "seed_transpiler": 0,
+              "shots": 1024
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_relation": "A_LT_B",
+            "constraints": {
+              "seed_simulator": 0,
+              "shots": 1024
+            },
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "flips": 0,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0,
+            "subset_size": 5,
+            "total": 4
+          }
+        ],
+        "0.05": [
+          {
+            "baseline_key_used": {
+              "layout_method": "trivial",
+              "optimization_level": 0,
+              "seed_simulator": 0,
+              "seed_transpiler": 0,
+              "shots": 1024
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_relation": "A_LT_B",
+            "constraints": {},
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "flips": 0,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0,
+            "subset_size": 5,
+            "total": 4
+          },
+          {
+            "baseline_key_used": {
+              "layout_method": "trivial",
+              "optimization_level": 0,
+              "seed_simulator": 0,
+              "seed_transpiler": 0,
+              "shots": 1024
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_relation": "A_LT_B",
+            "constraints": {
+              "shots": 1024
+            },
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "flips": 0,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0,
+            "subset_size": 5,
+            "total": 4
+          },
+          {
+            "baseline_key_used": {
+              "layout_method": "trivial",
+              "optimization_level": 0,
+              "seed_simulator": 0,
+              "seed_transpiler": 0,
+              "shots": 1024
+            },
+            "baseline_margin": -0.3447265625,
+            "baseline_relation": "A_LT_B",
+            "constraints": {
+              "seed_simulator": 0,
+              "shots": 1024
+            },
+            "decision": "inconclusive",
+            "flip_rate": 0.0,
+            "flips": 0,
+            "stability_ci_high": 0.9999999999999999,
+            "stability_ci_low": 0.5101091635454028,
+            "stability_hat": 1.0,
+            "subset_size": 5,
+            "total": 4
+          }
+        ]
+      },
+      "delta_sweep": [
+        {
+          "baseline_holds": false,
+          "baseline_relation": "A_LT_B",
+          "claim_holds_count": 0,
+          "claim_holds_rate": 0.0,
+          "claim_total_count": 5,
+          "decision": "inconclusive",
+          "delta": 0.0,
+          "flip_rate": 0.0,
+          "flips": 0,
+          "stability_ci_high": 0.9999999999999999,
+          "stability_ci_low": 0.5101091635454028,
+          "stability_hat": 1.0,
+          "total": 4
+        },
+        {
+          "baseline_holds": false,
+          "baseline_relation": "A_LT_B",
+          "claim_holds_count": 0,
+          "claim_holds_rate": 0.0,
+          "claim_total_count": 5,
+          "decision": "inconclusive",
+          "delta": 0.01,
+          "flip_rate": 0.0,
+          "flips": 0,
+          "stability_ci_high": 0.9999999999999999,
+          "stability_ci_low": 0.5101091635454028,
+          "stability_hat": 1.0,
+          "total": 4
+        },
+        {
+          "baseline_holds": false,
+          "baseline_relation": "A_LT_B",
+          "claim_holds_count": 0,
+          "claim_holds_rate": 0.0,
+          "claim_total_count": 5,
+          "decision": "inconclusive",
+          "delta": 0.05,
+          "flip_rate": 0.0,
+          "flips": 0,
+          "stability_ci_high": 0.9999999999999999,
+          "stability_ci_low": 0.5101091635454028,
+          "stability_hat": 1.0,
+          "total": 4
+        }
+      ],
+      "factor_attribution": {
+        "0.0": {
+          "baseline_relation": "A_LT_B",
+          "by_dimension": {
+            "layout_method": {
+              "sabre": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              },
+              "trivial": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 3
+              }
+            },
+            "optimization_level": {
+              "0": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 4
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 4
+              }
+            },
+            "seed_transpiler": {
+              "1": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              },
+              "2": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              },
+              "4": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              },
+              "9": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              }
+            },
+            "shots": {
+              "1024": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 4
+              }
+            }
+          },
+          "flip_rate": 0.0,
+          "flips": 0,
+          "top_flip_configs": [],
+          "total": 4
+        },
+        "0.01": {
+          "baseline_relation": "A_LT_B",
+          "by_dimension": {
+            "layout_method": {
+              "sabre": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              },
+              "trivial": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 3
+              }
+            },
+            "optimization_level": {
+              "0": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 4
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 4
+              }
+            },
+            "seed_transpiler": {
+              "1": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              },
+              "2": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              },
+              "4": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              },
+              "9": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              }
+            },
+            "shots": {
+              "1024": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 4
+              }
+            }
+          },
+          "flip_rate": 0.0,
+          "flips": 0,
+          "top_flip_configs": [],
+          "total": 4
+        },
+        "0.05": {
+          "baseline_relation": "A_LT_B",
+          "by_dimension": {
+            "layout_method": {
+              "sabre": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              },
+              "trivial": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 3
+              }
+            },
+            "optimization_level": {
+              "0": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 4
+              }
+            },
+            "seed_simulator": {
+              "0": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 4
+              }
+            },
+            "seed_transpiler": {
+              "1": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              },
+              "2": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              },
+              "4": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              },
+              "9": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 1
+              }
+            },
+            "shots": {
+              "1024": {
+                "flip_rate": 0.0,
+                "flips": 0,
+                "total": 4
+              }
+            }
+          },
+          "flip_rate": 0.0,
+          "flips": 0,
+          "top_flip_configs": [],
+          "total": 4
+        }
+      },
+      "lockdown_recommendation": {
+        "0.0": {
+          "candidate_count": 4,
+          "global_flip_rate": 0.0,
+          "top_recommendations": [
+            {
+              "baseline_key_used": {
+                "layout_method": "trivial",
+                "optimization_level": 0,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "baseline_margin": -0.3447265625,
+              "baseline_relation": "A_LT_B",
+              "constraints": {
+                "optimization_level": 0
+              },
+              "decision": "inconclusive",
+              "dimension": "optimization_level",
+              "flip_rate": 0.0,
+              "flip_rate_improvement": 0.0,
+              "flips": 0,
+              "stability_ci_high": 0.9999999999999999,
+              "stability_ci_low": 0.5101091635454028,
+              "stability_hat": 1.0,
+              "subset_size": 5,
+              "total": 4,
+              "value": 0
+            },
+            {
+              "baseline_key_used": {
+                "layout_method": "trivial",
+                "optimization_level": 0,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "baseline_margin": -0.3447265625,
+              "baseline_relation": "A_LT_B",
+              "constraints": {
+                "layout_method": "trivial"
+              },
+              "decision": "inconclusive",
+              "dimension": "layout_method",
+              "flip_rate": 0.0,
+              "flip_rate_improvement": 0.0,
+              "flips": 0,
+              "stability_ci_high": 1.0,
+              "stability_ci_low": 0.4385029682449546,
+              "stability_hat": 1.0,
+              "subset_size": 4,
+              "total": 3,
+              "value": "trivial"
+            }
+          ]
+        },
+        "0.01": {
+          "candidate_count": 4,
+          "global_flip_rate": 0.0,
+          "top_recommendations": [
+            {
+              "baseline_key_used": {
+                "layout_method": "trivial",
+                "optimization_level": 0,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "baseline_margin": -0.3447265625,
+              "baseline_relation": "A_LT_B",
+              "constraints": {
+                "optimization_level": 0
+              },
+              "decision": "inconclusive",
+              "dimension": "optimization_level",
+              "flip_rate": 0.0,
+              "flip_rate_improvement": 0.0,
+              "flips": 0,
+              "stability_ci_high": 0.9999999999999999,
+              "stability_ci_low": 0.5101091635454028,
+              "stability_hat": 1.0,
+              "subset_size": 5,
+              "total": 4,
+              "value": 0
+            },
+            {
+              "baseline_key_used": {
+                "layout_method": "trivial",
+                "optimization_level": 0,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "baseline_margin": -0.3447265625,
+              "baseline_relation": "A_LT_B",
+              "constraints": {
+                "layout_method": "trivial"
+              },
+              "decision": "inconclusive",
+              "dimension": "layout_method",
+              "flip_rate": 0.0,
+              "flip_rate_improvement": 0.0,
+              "flips": 0,
+              "stability_ci_high": 1.0,
+              "stability_ci_low": 0.4385029682449546,
+              "stability_hat": 1.0,
+              "subset_size": 4,
+              "total": 3,
+              "value": "trivial"
+            }
+          ]
+        },
+        "0.05": {
+          "candidate_count": 4,
+          "global_flip_rate": 0.0,
+          "top_recommendations": [
+            {
+              "baseline_key_used": {
+                "layout_method": "trivial",
+                "optimization_level": 0,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "baseline_margin": -0.3447265625,
+              "baseline_relation": "A_LT_B",
+              "constraints": {
+                "optimization_level": 0
+              },
+              "decision": "inconclusive",
+              "dimension": "optimization_level",
+              "flip_rate": 0.0,
+              "flip_rate_improvement": 0.0,
+              "flips": 0,
+              "stability_ci_high": 0.9999999999999999,
+              "stability_ci_low": 0.5101091635454028,
+              "stability_hat": 1.0,
+              "subset_size": 5,
+              "total": 4,
+              "value": 0
+            },
+            {
+              "baseline_key_used": {
+                "layout_method": "trivial",
+                "optimization_level": 0,
+                "seed_simulator": 0,
+                "seed_transpiler": 0,
+                "shots": 1024
+              },
+              "baseline_margin": -0.3447265625,
+              "baseline_relation": "A_LT_B",
+              "constraints": {
+                "layout_method": "trivial"
+              },
+              "decision": "inconclusive",
+              "dimension": "layout_method",
+              "flip_rate": 0.0,
+              "flip_rate_improvement": 0.0,
+              "flips": 0,
+              "stability_ci_high": 1.0,
+              "stability_ci_low": 0.4385029682449546,
+              "stability_hat": 1.0,
+              "subset_size": 4,
+              "total": 3,
+              "value": "trivial"
+            }
+          ]
+        }
+      },
+      "sampled_configurations": 5
+    }
+  },
+  "perturbation_space_size": 80,
+  "rq_summary": {
+    "decision_counts_overall": {
+      "inconclusive": 3,
+      "stable": 0,
+      "unstable": 0
+    },
+    "naive_baseline_comparison": {
+      "counts": {
+        "agree": 3,
+        "naive_overclaim": 0,
+        "naive_underclaim": 0,
+        "naive_uninformative": 0
+      },
+      "policy": "legacy_strict_all"
+    },
+    "naive_baseline_realistic_comparison": {
+      "counts": {
+        "agree": 3,
+        "naive_overclaim": 0,
+        "naive_underclaim": 0,
+        "naive_uninformative": 0
+      },
+      "policy": "default_researcher_v1"
+    },
+    "rq1_prevalence": {
+      "by_space_and_claim_type": {
+        "baseline": {
+          "ranking": {
+            "inconclusive": 3,
+            "stable": 0,
+            "total": 3,
+            "unstable": 0
+          }
+        }
+      },
+      "task": "maxcut"
+    },
+    "rq2_drivers": {
+      "all_dimensions": [
+        {
+          "avg_contrast": 0.0,
+          "avg_improvement_from_best_value": 0.0,
+          "dimension": "seed_transpiler",
+          "driver_score": 0.0,
+          "flip_rate": 0.0,
+          "observations": 3,
+          "value_groups": 12
+        },
+        {
+          "avg_contrast": 0.0,
+          "avg_improvement_from_best_value": 0.0,
+          "dimension": "optimization_level",
+          "driver_score": 0.0,
+          "flip_rate": 0.0,
+          "observations": 3,
+          "value_groups": 3
+        },
+        {
+          "avg_contrast": 0.0,
+          "avg_improvement_from_best_value": 0.0,
+          "dimension": "layout_method",
+          "driver_score": 0.0,
+          "flip_rate": 0.0,
+          "observations": 3,
+          "value_groups": 6
+        },
+        {
+          "avg_contrast": 0.0,
+          "avg_improvement_from_best_value": 0.0,
+          "dimension": "shots",
+          "driver_score": 0.0,
+          "flip_rate": 0.0,
+          "observations": 3,
+          "value_groups": 3
+        },
+        {
+          "avg_contrast": 0.0,
+          "avg_improvement_from_best_value": 0.0,
+          "dimension": "seed_simulator",
+          "driver_score": 0.0,
+          "flip_rate": 0.0,
+          "observations": 3,
+          "value_groups": 3
+        }
+      ],
+      "metric_formula": "driver_score = sqrt(sum_v w_v*(r_v-r_bar)^2 / sum_v w_v), r_v=flips_v/total_v, w_v=total_v",
+      "metric_label": "driver score (std of flip rate across knob values)",
+      "metric_name": "std_flip_rate_across_values",
+      "metric_note": "Higher score means changing this knob shifts flip-rate behavior more across its values.",
+      "top_dimensions": [
+        {
+          "avg_contrast": 0.0,
+          "avg_improvement_from_best_value": 0.0,
+          "dimension": "seed_transpiler",
+          "driver_score": 0.0,
+          "flip_rate": 0.0,
+          "observations": 3,
+          "value_groups": 12
+        },
+        {
+          "avg_contrast": 0.0,
+          "avg_improvement_from_best_value": 0.0,
+          "dimension": "optimization_level",
+          "driver_score": 0.0,
+          "flip_rate": 0.0,
+          "observations": 3,
+          "value_groups": 3
+        },
+        {
+          "avg_contrast": 0.0,
+          "avg_improvement_from_best_value": 0.0,
+          "dimension": "layout_method",
+          "driver_score": 0.0,
+          "flip_rate": 0.0,
+          "observations": 3,
+          "value_groups": 6
+        }
+      ]
+    },
+    "rq3_cost_tradeoff": {
+      "stability_vs_cost_rows": [
+        {
+          "claim_type": "ranking",
+          "decision": "inconclusive",
+          "delta": "0.0",
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "minimum_shots_for_stable": null,
+          "n_eval": 4,
+          "shots": 1024,
+          "stability_ci_high": 0.9999999999999999,
+          "stability_ci_low": 0.5101091635454028,
+          "stability_hat": 1.0
+        },
+        {
+          "claim_type": "ranking",
+          "decision": "inconclusive",
+          "delta": "0.01",
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "minimum_shots_for_stable": null,
+          "n_eval": 4,
+          "shots": 1024,
+          "stability_ci_high": 0.9999999999999999,
+          "stability_ci_low": 0.5101091635454028,
+          "stability_hat": 1.0
+        },
+        {
+          "claim_type": "ranking",
+          "decision": "inconclusive",
+          "delta": "0.05",
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "minimum_shots_for_stable": null,
+          "n_eval": 4,
+          "shots": 1024,
+          "stability_ci_high": 0.9999999999999999,
+          "stability_ci_low": 0.5101091635454028,
+          "stability_hat": 1.0
+        }
+      ]
+    },
+    "rq4_adaptive_sampling": {
+      "adaptive_sampling": [],
+      "decision_agreement_rate_vs_full_factorial": null
+    },
+    "rq5_conditional_robustness": {
+      "experiments_with_map": 1,
+      "failure_frontier_examples": [],
+      "minimal_lockdown_examples": [],
+      "robust_core_examples": []
+    },
+    "rq6_stratified_stability": {
+      "decision_counts": {
+        "inconclusive": 3,
+        "stable": 0,
+        "unstable": 0
+      },
+      "experiments_with_strata": 1,
+      "inconclusive_examples": [
+        {
+          "claim_type": "ranking",
+          "conditions": {
+            "edge_density_bucket": "dense",
+            "graph_size_bucket": "small",
+            "instance_family": "other_graph",
+            "transpiled_depth_bucket": "depth_mid",
+            "two_qubit_count_bucket": "twoq_mid"
+          },
+          "decision": "inconclusive",
+          "delta": "0.0",
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "flip_rate": 0.0,
+          "n_eval": 4,
+          "n_instances": 1,
+          "stability_ci_high": 0.9999999999999999,
+          "stability_ci_low": 0.5101091635454028,
+          "stability_hat": 1.0
+        },
+        {
+          "claim_type": "ranking",
+          "conditions": {
+            "edge_density_bucket": "dense",
+            "graph_size_bucket": "small",
+            "instance_family": "other_graph",
+            "transpiled_depth_bucket": "depth_mid",
+            "two_qubit_count_bucket": "twoq_mid"
+          },
+          "decision": "inconclusive",
+          "delta": "0.01",
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "flip_rate": 0.0,
+          "n_eval": 4,
+          "n_instances": 1,
+          "stability_ci_high": 0.9999999999999999,
+          "stability_ci_low": 0.5101091635454028,
+          "stability_hat": 1.0
+        },
+        {
+          "claim_type": "ranking",
+          "conditions": {
+            "edge_density_bucket": "dense",
+            "graph_size_bucket": "small",
+            "instance_family": "other_graph",
+            "transpiled_depth_bucket": "depth_mid",
+            "two_qubit_count_bucket": "twoq_mid"
+          },
+          "decision": "inconclusive",
+          "delta": "0.05",
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "flip_rate": 0.0,
+          "n_eval": 4,
+          "n_instances": 1,
+          "stability_ci_high": 0.9999999999999999,
+          "stability_ci_low": 0.5101091635454028,
+          "stability_hat": 1.0
+        }
+      ],
+      "stable_examples": [],
+      "strata_dimensions": [
+        "edge_density_bucket",
+        "graph_size_bucket",
+        "instance_family",
+        "transpiled_depth_bucket",
+        "two_qubit_count_bucket"
+      ],
+      "unstable_examples": []
+    },
+    "rq7_effect_diagnostics": {
+      "dimensions": [
+        "layout_method",
+        "optimization_level",
+        "seed_simulator",
+        "seed_transpiler",
+        "shots_bucket"
+      ],
+      "experiments_with_effect_diagnostics": 1,
+      "top_interactions": [
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.0",
+          "dimensions": [
+            "seed_transpiler",
+            "optimization_level"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 4,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        },
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.0",
+          "dimensions": [
+            "seed_transpiler",
+            "layout_method"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 4,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        },
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.0",
+          "dimensions": [
+            "seed_transpiler",
+            "shots_bucket"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 4,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        },
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.0",
+          "dimensions": [
+            "seed_transpiler",
+            "seed_simulator"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 4,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        },
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.0",
+          "dimensions": [
+            "optimization_level",
+            "layout_method"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 2,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        },
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.01",
+          "dimensions": [
+            "seed_transpiler",
+            "optimization_level"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 4,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        },
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.01",
+          "dimensions": [
+            "seed_transpiler",
+            "layout_method"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 4,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        },
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.01",
+          "dimensions": [
+            "seed_transpiler",
+            "shots_bucket"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 4,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        },
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.01",
+          "dimensions": [
+            "seed_transpiler",
+            "seed_simulator"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 4,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        },
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.01",
+          "dimensions": [
+            "optimization_level",
+            "layout_method"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 2,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        },
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.05",
+          "dimensions": [
+            "seed_transpiler",
+            "optimization_level"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 4,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        },
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.05",
+          "dimensions": [
+            "seed_transpiler",
+            "layout_method"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 4,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        },
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.05",
+          "dimensions": [
+            "seed_transpiler",
+            "shots_bucket"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 4,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        },
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.05",
+          "dimensions": [
+            "seed_transpiler",
+            "seed_simulator"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 4,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        },
+        {
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.05",
+          "dimensions": [
+            "optimization_level",
+            "layout_method"
+          ],
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "interaction_score": 0.0,
+          "joint_spread": 0.0,
+          "n_cells": 2,
+          "n_eval": 4,
+          "reference_main_effect": 0.0
+        }
+      ],
+      "top_main_effects": [
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": 2
+            },
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": 9
+            },
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": 1
+            },
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": 4
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.0",
+          "dimension": "seed_transpiler",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 4
+        },
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": 2
+            },
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": 9
+            },
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": 1
+            },
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": 4
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.01",
+          "dimension": "seed_transpiler",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 4
+        },
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": 2
+            },
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": 9
+            },
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": 1
+            },
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": 4
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.05",
+          "dimension": "seed_transpiler",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 4
+        },
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 3,
+              "value": "trivial"
+            },
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": "sabre"
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.0",
+          "dimension": "layout_method",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 2
+        },
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 3,
+              "value": "trivial"
+            },
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": "sabre"
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.01",
+          "dimension": "layout_method",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 2
+        },
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 3,
+              "value": "trivial"
+            },
+            {
+              "flip_rate": 0.0,
+              "n_eval": 1,
+              "value": "sabre"
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.05",
+          "dimension": "layout_method",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 2
+        },
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 4,
+              "value": 0
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.0",
+          "dimension": "optimization_level",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 1
+        },
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 4,
+              "value": "high"
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.0",
+          "dimension": "shots_bucket",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 1
+        },
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 4,
+              "value": 0
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.0",
+          "dimension": "seed_simulator",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 1
+        },
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 4,
+              "value": 0
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.01",
+          "dimension": "optimization_level",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 1
+        },
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 4,
+              "value": "high"
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.01",
+          "dimension": "shots_bucket",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 1
+        },
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 4,
+              "value": 0
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.01",
+          "dimension": "seed_simulator",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 1
+        },
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 4,
+              "value": 0
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.05",
+          "dimension": "optimization_level",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 1
+        },
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 4,
+              "value": "high"
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.05",
+          "dimension": "shots_bucket",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 1
+        },
+        {
+          "by_value": [
+            {
+              "flip_rate": 0.0,
+              "n_eval": 4,
+              "value": 0
+            }
+          ],
+          "claim_type": "ranking",
+          "context_conditions": {
+            "device_mode": "transpile_only",
+            "noise_model": "none",
+            "space_preset": "baseline"
+          },
+          "delta": "0.05",
+          "dimension": "seed_simulator",
+          "effect_score": 0.0,
+          "experiment_id": "baseline:QAOA_p2>RandomBaseline",
+          "n_eval": 4,
+          "n_levels": 1
+        }
+      ]
+    }
+  },
+  "sampling": {
+    "max_sample_size": null,
+    "min_sample_size": 16,
+    "mode": "random_k",
+    "operator_shim": false,
+    "perturbation_space_size": 80,
+    "sample_size": 4,
+    "sampled_configurations_with_baseline": 5,
+    "seed": 1,
+    "space_preset": "baseline",
+    "step_size": 8,
+    "suite": "core",
+    "target_ci_width": null
+  },
+  "stability_rule": {
+    "confidence_level": 0.95,
+    "decision": "stable iff CI lower bound >= threshold",
+    "threshold": 0.95
+  }
+}

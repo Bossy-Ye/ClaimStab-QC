@@ -1,0 +1,342 @@
+{
+  "comparative": {
+    "space_claim_delta": [
+      {
+        "batch_mode": "transpile_only",
+        "claim_pair": "QAOA_p1>QAOA_p2",
+        "decision": "inconclusive",
+        "decision_counts": {
+          "inconclusive": 1,
+          "stable": 0,
+          "unstable": 0
+        },
+        "delta": 0.0,
+        "device_name": "FakeManilaV2",
+        "flip_rate_max": 0.0,
+        "flip_rate_mean": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_ci_high": 1.0,
+        "holds_rate_ci_low": 0.4385029682449546,
+        "holds_rate_mean": 1.0,
+        "metric_name": "circuit_depth",
+        "n_claim_evals": 2,
+        "n_instances": 1,
+        "stability_ci_high": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_hat": 1.0
+      },
+      {
+        "batch_mode": "transpile_only",
+        "claim_pair": "QAOA_p1>QAOA_p2",
+        "decision": "inconclusive",
+        "decision_counts": {
+          "inconclusive": 1,
+          "stable": 0,
+          "unstable": 0
+        },
+        "delta": 0.01,
+        "device_name": "FakeManilaV2",
+        "flip_rate_max": 0.0,
+        "flip_rate_mean": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_ci_high": 1.0,
+        "holds_rate_ci_low": 0.4385029682449546,
+        "holds_rate_mean": 1.0,
+        "metric_name": "circuit_depth",
+        "n_claim_evals": 2,
+        "n_instances": 1,
+        "stability_ci_high": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_hat": 1.0
+      },
+      {
+        "batch_mode": "transpile_only",
+        "claim_pair": "QAOA_p1>QAOA_p2",
+        "decision": "inconclusive",
+        "decision_counts": {
+          "inconclusive": 1,
+          "stable": 0,
+          "unstable": 0
+        },
+        "delta": 0.05,
+        "device_name": "FakeManilaV2",
+        "flip_rate_max": 0.0,
+        "flip_rate_mean": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_ci_high": 1.0,
+        "holds_rate_ci_low": 0.4385029682449546,
+        "holds_rate_mean": 1.0,
+        "metric_name": "circuit_depth",
+        "n_claim_evals": 2,
+        "n_instances": 1,
+        "stability_ci_high": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_hat": 1.0
+      },
+      {
+        "batch_mode": "transpile_only",
+        "claim_pair": "QAOA_p1>QAOA_p2",
+        "decision": "inconclusive",
+        "decision_counts": {
+          "inconclusive": 1,
+          "stable": 0,
+          "unstable": 0
+        },
+        "delta": 0.0,
+        "device_name": "FakeManilaV2",
+        "flip_rate_max": 0.0,
+        "flip_rate_mean": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_ci_high": 1.0,
+        "holds_rate_ci_low": 0.4385029682449546,
+        "holds_rate_mean": 1.0,
+        "metric_name": "two_qubit_count",
+        "n_claim_evals": 2,
+        "n_instances": 1,
+        "stability_ci_high": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_hat": 1.0
+      },
+      {
+        "batch_mode": "transpile_only",
+        "claim_pair": "QAOA_p1>QAOA_p2",
+        "decision": "inconclusive",
+        "decision_counts": {
+          "inconclusive": 1,
+          "stable": 0,
+          "unstable": 0
+        },
+        "delta": 0.01,
+        "device_name": "FakeManilaV2",
+        "flip_rate_max": 0.0,
+        "flip_rate_mean": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_ci_high": 1.0,
+        "holds_rate_ci_low": 0.4385029682449546,
+        "holds_rate_mean": 1.0,
+        "metric_name": "two_qubit_count",
+        "n_claim_evals": 2,
+        "n_instances": 1,
+        "stability_ci_high": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_hat": 1.0
+      },
+      {
+        "batch_mode": "transpile_only",
+        "claim_pair": "QAOA_p1>QAOA_p2",
+        "decision": "inconclusive",
+        "decision_counts": {
+          "inconclusive": 1,
+          "stable": 0,
+          "unstable": 0
+        },
+        "delta": 0.05,
+        "device_name": "FakeManilaV2",
+        "flip_rate_max": 0.0,
+        "flip_rate_mean": 0.0,
+        "flip_rate_min": 0.0,
+        "holds_rate_ci_high": 1.0,
+        "holds_rate_ci_low": 0.4385029682449546,
+        "holds_rate_mean": 1.0,
+        "metric_name": "two_qubit_count",
+        "n_claim_evals": 2,
+        "n_instances": 1,
+        "stability_ci_high": 1.0,
+        "stability_ci_low": 0.3423802275066532,
+        "stability_hat": 1.0
+      }
+    ]
+  },
+  "device_summary": [
+    {
+      "batch_mode": "transpile_only",
+      "claim_pair": "QAOA_p1>QAOA_p2",
+      "decision": "inconclusive",
+      "decision_counts": {
+        "inconclusive": 1,
+        "stable": 0,
+        "unstable": 0
+      },
+      "delta": 0.0,
+      "device_name": "FakeManilaV2",
+      "flip_rate_max": 0.0,
+      "flip_rate_mean": 0.0,
+      "flip_rate_min": 0.0,
+      "holds_rate_ci_high": 1.0,
+      "holds_rate_ci_low": 0.4385029682449546,
+      "holds_rate_mean": 1.0,
+      "metric_name": "circuit_depth",
+      "n_claim_evals": 2,
+      "n_instances": 1,
+      "stability_ci_high": 1.0,
+      "stability_ci_low": 0.3423802275066532,
+      "stability_hat": 1.0
+    },
+    {
+      "batch_mode": "transpile_only",
+      "claim_pair": "QAOA_p1>QAOA_p2",
+      "decision": "inconclusive",
+      "decision_counts": {
+        "inconclusive": 1,
+        "stable": 0,
+        "unstable": 0
+      },
+      "delta": 0.01,
+      "device_name": "FakeManilaV2",
+      "flip_rate_max": 0.0,
+      "flip_rate_mean": 0.0,
+      "flip_rate_min": 0.0,
+      "holds_rate_ci_high": 1.0,
+      "holds_rate_ci_low": 0.4385029682449546,
+      "holds_rate_mean": 1.0,
+      "metric_name": "circuit_depth",
+      "n_claim_evals": 2,
+      "n_instances": 1,
+      "stability_ci_high": 1.0,
+      "stability_ci_low": 0.3423802275066532,
+      "stability_hat": 1.0
+    },
+    {
+      "batch_mode": "transpile_only",
+      "claim_pair": "QAOA_p1>QAOA_p2",
+      "decision": "inconclusive",
+      "decision_counts": {
+        "inconclusive": 1,
+        "stable": 0,
+        "unstable": 0
+      },
+      "delta": 0.05,
+      "device_name": "FakeManilaV2",
+      "flip_rate_max": 0.0,
+      "flip_rate_mean": 0.0,
+      "flip_rate_min": 0.0,
+      "holds_rate_ci_high": 1.0,
+      "holds_rate_ci_low": 0.4385029682449546,
+      "holds_rate_mean": 1.0,
+      "metric_name": "circuit_depth",
+      "n_claim_evals": 2,
+      "n_instances": 1,
+      "stability_ci_high": 1.0,
+      "stability_ci_low": 0.3423802275066532,
+      "stability_hat": 1.0
+    },
+    {
+      "batch_mode": "transpile_only",
+      "claim_pair": "QAOA_p1>QAOA_p2",
+      "decision": "inconclusive",
+      "decision_counts": {
+        "inconclusive": 1,
+        "stable": 0,
+        "unstable": 0
+      },
+      "delta": 0.0,
+      "device_name": "FakeManilaV2",
+      "flip_rate_max": 0.0,
+      "flip_rate_mean": 0.0,
+      "flip_rate_min": 0.0,
+      "holds_rate_ci_high": 1.0,
+      "holds_rate_ci_low": 0.4385029682449546,
+      "holds_rate_mean": 1.0,
+      "metric_name": "two_qubit_count",
+      "n_claim_evals": 2,
+      "n_instances": 1,
+      "stability_ci_high": 1.0,
+      "stability_ci_low": 0.3423802275066532,
+      "stability_hat": 1.0
+    },
+    {
+      "batch_mode": "transpile_only",
+      "claim_pair": "QAOA_p1>QAOA_p2",
+      "decision": "inconclusive",
+      "decision_counts": {
+        "inconclusive": 1,
+        "stable": 0,
+        "unstable": 0
+      },
+      "delta": 0.01,
+      "device_name": "FakeManilaV2",
+      "flip_rate_max": 0.0,
+      "flip_rate_mean": 0.0,
+      "flip_rate_min": 0.0,
+      "holds_rate_ci_high": 1.0,
+      "holds_rate_ci_low": 0.4385029682449546,
+      "holds_rate_mean": 1.0,
+      "metric_name": "two_qubit_count",
+      "n_claim_evals": 2,
+      "n_instances": 1,
+      "stability_ci_high": 1.0,
+      "stability_ci_low": 0.3423802275066532,
+      "stability_hat": 1.0
+    },
+    {
+      "batch_mode": "transpile_only",
+      "claim_pair": "QAOA_p1>QAOA_p2",
+      "decision": "inconclusive",
+      "decision_counts": {
+        "inconclusive": 1,
+        "stable": 0,
+        "unstable": 0
+      },
+      "delta": 0.05,
+      "device_name": "FakeManilaV2",
+      "flip_rate_max": 0.0,
+      "flip_rate_mean": 0.0,
+      "flip_rate_min": 0.0,
+      "holds_rate_ci_high": 1.0,
+      "holds_rate_ci_low": 0.4385029682449546,
+      "holds_rate_mean": 1.0,
+      "metric_name": "two_qubit_count",
+      "n_claim_evals": 2,
+      "n_instances": 1,
+      "stability_ci_high": 1.0,
+      "stability_ci_low": 0.3423802275066532,
+      "stability_hat": 1.0
+    }
+  ],
+  "meta": {
+    "artifacts": {
+      "cache_db": null,
+      "events_jsonl": null,
+      "replay_trace": null,
+      "trace_jsonl": "trace.jsonl"
+    },
+    "evidence_chain": {
+      "decision_provenance": "each experiment includes evidence.trace_query + evidence.cep blocks that can be matched against trace records for reproducible decision provenance",
+      "events_source": "events_jsonl",
+      "lookup_fields": [
+        "suite",
+        "space_preset",
+        "instance_id",
+        "method",
+        "metric_name",
+        "seed_transpiler",
+        "optimization_level",
+        "layout_method",
+        "shots",
+        "seed_simulator",
+        "device_name",
+        "device_mode"
+      ],
+      "protocol": "cep_v1",
+      "required_evidence_fields": [
+        "config_fingerprint",
+        "perturbation_space",
+        "sampling_strategy",
+        "observation",
+        "inference"
+      ],
+      "schema_id": "claimstab/evidence/schema_cep_v1.json",
+      "trace_source": "trace_jsonl"
+    },
+    "generated_by": "claimstab/pipelines/multidevice_app.py",
+    "runtime": {
+      "dependencies": {},
+      "environment_flags": {},
+      "git_commit": "<git_commit>",
+      "git_dirty": "<git_dirty>",
+      "platform": "macOS-14.3-arm64-arm-64bit-Mach-O",
+      "python_version": "<python>"
+    },
+    "suite": "core"
+  }
+}
