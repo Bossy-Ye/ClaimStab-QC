@@ -82,6 +82,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Treat warnings as failure",
     )
+    validate_evidence_p.add_argument(
+        "--allow-schema-skip",
+        action="store_true",
+        help="Allow pass when JSON schema validation is unavailable (not recommended).",
+    )
     validate_evidence_p.set_defaults(func=cmd_validate_evidence)
 
     ex_p = sub.add_parser("examples", help="Print ready-to-run example commands")

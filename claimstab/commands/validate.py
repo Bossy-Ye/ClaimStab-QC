@@ -43,6 +43,14 @@ def cmd_validate_evidence(args: argparse.Namespace) -> int:
         print("Warnings:")
         for line in result.warnings:
             print(f"- {line}")
+    if not result.schema_valid and not args.allow_schema_skip:
+        print("Errors:", file=sys.stderr)
+        print(
+            "- CEP schema validation is unavailable or failed. "
+            "Install/repair dependencies or rerun with --allow-schema-skip.",
+            file=sys.stderr,
+        )
+        return 2
     if result.errors:
         print("Errors:", file=sys.stderr)
         for line in result.errors:

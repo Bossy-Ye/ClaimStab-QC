@@ -164,7 +164,8 @@ def validate_evidence_payload(
                 path = ".".join(str(p) for p in err.path) if err.path else "<root>"
                 errors.append(f"schema:{path}: {err.message}")
     except Exception as exc:
-        warnings.append(f"Schema validation skipped ({type(exc).__name__}: {exc}).")
+        schema_valid = False
+        warnings.append(f"Schema validation unavailable ({type(exc).__name__}: {exc}).")
 
     meta = payload.get("meta", {})
     if not isinstance(meta, dict):

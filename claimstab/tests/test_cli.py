@@ -6,9 +6,14 @@ import tempfile
 import unittest
 import json
 from pathlib import Path
+from unittest.mock import patch
 
 from claimstab import cli
-from claimstab.evidence import build_cep_protocol_meta, build_experiment_cep_record
+from claimstab.evidence import (
+    EvidenceValidationResult,
+    build_cep_protocol_meta,
+    build_experiment_cep_record,
+)
 
 
 class TestCLI(unittest.TestCase):
@@ -149,6 +154,25 @@ class TestCLI(unittest.TestCase):
 
             rc = cli.main(["validate-evidence", "--json", str(json_path)])
             self.assertEqual(rc, 0)
+
+    def test_validate_evidence_requires_schema_unless_allow_flag(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            json_path = Path(td) / "claim_stability.json"
+            json_path.write_text("{}", encoding="utf-8")
+            stub = EvidenceValidationResult(
+                json_path=json_path,
+                schema_valid=False,
+                trace_checked=True,
+                experiments_checked=1,
+                experiments_with_trace_match=1,
+                errors=[],
+                warnings=["Schema validation unavailable (ModuleNotFoundError: No module named 'jsonschema')."],
+            )
+            with patch("claimstab.commands.validate.validate_evidence_file", return_value=stub):
+                rc = cli.main(["validate-evidence", "--json", str(json_path)])
+                self.assertEqual(rc, 2)
+                rc_allow = cli.main(["validate-evidence", "--json", str(json_path), "--allow-schema-skip"])
+                self.assertEqual(rc_allow, 0)
 
     def test_run_dry_run_main(self) -> None:
         with tempfile.TemporaryDirectory() as td:
