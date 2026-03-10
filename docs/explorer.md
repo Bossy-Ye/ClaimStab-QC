@@ -6,9 +6,9 @@
     <h2>Inspect ClaimStab outputs in seconds</h2>
     <p>Upload a <code>claim_stability.json</code> file and get immediate stability insights: decisions, spaces, claim types, adaptive coverage, and high-flip hotspots.</p>
     <div class="csx-hero-links">
-      <a class="csx-link-chip" href="../quickstart/">Run CLI Locally</a>
-      <a class="csx-link-chip" href="../reproduce/">Reproduction Guide</a>
-      <a class="csx-link-chip" href="../dataset_registry/">Browse Public Datasets</a>
+      <a class="csx-link-chip" href="https://bossy-ye.github.io/ClaimStab-QC/quickstart/">Run CLI Locally</a>
+      <a class="csx-link-chip" href="https://bossy-ye.github.io/ClaimStab-QC/reproduce/">Reproduction Guide</a>
+      <a class="csx-link-chip" href="https://bossy-ye.github.io/ClaimStab-QC/dataset_registry/">Browse Public Datasets</a>
     </div>
   </div>
 </div>
