@@ -61,9 +61,10 @@ class TestAtlasCatalog(unittest.TestCase):
 
             md = build_dataset_registry_markdown(root, repo_url="https://example.com/repo")
             self.assertIn("# Dataset Registry", md)
-            self.assertIn("`s1`", md)
-            self.assertIn("`toy`", md)
-            self.assertIn("ranking: M1 > M2", md)
+            self.assertIn("<code>s1</code>", md)
+            self.assertIn(">toy<", md)
+            self.assertIn('data-href="#submission-s1"', md)
+            self.assertIn("ranking: M1 &gt; M2", md)
             self.assertIn("sampling_only", md)
 
 

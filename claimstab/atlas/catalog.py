@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import html
 import json
+import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -59,6 +61,21 @@ def _format_claim(claim: dict[str, Any]) -> str:
 def _github_blob_url(repo_url: str, rel_path: str) -> str:
     base = repo_url.rstrip("/")
     return f"{base}/blob/main/{rel_path}"
+
+
+def _slugify(value: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+    return slug or "entry"
+
+
+def _escape(value: Any) -> str:
+    return html.escape(str(value), quote=True)
+
+
+def _render_pills(values: list[str]) -> str:
+    if not values:
+        return '<span class="csr-pill">N/A</span>'
+    return " ".join(f'<span class="csr-pill">{_escape(v)}</span>' for v in values)
 
 
 def _snapshot_from_entry(atlas_root: Path, entry: dict[str, Any]) -> SubmissionSnapshot:
@@ -163,6 +180,11 @@ def build_dataset_registry_markdown(
         for entry in submissions_raw
         if isinstance(entry, dict)
     ]
+    snapshots = sorted(snapshots, key=lambda item: item.created_at_utc, reverse=True)
+
+    task_values = sorted({s.task for s in snapshots if s.task})
+    claim_type_values = sorted({c for s in snapshots for c in s.claim_types if c})
+    unique_spaces = sorted({sp for s in snapshots for sp in s.spaces if sp})
 
     lines: list[str] = []
     lines.append("# Dataset Registry")
@@ -180,39 +202,136 @@ def build_dataset_registry_markdown(
         f"_Generated at {datetime.now(timezone.utc).replace(microsecond=0).isoformat()} from `atlas/index.json`._"
     )
     lines.append("")
-    lines.append("## Submission Overview")
+    lines.append('<div id="dataset-registry-overview" class="csr-hero">')
+    lines.append('  <p class="csr-eyebrow">ClaimAtlas Browser</p>')
+    lines.append("  <h2>Dataset Registry Overview</h2>")
+    lines.append("  <p>Click any row to jump to a dataset profile. Use filters to quickly narrow by task or claim type.</p>")
+    lines.append('  <div class="csr-metrics">')
+    lines.append(
+        f'    <div><span>Total submissions</span><strong>{len(snapshots)}</strong></div>'
+    )
+    lines.append(
+        f'    <div><span>Tasks</span><strong>{len(task_values)}</strong></div>'
+    )
+    lines.append(
+        f'    <div><span>Claim types</span><strong>{len(claim_type_values)}</strong></div>'
+    )
+    lines.append(
+        f'    <div><span>Spaces covered</span><strong>{len(unique_spaces)}</strong></div>'
+    )
+    lines.append("  </div>")
+    lines.append("</div>")
     lines.append("")
-    lines.append("| Submission | Task | Suite | Claim Types | Spaces | Contributor |")
-    lines.append("|---|---|---|---|---|---|")
+    lines.append('<div class="csr-controls">')
+    lines.append('  <label class="csr-filter-group" for="csr-filter">Search</label>')
+    lines.append(
+        '  <input id="csr-filter" type="search" placeholder="Try maxcut, adaptive, bv, ranking..." aria-label="Filter datasets" />'
+    )
+    lines.append('  <label class="csr-filter-group" for="csr-filter-task">Task</label>')
+    lines.append('  <select id="csr-filter-task" aria-label="Filter by task">')
+    lines.append('    <option value="">All tasks</option>')
+    for task in task_values:
+        lines.append(f'    <option value="{_escape(task)}">{_escape(task)}</option>')
+    lines.append("  </select>")
+    lines.append('  <label class="csr-filter-group" for="csr-filter-claim">Claim type</label>')
+    lines.append('  <select id="csr-filter-claim" aria-label="Filter by claim type">')
+    lines.append('    <option value="">All claim types</option>')
+    for claim_type in claim_type_values:
+        lines.append(f'    <option value="{_escape(claim_type)}">{_escape(claim_type)}</option>')
+    lines.append("  </select>")
+    lines.append(
+        f'  <p class="csr-filter-count"><strong id="csr-visible-count">{len(snapshots)}</strong> / {len(snapshots)} shown</p>'
+    )
+    lines.append("</div>")
+    lines.append("")
+    lines.append('<div class="csr-table-wrap">')
+    lines.append('<table class="csr-table">')
+    lines.append("<thead>")
+    lines.append("<tr>")
+    lines.append("<th>Submission</th><th>Task</th><th>Suite</th><th>Claim Types</th><th>Spaces</th><th>Contributor</th><th>Open</th>")
+    lines.append("</tr>")
+    lines.append("</thead>")
+    lines.append("<tbody>")
     for s in snapshots:
-        lines.append(
-            f"| `{s.submission_id}` | `{s.task}` | `{s.suite}` | `{', '.join(s.claim_types)}` | `{', '.join(s.spaces)}` | `{s.contributor}` |"
+        anchor = f"submission-{_slugify(s.submission_id)}"
+        claim_json_rel = s.artifact_paths.get("claim_stability.json")
+        claim_json_url = (
+            _github_blob_url(repo_url, str(Path("atlas") / claim_json_rel))
+            if claim_json_rel
+            else f"#{anchor}"
         )
+        search_blob = " ".join(
+            [
+                s.submission_id,
+                s.title,
+                s.task,
+                s.suite,
+                s.contributor,
+                " ".join(s.claim_types),
+                " ".join(s.spaces),
+                " ".join(s.methods),
+            ]
+        ).lower()
+        lines.append(
+            f'<tr class="csr-row" tabindex="0" data-href="#{_escape(anchor)}" data-task="{_escape(s.task)}" '
+            f'data-claims="{_escape(",".join(s.claim_types))}" data-search="{_escape(search_blob)}">'
+        )
+        lines.append(f'<td><a href="#{_escape(anchor)}"><code>{_escape(s.submission_id)}</code></a></td>')
+        lines.append(f"<td>{_escape(s.task)}</td>")
+        lines.append(f"<td>{_escape(s.suite)}</td>")
+        lines.append(f"<td>{_render_pills(s.claim_types)}</td>")
+        lines.append(f"<td>{_render_pills(s.spaces)}</td>")
+        lines.append(f"<td>{_escape(s.contributor)}</td>")
+        lines.append(
+            f'<td><a class="csr-link-btn" href="{_escape(claim_json_url)}" target="_blank" rel="noopener">claim_stability.json</a></td>'
+        )
+        lines.append("</tr>")
+    lines.append("</tbody>")
+    lines.append("</table>")
+    lines.append("</div>")
 
     for s in snapshots:
+        anchor = f"submission-{_slugify(s.submission_id)}"
         lines.append("")
-        lines.append(f"## Submission `{s.submission_id}`")
+        lines.append(f'<section id="{_escape(anchor)}" class="csr-entry">')
+        lines.append(
+            f'<h2>Submission <code>{_escape(s.submission_id)}</code></h2>'
+        )
+        lines.append(
+            f'<p class="csr-entry-meta"><strong>{_escape(s.title)}</strong> · {_escape(s.task)} / {_escape(s.suite)} · by {_escape(s.contributor)} · {_escape(s.created_at_utc)}</p>'
+        )
+        lines.append('<div class="csr-pill-row">')
+        lines.append(_render_pills(s.claim_types))
+        lines.append(_render_pills(s.spaces))
+        lines.append("</div>")
         lines.append("")
-        lines.append(f"- Title: {s.title}")
-        lines.append(f"- Created (UTC): {s.created_at_utc}")
-        lines.append(f"- Task: `{s.task}`")
-        lines.append(f"- Suite: `{s.suite}`")
-        lines.append(f"- Claim types: `{', '.join(s.claim_types)}`")
-        lines.append(f"- Algorithms (methods): `{', '.join(s.methods) if s.methods else 'N/A'}`")
+        lines.append("Methods:")
         lines.append("")
-        lines.append("Claims:")
+        lines.append(f"- `{', '.join(s.methods) if s.methods else 'N/A'}`")
+        lines.append("")
         rendered_claims = s.claim_summaries or s.claims
+        lines.append('<details class="csr-fold" open>')
+        lines.append(f"<summary>Claims ({len(rendered_claims) if rendered_claims else 0})</summary>")
         if rendered_claims:
+            lines.append("<ul>")
             for c in rendered_claims:
-                lines.append(f"- `{c}`")
+                lines.append(f"<li><code>{_escape(c)}</code></li>")
+            lines.append("</ul>")
         else:
-            lines.append("- `N/A`")
+            lines.append("<p><code>N/A</code></p>")
+        lines.append("</details>")
 
         lines.append("")
-        lines.append("Perturbation / Sampling settings:")
-        lines.append("")
-        lines.append("| space_preset | mode | sample_size | seed | sampled_with_baseline | perturbation_space_size |")
-        lines.append("|---|---:|---:|---:|---:|---:|")
+        lines.append('<details class="csr-fold" open>')
+        lines.append("<summary>Perturbation / Sampling settings</summary>")
+        lines.append('<div class="csr-mini-table-wrap">')
+        lines.append('<table class="csr-mini-table">')
+        lines.append("<thead>")
+        lines.append("<tr>")
+        lines.append("<th>space_preset</th><th>mode</th><th>sample_size</th><th>seed</th><th>sampled_with_baseline</th><th>perturbation_space_size</th>")
+        lines.append("</tr>")
+        lines.append("</thead>")
+        lines.append("<tbody>")
         if s.sampling_rows:
             seen_rows = set()
             for row in s.sampling_rows:
@@ -228,36 +347,57 @@ def build_dataset_registry_markdown(
                     continue
                 seen_rows.add(row_key)
                 lines.append(
-                    f"| `{row.get('space_preset')}` | `{row.get('mode')}` | `{row.get('sample_size')}` | `{row.get('seed')}` | `{row.get('sampled_with_baseline')}` | `{row.get('space_size')}` |"
+                    "<tr>"
+                    f"<td><code>{_escape(row.get('space_preset'))}</code></td>"
+                    f"<td><code>{_escape(row.get('mode'))}</code></td>"
+                    f"<td><code>{_escape(row.get('sample_size'))}</code></td>"
+                    f"<td><code>{_escape(row.get('seed'))}</code></td>"
+                    f"<td><code>{_escape(row.get('sampled_with_baseline'))}</code></td>"
+                    f"<td><code>{_escape(row.get('space_size'))}</code></td>"
+                    "</tr>"
                 )
         else:
-            lines.append("| `N/A` | `N/A` | `N/A` | `N/A` | `N/A` | `N/A` |")
+            lines.append('<tr><td colspan="6"><code>N/A</code></td></tr>')
+        lines.append("</tbody>")
+        lines.append("</table>")
+        lines.append("</div>")
+        lines.append("</details>")
 
         if s.baseline:
             lines.append("")
-            lines.append("Reference baseline configuration:")
-            lines.append("")
-            lines.append("```json")
-            lines.append(json.dumps(s.baseline, indent=2))
-            lines.append("```")
+            lines.append('<details class="csr-fold">')
+            lines.append("<summary>Reference baseline configuration</summary>")
+            lines.append('<pre class="csr-codeblock"><code class="language-json">')
+            lines.append(_escape(json.dumps(s.baseline, indent=2)))
+            lines.append("</code></pre>")
+            lines.append("</details>")
 
         lines.append("")
         lines.append("Artifacts:")
+        lines.append("")
+        lines.append('<div class="csr-artifact-grid">')
         for name, rel_path in sorted(s.artifact_paths.items()):
             public_rel = str(Path("atlas") / rel_path)
             url = _github_blob_url(repo_url, public_rel)
-            lines.append(f"- `{name}`: [{public_rel}]({url})")
+            lines.append(
+                f'<a class="csr-artifact-link" href="{_escape(url)}" target="_blank" rel="noopener"><span>{_escape(name)}</span><small>{_escape(public_rel)}</small></a>'
+            )
+        lines.append("</div>")
 
         if s.reproduce_command:
             lines.append("")
-            lines.append("Reproduce command:")
-            lines.append("")
-            lines.append("```bash")
-            lines.append(s.reproduce_command)
-            lines.append("```")
+            lines.append('<details class="csr-fold">')
+            lines.append("<summary>Reproduce command</summary>")
+            lines.append('<pre class="csr-codeblock"><code class="language-bash">')
+            lines.append(_escape(s.reproduce_command))
+            lines.append("</code></pre>")
+            lines.append("</details>")
         if s.how_to_cite:
             lines.append("")
             lines.append(f"Citation: [{s.how_to_cite}]({s.how_to_cite})")
+        lines.append("")
+        lines.append('<p class="csr-backtop"><a href="#dataset-registry-overview">Back to overview</a></p>')
+        lines.append("</section>")
 
     lines.append("")
     lines.append("## How To Add New Dataset Rows")
