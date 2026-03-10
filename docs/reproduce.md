@@ -3,6 +3,8 @@
 This page lists copy-paste commands for the current workflows in this repo.
 
 For the canonical command-to-directory mapping, see [Output Directory Map](output_map.md).
+For the locked ICSE experiment set, see [ICSE Experiment Matrix](icse_experiment_matrix.md).
+Compatibility guarantees and validation gates are in [Compatibility Contract](compatibility_contract.md).
 
 ## Output Convention (Canonical)
 
@@ -42,6 +44,28 @@ Expected artifacts:
 - `output/paper_artifact/structural/robustness_map.json`
 - `output/paper_artifact/structural/rq_summary.json`
 
+## 1.6) Decision-claim track (BV)
+
+```bash
+python -m claimstab.cli validate-spec --spec specs/paper_decision.yml
+python -m claimstab.cli run --spec specs/paper_decision.yml --out-dir output/presentation_large/large/bv_decision --report
+```
+
+Expected artifacts:
+- `output/presentation_large/large/bv_decision/claim_stability.json`
+- `output/presentation_large/large/bv_decision/rq_summary.json`
+
+## 1.7) Distribution-claim track (Grover)
+
+```bash
+python -m claimstab.cli validate-spec --spec specs/paper_distribution.yml
+python -m claimstab.cli run --spec specs/paper_distribution.yml --out-dir output/presentation_large/large/grover_distribution --report
+```
+
+Expected artifacts:
+- `output/presentation_large/large/grover_distribution/claim_stability.json`
+- `output/presentation_large/large/grover_distribution/rq_summary.json`
+
 ## 2) Device-aware extension
 
 ```bash
@@ -51,6 +75,16 @@ python -m claimstab.cli run --spec specs/paper_device.yml --out-dir output/prese
 
 Expected artifacts:
 - `output/presentation/device_extension/...` (mode-dependent summaries, CSV/JSON)
+
+## 2.5) Boundary challenge pack
+
+```bash
+python examples/exp_boundary_challenge.py --out output/presentation_large/boundary
+```
+
+Expected artifacts:
+- `output/presentation_large/boundary/run/claim_stability.json`
+- `output/presentation_large/boundary/boundary_summary.json`
 
 ## 3) Non-MaxCut BV + Atlas publication
 

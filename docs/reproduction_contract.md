@@ -1,6 +1,7 @@
 # Reproduction Contract
 
 This contract defines what is required to reproduce the **main paper evaluation** versus optional extension tracks.
+The locked experiment matrix is documented in `docs/icse_experiment_matrix.md`.
 
 ## Scope
 - **Main paper evaluation**: comprehensive claim-stability experiments from `examples/exp_comprehensive_*.py`.

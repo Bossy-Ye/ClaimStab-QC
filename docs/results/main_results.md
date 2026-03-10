@@ -13,8 +13,10 @@ Both phases evaluate:
 This produces a 27-row space×claim×delta comparative matrix per phase.
 
 Additional tracks used for generality:
-- **Bernstein-Vazirani decision-claim benchmark** (non-optimization control task).
-- **GHZ structural compilation benchmark** (circuit-depth / 2Q structural claims).
+- **Bernstein-Vazirani decision-claim benchmark** via `specs/paper_decision.yml`.
+- **Grover distribution-claim benchmark** via `specs/paper_distribution.yml`.
+- **GHZ structural compilation benchmark** via `specs/paper_structural.yml`.
+- **Boundary challenge pack** via `specs/paper_boundary.yml`.
 
 ## Key Takeaways
 - `compilation_only` is the most stable regime overall.

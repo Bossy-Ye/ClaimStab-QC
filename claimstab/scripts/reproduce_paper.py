@@ -21,6 +21,24 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--sample-size-large", type=int, default=64)
     ap.add_argument("--sample-size-structural", type=int, default=48)
     ap.add_argument("--sample-seed", type=int, default=42)
+    ap.add_argument(
+        "--include-decision",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Also run BV decision track (specs/paper_decision.yml).",
+    )
+    ap.add_argument(
+        "--include-distribution",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Also run Grover distribution track (specs/paper_distribution.yml).",
+    )
+    ap.add_argument(
+        "--include-boundary",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Also run boundary challenge pack (examples/exp_boundary_challenge.py).",
+    )
     return ap.parse_args()
 
 
@@ -52,6 +70,9 @@ def main() -> None:
     calibration_dir = out_root / "calibration"
     large_dir = out_root / "large"
     structural_dir = out_root / "structural"
+    decision_dir = out_root / "decision"
+    distribution_dir = out_root / "distribution"
+    boundary_dir = out_root / "boundary"
     figures_main_dir = out_root / "figures" / "main"
     figures_structural_dir = out_root / "figures" / "structural"
 
@@ -94,6 +115,47 @@ def main() -> None:
     for cmd in commands:
         _run(cmd)
 
+    optional_commands: list[list[str]] = []
+    if args.include_decision:
+        optional_commands.append(
+            [
+                sys.executable,
+                "-m",
+                "claimstab.cli",
+                "run",
+                "--spec",
+                "specs/paper_decision.yml",
+                "--out-dir",
+                str(decision_dir),
+                "--report",
+            ]
+        )
+    if args.include_distribution:
+        optional_commands.append(
+            [
+                sys.executable,
+                "-m",
+                "claimstab.cli",
+                "run",
+                "--spec",
+                "specs/paper_distribution.yml",
+                "--out-dir",
+                str(distribution_dir),
+                "--report",
+            ]
+        )
+    if args.include_boundary:
+        optional_commands.append(
+            [
+                sys.executable,
+                "examples/exp_boundary_challenge.py",
+                "--out",
+                str(boundary_dir),
+            ]
+        )
+    for cmd in optional_commands:
+        _run(cmd)
+
     generated_reports = _render_reports(out_root)
 
     _run(
@@ -131,6 +193,9 @@ def main() -> None:
             "calibration": str(calibration_dir),
             "large": str(large_dir),
             "structural": str(structural_dir),
+            "decision": str(decision_dir) if args.include_decision else None,
+            "distribution": str(distribution_dir) if args.include_distribution else None,
+            "boundary": str(boundary_dir) if args.include_boundary else None,
         },
         "figures": {
             "main": str(figures_main_dir),
@@ -138,6 +203,8 @@ def main() -> None:
         },
         "generated_reports": generated_reports,
         "commands": [" ".join(cmd) for cmd in commands],
+        "optional_commands": [" ".join(cmd) for cmd in optional_commands],
+        "experiment_matrix_doc": str((Path("docs") / "icse_experiment_matrix.md").resolve()),
     }
     manifest_path = out_root / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")

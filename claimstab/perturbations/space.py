@@ -145,3 +145,42 @@ class PerturbationSpace:
             shots_list=[64],
             seeds_simulator=[0, 1, 2],
         )
+
+    @staticmethod
+    def compilation_stress() -> "PerturbationSpace":
+        """
+        Optional expanded compilation-focused preset.
+        """
+        return PerturbationSpace(
+            seeds_transpiler=list(range(20)),
+            opt_levels=[0, 1, 2, 3],
+            layout_methods=["trivial", "sabre"],
+            shots_list=[1024],
+            seeds_simulator=[0],
+        )
+
+    @staticmethod
+    def sampling_stress() -> "PerturbationSpace":
+        """
+        Optional expanded execution-focused preset with wider shot/seed ranges.
+        """
+        return PerturbationSpace(
+            seeds_transpiler=[0],
+            opt_levels=[1],
+            layout_methods=["sabre"],
+            shots_list=[8, 16, 32, 64, 128, 256, 1024, 4096],
+            seeds_simulator=list(range(32)),
+        )
+
+    @staticmethod
+    def combined_stress() -> "PerturbationSpace":
+        """
+        Optional mixed preset for stronger stress testing across both dimensions.
+        """
+        return PerturbationSpace(
+            seeds_transpiler=list(range(12)),
+            opt_levels=[0, 1, 2, 3],
+            layout_methods=["trivial", "sabre"],
+            shots_list=[16, 64, 256, 1024],
+            seeds_simulator=[0, 1, 2, 3, 4],
+        )

@@ -39,12 +39,15 @@ nav:
       - Device-aware Results: results/device_aware.md
       - Figures: results/figures.md
   - Reproduce: reproduce.md
+  - ICSE Experiment Matrix: icse_experiment_matrix.md
   - Output Map: output_map.md
   - Trace Cache Replay: trace_cache_replay.md
   - Artifact: artifact.md
   - Appendix:
       - ClaimAtlas Guide: atlas.md
+      - ICSE Evidence Map: for_icse.md
       - Architecture: ARCHITECTURE.md
+      - Compatibility Contract: compatibility_contract.md
       - Experiment Playbook: EXPERIMENT_PLAYBOOK.md
       - Implementation Catalog: generated/implementation_catalog.md
   - Cite: cite.md

@@ -13,7 +13,16 @@ ALLOWED_BACKEND_ENGINES = {"auto", "basic", "aer"}
 ALLOWED_NOISE_MODES = {"none", "from_device_profile"}
 ALLOWED_PROVIDERS = {"none", "ibm_fake", "generic"}
 ALLOWED_DEVICE_MODES = {"transpile_only", "noisy_sim"}
-ALLOWED_SPACE_PRESETS = {"baseline", "compilation_only", "sampling_only", "combined_light", "day1_default"}
+ALLOWED_SPACE_PRESETS = {
+    "baseline",
+    "compilation_only",
+    "sampling_only",
+    "combined_light",
+    "compilation_stress",
+    "sampling_stress",
+    "combined_stress",
+    "day1_default",
+}
 
 
 def load_yaml(path: str | Path) -> dict[str, Any]:

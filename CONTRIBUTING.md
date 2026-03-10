@@ -26,10 +26,13 @@ python -m pip install -e ".[aer,ibm,dev]"
 - Add or update tests for every logic change.
 - Keep CLI help text and README usage examples in sync with code.
 - Prefer deterministic outputs and explicit seeds in experiments.
+- Follow `docs/compatibility_contract.md` for stable interface constraints.
 
 ## Local Validation
 ```bash
 PYTHONPATH=. ./venv/bin/python -m pytest -q
+PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.check_refactor_compat --mode all
+PYTHONPATH=. ./venv/bin/python -m mkdocs build --strict
 ```
 
 For reporting changes, run:

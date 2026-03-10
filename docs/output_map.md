@@ -23,6 +23,9 @@ Legacy ad-hoc paths (`output/exp_*`) are still supported, but not preferred for 
 | Structural benchmark only | `examples/exp_structural_compilation.py --out-dir output/paper_artifact/structural` | `output/paper_artifact/structural/` |
 | Main spec run | `python -m claimstab.cli run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report` | `output/presentation_large/large/maxcut_ranking/` |
 | Structural spec run | `python -m claimstab.cli run --spec specs/paper_structural.yml --out-dir output/paper_artifact/structural --report` | `output/paper_artifact/structural/` |
+| Decision spec run | `python -m claimstab.cli run --spec specs/paper_decision.yml --out-dir output/presentation_large/large/bv_decision --report` | `output/presentation_large/large/bv_decision/` |
+| Distribution spec run | `python -m claimstab.cli run --spec specs/paper_distribution.yml --out-dir output/presentation_large/large/grover_distribution --report` | `output/presentation_large/large/grover_distribution/` |
+| Boundary challenge run | `python examples/exp_boundary_challenge.py --out output/presentation_large/boundary` | `output/presentation_large/boundary/{run,boundary_summary.json}` |
 | Device spec run | `python -m claimstab.cli run --spec specs/paper_device.yml --out-dir output/presentation/device_extension` | `output/presentation/device_extension/` |
 | BV + Atlas demo | `python -m claimstab.cli run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_bv_demo --report` | `output/atlas_bv_demo/` |
 | External task demo | `python -m claimstab.cli run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/sample_problem_demo_run --report` | `output/sample_problem_demo_run/` |

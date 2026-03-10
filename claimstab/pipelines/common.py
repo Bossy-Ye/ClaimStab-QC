@@ -28,6 +28,9 @@ SPACE_ALIASES: dict[str, str] = {
     "compilation_only": "compilation_only",
     "sampling_only": "sampling_only",
     "combined_light": "combined_light",
+    "compilation_stress": "compilation_stress",
+    "sampling_stress": "sampling_stress",
+    "combined_stress": "combined_stress",
     "day1_default": "baseline",
 }
 
@@ -119,6 +122,12 @@ def make_space(name: str, *, combined_light_shots: Sequence[int] | None = None) 
             shots_list=shots,
             seeds_simulator=[0, 1, 2],
         )
+    if name == "compilation_stress":
+        return PerturbationSpace.compilation_stress()
+    if name == "sampling_stress":
+        return PerturbationSpace.sampling_stress()
+    if name == "combined_stress":
+        return PerturbationSpace.combined_stress()
     raise ValueError(f"Unknown preset: {name}")
 
 

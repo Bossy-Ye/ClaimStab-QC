@@ -117,23 +117,59 @@
       "properties": {
         "preset": {
           "type": "string",
-          "enum": ["baseline", "compilation_only", "sampling_only", "combined_light", "day1_default"]
+          "enum": [
+            "baseline",
+            "compilation_only",
+            "sampling_only",
+            "combined_light",
+            "compilation_stress",
+            "sampling_stress",
+            "combined_stress",
+            "day1_default"
+          ]
         },
         "presets": {
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["baseline", "compilation_only", "sampling_only", "combined_light", "day1_default"]
+            "enum": [
+              "baseline",
+              "compilation_only",
+              "sampling_only",
+              "combined_light",
+              "compilation_stress",
+              "sampling_stress",
+              "combined_stress",
+              "day1_default"
+            ]
           },
           "minItems": 1
         },
         "transpile_space": {
           "type": "string",
-          "enum": ["baseline", "compilation_only", "sampling_only", "combined_light", "day1_default"]
+          "enum": [
+            "baseline",
+            "compilation_only",
+            "sampling_only",
+            "combined_light",
+            "compilation_stress",
+            "sampling_stress",
+            "combined_stress",
+            "day1_default"
+          ]
         },
         "noisy_space": {
           "type": "string",
-          "enum": ["baseline", "compilation_only", "sampling_only", "combined_light", "day1_default"]
+          "enum": [
+            "baseline",
+            "compilation_only",
+            "sampling_only",
+            "combined_light",
+            "compilation_stress",
+            "sampling_stress",
+            "combined_stress",
+            "day1_default"
+          ]
         }
       },
       "additionalProperties": false

@@ -1,6 +1,7 @@
 # ClaimStab-QC for ICSE: Contribution-to-Evidence Map
 
 This page maps each paper claim to concrete artifacts in `output/paper_pack/` so reviewers can audit decisions and provenance quickly.
+The locked command set is in `docs/icse_experiment_matrix.md`, and compatibility guarantees are in `docs/compatibility_contract.md`.
 
 ## C1. Claim-centric stability decisions under perturbation spaces
 - Contribution: Evaluate whether a claim remains valid across software-visible perturbations, not just single-point scores.

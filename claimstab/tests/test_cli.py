@@ -60,6 +60,43 @@ class TestCLI(unittest.TestCase):
             rc = cli.main(["validate-spec", "--spec", str(spec_path)])
             self.assertEqual(rc, 0)
 
+    def test_validate_spec_accepts_optional_stress_space_presets(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            spec_path = Path(td) / "spec.yml"
+            spec_path.write_text(
+                """
+                spec_version: 1
+                pipeline: main
+                suite: core
+                task:
+                  kind: maxcut
+                  suite: core
+                methods:
+                  - name: QAOA_p1
+                    kind: qaoa
+                    params: {p: 1}
+                  - name: RandomBaseline
+                    kind: random_baseline
+                claims:
+                  - type: ranking
+                    method_a: QAOA_p1
+                    method_b: RandomBaseline
+                    deltas: [0.0]
+                perturbations:
+                  preset: sampling_stress
+                sampling:
+                  mode: random_k
+                  sample_size: 4
+                  seed: 1
+                decision_rule:
+                  threshold: 0.95
+                  confidence_level: 0.95
+                """,
+                encoding="utf-8",
+            )
+            rc = cli.main(["validate-spec", "--spec", str(spec_path)])
+            self.assertEqual(rc, 0)
+
     def test_validate_evidence_subcommand(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             td_path = Path(td)

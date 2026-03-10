@@ -35,11 +35,17 @@ class TestPipelineCommon(unittest.TestCase):
     def test_canonical_aliases(self) -> None:
         self.assertEqual(canonical_suite_name("day1"), "core")
         self.assertEqual(canonical_space_name("day1_default", space_label="space"), "baseline")
+        self.assertEqual(canonical_space_name("sampling_stress", space_label="space"), "sampling_stress")
 
     def test_make_space_combined_light_override(self) -> None:
         space = make_space("combined_light", combined_light_shots=[64, 256, 1024])
         self.assertIsInstance(space, PerturbationSpace)
         self.assertEqual(space.shots_list, [64, 256, 1024])
+
+    def test_make_space_optional_stress_presets(self) -> None:
+        self.assertGreater(make_space("compilation_stress").size(), make_space("compilation_only").size())
+        self.assertGreater(make_space("sampling_stress").size(), make_space("sampling_only").size())
+        self.assertGreater(make_space("combined_stress").size(), make_space("combined_light").size())
 
     def test_baseline_helpers(self) -> None:
         space = make_space("baseline")

@@ -21,7 +21,7 @@ Evaluates claim truth/flip behavior and computes stability decisions.
 Provides inference policies used by claim evaluation (for example Wilson/Beta CI paths).
 
 7. `analysis/`
-Aggregates RQ summaries and post-hoc diagnostics across experiments.
+Aggregates RQ summaries and post-hoc diagnostics across experiments, including optional synthetic-truth calibration (`analysis/synthetic_truth.py`).
 
 8. `evidence/`
 Implements CEP (Claim Evidence Protocol) schema/build/validation logic.

@@ -127,6 +127,7 @@ More docs:
 - Project website: [ClaimStab-QC](https://bossy-ye.github.io/ClaimStab-QC/)
 - Live interaction page (no local install needed): [Live Claim Explorer](https://bossy-ye.github.io/ClaimStab-QC/explorer/)
 - Docs quickstart: [Quickstart](https://bossy-ye.github.io/ClaimStab-QC/quickstart/)
+- Locked ICSE matrix: [ICSE Experiment Matrix](https://bossy-ye.github.io/ClaimStab-QC/icse_experiment_matrix/)
 - Public dataset registry: [Dataset Registry](https://bossy-ye.github.io/ClaimStab-QC/dataset_registry/)
 - Output directory map: [Output Map](https://bossy-ye.github.io/ClaimStab-QC/output_map/)
 - Auto-generated implementation catalog: [Implementation Catalog](https://bossy-ye.github.io/ClaimStab-QC/generated/implementation_catalog/)
@@ -187,6 +188,9 @@ Preferred artifact roots:
 - [`specs/paper_main.yml`](./specs/paper_main.yml): main paper track.
 - [`specs/paper_structural.yml`](./specs/paper_structural.yml): structural compilation track.
 - [`specs/paper_device.yml`](./specs/paper_device.yml): multi-device extension.
+- [`specs/paper_decision.yml`](./specs/paper_decision.yml): BV decision-claim track.
+- [`specs/paper_distribution.yml`](./specs/paper_distribution.yml): Grover distribution-claim track.
+- [`specs/paper_boundary.yml`](./specs/paper_boundary.yml): near-threshold boundary challenge pack.
 - [`specs/atlas_bv_demo.yml`](./specs/atlas_bv_demo.yml): BV dataset workflow demo.
 
 ## Report and Figures
