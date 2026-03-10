@@ -24,7 +24,7 @@ nav:
       - Quickstart: quickstart.md
       - Reproduce: reproduce.md
       - Output Map: output_map.md
-      - ICSE Experiment Matrix: icse_experiment_matrix.md
+      - Experiment Matrix: experiment_matrix.md
   - Concepts:
       - Claims: concepts/claims.md
       - Perturbations: concepts/perturbations.md
@@ -49,7 +49,7 @@ nav:
       - Reproduction Contract: reproduction_contract.md
       - Release Checklist: release_checklist.md
       - Release Notes Template: release_notes_template.md
-      - ICSE Evidence Map: for_icse.md
+      - Evidence Map: evidence_map.md
       - Architecture: ARCHITECTURE.md
       - Compatibility Contract: compatibility_contract.md
       - Experiment Playbook: EXPERIMENT_PLAYBOOK.md

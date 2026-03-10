@@ -1,6 +1,6 @@
-# ICSE Experiment Matrix (Locked)
+# Experiment Matrix (Locked)
 
-This matrix defines the canonical experiment set for ICSE evaluation and artifact review.
+This matrix defines the canonical experiment set for evaluation and artifact review.
 
 ## Scope Classes
 - **Core**: required for paper claims and primary figures.

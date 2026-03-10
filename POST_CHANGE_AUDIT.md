@@ -6,7 +6,7 @@ Audit scope: strict verification of completed changes only (no further optimizat
 
 Overall outcome:
 
-- Priority 1 (ICSE clarity/credibility/reproducibility): **PARTIAL**
+- Priority 1 (submission clarity/credibility/reproducibility): **PARTIAL**
 - Priority 2 (future infrastructure potential): **PASS**
 - Priority 3 (avoid over-productization): **PASS**
 
@@ -156,7 +156,7 @@ Audited surfaces:
 
 - Artifact/appendix area remains broad (expected for research repos), but now appropriately behind primary onboarding.
 
-### ICSE communication impact
+### Submission communication impact
 
 - **Improved materially** for newcomer-first reviewer flow.
 
@@ -203,19 +203,19 @@ Audited surfaces:
 
 ### 7.4 Most unnecessary completed change (if forced to cut one)
 
-- `docs/release_notes_template.md` (useful but lowest immediate ICSE-impact among completed items).
+- `docs/release_notes_template.md` (useful but lowest immediate submission-impact among completed items).
 
 ### Scope risks (ranked)
 
 1. **[High]** Remote CI red remains unresolved despite local green.
 2. **[Medium]** Canonical invocation strictness slightly diluted by listing multiple stable entrypoints early in README.
-3. **[Low]** Release-note template inclusion is low-impact relative to immediate ICSE trust gains.
+3. **[Low]** Release-note template inclusion is low-impact relative to immediate submission trust gains.
 
 ---
 
 ## 8. Final Verdict
 
-### Ready for ICSE-facing use
+### Ready for submission-facing use
 
 - **PARTIAL**
 - Reason: clarity/onboarding and schema consistency improved, but remote CI trust signal is still red.

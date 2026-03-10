@@ -9,7 +9,7 @@ python -m pip install -e .
 
 CLI check:
 ```bash
-claimstab --help
+python -m claimstab.cli --help
 ```
 
 With optional extras:
@@ -22,36 +22,29 @@ python -m pip install -e ".[aer,ibm,docs,dev]"
 Run a small claim-stability demo:
 
 ```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
-  --suite core \
-  --sampling-mode random_k \
-  --sample-size 8 \
-  --sample-seed 1 \
-  --out-dir output/quickstart
+python -m claimstab.cli validate-spec --spec specs/atlas_bv_demo.yml
+python -m claimstab.cli run --spec specs/atlas_bv_demo.yml --out-dir output/quickstart --report
+python -m claimstab.cli validate-evidence --json output/quickstart/claim_stability.json
 ```
 
 Expected outputs:
 - `output/quickstart/scores.csv`
 - `output/quickstart/claim_stability.json`
-
-Equivalent CLI run from spec:
-```bash
-python -m claimstab.cli validate-spec --spec specs/paper_main.yml
-python -m claimstab.cli run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
-python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
-```
+- `output/quickstart/rq_summary.json`
+- `output/quickstart/robustness_map.json`
+- `output/quickstart/stability_report.html`
 
 ## Evaluation Tracks
 Main paper tracks:
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_calibration.py
-PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py
-PYTHONPATH=. ./venv/bin/python examples/exp_structural_compilation.py
+PYTHONPATH=. ./.venv/bin/python examples/exp_comprehensive_calibration.py
+PYTHONPATH=. ./.venv/bin/python examples/exp_comprehensive_large.py
+PYTHONPATH=. ./.venv/bin/python examples/exp_structural_compilation.py
 ```
 
 Device-targeted extension:
 ```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app --run all --suite standard --out-dir output/multidevice_full
+PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.multidevice_app --run all --suite standard --out-dir output/multidevice_full
 ```
 
 External task plugin demo:
@@ -76,7 +69,7 @@ make reproduce-paper
 
 ## Generate HTML Report
 ```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.generate_stability_report \
+PYTHONPATH=. ./.venv/bin/python -m claimstab.scripts.generate_stability_report \
   --json output/quickstart/claim_stability.json \
   --out output/quickstart/stability_report.html
 ```
@@ -96,10 +89,10 @@ Template specs are available in:
 - `examples/specs/perturbation_spec.yaml`
 - `specs/atlas_bv_demo.yml` (small end-to-end publishable example)
 
-Example run with a spec file:
+Advanced direct pipeline entrypoint (secondary path):
 
 ```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
+PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --suite core \
   --spec examples/specs/claim_spec.yaml \
   --out-dir output/spec_run
@@ -117,7 +110,7 @@ Plot-enabled report:
 
 ```bash
 MPLBACKEND=Agg MPLCONFIGDIR=/tmp/mplcache XDG_CACHE_HOME=/tmp/cache \
-PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.generate_stability_report \
+PYTHONPATH=. ./.venv/bin/python -m claimstab.scripts.generate_stability_report \
   --json output/quickstart/claim_stability.json \
   --out output/quickstart/stability_report_plots.html \
   --with-plots

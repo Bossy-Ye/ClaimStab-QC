@@ -1,21 +1,21 @@
-# Release Plan (Minimal, ICSE-Aligned)
+# Release Plan (Minimal, Submission-Aligned)
 
 ## Decision
 
 1. GitHub Release: Yes, once readiness gates pass.
-2. PyPI: Postpone until post-ICSE stabilization.
+2. PyPI: Postpone until post-submission stabilization.
 
 ## Why GitHub Release First
 
 1. Captures code/docs/artifact state with commit/tag provenance.
-2. Supports ICSE artifact review and reproducibility references.
+2. Supports artifact review and reproducibility references.
 3. Lower operational risk than immediate package-publication promises.
 
 ## Why PyPI Is Deferred
 
 1. Interface hardening is still in progress.
 2. Optional dependency matrix is non-trivial for first external users.
-3. Better to publish after one full ICSE cycle and post-submission cleanup.
+3. Better to publish after one full submission cycle and post-submission cleanup.
 
 ## Release Readiness Gates
 
@@ -38,8 +38,8 @@ All must pass:
 
 ## Release Notes Structure
 
-1. What this release is (ICSE-focused stability/repro release).
+1. What this release is (submission-focused stability/repro release).
 2. User-visible changes (CLI/docs/workflow clarity).
 3. Compatibility contract and non-breaking statement.
 4. Reproduction commands.
-5. Known limitations and planned post-ICSE work.
+5. Known limitations and planned post-submission work.

@@ -14,28 +14,28 @@ python -m pip install -e ".[aer,ibm,dev,docs]"
 
 ## Run Tests
 ```bash
-PYTHONPATH=. ./venv/bin/python -m pytest -q
+PYTHONPATH=. ./.venv/bin/python -m pytest -q
 ```
 
 ## Run Experiments
 Main paper track (calibration):
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_calibration.py --out-dir output/presentation_large/calibration
+PYTHONPATH=. ./.venv/bin/python examples/exp_comprehensive_calibration.py --out-dir output/presentation_large/calibration
 ```
 
 Main paper track (large):
 ```bash
-PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py --out-dir output/presentation_large/large
+PYTHONPATH=. ./.venv/bin/python examples/exp_comprehensive_large.py --out-dir output/presentation_large/large
 ```
 
 Legacy/core smoke:
 ```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app --suite core --out-dir output/core
+PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.claim_stability_app --suite core --out-dir output/core
 ```
 
 Comprehensive:
 ```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
+PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --suite large \
   --space-presets compilation_only,sampling_only,combined_light \
   --claim-pairs "QAOA_p2>RandomBaseline,QAOA_p2>QAOA_p1,QAOA_p1>RandomBaseline" \
@@ -47,7 +47,7 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
 
 Device-aware extension:
 ```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app --run all --suite standard --out-dir output/multidevice
+PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.multidevice_app --run all --suite standard --out-dir output/multidevice
 ```
 
 ## Validate Outputs
@@ -60,5 +60,5 @@ Check these fields in JSON:
 
 Lightweight structural invariant check:
 ```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.check_expected --out-dir output/expected_check --keep
+PYTHONPATH=. ./.venv/bin/python -m claimstab.scripts.check_expected --out-dir output/expected_check --keep
 ```

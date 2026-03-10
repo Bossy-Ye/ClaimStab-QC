@@ -3,7 +3,7 @@
 This page lists copy-paste commands for the current workflows in this repo.
 
 For the canonical command-to-directory mapping, see [Output Directory Map](output_map.md).
-For the locked ICSE experiment set, see [ICSE Experiment Matrix](icse_experiment_matrix.md).
+For the locked experiment set, see [Experiment Matrix](experiment_matrix.md).
 Compatibility guarantees and validation gates are in [Compatibility Contract](compatibility_contract.md).
 
 ## Output Convention (Canonical)
@@ -34,7 +34,7 @@ Expected artifacts:
 
 ```bash
 python -m claimstab.cli validate-spec --spec specs/paper_structural.yml
-PYTHONPATH=. ./venv/bin/python examples/exp_structural_compilation.py --out-dir output/paper_artifact/structural
+PYTHONPATH=. ./.venv/bin/python examples/exp_structural_compilation.py --out-dir output/paper_artifact/structural
 python -m claimstab.cli validate-evidence --json output/paper_artifact/structural/claim_stability.json
 ```
 

@@ -27,7 +27,7 @@ def _module_path_for_python_file(path: Path) -> str:
         rel = stem.resolve().relative_to(Path.cwd().resolve())
         return ".".join(rel.parts)
     except Exception:
-        return stem.name
+        return str(path.resolve())
 
 
 def cmd_init_external_task(args: argparse.Namespace) -> int:
@@ -122,7 +122,7 @@ meta:
 task:
   kind: external
   entrypoint: {module_path}:{class_name}
-  suite: toy
+  suite: core
   params:
     num_qubits: 6
     num_instances: 3
@@ -164,7 +164,7 @@ backend:
     print(f"- Task plugin: {task_file}")
     print(f"- Spec: {spec_file}")
     print("Next steps:")
-    print(f"1) claimstab validate-spec --spec {spec_file}")
-    print(f"2) claimstab run --spec {spec_file} --out-dir output/{slug} --report")
-    print(f"3) claimstab publish-result --run-dir output/{slug} --atlas-root atlas --contributor your_name")
+    print(f"1) python -m claimstab.cli validate-spec --spec {spec_file}")
+    print(f"2) python -m claimstab.cli run --spec {spec_file} --out-dir output/{slug} --report")
+    print(f"3) python -m claimstab.cli publish-result --run-dir output/{slug} --atlas-root atlas --contributor your_name")
     return 0

@@ -69,7 +69,7 @@ def make_task(raw_task: dict[str, Any] | None, *, default_suite: str = "core") -
 
     if cfg.kind.lower() == "external":
         if not cfg.entrypoint:
-            raise TaskSpecError("task.kind=external requires task.entrypoint='module:Class'.")
+            raise TaskSpecError("task.kind=external requires task.entrypoint='module:Class' or 'path/to/task.py:Class'.")
         cls = load_external_task(cfg.entrypoint)
     else:
         cls = get_task_class(cfg.kind)

@@ -51,7 +51,7 @@ def summarize_claim_payload(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def parse_args() -> argparse.Namespace:
-    ap = argparse.ArgumentParser(description="Run a locked ICSE method-set bundle across claim types.")
+    ap = argparse.ArgumentParser(description="Run a locked method-set bundle across claim types.")
     ap.add_argument("--out", default="output/presentation_large/icse_methodset")
     ap.add_argument("--skip-run", action="store_true", help="Skip execution and summarize existing outputs only.")
     return ap.parse_args()

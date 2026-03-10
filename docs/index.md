@@ -10,8 +10,8 @@ If this is your first visit, follow this order:
 2. [Reproduce](reproduce.md)
 3. [Output Directory Map](output_map.md)
 
-Locked ICSE run set:
-- [ICSE Experiment Matrix](icse_experiment_matrix.md)
+Locked run set:
+- [Experiment Matrix](experiment_matrix.md)
 
 ## What ClaimStab Checks
 
@@ -73,4 +73,4 @@ These are preserved as future-facing infrastructure assets, but are not required
 - [Main Results](results/main_results.md)
 - [Reproduction Contract](reproduction_contract.md)
 - [Compatibility Contract](compatibility_contract.md)
-- [ICSE Evidence Map](for_icse.md)
+- [Evidence Map](evidence_map.md)

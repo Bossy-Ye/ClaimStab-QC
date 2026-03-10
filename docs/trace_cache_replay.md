@@ -5,7 +5,7 @@ This page shows copy-paste commands for the trace/cache/replay workflow.
 ## 1) Main pipeline with cache + trace + events
 
 ```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
+PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --task maxcut \
   --suite core \
   --space-preset sampling_only \
@@ -21,7 +21,7 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
 ## 2) Main pipeline replay (no execution)
 
 ```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
+PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --task maxcut \
   --suite core \
   --space-preset sampling_only \
@@ -32,7 +32,7 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.claim_stability_app \
 ## 3) Multi-device transpile-only with cache + trace + events
 
 ```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app \
+PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.multidevice_app \
   --run transpile_only \
   --suite core \
   --sampling-mode random_k \
@@ -49,7 +49,7 @@ PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app \
 ## 4) Multi-device replay (no execution)
 
 ```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app \
+PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.multidevice_app \
   --run transpile_only \
   --suite core \
   --transpile-devices FakeManilaV2 \

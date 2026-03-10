@@ -1,4 +1,4 @@
-# ICSE Focus Plan
+# Submission Focus Plan (for submission usage only)
 
 This round is about improving reviewer trust and first-time comprehension, not expanding research scope.
 
@@ -9,7 +9,7 @@ This round is about improving reviewer trust and first-time comprehension, not e
 3. Ensure docs and schema are fully consistent.
 4. Keep output/evidence contracts explicit and easy to validate.
 
-## What Strengthens ICSE Now
+## What Strengthens Submission Readiness Now
 
 1. A 2-3 minute project explanation for newcomers.
 2. One canonical command path for reproducing the main track.
