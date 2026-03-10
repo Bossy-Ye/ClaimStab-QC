@@ -27,7 +27,7 @@ def _module_path_for_python_file(path: Path) -> str:
         rel = stem.resolve().relative_to(Path.cwd().resolve())
         return ".".join(rel.parts)
     except Exception:
-        return stem.name
+        return str(path.resolve())
 
 
 def cmd_init_external_task(args: argparse.Namespace) -> int:

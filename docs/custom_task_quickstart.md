@@ -59,7 +59,7 @@ Published record:
 ## Common Mistakes (Quick Fixes)
 
 1. `entrypoint import` fails:
-`task.entrypoint` must be `module.path:ClassName` and class name must match exactly.
+`task.entrypoint` must be `module.path:ClassName` or `path/to/task.py:ClassName`, and class name must match exactly.
 
 2. Unknown method kind:
 ensure each `methods[*].kind` in YAML is handled in your task plugin `build(...)`.

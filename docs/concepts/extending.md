@@ -23,7 +23,7 @@ task:
   params: {}
 ```
 
-Task spec for external plugin (`module:Class`):
+Task spec for external plugin (`module:Class` or `path/to/task.py:Class`):
 ```yaml
 task:
   kind: external
