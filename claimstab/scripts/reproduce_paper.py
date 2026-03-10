@@ -204,7 +204,7 @@ def main() -> None:
         "generated_reports": generated_reports,
         "commands": [" ".join(cmd) for cmd in commands],
         "optional_commands": [" ".join(cmd) for cmd in optional_commands],
-        "experiment_matrix_doc": str((Path("docs") / "icse_experiment_matrix.md").resolve()),
+        "experiment_matrix_doc": str((Path("docs") / "experiment_matrix.md").resolve()),
     }
     manifest_path = out_root / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
