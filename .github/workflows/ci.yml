@@ -45,6 +45,11 @@ jobs:
         run: |
           echo "Python: ${{ matrix.python-version }}"
           echo "Install variant: ${{ matrix.install-variant }}"
+          python -VV
+          python - <<'PY'
+          import platform
+          print("Platform:", platform.platform())
+          PY
           python -m pip list
 
       - name: Run tests

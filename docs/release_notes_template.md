@@ -2,6 +2,39 @@
 
 Use this template for GitHub Releases during the ICSE-focused phase.
 
+## Pre-Filled Draft: `v0.1.0-icse-prep`
+
+Release Summary:
+
+- Version: `v0.1.0-icse-prep`
+- Scope: ICSE-facing clarity, reproducibility, and compatibility-safe documentation hardening
+- Project identity: ClaimStab-QC is a claim-centric framework for testing whether quantum-software paper conclusions remain valid under perturbations
+
+Supported claim types:
+
+- `ranking`
+- `decision`
+- `distribution`
+
+Stable vs experimental:
+
+- Stable: canonical CLI path (`python -m claimstab.cli ...`), core output contracts (`claim_stability.json`, `rq_summary.json`, `robustness_map.json`, `scores.csv`), report format, CEP evidence fields
+- Advanced/experimental: Live Claim Explorer, Dataset Registry/ClaimAtlas browsing, optional multidevice/noisy-sim extensions
+
+Quickstart / reproduction:
+
+```bash
+python -m claimstab.cli validate-spec --spec specs/paper_main.yml
+python -m claimstab.cli run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
+python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
+```
+
+Compatibility statement:
+
+- CLI command/flag compatibility: unchanged
+- Output artifact compatibility: unchanged
+- Evidence schema compatibility: unchanged
+
 ## Release Summary
 
 - Version:

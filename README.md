@@ -6,6 +6,8 @@
 
 ClaimStab-QC is a claim-centric framework for checking whether paper conclusions remain valid under software-visible perturbations in quantum software pipelines.
 
+Repository scope note: this repository surface is broader than the ICSE paper scope. The paper intentionally focuses on the fully validated methodological core; broader infrastructure is kept for reproducibility and future community adoption. See [PAPER_SCOPE.md](./PAPER_SCOPE.md).
+
 ## What Problem It Solves
 
 Most quantum-software papers report conclusions from one or a few configurations. ClaimStab-QC tests those conclusions across controlled perturbation spaces, quantifies uncertainty with confidence intervals, and returns conservative decisions:
@@ -34,10 +36,8 @@ Canonical schema: [claimstab/spec/schema_v1.json](./claimstab/spec/schema_v1.jso
 
 Stable interfaces (backward-compatible contract):
 
-- CLI entrypoints:
+- Canonical CLI path:
   - `python -m claimstab.cli ...`
-  - `python -m claimstab.pipelines.claim_stability_app ...`
-  - `python -m claimstab.pipelines.multidevice_app ...`
 - Core artifact names in run directories:
   - `claim_stability.json`, `rq_summary.json`, `robustness_map.json`, `scores.csv`
 - Report artifact:
@@ -47,8 +47,8 @@ Stable interfaces (backward-compatible contract):
 
 Advanced/experimental surface (kept, but not primary onboarding path):
 
-- Live Claim Explorer ([docs/explorer.md](./docs/explorer.md))
-- Dataset Registry / ClaimAtlas browsing ([docs/dataset_registry.md](./docs/dataset_registry.md))
+- Live Claim Explorer (advanced exploration surface): [docs/explorer.md](./docs/explorer.md)
+- Dataset Registry / ClaimAtlas browsing (community-facing infrastructure surface): [docs/dataset_registry.md](./docs/dataset_registry.md)
 - Optional multidevice/noisy simulation extensions
 
 Full contract: [docs/compatibility_contract.md](./docs/compatibility_contract.md)
@@ -75,6 +75,8 @@ python -m claimstab.cli run --spec specs/paper_main.yml --out-dir output/present
 ```bash
 python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
 ```
+
+Only this CLI path is recommended for first-time onboarding. Pipeline module entrypoints are available for advanced/internal workflows (see below).
 
 ## Minimal Input Spec
 
@@ -137,6 +139,11 @@ Decision semantics (same everywhere):
 - Dataset Registry: [docs/dataset_registry.md](./docs/dataset_registry.md)
 - ClaimAtlas guide: [docs/atlas.md](./docs/atlas.md)
 - Custom task onboarding: [docs/custom_task_quickstart.md](./docs/custom_task_quickstart.md)
+
+Advanced secondary entrypoints (not the canonical onboarding path):
+
+- `python -m claimstab.pipelines.claim_stability_app ...`
+- `python -m claimstab.pipelines.multidevice_app ...`
 
 ## Main Specs
 

@@ -1,6 +1,7 @@
 # ClaimStab-QC Paper Scope (ICSE)
 
 This document locks the paper-facing scope so the method narrative stays focused and reproducible.
+The repository intentionally contains a broader infrastructure surface than the paper narrative; items outside this scope remain available for reproducibility and future community workflows.
 
 ## In Scope (Primary Contributions)
 
@@ -54,4 +55,3 @@ These components support reproducibility and ecosystem usability; they should be
    - `claim_stability.json`
    - paper-pack manifest entry
 3. Keep CEP/Atlas discussion short and clearly labeled as artifact/reproducibility support.
-
