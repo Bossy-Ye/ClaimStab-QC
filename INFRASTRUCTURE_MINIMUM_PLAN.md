@@ -1,6 +1,6 @@
 # Infrastructure Minimum Plan
 
-Goal: stay infrastructure-ready without over-productizing pre-ICSE.
+Goal: stay infrastructure-ready without over-productizing pre-submission.
 
 ## Minimum Surface To Keep Now
 
@@ -30,7 +30,7 @@ Goal: stay infrastructure-ready without over-productizing pre-ICSE.
 3. Custom task onboarding path.
 4. Evidence protocol and traceability assets.
 
-## Post-ICSE (Explicitly Postponed)
+## Post-Submission (Explicitly Postponed)
 
 1. Platform productization and dashboard ecosystem.
 2. New API guarantees beyond current contracts.

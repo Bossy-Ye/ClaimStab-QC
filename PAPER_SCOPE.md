@@ -1,4 +1,4 @@
-# ClaimStab-QC Paper Scope (ICSE)
+# ClaimStab-QC Paper Scope
 
 This document locks the paper-facing scope so the method narrative stays focused and reproducible.
 The repository intentionally contains a broader infrastructure surface than the paper narrative; items outside this scope remain available for reproducibility and future community workflows.

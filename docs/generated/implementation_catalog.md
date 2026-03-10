@@ -138,7 +138,7 @@ This page is auto-generated from tracked repository files.
 - `docs/dataset_registry.md`
 - `docs/examples.md`
 - `docs/explorer.md`
-- `docs/for_icse.md`
+- `docs/evidence_map.md`
 - `docs/generated/.gitkeep`
 - `docs/generated/README.md`
 - `docs/generated/implementation_catalog.md`

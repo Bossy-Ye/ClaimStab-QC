@@ -6,7 +6,7 @@
 
 ClaimStab-QC is a claim-centric framework for checking whether paper conclusions remain valid under software-visible perturbations in quantum software pipelines.
 
-Repository scope note: this repository surface is broader than the ICSE paper scope. The paper intentionally focuses on the fully validated methodological core; broader infrastructure is kept for reproducibility and future community adoption. See [PAPER_SCOPE.md](./PAPER_SCOPE.md).
+Repository scope note: this repository surface is broader than the paper scope. The paper intentionally focuses on the fully validated methodological core; broader infrastructure is kept for reproducibility and future community adoption. See [PAPER_SCOPE.md](./PAPER_SCOPE.md).
 
 ## What Problem It Solves
 
@@ -18,7 +18,7 @@ Most quantum-software papers report conclusions from one or a few configurations
 
 ## Who It Is For
 
-- Researchers validating paper claims (ICSE/artifact-style reproducibility)
+- Researchers validating paper claims (artifact-style reproducibility)
 - Contributors adding new tasks/methods with a fixed spec contract
 - Advanced users comparing datasets through ClaimAtlas
 
@@ -129,7 +129,7 @@ Decision semantics (same everywhere):
 
 - Docs home: [ClaimStab-QC website](https://bossy-ye.github.io/ClaimStab-QC/)
 - Quickstart: [docs/quickstart.md](./docs/quickstart.md)
-- ICSE matrix (locked): [docs/icse_experiment_matrix.md](./docs/icse_experiment_matrix.md)
+- Experiment matrix (locked): [docs/experiment_matrix.md](./docs/experiment_matrix.md)
 - Output map: [docs/output_map.md](./docs/output_map.md)
 - Reproduction commands: [docs/reproduce.md](./docs/reproduce.md)
 

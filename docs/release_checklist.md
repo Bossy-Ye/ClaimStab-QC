@@ -1,11 +1,11 @@
 # Release Checklist (GitHub First)
 
-This checklist defines minimal readiness for a GitHub Release in the ICSE phase.
+This checklist defines minimal readiness for a GitHub Release in the current submission phase.
 
 ## Release Policy
 
 1. Publish GitHub Releases when gates pass.
-2. Defer PyPI publication until post-ICSE hardening.
+2. Defer PyPI publication until post-submission hardening.
 
 ## Readiness Gates (All Required)
 

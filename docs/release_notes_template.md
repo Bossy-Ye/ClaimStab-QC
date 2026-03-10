@@ -1,13 +1,13 @@
 # Release Notes Template
 
-Use this template for GitHub Releases during the ICSE-focused phase.
+Use this template for GitHub Releases during the submission-focused phase.
 
-## Pre-Filled Draft: `v0.1.0-icse-prep`
+## Pre-Filled Draft: `v0.1.0-research-baseline`
 
 Release Summary:
 
-- Version: `v0.1.0-icse-prep`
-- Scope: ICSE-facing clarity, reproducibility, and compatibility-safe documentation hardening
+- Version: `v0.1.0-research-baseline`
+- Scope: submission-facing clarity, reproducibility, and compatibility-safe documentation hardening
 - Project identity: ClaimStab-QC is a claim-centric framework for testing whether quantum-software paper conclusions remain valid under perturbations
 
 Supported claim types:
@@ -40,7 +40,7 @@ Compatibility statement:
 - Version:
 - Date:
 - Scope:
-- Positioning: ICSE-first clarity/reproducibility release.
+- Positioning: submission-first clarity/reproducibility release.
 
 ## Why This Release
 
