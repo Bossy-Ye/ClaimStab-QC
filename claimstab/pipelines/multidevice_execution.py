@@ -7,6 +7,7 @@ import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
+from time import perf_counter
 from typing import Any, Callable, Iterable
 
 from claimstab.cache.store import CacheStore
@@ -47,6 +48,7 @@ class MultideviceExecutionResult:
     trace_path: Path
     global_trace_index: TraceIndex | None
     global_device_summary: list[dict[str, object]]
+    practicality: dict[str, Any]
 
 
 def execute_multidevice_plan(
@@ -56,6 +58,7 @@ def execute_multidevice_plan(
     bound_task_cls: Any,
     generated_by: str = "claimstab/pipelines/multidevice_app.py",
 ) -> MultideviceExecutionResult:
+    perf_start = perf_counter()
     args = plan.args
     spec_payload = plan.spec_payload
     runtime_meta = plan.runtime_meta
@@ -65,6 +68,8 @@ def execute_multidevice_plan(
     trace_path = plan.trace_path
 
     global_device_summary: list[dict[str, object]] = []
+    total_rows_processed = 0
+    batch_practicality: dict[str, dict[str, Any]] = {}
     replay_rows_by_batch: dict[str, dict[str, dict[str, dict[str, list[ScoreRow]]]]] = {}
     replay_keys_by_batch: dict[str, set[ConfigKey]] = {}
     replay_space_by_batch: dict[str, str] = {}
@@ -84,6 +89,15 @@ def execute_multidevice_plan(
         )
 
     def write_skipped_batch_summary(*, batch_mode: str, requested_devices: list[str], reason: str) -> None:
+        batch_wall_time = 0.0
+        practicality = {
+            "num_workers": 1,
+            "total_wall_time": batch_wall_time,
+            "wall_time_ms": 0.0,
+            "rows_processed": 0,
+            "throughput_runs_per_sec": None,
+        }
+        batch_practicality[batch_mode] = practicality
         batch_dir = plan.out_root / batch_mode
         batch_dir.mkdir(parents=True, exist_ok=True)
         summary_payload = {
@@ -93,6 +107,7 @@ def execute_multidevice_plan(
                 "generated_by": generated_by,
                 "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
                 "runtime": runtime_meta,
+                "practicality": practicality,
                 "artifacts": {
                     "trace_jsonl": artifact_manifest.trace_jsonl,
                     "events_jsonl": artifact_manifest.events_jsonl,
@@ -132,6 +147,9 @@ def execute_multidevice_plan(
         replay_device_rows: dict[str, dict[str, dict[str, list[ScoreRow]]]] | None = None,
         replay_keys: set[ConfigKey] | None = None,
     ) -> None:
+        nonlocal total_rows_processed
+        batch_start = perf_counter()
+        batch_rows_processed = 0
         batch_dir = plan.out_root / batch_mode
         batch_dir.mkdir(parents=True, exist_ok=True)
         batch_experiments: list[dict[str, object]] = []
@@ -167,6 +185,7 @@ def execute_multidevice_plan(
                     all_rows = [row for rows in rows_by_graph.values() for row in rows]
                     if not all_rows:
                         continue
+                    batch_rows_processed += len(all_rows)
                     csv_name = f"{batch_mode}_{device_name}_{metric_name}.csv"
                     callbacks.write_rows_csv(all_rows, batch_dir / csv_name)
 
@@ -374,6 +393,8 @@ def execute_multidevice_plan(
                                     ]
                                 )
 
+                        batch_rows_processed += len(all_rows)
+
                         csv_name = f"{batch_mode}_{device_name}_{metric_name}.csv"
                         callbacks.write_rows_csv(all_rows, batch_dir / csv_name)
 
@@ -485,6 +506,17 @@ def execute_multidevice_plan(
                 if cache_store is not None:
                     cache_store.close()
 
+        batch_wall_time = perf_counter() - batch_start
+        total_rows_processed += batch_rows_processed
+        practicality = {
+            "num_workers": 1,
+            "total_wall_time": batch_wall_time,
+            "wall_time_ms": batch_wall_time * 1000.0,
+            "rows_processed": batch_rows_processed,
+            "throughput_runs_per_sec": (batch_rows_processed / batch_wall_time) if batch_wall_time > 0 else None,
+        }
+        batch_practicality[batch_mode] = practicality
+
         summary_payload = {
             "meta": {
                 "suite": suite_name,
@@ -492,6 +524,7 @@ def execute_multidevice_plan(
                 "generated_by": generated_by,
                 "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
                 "runtime": runtime_meta,
+                "practicality": practicality,
                 "artifacts": {
                     "trace_jsonl": artifact_manifest.trace_jsonl,
                     "events_jsonl": artifact_manifest.events_jsonl,
@@ -584,12 +617,23 @@ def execute_multidevice_plan(
                 replay_keys=replay_keys_by_batch.get("noisy_sim") if args.replay_trace else None,
             )
 
+    total_wall_time = perf_counter() - perf_start
+    practicality = {
+        "num_workers": 1,
+        "total_wall_time": total_wall_time,
+        "wall_time_ms": total_wall_time * 1000.0,
+        "rows_processed": total_rows_processed,
+        "throughput_runs_per_sec": (total_rows_processed / total_wall_time) if total_wall_time > 0 else None,
+        "by_batch": batch_practicality,
+    }
+
     return MultideviceExecutionResult(
         suite_name=suite_name,
         artifact_manifest=artifact_manifest,
         trace_path=trace_path,
         global_trace_index=global_trace_index,
         global_device_summary=global_device_summary,
+        practicality=practicality,
     )
 
 

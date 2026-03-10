@@ -40,6 +40,9 @@ class ScoreRow:
     two_qubit_count: int | None = None
     swap_count: int | None = None
     counts: dict[str, int] | None = None
+    transpile_time_ms: float | None = None
+    execute_time_ms: float | None = None
+    wall_time_ms: float | None = None
 
 
 class MatrixRunner:
@@ -198,6 +201,21 @@ class MatrixRunner:
                                     if store_counts
                                     else None
                                 ),
+                                transpile_time_ms=(
+                                    float(cached["transpile_time_ms"])
+                                    if cached.get("transpile_time_ms") is not None
+                                    else None
+                                ),
+                                execute_time_ms=(
+                                    float(cached["execute_time_ms"])
+                                    if cached.get("execute_time_ms") is not None
+                                    else None
+                                ),
+                                wall_time_ms=(
+                                    float(cached["wall_time_ms"])
+                                    if cached.get("wall_time_ms") is not None
+                                    else None
+                                ),
                             )
                         )
                         continue
@@ -269,6 +287,21 @@ class MatrixRunner:
                         two_qubit_count=details.two_qubit_count,
                         swap_count=details.swap_count,
                         counts=details.counts if store_counts else None,
+                        transpile_time_ms=(
+                            float(getattr(details, "transpile_time_ms"))
+                            if getattr(details, "transpile_time_ms", None) is not None
+                            else None
+                        ),
+                        execute_time_ms=(
+                            float(getattr(details, "execute_time_ms"))
+                            if getattr(details, "execute_time_ms", None) is not None
+                            else None
+                        ),
+                        wall_time_ms=(
+                            float(getattr(details, "wall_time_ms"))
+                            if getattr(details, "wall_time_ms", None) is not None
+                            else None
+                        ),
                     )
                 )
                 if cache_store is not None:
@@ -283,6 +316,21 @@ class MatrixRunner:
                             "counts": (
                                 {str(k): int(v) for k, v in dict(details.counts or {}).items()}
                                 if details.counts is not None
+                                else None
+                            ),
+                            "transpile_time_ms": (
+                                float(getattr(details, "transpile_time_ms"))
+                                if getattr(details, "transpile_time_ms", None) is not None
+                                else None
+                            ),
+                            "execute_time_ms": (
+                                float(getattr(details, "execute_time_ms"))
+                                if getattr(details, "execute_time_ms", None) is not None
+                                else None
+                            ),
+                            "wall_time_ms": (
+                                float(getattr(details, "wall_time_ms"))
+                                if getattr(details, "wall_time_ms", None) is not None
                                 else None
                             ),
                             "device_provider": details.device_provider,
@@ -304,6 +352,21 @@ class MatrixRunner:
                             "transpiled_depth": int(details.transpiled_depth),
                             "two_qubit_count": int(details.two_qubit_count),
                             "swap_count": int(details.swap_count),
+                            "transpile_time_ms": (
+                                float(getattr(details, "transpile_time_ms"))
+                                if getattr(details, "transpile_time_ms", None) is not None
+                                else None
+                            ),
+                            "execute_time_ms": (
+                                float(getattr(details, "execute_time_ms"))
+                                if getattr(details, "execute_time_ms", None) is not None
+                                else None
+                            ),
+                            "wall_time_ms": (
+                                float(getattr(details, "wall_time_ms"))
+                                if getattr(details, "wall_time_ms", None) is not None
+                                else None
+                            ),
                         }
                     )
 

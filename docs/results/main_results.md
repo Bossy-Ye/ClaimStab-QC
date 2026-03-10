@@ -25,6 +25,9 @@ Additional tracks used for generality:
 - Conditional robustness maps (RQ5) isolate stable cores and unstable frontiers instead of only reporting a single global verdict.
 - Stratified stability and effect diagnostics (RQ6/RQ7) identify which instance strata and knob interactions are most failure-prone.
 - All reported decisions are trace-linked through CEP evidence blocks and can be checked with `python -m claimstab.cli validate-evidence`.
+- System-practicality metadata is recorded per run in `meta.practicality`:
+  - `num_workers`, `total_wall_time`, `throughput_runs_per_sec`
+  - runner timing aggregates (`transpile_time_ms`, `execute_time_ms`, `wall_time_ms`).
 
 ## Snapshot Rows
 

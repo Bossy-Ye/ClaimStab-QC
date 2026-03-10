@@ -114,6 +114,8 @@ def _normalize_artifacts(payload: dict[str, Any]) -> None:
     if not isinstance(meta, dict):
         return
     meta.pop("reproduce_command", None)
+    # Additive practicality metrics are intentionally excluded from legacy fixtures.
+    meta.pop("practicality", None)
     artifacts = meta.get("artifacts")
     if isinstance(artifacts, dict):
         for key in ("trace_jsonl", "events_jsonl", "cache_db", "replay_trace", "robustness_map_json"):

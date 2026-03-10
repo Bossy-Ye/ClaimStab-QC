@@ -30,6 +30,9 @@ def write_rows_csv(rows: Iterable[ScoreRow], path: Path) -> None:
                 "circuit_depth",
                 "two_qubit_count",
                 "swap_count",
+                "transpile_time_ms",
+                "execute_time_ms",
+                "wall_time_ms",
             ]
         )
         for r in rows:
@@ -52,6 +55,9 @@ def write_rows_csv(rows: Iterable[ScoreRow], path: Path) -> None:
                     r.circuit_depth,
                     r.two_qubit_count,
                     r.swap_count,
+                    r.transpile_time_ms,
+                    r.execute_time_ms,
+                    r.wall_time_ms,
                 ]
             )
 
@@ -83,6 +89,9 @@ def write_scores_csv(rows: Iterable[tuple[str, str, ScoreRow]], path: Path) -> N
                 "circuit_depth",
                 "two_qubit_count",
                 "swap_count",
+                "transpile_time_ms",
+                "execute_time_ms",
+                "wall_time_ms",
             ]
         )
 
@@ -109,5 +118,8 @@ def write_scores_csv(rows: Iterable[tuple[str, str, ScoreRow]], path: Path) -> N
                     r.circuit_depth,
                     r.two_qubit_count,
                     r.swap_count,
+                    r.transpile_time_ms,
+                    r.execute_time_ms,
+                    r.wall_time_ms,
                 ]
             )

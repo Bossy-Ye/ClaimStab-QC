@@ -34,6 +34,8 @@ The locked command set is in `docs/icse_experiment_matrix.md`, and compatibility
   - `output/paper_pack/tables/rq4_adaptive_summary.json`
   - `output/paper_pack/figures/rq4_adaptive/fig_rq4_ci_width_vs_cost.pdf`
   - `output/paper_pack/figures/rq4_adaptive/fig_rq4_agreement_vs_cost.pdf`
+  - run-level practicality fields in `claim_stability.json -> meta.practicality`
+    (`num_workers`, `total_wall_time`, `throughput_runs_per_sec`).
 
 ## C6. Hardware-aware variability reporting (multi-device)
 - Contribution: Show device-dependent stability and confidence behavior.

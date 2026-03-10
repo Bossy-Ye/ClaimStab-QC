@@ -26,6 +26,7 @@ def build_and_write_multidevice_outputs(
                 "generated_by": generated_by,
                 "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
                 "runtime": plan.runtime_meta,
+                "practicality": execution_result.practicality,
                 "artifacts": {
                     "trace_jsonl": execution_result.artifact_manifest.trace_jsonl,
                     "events_jsonl": execution_result.artifact_manifest.events_jsonl,

@@ -27,6 +27,9 @@ class TraceRecord:
     two_qubit_count: int | None = None
     swap_count: int | None = None
     counts: dict[str, int] | None = None
+    transpile_time_ms: float | None = None
+    execute_time_ms: float | None = None
+    wall_time_ms: float | None = None
     device_provider: str | None = None
     device_name: str | None = None
     device_mode: str | None = None
@@ -52,6 +55,9 @@ class TraceRecord:
             two_qubit_count=row.two_qubit_count,
             swap_count=row.swap_count,
             counts=dict(row.counts) if row.counts is not None else None,
+            transpile_time_ms=row.transpile_time_ms,
+            execute_time_ms=row.execute_time_ms,
+            wall_time_ms=row.wall_time_ms,
             device_provider=row.device_provider,
             device_name=row.device_name,
             device_mode=row.device_mode,
@@ -79,6 +85,9 @@ class TraceRecord:
             two_qubit_count=self.two_qubit_count,
             swap_count=self.swap_count,
             counts=dict(self.counts) if self.counts is not None else None,
+            transpile_time_ms=self.transpile_time_ms,
+            execute_time_ms=self.execute_time_ms,
+            wall_time_ms=self.wall_time_ms,
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -105,6 +114,13 @@ class TraceRecord:
             two_qubit_count=(None if payload.get("two_qubit_count") is None else int(payload.get("two_qubit_count"))),
             swap_count=(None if payload.get("swap_count") is None else int(payload.get("swap_count"))),
             counts=({str(k): int(v) for k, v in dict(counts).items()} if isinstance(counts, Mapping) else None),
+            transpile_time_ms=(
+                None if payload.get("transpile_time_ms") is None else float(payload.get("transpile_time_ms"))
+            ),
+            execute_time_ms=(
+                None if payload.get("execute_time_ms") is None else float(payload.get("execute_time_ms"))
+            ),
+            wall_time_ms=(None if payload.get("wall_time_ms") is None else float(payload.get("wall_time_ms"))),
             device_provider=(None if payload.get("device_provider") is None else str(payload.get("device_provider"))),
             device_name=(None if payload.get("device_name") is None else str(payload.get("device_name"))),
             device_mode=(None if payload.get("device_mode") is None else str(payload.get("device_mode"))),
@@ -149,4 +165,3 @@ class ArtifactManifest:
     trace_jsonl: str
     events_jsonl: str | None
     cache_db: str | None
-

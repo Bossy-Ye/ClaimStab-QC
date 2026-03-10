@@ -78,6 +78,11 @@ class TestMultideviceReplaySmoke(unittest.TestCase):
                 replay_summary.get("meta", {}).get("artifacts", {}).get("replay_trace"),
                 str(trace_path),
             )
+            practicality = replay_summary.get("meta", {}).get("practicality", {})
+            self.assertEqual(practicality.get("num_workers"), 1)
+            self.assertIn("total_wall_time", practicality)
+            self.assertIn("throughput_runs_per_sec", practicality)
+            self.assertIn("by_batch", practicality)
 
             subprocess.run(
                 [

@@ -47,6 +47,11 @@ class TestSmokeDemo(unittest.TestCase):
         self.assertIn("experiments", payload)
         self.assertGreater(len(payload["experiments"]), 0)
         self.assertEqual(payload.get("meta", {}).get("evidence_chain", {}).get("protocol"), "cep_v1")
+        practicality = payload.get("meta", {}).get("practicality", {})
+        self.assertEqual(practicality.get("num_workers"), 1)
+        self.assertIn("total_wall_time", practicality)
+        self.assertIn("throughput_runs_per_sec", practicality)
+        self.assertIn("runner_timing", practicality)
         first = payload.get("experiments", [])[0]
         self.assertIn("cep", first.get("evidence", {}))
         comparative = payload.get("comparative", {}).get("space_claim_delta", [])

@@ -40,6 +40,13 @@ class TestQiskitAerRunner(unittest.TestCase):
         self.assertIsNone(res.device_provider)
         self.assertIsNone(res.device_name)
         self.assertIsNone(res.device_mode)
+        self.assertIsNotNone(res.transpile_time_ms)
+        self.assertIsNotNone(res.execute_time_ms)
+        self.assertIsNotNone(res.wall_time_ms)
+        self.assertGreaterEqual(float(res.transpile_time_ms or 0.0), 0.0)
+        self.assertGreaterEqual(float(res.execute_time_ms or 0.0), 0.0)
+        self.assertGreaterEqual(float(res.wall_time_ms or 0.0), 0.0)
+        self.assertGreaterEqual(float(res.wall_time_ms or 0.0), float(res.transpile_time_ms or 0.0))
 
     def test_transpile_cache_reuses_compile_for_execution_only_changes(self) -> None:
         runner = QiskitAerRunner(engine="basic", cache_transpilation=True)
@@ -103,6 +110,8 @@ class TestQiskitAerRunner(unittest.TestCase):
         self.assertGreaterEqual(res.two_qubit_count, 1)
         self.assertEqual(res.device_mode, "transpile_only")
         self.assertEqual(res.device_snapshot_fingerprint, resolved.snapshot_fingerprint)
+        self.assertIsNotNone(res.transpile_time_ms)
+        self.assertEqual(float(res.execute_time_ms or 0.0), 0.0)
 
     def test_noisy_sim_produces_counts_when_available(self) -> None:
         if sys.version_info >= (3, 13):

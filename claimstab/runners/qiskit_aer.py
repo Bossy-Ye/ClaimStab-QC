@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import os
+from time import perf_counter
 from typing import Any, Callable, Optional
 
 from qiskit import QuantumCircuit, transpile
@@ -66,6 +67,9 @@ class AerRunResult:
     device_mode: str | None = None
     device_snapshot_fingerprint: str | None = None
     device_snapshot_summary: dict[str, object] | None = None
+    transpile_time_ms: float | None = None
+    execute_time_ms: float | None = None
+    wall_time_ms: float | None = None
 
 
 class QiskitAerRunner:
@@ -394,8 +398,12 @@ class QiskitAerRunner:
         """
         Transpile and execute a circuit under a specific perturbation configuration.
         """
+        wall_t0 = perf_counter()
         profile = device_profile if device_profile is not None else DeviceProfile(enabled=False, provider="none")
+        transpile_time_ms: float = 0.0
+        execute_time_ms: float = 0.0
         if profile.enabled and profile.mode == "transpile_only":
+            transpile_t0 = perf_counter()
             transpiled = self._get_transpiled_circuit(
                 circuit,
                 cfg,
@@ -403,6 +411,7 @@ class QiskitAerRunner:
                 device_profile=profile,
                 device_backend=device_backend,
             )
+            transpile_time_ms = (perf_counter() - transpile_t0) * 1000.0
             counts: Counts | None = None
         else:
             backend, run_kwargs = self._resolve_backend_and_run_kwargs(
@@ -411,6 +420,7 @@ class QiskitAerRunner:
                 device_backend=device_backend,
                 noise_model_mode=noise_model_mode,
             )
+            transpile_t0 = perf_counter()
             transpiled = self._get_transpiled_circuit(
                 circuit,
                 cfg,
@@ -418,13 +428,16 @@ class QiskitAerRunner:
                 device_profile=profile if profile.enabled else None,
                 device_backend=device_backend,
             )
-
+            transpile_time_ms = (perf_counter() - transpile_t0) * 1000.0
+            execute_t0 = perf_counter()
             job = backend.run(transpiled, **run_kwargs)
             result = job.result()
             raw_counts = result.get_counts()
             counts = {str(k): int(v) for k, v in dict(raw_counts).items()}
+            execute_time_ms = (perf_counter() - execute_t0) * 1000.0
 
         two_qubit_count, swap_count = self._transpiled_stats(transpiled)
+        wall_time_ms = (perf_counter() - wall_t0) * 1000.0
 
         return AerRunResult(
             counts=counts,
@@ -437,6 +450,9 @@ class QiskitAerRunner:
             device_mode=profile.mode if profile.enabled else None,
             device_snapshot_fingerprint=device_snapshot_fingerprint if profile.enabled else None,
             device_snapshot_summary=device_snapshot_summary if profile.enabled else None,
+            transpile_time_ms=transpile_time_ms,
+            execute_time_ms=execute_time_ms,
+            wall_time_ms=wall_time_ms,
         )
 
     def run_metric(

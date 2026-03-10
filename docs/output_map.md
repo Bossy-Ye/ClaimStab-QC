@@ -48,6 +48,10 @@ Each run directory typically contains:
 - optional `report_assets/*.png`
 - optional reproducibility artifacts: `trace.jsonl`, `events.jsonl`, `cache.sqlite`
 
+Practicality/performance fields:
+- `claim_stability.json -> meta.practicality` includes `num_workers`, `total_wall_time`, `throughput_runs_per_sec`.
+- `scores.csv` includes per-row runner timing columns: `transpile_time_ms`, `execute_time_ms`, `wall_time_ms`.
+
 ## Atlas Dataset Paths
 
 - Publish command:

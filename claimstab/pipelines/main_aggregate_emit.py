@@ -32,6 +32,7 @@ def build_main_outputs(plan: MainPlan, exec_result: MainExecutionResult) -> Main
     resolved_device = plan.resolved_device
     noise_model_mode = plan.noise_model_mode
     runtime_meta = exec_result.runtime_meta
+    practicality = exec_result.practicality
     suite_name = exec_result.suite_name
     selected_spaces = exec_result.selected_spaces
     experiments = exec_result.experiments
@@ -65,6 +66,7 @@ def build_main_outputs(plan: MainPlan, exec_result: MainExecutionResult) -> Main
             "generated_by": "claimstab/pipelines/claim_stability_app.py",
             "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
             "runtime": runtime_meta,
+            "practicality": practicality,
             "artifacts": {
                 "trace_jsonl": artifact_manifest.trace_jsonl,
                 "events_jsonl": artifact_manifest.events_jsonl,

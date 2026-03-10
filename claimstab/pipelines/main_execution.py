@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
+from time import perf_counter
 from typing import Any, Mapping
 
 from claimstab.baselines.naive import NAIVE_POLICY_REALISTIC, evaluate_naive_baseline
@@ -76,6 +77,7 @@ class MainExecutionResult:
     runtime_meta: dict[str, Any]
     suite_name: str
     selected_spaces: list[str]
+    practicality: dict[str, Any]
 
 
 def make_space(preset: str):
@@ -228,7 +230,29 @@ def _with_common_eval_metrics(summary_row: Mapping[str, Any], eval_profile: Mapp
     return out
 
 
+def _summarize_runner_timing(rows: list[tuple[str, str, ScoreRow]]) -> dict[str, Any]:
+    total_rows = len(rows)
+    transpile_vals = [float(r.transpile_time_ms) for _, _, r in rows if r.transpile_time_ms is not None]
+    execute_vals = [float(r.execute_time_ms) for _, _, r in rows if r.execute_time_ms is not None]
+    wall_vals = [float(r.wall_time_ms) for _, _, r in rows if r.wall_time_ms is not None]
+
+    def _safe_mean(values: list[float]) -> float | None:
+        return (sum(values) / float(len(values))) if values else None
+
+    return {
+        "rows_with_timing": len(wall_vals),
+        "transpile_time_ms_sum": sum(transpile_vals) if transpile_vals else 0.0,
+        "execute_time_ms_sum": sum(execute_vals) if execute_vals else 0.0,
+        "wall_time_ms_sum": sum(wall_vals) if wall_vals else 0.0,
+        "transpile_time_ms_mean": _safe_mean(transpile_vals),
+        "execute_time_ms_mean": _safe_mean(execute_vals),
+        "wall_time_ms_mean": _safe_mean(wall_vals),
+        "rows_total": total_rows,
+    }
+
+
 def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
+    perf_start = perf_counter()
     args = plan.args
     suite_name = plan.suite_name
     task_kind = plan.task_kind
@@ -1204,6 +1228,18 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                 }
             )
 
+    total_wall_time = perf_counter() - perf_start
+    rows_processed = len(all_rows)
+    runner_timing = _summarize_runner_timing(all_rows)
+    practicality = {
+        "num_workers": 1,
+        "total_wall_time": total_wall_time,
+        "wall_time_ms": total_wall_time * 1000.0,
+        "rows_processed": rows_processed,
+        "throughput_runs_per_sec": (rows_processed / total_wall_time) if total_wall_time > 0 else None,
+        "runner_timing": runner_timing,
+    }
+
     return MainExecutionResult(
         all_rows=all_rows,
         experiments=experiments,
@@ -1212,4 +1248,5 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
         runtime_meta=runtime_meta,
         suite_name=suite_name,
         selected_spaces=selected_spaces,
+        practicality=practicality,
     )

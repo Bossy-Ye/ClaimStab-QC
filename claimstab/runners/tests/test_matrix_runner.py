@@ -20,6 +20,9 @@ class _Details:
     device_name: str | None = None
     device_mode: str | None = None
     device_snapshot_fingerprint: str | None = None
+    transpile_time_ms: float | None = 1.0
+    execute_time_ms: float | None = 2.0
+    wall_time_ms: float | None = 3.0
 
 
 class _Backend:
@@ -92,6 +95,9 @@ class TestMatrixRunner(unittest.TestCase):
         )
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0].score, 7.0)
+        self.assertEqual(rows[0].transpile_time_ms, 1.0)
+        self.assertEqual(rows[0].execute_time_ms, 2.0)
+        self.assertEqual(rows[0].wall_time_ms, 3.0)
 
     def test_default_objective_path_is_device_neutral(self) -> None:
         space = PerturbationSpace(
@@ -161,6 +167,9 @@ class TestMatrixRunner(unittest.TestCase):
             self.assertEqual(len(rows1), 1)
             self.assertEqual(len(rows2), 1)
             self.assertEqual(rows1[0].score, rows2[0].score)
+            self.assertEqual(rows2[0].transpile_time_ms, 1.0)
+            self.assertEqual(rows2[0].execute_time_ms, 2.0)
+            self.assertEqual(rows2[0].wall_time_ms, 3.0)
             self.assertTrue(any(str(e.get("event_type")) == "cache_hit" for e in events))
 
 
