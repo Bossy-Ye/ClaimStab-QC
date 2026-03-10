@@ -5,6 +5,11 @@ on:
     branches: ["main"]
   pull_request:
 
+env:
+  PYTHONHASHSEED: "0"
+  MPLBACKEND: "Agg"
+  TZ: "UTC"
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -39,10 +44,19 @@ jobs:
         run: |
           echo "Python: ${{ matrix.python-version }}"
           echo "Install variant: ${{ matrix.install-variant }}"
+          python -m pip list
 
       - name: Run tests
         run: |
-          PYTHONPATH=. pytest -q
+          set -o pipefail
+          PYTHONPATH=. pytest -q -ra --maxfail=1 --durations=20 2>&1 | tee pytest.log
+
+      - name: Upload pytest log (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-log-py${{ matrix.python-version }}-${{ matrix.install-variant }}
+          path: pytest.log
 
   compat_guardrails:
     runs-on: ubuntu-latest
@@ -60,17 +74,30 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e .
           python -m pip install pytest
+          python -m pip list
 
       - name: Run refactor compatibility guardrails
         run: |
-          PYTHONPATH=. pytest -q claimstab/tests/test_pipeline_characterization.py claimstab/tests/test_refactor_artifact_compat.py
-          PYTHONPATH=. python -m claimstab.scripts.check_refactor_compat --mode all
+          set -o pipefail
+          PYTHONPATH=. pytest -q -ra --maxfail=1 claimstab/tests/test_pipeline_characterization.py claimstab/tests/test_refactor_artifact_compat.py 2>&1 | tee compat_pytest.log
+          PYTHONPATH=. python -m claimstab.scripts.check_refactor_compat --mode all 2>&1 | tee compat_guardrails.log
 
       - name: Run paper-track smoke tests
         run: |
-          PYTHONPATH=. pytest -q \
+          set -o pipefail
+          PYTHONPATH=. pytest -q -ra --maxfail=1 \
             claimstab/analysis/tests/test_paper_claims.py \
             claimstab/tests/test_figures_rq4_adaptive.py \
             claimstab/tests/test_figures_multidevice_heatmap.py \
             claimstab/tests/test_export_paper_pack.py \
-            claimstab/tests/test_exp_rq4_adaptive.py
+            claimstab/tests/test_exp_rq4_adaptive.py 2>&1 | tee paper_track_smoke.log
+
+      - name: Upload guardrail logs (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compat-guardrails-logs
+          path: |
+            compat_pytest.log
+            compat_guardrails.log
+            paper_track_smoke.log
