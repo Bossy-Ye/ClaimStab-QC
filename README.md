@@ -4,83 +4,79 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](./LICENSE)
 [![Status](https://img.shields.io/badge/status-research%20framework-orange.svg)](#)
 
-ClaimStab-QC is a claim-centric validation framework for checking whether paper-level conclusions remain true under software-visible perturbations in quantum toolchains.
+ClaimStab-QC is a claim-centric framework for checking whether paper conclusions remain valid under software-visible perturbations in quantum software pipelines.
 
-## Quickstart (Paper-First)
+## What Problem It Solves
 
-Environment setup (required once):
+Most quantum-software papers report conclusions from one or a few configurations. ClaimStab-QC tests those conclusions across controlled perturbation spaces, quantifies uncertainty with confidence intervals, and returns conservative decisions:
+
+- `stable`: CI lower bound >= threshold
+- `unstable`: CI upper bound < threshold
+- `inconclusive`: otherwise
+
+## Who It Is For
+
+- Researchers validating paper claims (ICSE/artifact-style reproducibility)
+- Contributors adding new tasks/methods with a fixed spec contract
+- Advanced users comparing datasets through ClaimAtlas
+
+## Supported Claim Types (Current)
+
+Claim taxonomy is fixed by spec schema v1:
+
+- `ranking`: compare method A vs method B with margin `delta`
+- `decision`: check whether target label remains in top-k
+- `distribution`: check distance-to-reference within `epsilon` (JS/TVD)
+
+Canonical schema: [claimstab/spec/schema_v1.json](./claimstab/spec/schema_v1.json)
+
+## Stable vs Experimental
+
+Stable interfaces (backward-compatible contract):
+
+- CLI entrypoints:
+  - `python -m claimstab.cli ...`
+  - `python -m claimstab.pipelines.claim_stability_app ...`
+  - `python -m claimstab.pipelines.multidevice_app ...`
+- Core artifact names in run directories:
+  - `claim_stability.json`, `rq_summary.json`, `robustness_map.json`, `scores.csv`
+- Report artifact:
+  - `stability_report.html`
+- Evidence compatibility:
+  - CEP fields under `experiments[*].evidence.cep`
+
+Advanced/experimental surface (kept, but not primary onboarding path):
+
+- Live Claim Explorer ([docs/explorer.md](./docs/explorer.md))
+- Dataset Registry / ClaimAtlas browsing ([docs/dataset_registry.md](./docs/dataset_registry.md))
+- Optional multidevice/noisy simulation extensions
+
+Full contract: [docs/compatibility_contract.md](./docs/compatibility_contract.md)
+
+## 5-Minute Quickstart (Canonical Path)
+
+1. Install:
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e .
 ```
 
-To avoid PATH issues, this README uses `python -m claimstab.cli ...` as the canonical CLI form.
+2. Validate and run the canonical paper spec:
 
-1) Validate paper spec:
 ```bash
 python -m claimstab.cli validate-spec --spec specs/paper_main.yml
-```
-
-2) Run paper preset + HTML report:
-```bash
 python -m claimstab.cli run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
 ```
 
-3) Export paper pack (tables/figures/manifest):
-```bash
-python -m claimstab.scripts.export_paper_pack --input-root output/presentation_large --out output/paper_pack --which large
-```
-
-Optional checks:
-- `python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json`
-- `make reproduce-paper`
-
-### Check Adaptive Sampling (CLI Smoke)
-
-Run adaptive CI-width smoke tests:
+3. Validate evidence links:
 
 ```bash
-# Ranking claim (MaxCut)
-python -m claimstab.cli validate-spec --spec examples/specs/adaptive_maxcut_smoke.yml
-python -m claimstab.cli run --spec examples/specs/adaptive_maxcut_smoke.yml --out-dir output/adaptive_maxcut_smoke --report
-
-# Decision claim (BV)
-python -m claimstab.cli validate-spec --spec examples/specs/adaptive_bv_smoke.yml
-python -m claimstab.cli run --spec examples/specs/adaptive_bv_smoke.yml --out-dir output/adaptive_bv_smoke --report
+python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
 ```
 
-Verify adaptive fields exist in output:
-
-```bash
-python - <<'PY'
-import json
-from pathlib import Path
-for path in [
-    Path("output/adaptive_maxcut_smoke/claim_stability.json"),
-    Path("output/adaptive_bv_smoke/claim_stability.json"),
-]:
-    d = json.loads(path.read_text())
-    for e in d.get("experiments", []):
-        s = e.get("sampling", {})
-        a = s.get("adaptive_stopping", {})
-        print(path.name, e.get("experiment_id"), s.get("mode"), a.get("enabled"), a.get("target_ci_width"), a.get("achieved_ci_width"), a.get("stop_reason"))
-        assert s.get("mode") == "adaptive_ci"
-        assert a.get("enabled") is True
-        assert a.get("stop_reason") in {"target_ci_width_reached", "max_budget_reached", "no_candidate_configs"}
-PY
-```
-
-## Contribute Your Dataset (3-Minute Path)
-
-Required input contract for `python -m claimstab.cli publish-result`:
-- `--run-dir` must contain `claim_stability.json` (required).
-- Optional but recommended files in the same directory:
-  - `scores.csv`
-  - `rq_summary.json`
-  - `stability_report.html`
-
-Minimal spec template (required fields):
+## Minimal Input Spec
 
 ```yaml
 spec_version: 1
@@ -111,7 +107,48 @@ backend:
   engine: basic
 ```
 
-Copy-paste contributor flow:
+## Key Outputs and How To Interpret Them
+
+Main outputs under `--out-dir`:
+
+- `claim_stability.json`: per-experiment claim outcomes, CI, decision, CEP trace links
+- `rq_summary.json`: aggregate research-question summaries and diagnostics
+- `robustness_map.json`: conditional stability cells, robust core, frontier, lockdown hints
+- `scores.csv`: raw per-evaluation rows and runner timing fields
+- `stability_report.html`: human-readable report
+
+Decision semantics (same everywhere):
+
+- `stable`: evidence supports claim preservation at configured confidence
+- `unstable`: evidence rejects claim preservation at configured confidence
+- `inconclusive`: current budget/evidence cannot decide conservatively
+
+## Start Here Links
+
+- Docs home: [ClaimStab-QC website](https://bossy-ye.github.io/ClaimStab-QC/)
+- Quickstart: [docs/quickstart.md](./docs/quickstart.md)
+- ICSE matrix (locked): [docs/icse_experiment_matrix.md](./docs/icse_experiment_matrix.md)
+- Output map: [docs/output_map.md](./docs/output_map.md)
+- Reproduction commands: [docs/reproduce.md](./docs/reproduce.md)
+
+## Advanced / Community-Facing Capabilities
+
+- Live Claim Explorer: [docs/explorer.md](./docs/explorer.md)
+- Dataset Registry: [docs/dataset_registry.md](./docs/dataset_registry.md)
+- ClaimAtlas guide: [docs/atlas.md](./docs/atlas.md)
+- Custom task onboarding: [docs/custom_task_quickstart.md](./docs/custom_task_quickstart.md)
+
+## Main Specs
+
+- [specs/paper_main.yml](./specs/paper_main.yml)
+- [specs/paper_structural.yml](./specs/paper_structural.yml)
+- [specs/paper_decision.yml](./specs/paper_decision.yml)
+- [specs/paper_distribution.yml](./specs/paper_distribution.yml)
+- [specs/paper_device.yml](./specs/paper_device.yml)
+- [specs/paper_boundary.yml](./specs/paper_boundary.yml)
+- [specs/atlas_bv_demo.yml](./specs/atlas_bv_demo.yml)
+
+## Contribute a Dataset (Minimal Flow)
 
 ```bash
 python -m claimstab.cli validate-spec --spec specs/atlas_bv_demo.yml
@@ -121,138 +158,36 @@ python -m claimstab.cli validate-atlas --atlas-root atlas
 python -m claimstab.cli export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
 ```
 
-See full dataset documentation: [`docs/atlas.md`](./docs/atlas.md).
+## Validation and Development
 
-More docs:
-- Project website: [ClaimStab-QC](https://bossy-ye.github.io/ClaimStab-QC/)
-- Live interaction page (no local install needed): [Live Claim Explorer](https://bossy-ye.github.io/ClaimStab-QC/explorer/)
-- Docs quickstart: [Quickstart](https://bossy-ye.github.io/ClaimStab-QC/quickstart/)
-- Locked ICSE matrix: [ICSE Experiment Matrix](https://bossy-ye.github.io/ClaimStab-QC/icse_experiment_matrix/)
-- Public dataset registry: [Dataset Registry](https://bossy-ye.github.io/ClaimStab-QC/dataset_registry/)
-- Output directory map: [Output Map](https://bossy-ye.github.io/ClaimStab-QC/output_map/)
-- Auto-generated implementation catalog: [Implementation Catalog](https://bossy-ye.github.io/ClaimStab-QC/generated/implementation_catalog/)
-
-## Core Capabilities
-- Claim evaluation: ranking + decision + distribution pathways.
-- Perturbation controls: transpiler seed, optimization level, layout, shots, simulator seed.
-- Sampling policies: full-factorial, random-k, adaptive CI-width stopping.
-- CI-based conservative inference (Wilson default, clustered stability support, pluggable inference policy).
-- Diagnostics: factor attribution, top unstable configs, lock-down recommendations.
-- Stability-vs-cost analysis (shots/CI-aware decision view).
-- Device-aware workflows:
-  - `transpile_only` structural metrics across device profiles.
-  - `noisy_sim` with IBM fake backends + Aer (optional extras).
-- Atlas dataset workflow: publish, validate, compare, and export website registry.
-
-## Repository Structure
-
-```text
-claimstab/                  # framework source code
-  claims/                   # claim semantics, stability, diagnostics
-  inference/                # inference policies (Wilson, Bayesian, etc.)
-  perturbations/            # spaces, sampling, operator shim
-  tasks/                    # built-in tasks + plugin base/registry/factory
-  runners/                  # execution backends
-  devices/                  # device profile resolution
-  atlas/                    # atlas helpers (publish, compare, export)
-  scripts/                  # report and figure generators
-  tests/                    # test suites
-examples/                   # runnable experiment scripts
-specs/                      # ready-to-run spec files
-atlas/                      # public dataset index + submissions
-output/                     # generated experiment outputs
-  presentation/             # frozen submission package (core)
-  presentation_large/       # frozen submission package (extended)
-  paper_artifact/           # one-command full reproduction package
-docs/                       # MkDocs website source
-```
-
-## Output Convention
-
-Preferred artifact roots:
-- `output/paper_artifact/` from `make reproduce-paper`
-- `output/presentation/` for core curated presentation results
-- `output/presentation_large/` for extended curated presentation results
-
-`output/exp_*` paths are still supported for ad-hoc local runs, but are considered legacy for paper packaging.
-
-## Main Scripts and Their Roles
-- `claimstab/pipelines/claim_stability_app.py`: general claim-stability runner (main local entry).
-- `examples/exp_comprehensive_calibration.py`: paper calibration batch.
-- `examples/exp_comprehensive_large.py`: paper large-scale batch.
-- `examples/exp_structural_compilation.py`: structural/compilation track.
-- `claimstab/pipelines/multidevice_app.py`: device-aware transpile/noisy extension.
-- `claimstab/scripts/export_paper_pack.py`: package an existing run family into paper tables/figures + hash manifest.
-
-## Specs You Can Run Immediately
-- [`specs/paper_main.yml`](./specs/paper_main.yml): main paper track.
-- [`specs/paper_structural.yml`](./specs/paper_structural.yml): structural compilation track.
-- [`specs/paper_device.yml`](./specs/paper_device.yml): multi-device extension.
-- [`specs/paper_decision.yml`](./specs/paper_decision.yml): BV decision-claim track.
-- [`specs/paper_distribution.yml`](./specs/paper_distribution.yml): Grover distribution-claim track.
-- [`specs/paper_boundary.yml`](./specs/paper_boundary.yml): near-threshold boundary challenge pack.
-- [`specs/atlas_bv_demo.yml`](./specs/atlas_bv_demo.yml): BV dataset workflow demo.
-
-## Report and Figures
-Generate HTML report from JSON:
-```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.generate_stability_report \
-  --json output/presentation_large/large/maxcut_ranking/claim_stability.json \
-  --out output/presentation_large/large/maxcut_ranking/stability_report.html
-```
-
-Generate report with plots:
-```bash
-MPLBACKEND=Agg PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.generate_stability_report \
-  --json output/presentation_large/large/maxcut_ranking/claim_stability.json \
-  --out output/presentation_large/large/maxcut_ranking/stability_report_plots.html \
-  --with-plots
-```
-
-## Trace, Cache, Replay
-Use trace/cache for reproducible incremental runs:
-- Docs page: [Trace Cache Replay](https://bossy-ye.github.io/ClaimStab-QC/trace_cache_replay/)
-- Local source: [`docs/trace_cache_replay.md`](./docs/trace_cache_replay.md)
-
-## ClaimAtlas (Public Dataset)
-- Atlas docs: [`docs/atlas.md`](./docs/atlas.md)
-- Atlas index: [`atlas/index.json`](./atlas/index.json)
-- Submission packages: [`atlas/submissions/`](./atlas/submissions)
-
-Export website dataset registry page:
-```bash
-python -m claimstab.cli export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
-```
-
-Validate dataset integrity:
-```bash
-python -m claimstab.cli validate-atlas --atlas-root atlas
-```
-
-## Community and Contribution
-- Paper scope lock: [`PAPER_SCOPE.md`](./PAPER_SCOPE.md)
-- Contributing: [`CONTRIBUTING.md`](./CONTRIBUTING.md)
-- Extension guide: [`docs/concepts/extending.md`](./docs/concepts/extending.md)
-- Naive baseline policies: [`docs/concepts/naive_baseline_policy.md`](./docs/concepts/naive_baseline_policy.md)
-- Architecture: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
-- Implementation catalog: [`docs/generated/implementation_catalog.md`](./docs/generated/implementation_catalog.md)
-- Experiment playbook: [`docs/EXPERIMENT_PLAYBOOK.md`](./docs/EXPERIMENT_PLAYBOOK.md)
-- Threats to validity: [`docs/concepts/threats_to_validity.md`](./docs/concepts/threats_to_validity.md)
-- Changelog: [`CHANGELOG.md`](./CHANGELOG.md)
-- Citation metadata: [`CITATION.cff`](./CITATION.cff)
-
-## Development
 Run tests:
+
 ```bash
-PYTHONPATH=. ./venv/bin/python -m pytest -q
+./venv/bin/python -m pytest -q
+```
+
+Compatibility check:
+
+```bash
+./venv/bin/python -m claimstab.scripts.check_refactor_compat --mode all
 ```
 
 Build docs:
+
 ```bash
-make docs-build
+./venv/bin/python -m mkdocs build --strict
 ```
 
-## Current validated stack
+## Current Validated Stack
+
 - `qiskit==2.2.3`
 - `qiskit-aer==0.17.2`
 - `qiskit-ibm-runtime==0.45.1`
+
+## Project Policies and Scope
+
+- Paper scope lock: [PAPER_SCOPE.md](./PAPER_SCOPE.md)
+- Contributing: [CONTRIBUTING.md](./CONTRIBUTING.md)
+- Compatibility contract: [docs/compatibility_contract.md](./docs/compatibility_contract.md)
+- Architecture: [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
+- Threats to validity: [docs/concepts/threats_to_validity.md](./docs/concepts/threats_to_validity.md)

@@ -1,100 +1,76 @@
 # ClaimStab-QC
 
-ClaimStab-QC is a claim-validation suite for quantum software experiments: it checks whether paper-level conclusions remain true under software-visible perturbations, and reports statistically conservative stability decisions.
+ClaimStab-QC is a claim-centric framework for checking whether paper conclusions remain valid under software-visible perturbations in quantum software pipelines.
 
-## Abstract
-Experimental claims in quantum software are often reported as point outcomes from one configuration. ClaimStab-QC reframes evaluation at the claim level: for each claim, we estimate stability under sampled perturbations, compute confidence intervals, and make conservative decisions (`stable`, `unstable`, `inconclusive`). This enables reproducibility-focused reporting beyond single-run metrics.
+## Start Here (2-3 Minutes)
 
-## Key Idea
-Evaluate claims, not just scores.
+If this is your first visit, follow this order:
 
-Given a stability threshold \(p\), a claim is considered stable only when:
+1. [Quickstart](quickstart.md)
+2. [Reproduce](reproduce.md)
+3. [Output Directory Map](output_map.md)
 
-\[
-\text{CI}_{\text{low}}(\hat{s}) \ge p
-\]
+Locked ICSE run set:
+- [ICSE Experiment Matrix](icse_experiment_matrix.md)
 
-where \(\hat{s}\) is the estimated stability rate under sampled perturbation configurations.
+## What ClaimStab Checks
 
-## How It Works
-1. Define claim semantics (`A >= B + δ`, threshold, decision, distribution).
-2. Define perturbation space and sampling policy.
-3. Run methods across sampled configurations.
-4. Compute claim flips/holds and Wilson confidence intervals.
-5. Emit conservative decisions plus diagnostics and report artifacts.
+ClaimStab evaluates claim outcomes (not only raw scores) under sampled perturbation configurations and returns conservative decisions:
 
-Built-in benchmark classes:
-- MaxCut ranking claims (variational optimization).
-- Bernstein-Vazirani decision-claim benchmark.
-- GHZ structural compilation benchmark.
+- `stable`: CI lower bound >= threshold
+- `unstable`: CI upper bound < threshold
+- `inconclusive`: otherwise
 
-## Results Snapshot
-!!! info "Key Results"
-    - `compilation_only` is the strongest regime for stability.
-    - `sampling_only` is the weakest regime and major instability driver.
-    - `combined_light` remains unstable for close method comparisons (e.g., `QAOA_p2` vs `QAOA_p1`).
+Supported claim types:
 
-| Scenario | Observation |
+- `ranking`
+- `decision`
+- `distribution`
+
+Canonical schema:
+- [claimstab/spec/schema_v1.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/claimstab/spec/schema_v1.json)
+
+## Why This Matters
+
+Experimental quantum-software conclusions are often sensitive to compiler/sampling settings. ClaimStab makes this explicit by:
+
+1. defining claims in executable form,
+2. evaluating them across perturbation spaces,
+3. quantifying uncertainty with confidence intervals,
+4. emitting auditable evidence and reproducible artifacts.
+
+## Core Outputs
+
+| File | Purpose |
 |---|---|
-| Best observed | `compilation_only`, `QAOA_p1 > RandomBaseline`, `delta=0.0`, stability ≈ `0.9958` |
-| Worst observed | `sampling_only`, `QAOA_p2 > QAOA_p1`, `delta=0.05`, flip-rate ≈ `0.2831` |
+| `claim_stability.json` | Per-experiment claim outcomes, CI, decisions, and evidence links |
+| `rq_summary.json` | Aggregated RQ summaries and diagnostics |
+| `robustness_map.json` | Conditional stability cells + robust core/frontier/lockdown summaries |
+| `scores.csv` | Raw score/evaluation rows with timing metadata |
+| `stability_report.html` | Human-readable report |
+
+## Snapshot
+
+!!! info "Current empirical signal"
+    - `compilation_only` tends to be the most stable space.
+    - `sampling_only` is the strongest instability driver.
+    - `combined_light` still exposes near-tie fragility.
 
 ![ClaimStab Pipeline](assets/pipeline.svg)
-![Claim-Centric Core](assets/claim_model_core.svg)
-![Perturbation Presets and Sampling](assets/perturbation_sampling.svg)
 
-## Public Dataset Access
+## Explore / Community Capabilities (Advanced)
 
-ClaimAtlas submissions are publicly visible and queryable:
-- Website page (generated from ClaimAtlas): [Dataset Registry](dataset_registry.md)
-- GitHub JSON index: [atlas/index.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/atlas/index.json)
-- GitHub packages: [atlas/submissions](https://github.com/Bossy-Ye/ClaimStab-QC/tree/main/atlas/submissions)
+These are preserved as future-facing infrastructure assets, but are not required for first-time onboarding:
 
-## Try It Online
-
-Use [Live Claim Explorer](explorer.md) to upload a `claim_stability.json` file and inspect:
-- decision distribution
-- claim-type and space coverage
-- adaptive-sampling metadata coverage
-- top high-flip comparative rows
-
-## Device-aware Snapshot
-
-| Track | Snapshot |
-|---|---|
-| `transpile_only` | multi-device structural claims run across IBM fake backend profiles |
-| `noisy_sim` | optional extension; environment dependent, does not block main-result reproducibility |
-
-Supporting note: current multi-device transpile-only outputs are often stable on structural metrics; main instability evidence comes from outcome metrics in `sampling_only` / `combined_light`.
-
-## Reproduce (Copy-Paste)
-
-Main paper tracks:
-
-```bash
-PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_calibration.py --out-dir output/presentation_large/calibration
-PYTHONPATH=. ./venv/bin/python examples/exp_comprehensive_large.py --out-dir output/presentation_large/large
-```
-
-Device-aware extension:
-
-```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.pipelines.multidevice_app --run all --suite standard --out-dir output/multidevice_full
-```
-
-## Project Links
-- [GitHub Repository](https://github.com/Bossy-Ye/ClaimStab-QC)
-- [Quickstart](quickstart.md)
-- [Custom Task Quickstart](custom_task_quickstart.md)
-- [Dataset Registry](dataset_registry.md)
 - [Live Claim Explorer](explorer.md)
-- [Examples & Outputs](examples.md)
-- [Output Directory Map](output_map.md)
-- [Implementation Catalog](generated/implementation_catalog.md)
+- [Dataset Registry (from ClaimAtlas)](dataset_registry.md)
 - [ClaimAtlas Guide](atlas.md)
-- [Extending ClaimStab](concepts/extending.md)
-- [Threats to Validity](concepts/threats_to_validity.md)
+- [Custom Task Quickstart](custom_task_quickstart.md)
+
+## Deep-Dive Links
+
+- [Concepts](concepts/claims.md)
+- [Main Results](results/main_results.md)
 - [Reproduction Contract](reproduction_contract.md)
-- [Reproduce](reproduce.md)
-- [Results](results/main_results.md)
-- [Cite](cite.md)
+- [Compatibility Contract](compatibility_contract.md)
+- [ICSE Evidence Map](for_icse.md)
