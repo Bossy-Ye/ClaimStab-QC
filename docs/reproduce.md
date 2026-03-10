@@ -34,7 +34,7 @@ Expected artifacts:
 
 ```bash
 python -m claimstab.cli validate-spec --spec specs/paper_structural.yml
-PYTHONPATH=. ./venv/bin/python examples/exp_structural_compilation.py --out-dir output/paper_artifact/structural
+PYTHONPATH=. ./.venv/bin/python examples/exp_structural_compilation.py --out-dir output/paper_artifact/structural
 python -m claimstab.cli validate-evidence --json output/paper_artifact/structural/claim_stability.json
 ```
 

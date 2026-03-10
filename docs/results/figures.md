@@ -17,7 +17,7 @@ make reproduce-paper
 Equivalent command:
 
 ```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.make_paper_figures \
+PYTHONPATH=. ./.venv/bin/python -m claimstab.scripts.make_paper_figures \
   --input-dir output/paper_artifact/large/maxcut_ranking \
   --also-calibration output/paper_artifact/calibration/maxcut_ranking \
   --output-dir output/paper_artifact/figures/main

@@ -13,31 +13,31 @@ This checklist defines minimal readiness for a GitHub Release in the ICSE phase.
 2. Local tests pass:
 
 ```bash
-./venv/bin/python -m pytest -q
+./.venv/bin/python -m pytest -q
 ```
 
 3. Docs build passes strictly:
 
 ```bash
-./venv/bin/python -m mkdocs build --strict
+./.venv/bin/python -m mkdocs build --strict
 ```
 
 4. Compatibility guardrails pass:
 
 ```bash
-./venv/bin/python -m claimstab.scripts.check_refactor_compat --mode all
+./.venv/bin/python -m claimstab.scripts.check_refactor_compat --mode all
 ```
 
 5. Canonical spec validation passes:
 
 ```bash
-./venv/bin/python -m claimstab.cli validate-spec --spec specs/paper_main.yml
+./.venv/bin/python -m claimstab.cli validate-spec --spec specs/paper_main.yml
 ```
 
 6. Evidence validation smoke passes:
 
 ```bash
-./venv/bin/python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
+./.venv/bin/python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
 ```
 
 ## Release Packaging Scope (Minimal)
