@@ -19,13 +19,12 @@ theme:
       accent: indigo
 
 nav:
-  - Home: index.md
-  - Live Claim Explorer: explorer.md
-  - Quickstart: quickstart.md
-  - Custom Task Quickstart: custom_task_quickstart.md
-  - Dataset Registry (from ClaimAtlas): dataset_registry.md
-  - Examples & Outputs: examples.md
-  - Reproduction Contract: reproduction_contract.md
+  - Start Here:
+      - Overview: index.md
+      - Quickstart: quickstart.md
+      - Reproduce: reproduce.md
+      - Output Map: output_map.md
+      - ICSE Experiment Matrix: icse_experiment_matrix.md
   - Concepts:
       - Claims: concepts/claims.md
       - Perturbations: concepts/perturbations.md
@@ -38,13 +37,18 @@ nav:
       - Structural Benchmark: results/structural_benchmark.md
       - Device-aware Results: results/device_aware.md
       - Figures: results/figures.md
-  - Reproduce: reproduce.md
-  - ICSE Experiment Matrix: icse_experiment_matrix.md
-  - Output Map: output_map.md
-  - Trace Cache Replay: trace_cache_replay.md
-  - Artifact: artifact.md
-  - Appendix:
+  - Explore & Community:
+      - Live Claim Explorer: explorer.md
+      - Dataset Registry (from ClaimAtlas): dataset_registry.md
       - ClaimAtlas Guide: atlas.md
+      - Custom Task Quickstart: custom_task_quickstart.md
+      - Examples & Outputs: examples.md
+      - Trace Cache Replay: trace_cache_replay.md
+  - Artifact & Appendix:
+      - Artifact Guide: artifact.md
+      - Reproduction Contract: reproduction_contract.md
+      - Release Checklist: release_checklist.md
+      - Release Notes Template: release_notes_template.md
       - ICSE Evidence Map: for_icse.md
       - Architecture: ARCHITECTURE.md
       - Compatibility Contract: compatibility_contract.md
