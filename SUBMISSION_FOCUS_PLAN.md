@@ -1,4 +1,4 @@
-# Research Focus Plan (for submission usage only)
+# Submission Focus Plan (for submission usage only)
 
 This round is about improving reviewer trust and first-time comprehension, not expanding research scope.
 
