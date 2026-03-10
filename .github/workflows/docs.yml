@@ -33,7 +33,25 @@ jobs:
 
       - name: Refresh dataset registry page
         run: |
-          python -m claimstab.cli export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
+          python - <<'PY'
+          import importlib.util
+          import sys
+          from pathlib import Path
+
+          module_path = Path("claimstab/atlas/catalog.py")
+          spec = importlib.util.spec_from_file_location("claimstab_atlas_catalog", module_path)
+          if spec is None or spec.loader is None:
+              raise RuntimeError(f"Unable to load module spec: {module_path}")
+          module = importlib.util.module_from_spec(spec)
+          sys.modules[spec.name] = module
+          spec.loader.exec_module(module)
+          output = Path("docs/dataset_registry.md")
+          output.write_text(
+              module.build_dataset_registry_markdown(atlas_root="atlas"),
+              encoding="utf-8",
+          )
+          print(f"Wrote dataset registry page: {output}")
+          PY
 
       - name: Build MkDocs site
         run: |
