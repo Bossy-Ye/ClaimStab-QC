@@ -1,4 +1,4 @@
-# ICSE Focus Plan
+# ICSE Focus Plan (for submission usage only)
 
 This round is about improving reviewer trust and first-time comprehension, not expanding research scope.
 
@@ -37,3 +37,4 @@ This round is about improving reviewer trust and first-time comprehension, not e
 2. CI reliability hardening with better failure logs.
 3. Schema/docs taxonomy alignment.
 4. Release hygiene checklist (GitHub release readiness, PyPI deferred).
+
