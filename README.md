@@ -170,19 +170,19 @@ python -m claimstab.cli export-dataset-registry --atlas-root atlas --out docs/da
 Run tests:
 
 ```bash
-./venv/bin/python -m pytest -q
+./.venv/bin/python -m pytest -q
 ```
 
 Compatibility check:
 
 ```bash
-./venv/bin/python -m claimstab.scripts.check_refactor_compat --mode all
+./.venv/bin/python -m claimstab.scripts.check_refactor_compat --mode all
 ```
 
 Build docs:
 
 ```bash
-./venv/bin/python -m mkdocs build --strict
+./.venv/bin/python -m mkdocs build --strict
 ```
 
 ## Current Validated Stack

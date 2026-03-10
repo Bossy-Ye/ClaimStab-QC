@@ -4,8 +4,8 @@ Thanks for contributing. This project values reproducibility, clarity, and test-
 
 ## Development Setup
 ```bash
-python -m venv venv
-source venv/bin/activate
+python -m venv .venv
+source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 ```
@@ -30,14 +30,14 @@ python -m pip install -e ".[aer,ibm,dev]"
 
 ## Local Validation
 ```bash
-PYTHONPATH=. ./venv/bin/python -m pytest -q
-PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.check_refactor_compat --mode all
-PYTHONPATH=. ./venv/bin/python -m mkdocs build --strict
+./.venv/bin/python -m pytest -q
+./.venv/bin/python -m claimstab.scripts.check_refactor_compat --mode all
+./.venv/bin/python -m mkdocs build --strict
 ```
 
 For reporting changes, run:
 ```bash
-PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.generate_stability_report \
+./.venv/bin/python -m claimstab.scripts.generate_stability_report \
   --json output/claim_stability.json \
   --out output/stability_report.html
 ```
