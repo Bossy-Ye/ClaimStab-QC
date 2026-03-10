@@ -9,6 +9,7 @@ env:
   PYTHONHASHSEED: "0"
   MPLBACKEND: "Agg"
   TZ: "UTC"
+  PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
 
 jobs:
   test:
