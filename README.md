@@ -47,8 +47,8 @@ Stable interfaces (backward-compatible contract):
 
 Advanced/experimental surface (kept, but not primary onboarding path):
 
-- Live Claim Explorer (advanced exploration surface): [docs/explorer.md](./docs/explorer.md)
-- Dataset Registry / ClaimAtlas browsing (community-facing infrastructure surface): [docs/dataset_registry.md](./docs/dataset_registry.md)
+- Live Claim Explorer (advanced exploration surface): [GitHub Pages](https://bossy-ye.github.io/ClaimStab-QC/explorer/)
+- Dataset Registry / ClaimAtlas browsing (community-facing infrastructure surface): [GitHub Pages](https://bossy-ye.github.io/ClaimStab-QC/dataset_registry/)
 - Optional multidevice/noisy simulation extensions
 
 Full contract: [docs/compatibility_contract.md](./docs/compatibility_contract.md)
@@ -164,9 +164,9 @@ Recommended `output/` layout:
 
 ## Advanced / Community-Facing Capabilities
 
-- Live Claim Explorer: [docs/explorer.md](./docs/explorer.md)
-- Dataset Registry: [docs/dataset_registry.md](./docs/dataset_registry.md)
-- ClaimAtlas guide (advanced dataset/publication workflow): [docs/atlas.md](./docs/atlas.md)
+- Live Claim Explorer: [GitHub Pages](https://bossy-ye.github.io/ClaimStab-QC/explorer/)
+- Dataset Registry: [GitHub Pages](https://bossy-ye.github.io/ClaimStab-QC/dataset_registry/)
+- ClaimAtlas guide (advanced dataset/publication workflow): [GitHub Pages](https://bossy-ye.github.io/ClaimStab-QC/atlas/)
 
 Advanced secondary entrypoints (not the canonical onboarding path):
 
