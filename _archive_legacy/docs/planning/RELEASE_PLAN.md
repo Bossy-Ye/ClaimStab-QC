@@ -25,7 +25,7 @@ All must pass:
 2. `python -m pytest -q` green locally.
 3. `python -m mkdocs build --strict` green.
 4. `python -m claimstab.scripts.check_refactor_compat --mode all` green.
-5. `python -m claimstab.cli validate-spec --spec specs/paper_main.yml` green.
+5. `python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_main.yml` green.
 6. `python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json` green.
 
 ## Minimal Release Checklist

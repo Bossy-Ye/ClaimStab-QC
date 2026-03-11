@@ -18,8 +18,8 @@ Preferred artifact roots for paper/submission:
 ## 1) Main paper track
 
 ```bash
-python -m claimstab.cli validate-spec --spec specs/paper_main.yml
-python -m claimstab.cli run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
+python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_main.yml
+python -m claimstab.cli run --spec paper/experiments/specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
 python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
 ```
 
@@ -33,8 +33,8 @@ Expected artifacts:
 ## 1.5) Structural compilation track (GHZ)
 
 ```bash
-python -m claimstab.cli validate-spec --spec specs/paper_structural.yml
-PYTHONPATH=. ./.venv/bin/python examples/exp_structural_compilation.py --out-dir output/paper_artifact/structural
+python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_structural.yml
+PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_structural_compilation.py --out-dir output/paper_artifact/structural
 python -m claimstab.cli validate-evidence --json output/paper_artifact/structural/claim_stability.json
 ```
 
@@ -47,8 +47,8 @@ Expected artifacts:
 ## 1.6) Decision-claim track (BV)
 
 ```bash
-python -m claimstab.cli validate-spec --spec specs/paper_decision.yml
-python -m claimstab.cli run --spec specs/paper_decision.yml --out-dir output/presentation_large/large/bv_decision --report
+python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_decision.yml
+python -m claimstab.cli run --spec paper/experiments/specs/paper_decision.yml --out-dir output/presentation_large/large/bv_decision --report
 ```
 
 Expected artifacts:
@@ -58,8 +58,8 @@ Expected artifacts:
 ## 1.7) Distribution-claim track (Grover)
 
 ```bash
-python -m claimstab.cli validate-spec --spec specs/paper_distribution.yml
-python -m claimstab.cli run --spec specs/paper_distribution.yml --out-dir output/presentation_large/large/grover_distribution --report
+python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_distribution.yml
+python -m claimstab.cli run --spec paper/experiments/specs/paper_distribution.yml --out-dir output/presentation_large/large/grover_distribution --report
 ```
 
 Expected artifacts:
@@ -69,17 +69,18 @@ Expected artifacts:
 ## 2) Device-aware extension
 
 ```bash
-python -m claimstab.cli validate-spec --spec specs/paper_device.yml
-python -m claimstab.cli run --spec specs/paper_device.yml --out-dir output/presentation/device_extension
+python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_device.yml
+python -m claimstab.cli run --spec paper/experiments/specs/paper_device.yml --out-dir output/multidevice_full
 ```
 
 Expected artifacts:
-- `output/presentation/device_extension/...` (mode-dependent summaries, CSV/JSON)
+- `output/multidevice_full/combined_summary.json`
+- `output/multidevice_full/<mode>/{summary.json,summary.csv}`
 
 ## 2.5) Boundary challenge pack
 
 ```bash
-python examples/exp_boundary_challenge.py --out output/presentation_large/boundary
+python paper/experiments/scripts/exp_boundary_challenge.py --out output/presentation_large/boundary
 ```
 
 Expected artifacts:
@@ -89,14 +90,14 @@ Expected artifacts:
 ## 3) Non-MaxCut BV + Atlas publication
 
 ```bash
-python -m claimstab.cli validate-spec --spec specs/atlas_bv_demo.yml
-python -m claimstab.cli run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_bv_demo --report
-python -m claimstab.cli publish-result --run-dir output/atlas_bv_demo --atlas-root atlas --contributor your_name
+python -m claimstab.cli validate-spec --spec examples/community/specs/atlas_bv_demo.yml
+python -m claimstab.cli run --spec examples/community/specs/atlas_bv_demo.yml --out-dir output/examples/atlas_bv_demo --report
+python -m claimstab.cli publish-result --run-dir output/examples/atlas_bv_demo --atlas-root atlas --contributor your_name
 python -m claimstab.cli validate-atlas --atlas-root atlas
 ```
 
 Expected artifacts:
-- `output/atlas_bv_demo/claim_stability.json`
+- `output/examples/atlas_bv_demo/claim_stability.json`
 - `atlas/submissions/<submission_id>/...`
 - `atlas/index.json`
 

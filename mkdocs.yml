@@ -49,13 +49,9 @@ nav:
   - Artifact & Appendix:
       - Artifact Guide: artifact.md
       - Reproduction Contract: reproduction_contract.md
-      - Release Checklist: release_checklist.md
-      - Release Notes Template: release_notes_template.md
       - Evidence Map: evidence_map.md
       - Architecture: ARCHITECTURE.md
       - Compatibility Contract: compatibility_contract.md
-      - Experiment Playbook: EXPERIMENT_PLAYBOOK.md
-      - Implementation Catalog: generated/implementation_catalog.md
   - Cite: cite.md
 
 plugins:

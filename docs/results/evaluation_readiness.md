@@ -42,9 +42,9 @@ No new tasks, claim types, or perturbation spaces were added.
     - `compilation_only`: 0.0745
     - `sampling_only`: 0.2588
     - `combined_light`: 0.2028
-- RQ2/RQ7 (drivers + effects):
+- RQ2 (mechanisms, drivers, interactions, and boundaries):
   - main-effect/attribution signals remain strongest on MaxCut and support perturbation-driver interpretation
-- RQ3/RQ4 (cost-confidence):
+- RQ4 (cost-confidence):
   - `adaptive_ci` (strict target 0.05): no cost gain (`max_budget_reached`, cost 495)
   - `adaptive_ci_tuned` (target 0.11): early stop (`target_ci_width_reached`), mean cost 320 vs 495 full-factorial, same decisions
 - Control/stress interpretation:
@@ -55,11 +55,14 @@ No new tasks, claim types, or perturbation spaces were added.
 
 Main-paper figures:
 
-- `output/paper_pack/figures/main_paper/space_profile_composite_maxcut_ranking.(pdf|png)`
-- `output/paper_pack/figures/main_paper/fig_rq5_robustness_map_maxcut_ranking.(pdf|png)`
-- `output/paper_pack/figures/main_paper/fig_attribution_top_maxcut_ranking.(pdf|png)`
-- `output/paper_pack/figures/main_paper/fig_rq7_main_effects_maxcut_ranking.(pdf|png)`
-- `output/paper_pack/figures/main_paper/fig_rq4_ci_width_vs_cost.(pdf|png)`
+- `output/paper_pack/figures/main/fig1_stability_profile.(pdf|svg|png)` (RQ1)
+- `output/paper_pack/figures/main/fig2_robustness_cells_by_delta.(pdf|png)` (RQ2-supporting robustness contrast in main set)
+- `output/paper_pack/figures/main/fig3_claim_distribution.(pdf|svg|png)` (RQ3)
+- `output/paper_pack/figures/main/fig4_cost_confidence_tradeoff.(pdf|svg|png)` (RQ4)
+
+RQ2 mechanism diagnostics and older variants are retained in legacy archive form under:
+
+- `output/paper_pack/figures/_archive_legacy/`
 
 Appendix figures:
 

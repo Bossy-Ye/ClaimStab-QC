@@ -199,7 +199,7 @@ Artifacts:
 <details class="csr-fold">
 <summary>Reproduce command</summary>
 <pre class="csr-codeblock"><code class="language-bash">
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --suite toy --space-presets sampling_only --sampling-mode random_k --sample-seed 7 --stability-threshold 0.95 --confidence-level 0.95 --deltas 0.0,0.05 --backend-engine basic --spec output/sample_problem_demo/spec_sample_problem.yml --out-dir output/sample_problem_demo_run --claim-pairs &#x27;MethodA&gt;MethodB&#x27; --sample-size 12
+PYTHONPATH=. ./venv/bin/python examples/community/claim_stability_demo.py --suite toy --space-presets sampling_only --sampling-mode random_k --sample-seed 7 --stability-threshold 0.95 --confidence-level 0.95 --deltas 0.0,0.05 --backend-engine basic --spec output/sample_problem_demo/spec_sample_problem.yml --out-dir output/sample_problem_demo_run --claim-pairs &#x27;MethodA&gt;MethodB&#x27; --sample-size 12
 </code></pre>
 </details>
 
@@ -268,7 +268,7 @@ Artifacts:
 <details class="csr-fold">
 <summary>Reproduce command</summary>
 <pre class="csr-codeblock"><code class="language-bash">
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --task maxcut --suite large --space-preset sampling_only --claim-pairs &#x27;QAOA_p2&gt;QAOA_p1&#x27; --deltas 0.0,0.01,0.05 --sampling-mode adaptive_ci --target-ci-width 0.03 --max-sample-size 128 --min-sample-size 16 --step-size 8 --sample-seed 42 --backend-engine basic --out-dir output/presentation_large/adaptive/maxcut_sampling_p2_vs_p1_w03
+PYTHONPATH=. ./venv/bin/python examples/community/claim_stability_demo.py --task maxcut --suite large --space-preset sampling_only --claim-pairs &#x27;QAOA_p2&gt;QAOA_p1&#x27; --deltas 0.0,0.01,0.05 --sampling-mode adaptive_ci --target-ci-width 0.03 --max-sample-size 128 --min-sample-size 16 --step-size 8 --sample-seed 42 --backend-engine basic --out-dir output/presentation_large/adaptive/maxcut_sampling_p2_vs_p1_w03
 </code></pre>
 </details>
 
@@ -341,7 +341,7 @@ Artifacts:
 <details class="csr-fold">
 <summary>Reproduce command</summary>
 <pre class="csr-codeblock"><code class="language-bash">
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --task bv --suite core --space-presets compilation_only,sampling_only,combined_light --sampling-mode random_k --sample-size 16 --sample-seed 7 --backend-engine basic --out-dir output/presentation/main/bv_core
+PYTHONPATH=. ./venv/bin/python examples/community/claim_stability_demo.py --task bv --suite core --space-presets compilation_only,sampling_only,combined_light --sampling-mode random_k --sample-size 16 --sample-seed 7 --backend-engine basic --out-dir output/presentation/main/bv_core
 </code></pre>
 </details>
 
@@ -414,7 +414,7 @@ Artifacts:
 <details class="csr-fold">
 <summary>Reproduce command</summary>
 <pre class="csr-codeblock"><code class="language-bash">
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --task bv --suite standard --space-presets compilation_only,sampling_only,combined_light --sampling-mode full_factorial --deltas 0.0,0.01,0.05 --stability-threshold 0.95 --confidence-level 0.95 --backend-engine basic --out-dir output/presentation_large/calibration/bv_decision
+PYTHONPATH=. ./venv/bin/python examples/community/claim_stability_demo.py --task bv --suite standard --space-presets compilation_only,sampling_only,combined_light --sampling-mode full_factorial --deltas 0.0,0.01,0.05 --stability-threshold 0.95 --confidence-level 0.95 --backend-engine basic --out-dir output/presentation_large/calibration/bv_decision
 </code></pre>
 </details>
 
@@ -486,7 +486,7 @@ Artifacts:
 <details class="csr-fold">
 <summary>Reproduce command</summary>
 <pre class="csr-codeblock"><code class="language-bash">
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --suite standard --task ghz --spec specs/paper_structural.yml --space-presets compilation_only,combined_light --sampling-mode random_k --sample-size 48 --sample-seed 42 --stability-threshold 0.95 --confidence-level 0.95 --backend-engine basic --out-dir output/paper_artifact/structural
+PYTHONPATH=. ./venv/bin/python examples/community/claim_stability_demo.py --suite standard --task ghz --spec paper/experiments/specs/paper_structural.yml --space-presets compilation_only,combined_light --sampling-mode random_k --sample-size 48 --sample-seed 42 --stability-threshold 0.95 --confidence-level 0.95 --backend-engine basic --out-dir output/paper_artifact/structural
 </code></pre>
 </details>
 
@@ -558,7 +558,7 @@ Artifacts:
 <details class="csr-fold">
 <summary>Reproduce command</summary>
 <pre class="csr-codeblock"><code class="language-bash">
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --task maxcut --suite core --space-presets compilation_only,sampling_only,combined_light --sampling-mode random_k --sample-size 16 --sample-seed 7 --backend-engine basic --out-dir output/presentation/main/maxcut_core
+PYTHONPATH=. ./venv/bin/python examples/community/claim_stability_demo.py --task maxcut --suite core --space-presets compilation_only,sampling_only,combined_light --sampling-mode random_k --sample-size 16 --sample-seed 7 --backend-engine basic --out-dir output/presentation/main/maxcut_core
 </code></pre>
 </details>
 
@@ -632,7 +632,7 @@ Artifacts:
 <details class="csr-fold">
 <summary>Reproduce command</summary>
 <pre class="csr-codeblock"><code class="language-bash">
-PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py --suite standard --space-presets compilation_only,sampling_only,combined_light --claim-pairs &#x27;QAOA_p2&gt;RandomBaseline,QAOA_p2&gt;QAOA_p1,QAOA_p1&gt;RandomBaseline&#x27; --sampling-mode full_factorial --deltas 0.0,0.01,0.05 --stability-threshold 0.95 --confidence-level 0.95 --backend-engine basic --task maxcut --out-dir output/presentation_large/calibration/maxcut_ranking
+PYTHONPATH=. ./venv/bin/python examples/community/claim_stability_demo.py --suite standard --space-presets compilation_only,sampling_only,combined_light --claim-pairs &#x27;QAOA_p2&gt;RandomBaseline,QAOA_p2&gt;QAOA_p1,QAOA_p1&gt;RandomBaseline&#x27; --sampling-mode full_factorial --deltas 0.0,0.01,0.05 --stability-threshold 0.95 --confidence-level 0.95 --backend-engine basic --task maxcut --out-dir output/presentation_large/calibration/maxcut_ranking
 </code></pre>
 </details>
 

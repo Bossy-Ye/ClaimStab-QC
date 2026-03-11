@@ -9,8 +9,8 @@ from pathlib import Path
 
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Run Grover distribution-claim demo and render HTML report.")
-    ap.add_argument("--spec", default="examples/specs/grover_dist_spec.yaml")
-    ap.add_argument("--out-dir", default="output/presentation_large/grover_dist")
+    ap.add_argument("--spec", default="examples/community/specs/grover_dist_spec.yaml")
+    ap.add_argument("--out-dir", default="output/examples/grover_distribution_demo")
     ap.add_argument("--validate", action="store_true", help="Validate spec against schema before run.")
     ap.add_argument("--dry-run", action="store_true", help="Print command without executing.")
     return ap.parse_args()

@@ -26,29 +26,28 @@ The locked command set is in `docs/experiment_matrix.md`, and compatibility guar
 - Evidence:
   - `output/paper_pack/tables/paper_claims_outcomes.csv`
   - `output/paper_pack/tables/paper_claims_prevalence.csv`
-  - `output/paper_pack/figures/paper_claims_outcomes.pdf`
+  - `output/paper_pack/figures/appendix/paper_claims_outcomes.pdf`
 
 ## C5. Cost vs confidence tradeoff (RQ4 adaptive sampling)
 - Contribution: Compare `full_factorial`, `random_k`, and `adaptive_ci` on agreement/cost/CI width.
 - Evidence:
   - `output/paper_pack/tables/rq4_adaptive_summary.json`
-  - `output/paper_pack/figures/rq4_adaptive/fig_rq4_ci_width_vs_cost.pdf`
-  - `output/paper_pack/figures/rq4_adaptive/fig_rq4_agreement_vs_cost.pdf`
+  - `output/paper_pack/figures/main/fig4_cost_confidence_tradeoff.pdf`
   - run-level practicality fields in `claim_stability.json -> meta.practicality`
     (`num_workers`, `total_wall_time`, `throughput_runs_per_sec`).
 
 ## C6. Hardware-aware variability reporting (multi-device)
 - Contribution: Show device-dependent stability and confidence behavior.
 - Evidence:
-  - `output/paper_pack/figures/multidevice/fig_multidevice_stability_hat_heatmap.pdf`
-  - `output/paper_pack/figures/multidevice/fig_multidevice_ci_low_heatmap.pdf`
+  - `output/paper_pack/figures/appendix/fig_multidevice_stability_hat_heatmap.pdf`
+  - `output/paper_pack/figures/appendix/fig_multidevice_ci_low_heatmap.pdf`
 
 ## C7. Cross-task fragility beyond MaxCut
 - Contribution: Demonstrate instability behavior on non-MaxCut tasks via distribution claims (Grover).
 - Evidence:
   - run output `output/presentation_large/grover_dist/claim_stability.json`
   - `output/presentation_large/grover_dist/stability_report.html`
-  - spec: `examples/specs/grover_dist_spec.yaml`
+  - spec: `examples/community/specs/grover_dist_spec.yaml`
 
 ## Reproducibility contract
 - CEP metadata and trace links are included per experiment in `claim_stability.json -> experiments[*].evidence.cep`.

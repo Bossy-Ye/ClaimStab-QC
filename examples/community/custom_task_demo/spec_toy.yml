@@ -6,8 +6,8 @@ meta:
 
 task:
   kind: external
-  entrypoint: examples.custom_task_demo.toy_task:ToyTask
-  suite: toy
+  entrypoint: examples.community.custom_task_demo.toy_task:ToyTask
+  suite: core
   params:
     num_qubits: 6
     num_instances: 3

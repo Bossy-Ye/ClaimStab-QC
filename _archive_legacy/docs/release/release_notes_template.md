@@ -24,8 +24,8 @@ Stable vs experimental:
 Quickstart / reproduction:
 
 ```bash
-python -m claimstab.cli validate-spec --spec specs/paper_main.yml
-python -m claimstab.cli run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
+python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_main.yml
+python -m claimstab.cli run --spec paper/experiments/specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
 python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
 ```
 
@@ -63,8 +63,8 @@ Compatibility statement:
 ## Reproduction Commands
 
 ```bash
-python -m claimstab.cli validate-spec --spec specs/paper_main.yml
-python -m claimstab.cli run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
+python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_main.yml
+python -m claimstab.cli run --spec paper/experiments/specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
 python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
 ```
 

@@ -27,7 +27,7 @@ def main() -> None:
         "--task",
         "ghz",
         "--spec",
-        "specs/paper_structural.yml",
+        "paper/experiments/specs/paper_structural.yml",
         "--space-presets",
         "compilation_only,combined_light",
         "--sampling-mode",

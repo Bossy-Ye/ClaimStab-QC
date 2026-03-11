@@ -25,19 +25,19 @@ def parse_args() -> argparse.Namespace:
         "--include-decision",
         action=argparse.BooleanOptionalAction,
         default=False,
-        help="Also run BV decision track (specs/paper_decision.yml).",
+        help="Also run BV decision track (paper/experiments/specs/paper_decision.yml).",
     )
     ap.add_argument(
         "--include-distribution",
         action=argparse.BooleanOptionalAction,
         default=False,
-        help="Also run Grover distribution track (specs/paper_distribution.yml).",
+        help="Also run Grover distribution track (paper/experiments/specs/paper_distribution.yml).",
     )
     ap.add_argument(
         "--include-boundary",
         action=argparse.BooleanOptionalAction,
         default=False,
-        help="Also run boundary challenge pack (examples/exp_boundary_challenge.py).",
+        help="Also run boundary challenge pack (paper/experiments/scripts/exp_boundary_challenge.py).",
     )
     return ap.parse_args()
 
@@ -79,7 +79,7 @@ def main() -> None:
     commands: list[list[str]] = [
         [
             sys.executable,
-            "examples/exp_comprehensive_calibration.py",
+            "paper/experiments/scripts/exp_comprehensive_calibration.py",
             "--out-dir",
             str(calibration_dir),
             "--backend-engine",
@@ -88,7 +88,7 @@ def main() -> None:
         ],
         [
             sys.executable,
-            "examples/exp_comprehensive_large.py",
+            "paper/experiments/scripts/exp_comprehensive_large.py",
             "--out-dir",
             str(large_dir),
             "--sample-size",
@@ -101,7 +101,7 @@ def main() -> None:
         ],
         [
             sys.executable,
-            "examples/exp_structural_compilation.py",
+            "paper/experiments/scripts/exp_structural_compilation.py",
             "--out-dir",
             str(structural_dir),
             "--sample-size",
@@ -124,7 +124,7 @@ def main() -> None:
                 "claimstab.cli",
                 "run",
                 "--spec",
-                "specs/paper_decision.yml",
+                "paper/experiments/specs/paper_decision.yml",
                 "--out-dir",
                 str(decision_dir),
                 "--report",
@@ -138,7 +138,7 @@ def main() -> None:
                 "claimstab.cli",
                 "run",
                 "--spec",
-                "specs/paper_distribution.yml",
+                "paper/experiments/specs/paper_distribution.yml",
                 "--out-dir",
                 str(distribution_dir),
                 "--report",
@@ -148,7 +148,7 @@ def main() -> None:
         optional_commands.append(
             [
                 sys.executable,
-                "examples/exp_boundary_challenge.py",
+                "paper/experiments/scripts/exp_boundary_challenge.py",
                 "--out",
                 str(boundary_dir),
             ]

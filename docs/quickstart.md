@@ -22,24 +22,24 @@ python -m pip install -e ".[aer,ibm,docs,dev]"
 Run a small claim-stability demo:
 
 ```bash
-python -m claimstab.cli validate-spec --spec specs/atlas_bv_demo.yml
-python -m claimstab.cli run --spec specs/atlas_bv_demo.yml --out-dir output/quickstart --report
-python -m claimstab.cli validate-evidence --json output/quickstart/claim_stability.json
+python -m claimstab.cli validate-spec --spec examples/community/specs/atlas_bv_demo.yml
+python -m claimstab.cli run --spec examples/community/specs/atlas_bv_demo.yml --out-dir output/examples/quickstart --report
+python -m claimstab.cli validate-evidence --json output/examples/quickstart/claim_stability.json
 ```
 
 Expected outputs:
-- `output/quickstart/scores.csv`
-- `output/quickstart/claim_stability.json`
-- `output/quickstart/rq_summary.json`
-- `output/quickstart/robustness_map.json`
-- `output/quickstart/stability_report.html`
+- `output/examples/quickstart/scores.csv`
+- `output/examples/quickstart/claim_stability.json`
+- `output/examples/quickstart/rq_summary.json`
+- `output/examples/quickstart/robustness_map.json`
+- `output/examples/quickstart/stability_report.html`
 
 ## Evaluation Tracks
 Main paper tracks:
 ```bash
-PYTHONPATH=. ./.venv/bin/python examples/exp_comprehensive_calibration.py
-PYTHONPATH=. ./.venv/bin/python examples/exp_comprehensive_large.py
-PYTHONPATH=. ./.venv/bin/python examples/exp_structural_compilation.py
+PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_comprehensive_calibration.py
+PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_comprehensive_large.py
+PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_structural_compilation.py
 ```
 
 Device-targeted extension:
@@ -49,7 +49,7 @@ PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.multidevice_app --run all
 
 External task plugin demo:
 ```bash
-python -m claimstab.cli run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy
+python -m claimstab.cli run --spec examples/community/custom_task_demo/spec_toy.yml --out-dir output/examples/toy
 ```
 
 Generate your own external-task starter:
@@ -70,8 +70,8 @@ make reproduce-paper
 ## Generate HTML Report
 ```bash
 PYTHONPATH=. ./.venv/bin/python -m claimstab.scripts.generate_stability_report \
-  --json output/quickstart/claim_stability.json \
-  --out output/quickstart/stability_report.html
+  --json output/examples/quickstart/claim_stability.json \
+  --out output/examples/quickstart/stability_report.html
 ```
 
 ## Useful CLI Options
@@ -85,25 +85,25 @@ PYTHONPATH=. ./.venv/bin/python -m claimstab.scripts.generate_stability_report \
 
 ## Spec Format
 Template specs are available in:
-- `examples/specs/claim_spec.yaml`
-- `examples/specs/perturbation_spec.yaml`
-- `specs/atlas_bv_demo.yml` (small end-to-end publishable example)
+- `examples/community/specs/claim_spec.yaml`
+- `examples/community/specs/perturbation_spec.yaml`
+- `examples/community/specs/atlas_bv_demo.yml` (small end-to-end publishable example)
 
 Advanced direct pipeline entrypoint (secondary path):
 
 ```bash
 PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --suite core \
-  --spec examples/specs/claim_spec.yaml \
+  --spec examples/community/specs/claim_spec.yaml \
   --out-dir output/spec_run
 ```
 
 Minimal publish path from a spec run:
 
 ```bash
-python -m claimstab.cli validate-spec --spec specs/atlas_bv_demo.yml
-python -m claimstab.cli run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_demo --report
-python -m claimstab.cli publish-result --run-dir output/atlas_demo --atlas-root atlas --contributor your_name
+python -m claimstab.cli validate-spec --spec examples/community/specs/atlas_bv_demo.yml
+python -m claimstab.cli run --spec examples/community/specs/atlas_bv_demo.yml --out-dir output/examples/atlas_bv_demo --report
+python -m claimstab.cli publish-result --run-dir output/examples/atlas_bv_demo --atlas-root atlas --contributor your_name
 ```
 
 Plot-enabled report:
@@ -111,7 +111,7 @@ Plot-enabled report:
 ```bash
 MPLBACKEND=Agg MPLCONFIGDIR=/tmp/mplcache XDG_CACHE_HOME=/tmp/cache \
 PYTHONPATH=. ./.venv/bin/python -m claimstab.scripts.generate_stability_report \
-  --json output/quickstart/claim_stability.json \
-  --out output/quickstart/stability_report_plots.html \
+  --json output/examples/quickstart/claim_stability.json \
+  --out output/examples/quickstart/stability_report_plots.html \
   --with-plots
 ```

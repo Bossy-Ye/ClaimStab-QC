@@ -66,8 +66,8 @@ python -m pip install -e .
 2. Validate and run the canonical paper spec:
 
 ```bash
-python -m claimstab.cli validate-spec --spec specs/paper_main.yml
-python -m claimstab.cli run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
+python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_main.yml
+python -m claimstab.cli run --spec paper/experiments/specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
 ```
 
 3. Validate evidence links:
@@ -133,6 +133,28 @@ Decision semantics (same everywhere):
 - Output map: [docs/output_map.md](./docs/output_map.md)
 - Reproduction commands: [docs/reproduce.md](./docs/reproduce.md)
 
+## Community Examples
+
+Use these first for onboarding and external contributions:
+
+- [examples/community](./examples/community)
+- [examples/community/README.md](./examples/community/README.md)
+- [examples/community/specs/atlas_bv_demo.yml](./examples/community/specs/atlas_bv_demo.yml)
+- [examples/community/custom_task_demo/spec_toy.yml](./examples/community/custom_task_demo/spec_toy.yml)
+
+Community runs should write under `output/examples/...` (for example `output/examples/quickstart`).
+
+## Paper Experiments
+
+Paper-only evaluation assets are isolated under:
+
+- [paper/experiments](./paper/experiments)
+- [paper/experiments/README.md](./paper/experiments/README.md)
+- [paper/experiments/specs](./paper/experiments/specs)
+- [paper/experiments/scripts](./paper/experiments/scripts)
+
+Paper runs should write under `output/presentation_large/...` and packaged artifacts under `output/paper_pack/...`.
+
 ## Advanced / Community-Facing Capabilities
 
 - Live Claim Explorer: [docs/explorer.md](./docs/explorer.md)
@@ -145,22 +167,24 @@ Advanced secondary entrypoints (not the canonical onboarding path):
 - `python -m claimstab.pipelines.claim_stability_app ...`
 - `python -m claimstab.pipelines.multidevice_app ...`
 
-## Main Specs
+## Paper Specs
 
-- [specs/paper_main.yml](./specs/paper_main.yml)
-- [specs/paper_structural.yml](./specs/paper_structural.yml)
-- [specs/paper_decision.yml](./specs/paper_decision.yml)
-- [specs/paper_distribution.yml](./specs/paper_distribution.yml)
-- [specs/paper_device.yml](./specs/paper_device.yml)
-- [specs/paper_boundary.yml](./specs/paper_boundary.yml)
-- [specs/atlas_bv_demo.yml](./specs/atlas_bv_demo.yml)
+- [paper/experiments/specs/paper_main.yml](./paper/experiments/specs/paper_main.yml)
+- [paper/experiments/specs/paper_structural.yml](./paper/experiments/specs/paper_structural.yml)
+- [paper/experiments/specs/paper_decision.yml](./paper/experiments/specs/paper_decision.yml)
+- [paper/experiments/specs/paper_distribution.yml](./paper/experiments/specs/paper_distribution.yml)
+- [paper/experiments/specs/paper_device.yml](./paper/experiments/specs/paper_device.yml)
+- [paper/experiments/specs/paper_boundary.yml](./paper/experiments/specs/paper_boundary.yml)
+
+Community demo spec:
+- [examples/community/specs/atlas_bv_demo.yml](./examples/community/specs/atlas_bv_demo.yml)
 
 ## Contribute a Dataset (Minimal Flow)
 
 ```bash
-python -m claimstab.cli validate-spec --spec specs/atlas_bv_demo.yml
-python -m claimstab.cli run --spec specs/atlas_bv_demo.yml --out-dir output/atlas_demo --report
-python -m claimstab.cli publish-result --run-dir output/atlas_demo --atlas-root atlas --contributor your_name
+python -m claimstab.cli validate-spec --spec examples/community/specs/atlas_bv_demo.yml
+python -m claimstab.cli run --spec examples/community/specs/atlas_bv_demo.yml --out-dir output/examples/atlas_bv_demo --report
+python -m claimstab.cli publish-result --run-dir output/examples/atlas_bv_demo --atlas-root atlas --contributor your_name
 python -m claimstab.cli validate-atlas --atlas-root atlas
 python -m claimstab.cli export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
 ```

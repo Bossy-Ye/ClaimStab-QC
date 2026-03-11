@@ -10,7 +10,7 @@ docs-build:
 	$(MKDOCS_PY) -m mkdocs build
 
 gen-catalog:
-	PYTHONPATH=. $(MKDOCS_PY) -m claimstab.scripts.generate_implementation_catalog --out docs/generated/implementation_catalog.md
+	PYTHONPATH=. $(MKDOCS_PY) -m claimstab.scripts.generate_implementation_catalog --out _archive_legacy/docs/generated/implementation_catalog.md
 
 figures:
 	PYTHONPATH=. ./venv/bin/python -m claimstab.scripts.make_paper_figures --input-dir output/paper_artifact/large/maxcut_ranking --also-calibration output/paper_artifact/calibration/maxcut_ranking --output-dir output/paper_artifact/figures/main

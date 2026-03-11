@@ -35,7 +35,7 @@ This document defines the backward-compatibility guarantees for ClaimStab-QC.
 ```bash
 python -m pytest -q
 python -m claimstab.scripts.check_refactor_compat --mode all
-python -m claimstab.cli validate-spec --spec specs/paper_main.yml
+python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_main.yml
 python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
 python -m mkdocs build --strict
 ```

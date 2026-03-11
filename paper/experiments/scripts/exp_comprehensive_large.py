@@ -66,7 +66,7 @@ def main() -> None:
     if args.include_structural:
         ghz_cmd = [
             sys.executable,
-            "examples/exp_structural_compilation.py",
+            "paper/experiments/scripts/exp_structural_compilation.py",
             "--out-dir",
             f"{args.out_dir}/ghz_structural",
             "--sample-size",

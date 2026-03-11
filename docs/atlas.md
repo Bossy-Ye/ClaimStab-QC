@@ -65,14 +65,14 @@ backend:
 1. Run experiment (built-in or custom task):
 
 ```bash
-python -m claimstab.cli run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy --report
+python -m claimstab.cli run --spec examples/community/custom_task_demo/spec_toy.yml --out-dir output/examples/toy --report
 ```
 
 2. Publish artifacts to dataset:
 
 ```bash
 python -m claimstab.cli publish-result \
-  --run-dir output/toy \
+  --run-dir output/examples/toy \
   --atlas-root atlas \
   --contributor your_name
 ```

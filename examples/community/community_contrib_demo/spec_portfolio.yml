@@ -6,7 +6,7 @@ meta:
 
 task:
   kind: external
-  entrypoint: examples.community_contrib_demo.portfolio_task:PortfolioAllocationTask
+  entrypoint: examples.community.community_contrib_demo.portfolio_task:PortfolioAllocationTask
   suite: core
   params:
     num_qubits: 6

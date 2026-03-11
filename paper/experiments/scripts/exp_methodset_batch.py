@@ -52,7 +52,7 @@ def summarize_claim_payload(payload: dict[str, Any]) -> dict[str, Any]:
 
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Run a locked method-set bundle across claim types.")
-    ap.add_argument("--out", default="output/presentation_large/icse_methodset")
+    ap.add_argument("--out", default="output/presentation_large/methodset_batch")
     ap.add_argument("--skip-run", action="store_true", help="Skip execution and summarize existing outputs only.")
     return ap.parse_args()
 
@@ -65,22 +65,22 @@ def main() -> int:
     runs = [
         {
             "track": "ranking_maxcut",
-            "spec": "specs/paper_main.yml",
+            "spec": "paper/experiments/specs/paper_main.yml",
             "out_dir": out_root / "ranking_maxcut",
         },
         {
             "track": "decision_bv",
-            "spec": "specs/paper_decision.yml",
+            "spec": "paper/experiments/specs/paper_decision.yml",
             "out_dir": out_root / "decision_bv",
         },
         {
             "track": "distribution_grover",
-            "spec": "specs/paper_distribution.yml",
+            "spec": "paper/experiments/specs/paper_distribution.yml",
             "out_dir": out_root / "distribution_grover",
         },
         {
             "track": "structural_ghz",
-            "spec": "specs/paper_structural.yml",
+            "spec": "paper/experiments/specs/paper_structural.yml",
             "out_dir": out_root / "structural_ghz",
         },
     ]
@@ -120,7 +120,7 @@ def main() -> int:
         )
 
     bundle = {
-        "schema_version": "icse_methodset_v1",
+        "schema_version": "methodset_batch_v1",
         "runs": summary_rows,
         "total_tracks": len(summary_rows),
     }

@@ -14,7 +14,7 @@ class TestICSEMethodsetScript(unittest.TestCase):
             out_root = Path(td) / "methodset"
             cmd = [
                 sys.executable,
-                "examples/exp_icse_methodset.py",
+                "paper/experiments/scripts/exp_methodset_batch.py",
                 "--out",
                 str(out_root),
                 "--skip-run",
@@ -24,7 +24,7 @@ class TestICSEMethodsetScript(unittest.TestCase):
             summary_path = out_root / "methodset_summary.json"
             self.assertTrue(summary_path.exists())
             payload = json.loads(summary_path.read_text(encoding="utf-8"))
-            self.assertEqual(payload.get("schema_version"), "icse_methodset_v1")
+            self.assertEqual(payload.get("schema_version"), "methodset_batch_v1")
             self.assertEqual(int(payload.get("total_tracks", -1)), 0)
 
 

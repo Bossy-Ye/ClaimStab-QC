@@ -73,7 +73,7 @@ def summarize_boundary_payload(payload: dict[str, Any]) -> dict[str, Any]:
 
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Run boundary challenge pack and summarize near-threshold outcomes.")
-    ap.add_argument("--spec", default="specs/paper_boundary.yml")
+    ap.add_argument("--spec", default="paper/experiments/specs/paper_boundary.yml")
     ap.add_argument("--out", default="output/presentation_large/boundary")
     ap.add_argument("--skip-run", action="store_true", help="Skip execution and summarize existing output only.")
     ap.add_argument(

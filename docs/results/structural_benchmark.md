@@ -18,12 +18,12 @@ Rationale: on line-like coupling maps, star fanout generally induces more routin
 ## Run Command
 
 ```bash
-PYTHONPATH=. ./.venv/bin/python examples/exp_structural_compilation.py --out-dir output/paper_artifact/structural
+PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_structural_compilation.py --out-dir output/paper_artifact/structural
 ```
 
 ## Spec
 
-`specs/paper_structural.yml`
+`paper/experiments/specs/paper_structural.yml`
 
 ## Expected Artifacts
 

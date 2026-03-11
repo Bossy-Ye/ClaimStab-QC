@@ -24,7 +24,7 @@ def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Generate deterministic implementation catalog markdown.")
     ap.add_argument(
         "--out",
-        default="docs/generated/implementation_catalog.md",
+        default="_archive_legacy/docs/generated/implementation_catalog.md",
         help="Output markdown path.",
     )
     return ap.parse_args()
@@ -36,7 +36,8 @@ def _repo_root() -> Path:
 
 def _tracked_files(root: Path) -> list[str]:
     out = subprocess.check_output(["git", "ls-files"], cwd=root, text=True)
-    return sorted(line.strip() for line in out.splitlines() if line.strip())
+    files = [line.strip() for line in out.splitlines() if line.strip()]
+    return sorted(rel for rel in files if (root / rel).exists())
 
 
 def _module_info(root: Path, rel: str) -> ModuleInfo:
@@ -99,7 +100,7 @@ def _render_module_list(title: str, modules: list[ModuleInfo]) -> list[str]:
 def build_catalog_markdown(root: Path) -> str:
     tracked = _tracked_files(root)
 
-    py_files = [f for f in tracked if f.endswith(".py")]
+    py_files = [f for f in tracked if f.endswith(".py") and (root / f).exists()]
     md_files = [f for f in tracked if f.endswith(".md")]
     yml_files = [f for f in tracked if f.endswith(".yml") or f.endswith(".yaml")]
     json_files = [f for f in tracked if f.endswith(".json")]
@@ -165,7 +166,7 @@ def build_catalog_markdown(root: Path) -> str:
     lines.extend(_render_file_list("Atlas Files", _section_files(tracked, "atlas/")))
     lines.extend(_render_file_list("Docs Files", _section_files(tracked, "docs/")))
     lines.extend(_render_file_list("Examples Files", _section_files(tracked, "examples/")))
-    lines.extend(_render_file_list("Specs Files", _section_files(tracked, "specs/")))
+    lines.extend(_render_file_list("Paper Files", _section_files(tracked, "paper/")))
     lines.extend(_render_file_list("Data Files", _section_files(tracked, "data/")))
 
     lines.extend(

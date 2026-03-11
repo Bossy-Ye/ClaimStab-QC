@@ -40,12 +40,18 @@ Generated files are indexed in `output/paper_artifact/figures/main/manifest.json
 
 ## Main-Paper vs Appendix Mapping
 
-Main paper figures (primary evaluation narrative):
+Main paper figures (primary evaluation narrative; RQ1-RQ4):
 
-- `space_profile_composite_maxcut_ranking`
-- `fig_rq5_robustness_map_maxcut_ranking`
-- attribution + main-effects composite (`fig_attribution_top_maxcut_ranking` + `fig_rq7_main_effects_maxcut_ranking`)
-- `rq4_adaptive/fig_rq4_ci_width_vs_cost` (includes `adaptive_ci_tuned`)
+- `fig1_stability_profile` (RQ1: prevalence + space dependence)
+- `fig2_robustness_cells_by_delta` (RQ2-supporting robustness contrast used in the main figure set)
+- `fig3_claim_distribution` (RQ3: robust vs fragile claim types across tasks)
+- `fig4_cost_confidence_tradeoff` (RQ4: cost-confidence tradeoff with tuned adaptive run)
+
+RQ2 appears in the mechanism figures as sub-analyses:
+
+- attribution drivers (`fig_attribution_top_*`)
+- interaction/main-effect diagnostics (`fig_rq7_main_effects_*`)
+- robustness boundaries (`fig_rq5_robustness_map_*`)
 
 Appendix/default-supplement figures (completeness, controls, or degenerate profiles):
 
@@ -56,7 +62,7 @@ Appendix/default-supplement figures (completeness, controls, or degenerate profi
 
 The paper-pack exporter stages this split automatically into:
 
-- `output/paper_pack/figures/main_paper/`
+- `output/paper_pack/figures/main/`
 - `output/paper_pack/figures/appendix/`
 - `output/paper_pack/figures/paper_figure_map.json`
 
@@ -64,10 +70,10 @@ The paper-pack exporter stages this split automatically into:
 
 ## Figure Quality Audit
 
-For paper-pack outputs, the latest full redesign audit is written to:
+For paper-pack outputs, the legacy redesign audit material is archived at:
 
-- `output/paper_pack/figures/FIGURE_AUDIT_REDESIGN.md`
-- before-vs-after examples in `output/paper_pack/figures/redesign_examples/`
+- `output/paper_pack/figures/_archive_legacy/root_files/FIGURE_AUDIT_REDESIGN.md`
+- before-vs-after examples in `output/paper_pack/figures/_archive_legacy/dirs/redesign_examples/`
 
 Chart-type selection rules are documented in:
 

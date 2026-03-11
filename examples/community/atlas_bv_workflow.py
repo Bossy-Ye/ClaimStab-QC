@@ -11,8 +11,8 @@ def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(
         description="Run a non-MaxCut BV claim-stability demo and publish it to ClaimAtlas."
     )
-    ap.add_argument("--spec", default="specs/atlas_bv_demo.yml", help="Path to BV demo spec.")
-    ap.add_argument("--run-dir", default="output/atlas_bv_demo", help="Directory for experiment outputs.")
+    ap.add_argument("--spec", default="examples/community/specs/atlas_bv_demo.yml", help="Path to BV demo spec.")
+    ap.add_argument("--run-dir", default="output/examples/atlas_bv_demo", help="Directory for experiment outputs.")
     ap.add_argument("--atlas-root", default="atlas", help="ClaimAtlas root directory.")
     ap.add_argument("--contributor", default="demo_user", help="Contributor id for atlas metadata.")
     ap.add_argument(

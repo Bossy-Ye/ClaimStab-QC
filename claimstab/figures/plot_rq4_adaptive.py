@@ -111,7 +111,6 @@ def _plot_ci_width_vs_cost(points: list[dict[str, Any]], out_path: Path) -> dict
     ax.set_xlabel("cost (n_claim_evals)")
     ax.set_ylabel("mean CI width")
     ax.set_ylim(bottom=0.0)
-    ax.set_title("RQ4 CI width vs cost", loc="left")
     ax.legend(loc="upper right", ncol=2, frameon=False, fontsize=10, handletextpad=0.4, columnspacing=1.2)
     return save_fig(fig, out_path)
 
@@ -157,14 +156,13 @@ def _plot_agreement_vs_cost(points: list[dict[str, Any]], out_path: Path) -> dic
             row_labels=[str(r.get("strategy")) for r in sorted(points, key=lambda r: str(r.get("strategy")))],
             col_labels=["agreement", "cost"],
             matrix=np.array(rows, dtype=float),
-            title="RQ4 agreement vs cost",
+            title="",
             note="Line chart replaced by compact table because agreement is nearly constant across strategies.",
         )
         return save_fig(fig, out_path)
     ax.set_ylim(0.0, 1.03)
     ax.set_xlabel("cost (n_claim_evals)")
     ax.set_ylabel("decision agreement vs full_factorial")
-    ax.set_title("RQ4 agreement vs cost", loc="left")
     ax.legend(loc="lower right")
     return save_fig(fig, out_path)
 

@@ -37,7 +37,7 @@ atlas/
 1. Run any ClaimStab experiment:
 
 ```bash
-claimstab run --spec specs/paper_main.yml --out-dir output/paper_main --report
+claimstab run --spec paper/experiments/specs/paper_main.yml --out-dir output/paper_main --report
 ```
 
 2. Publish outputs into ClaimAtlas:

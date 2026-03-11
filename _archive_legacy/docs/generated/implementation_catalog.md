@@ -4,11 +4,11 @@ This page is auto-generated from tracked repository files.
 
 ## Summary
 
-- Tracked files: `276`
-- Python files: `158`
-- Markdown files: `39`
-- YAML files: `18`
-- JSON files: `31`
+- Tracked files: `273`
+- Python files: `162`
+- Markdown files: `40`
+- YAML files: `6`
+- JSON files: `34`
 
 ## Core Abstractions
 
@@ -118,16 +118,17 @@ This page is auto-generated from tracked repository files.
 ## Docs Files
 
 - `docs/ARCHITECTURE.md`
-- `docs/EXPERIMENT_PLAYBOOK.md`
 - `docs/artifact.md`
 - `docs/assets/claim_explorer.js`
 - `docs/assets/claim_model_core.svg`
+- `docs/assets/dataset_registry.js`
 - `docs/assets/extra.css`
 - `docs/assets/perturbation_sampling.svg`
 - `docs/assets/pipeline.svg`
 - `docs/assets/results_snapshot.svg`
 - `docs/atlas.md`
 - `docs/cite.md`
+- `docs/compatibility_contract.md`
 - `docs/concepts/claims.md`
 - `docs/concepts/extending.md`
 - `docs/concepts/formal_definitions.md`
@@ -136,11 +137,11 @@ This page is auto-generated from tracked repository files.
 - `docs/concepts/threats_to_validity.md`
 - `docs/custom_task_quickstart.md`
 - `docs/dataset_registry.md`
-- `docs/examples.md`
-- `docs/explorer.md`
 - `docs/evidence_map.md`
+- `docs/examples.md`
+- `docs/experiment_matrix.md`
+- `docs/explorer.md`
 - `docs/generated/.gitkeep`
-- `docs/generated/README.md`
 - `docs/generated/implementation_catalog.md`
 - `docs/index.md`
 - `docs/output_map.md`
@@ -148,6 +149,7 @@ This page is auto-generated from tracked repository files.
 - `docs/reproduce.md`
 - `docs/reproduction_contract.md`
 - `docs/results/device_aware.md`
+- `docs/results/evaluation_readiness.md`
 - `docs/results/figures.md`
 - `docs/results/main_results.md`
 - `docs/results/structural_benchmark.md`
@@ -155,31 +157,11 @@ This page is auto-generated from tracked repository files.
 
 ## Examples Files
 
-- `examples/atlas_bv_workflow.py`
-- `examples/claim_stability_demo.py`
-- `examples/community_contrib_demo/portfolio_task.py`
-- `examples/community_contrib_demo/spec_portfolio.yml`
-- `examples/custom_task_demo/spec_toy.yml`
-- `examples/custom_task_demo/toy_task.py`
-- `examples/exp_comprehensive_calibration.py`
-- `examples/exp_comprehensive_large.py`
-- `examples/exp_rq4_adaptive.py`
-- `examples/exp_structural_compilation.py`
-- `examples/grover_distribution_demo.py`
-- `examples/multidevice_demo.py`
-- `examples/specs/adaptive_bv_smoke.yml`
-- `examples/specs/adaptive_maxcut_smoke.yml`
-- `examples/specs/claim_spec.yaml`
-- `examples/specs/grover_dist_spec.yaml`
-- `examples/specs/paper_claims.yaml`
-- `examples/specs/perturbation_spec.yaml`
+- _(none)_
 
-## Specs Files
+## Paper Files
 
-- `specs/atlas_bv_demo.yml`
-- `specs/paper_device.yml`
-- `specs/paper_main.yml`
-- `specs/paper_structural.yml`
+- _(none)_
 
 ## Data Files
 
@@ -201,7 +183,11 @@ This page is auto-generated from tracked repository files.
 
 ### `claimstab/analysis/rq.py`
 - Classes: _none_
-- Top-level functions: _as_float, _as_int, _decision_counts, _build_rq5_conditional_robustness, _build_rq6_stratified_stability, _build_rq7_effect_diagnostics, _weighted_std, _emit_rq2_debug, _build_rq2_drivers, build_rq_summary
+- Top-level functions: _as_float, _as_int, _space_from_experiment, _decision_counts, _build_rq5_conditional_robustness, _build_rq6_stratified_stability, _build_rq7_effect_diagnostics, _weighted_std, _emit_rq2_debug, _rank_rq2_dimensions, _build_rq2_drivers, build_rq_summary
+
+### `claimstab/analysis/synthetic_truth.py`
+- Classes: _none_
+- Top-level functions: _sample_binomial, simulate_truth_profile, run_truth_grid, parse_args, main
 
 ### `claimstab/analysis/tests/test_paper_claims.py`
 - Classes:
@@ -218,6 +204,11 @@ This page is auto-generated from tracked repository files.
   - `TestRQ2Attribution` (methods: test_std_driver_score_highlights_shots_dependency)
 - Top-level functions: _none_
 
+### `claimstab/analysis/tests/test_synthetic_truth.py`
+- Classes:
+  - `TestSyntheticTruth` (methods: test_ci_width_shrinks_with_more_samples, test_stable_rate_monotone_with_true_stability, test_grid_contains_expected_rows)
+- Top-level functions: _none_
+
 ### `claimstab/atlas/__init__.py`
 - Classes: _none_
 - Top-level functions: _none_
@@ -225,7 +216,7 @@ This page is auto-generated from tracked repository files.
 ### `claimstab/atlas/catalog.py`
 - Classes:
   - `SubmissionSnapshot` (methods: -)
-- Top-level functions: _load_json, _normalize_list, _format_claim, _github_blob_url, _snapshot_from_entry, build_dataset_registry_markdown
+- Top-level functions: _load_json, _normalize_list, _format_claim, _github_blob_url, _slugify, _escape, _render_pills, _snapshot_from_entry, build_dataset_registry_markdown
 
 ### `claimstab/atlas/compare.py`
 - Classes: _none_
@@ -467,7 +458,7 @@ This page is auto-generated from tracked repository files.
 
 ### `claimstab/figures/heatmap.py`
 - Classes: _none_
-- Top-level functions: plot_fliprate_heatmap
+- Top-level functions: _delta_label, _delta_sort_key, _resolve_row_key, plot_fliprate_heatmap, plot_space_profile_composite
 
 ### `claimstab/figures/loaders.py`
 - Classes: _none_
@@ -483,11 +474,11 @@ This page is auto-generated from tracked repository files.
 
 ### `claimstab/figures/robustness.py`
 - Classes: _none_
-- Top-level functions: plot_rq5_robustness_map, plot_rq6_decision_counts, plot_rq7_top_main_effects
+- Top-level functions: _apply_camera_ready_style, plot_rq5_robustness_map, plot_rq6_decision_counts, plot_rq7_top_main_effects
 
 ### `claimstab/figures/style.py`
 - Classes: _none_
-- Top-level functions: apply_style, save_fig
+- Top-level functions: apply_style, plot_line_with_ci, add_reference_lines, decision_color, save_fig
 
 ### `claimstab/inference/__init__.py`
 - Classes: _none_
@@ -545,7 +536,7 @@ This page is auto-generated from tracked repository files.
   - `CompilationPerturbation` (methods: -)
   - `ExecutionPerturbation` (methods: -)
   - `PerturbationConfig` (methods: -)
-  - `PerturbationSpace` (methods: iter_configs, iter_configs_with_operators, size, conf_level_default, day1_default, compilation_only, sampling_only, combined_light)
+  - `PerturbationSpace` (methods: iter_configs, iter_configs_with_operators, size, conf_level_default, day1_default, compilation_only, sampling_only, combined_light, compilation_stress, sampling_stress, combined_stress)
 - Top-level functions: _none_
 
 ### `claimstab/perturbations/tests/test_operators.py`
@@ -587,10 +578,41 @@ This page is auto-generated from tracked repository files.
 - Classes: _none_
 - Top-level functions: _bucket_problem_size, _bucket_density, _bucket_transpiled_depth, _bucket_two_qubit_count, derive_instance_strata, evaluate_auxiliary_claim_examples, evaluate_claim_on_rows, evaluate_decision_claim_on_rows, evaluate_distribution_claim_on_rows
 
+### `claimstab/pipelines/main_aggregate_emit.py`
+- Classes:
+  - `MainOutputBundle` (methods: -)
+- Top-level functions: build_main_outputs, write_main_outputs, maybe_render_report
+
+### `claimstab/pipelines/main_execution.py`
+- Classes:
+  - `MainExecutionResult` (methods: -)
+- Top-level functions: make_space, build_evidence_ref, _derive_instance_strata, load_rows_from_trace, _as_bool, _as_int, _as_float, _effective_k_with_baseline, _build_evaluation_profile, _with_common_eval_metrics, _summarize_runner_timing, execute_main_plan
+
 ### `claimstab/pipelines/multidevice_app.py`
 - Classes:
   - `BoundTask` (methods: __init__, build, infer_num_qubits)
 - Top-level functions: parse_args, parse_csv_tokens, parse_deltas, parse_claim_pairs, canonical_suite_name, canonical_space_name, make_space, build_baseline, key_sort_value, config_from_key, baseline_from_keys, build_evidence_ref, evidence_chain_meta, make_event_logger, load_rows_from_trace, evaluate_rows_for_claim, write_rows_csv, try_load_spec, main
+
+### `claimstab/pipelines/multidevice_emit.py`
+- Classes: _none_
+- Top-level functions: build_and_write_multidevice_outputs
+
+### `claimstab/pipelines/multidevice_execution.py`
+- Classes:
+  - `MultideviceCallbacks` (methods: -)
+  - `MultideviceExecutionResult` (methods: -)
+- Top-level functions: execute_multidevice_plan, evaluate_rows_for_claim
+
+### `claimstab/pipelines/multidevice_planning.py`
+- Classes:
+  - `MultidevicePlan` (methods: -)
+- Top-level functions: resolve_multidevice_plan
+
+### `claimstab/pipelines/planning.py`
+- Classes:
+  - `MainOutPaths` (methods: -)
+  - `MainPlan` (methods: -)
+- Top-level functions: resolve_main_plan
 
 ### `claimstab/pipelines/runner.py`
 - Classes:
@@ -659,6 +681,11 @@ This page is auto-generated from tracked repository files.
 - Classes: _none_
 - Top-level functions: parse_args, run_tiny_experiment, check_outputs, main
 
+### `claimstab/scripts/check_refactor_compat.py`
+- Classes:
+  - `DiffResult` (methods: summary)
+- Top-level functions: _compare_recursive, compare_normalized_artifacts, _load_fixture, _run_case, _iter_cases, parse_args, main
+
 ### `claimstab/scripts/clean_workspace.py`
 - Classes:
   - `CleanupEntry` (methods: -)
@@ -666,7 +693,7 @@ This page is auto-generated from tracked repository files.
 
 ### `claimstab/scripts/export_paper_pack.py`
 - Classes: _none_
-- Top-level functions: _safe_git, _sha256, _load_json, _pick_existing_path, _is_scalar, _csv_safe, _flatten_scalars, _as_float, _write_csv, _build_naive_policy_delta_snapshot, _resolve_input_dir, _run_make_paper_figures, parse_args, main
+- Top-level functions: _safe_git, _sha256, _load_json, _pick_existing_path, _is_scalar, _csv_safe, _flatten_scalars, _as_float, _as_int, _write_csv, _build_naive_policy_delta_snapshot, _build_evaluation_profile_snapshot, _build_rq2_by_space_rows, _build_rq7_by_space_rows, _resolve_input_dir, _run_make_paper_figures, _stage_main_and_appendix_figures, _remap_paths_to_appendix, parse_args, main
 
 ### `claimstab/scripts/generate_implementation_catalog.py`
 - Classes:
@@ -680,7 +707,7 @@ This page is auto-generated from tracked repository files.
 
 ### `claimstab/scripts/make_paper_figures.py`
 - Classes: _none_
-- Top-level functions: _collect_naive_rows, _collect_shots_rows, _collect_adaptive_rows, parse_args, main
+- Top-level functions: _collect_naive_rows, _collect_shots_rows, _collect_adaptive_rows, _task_label_from_run_name, _pick_rq4_summary_path, _rq4_points_to_df, parse_args, main
 
 ### `claimstab/scripts/plot_heatmap.py`
 - Classes: _none_
@@ -760,7 +787,7 @@ This page is auto-generated from tracked repository files.
 
 ### `claimstab/tasks/registry.py`
 - Classes: _none_
-- Top-level functions: register_task, get_task_class, load_external_task, registered_tasks, ensure_builtin_tasks_registered
+- Top-level functions: register_task, get_task_class, _load_module_from_file, _load_module, load_external_task, registered_tasks, ensure_builtin_tasks_registered
 
 ### `claimstab/tasks/suites.py`
 - Classes: _none_
@@ -773,7 +800,7 @@ This page is auto-generated from tracked repository files.
 
 ### `claimstab/tasks/tests/test_factory.py`
 - Classes:
-  - `TestTaskFactory` (methods: test_parse_methods_default, test_parse_methods_default_bv, test_parse_methods_default_grover, test_make_task_builtin_maxcut, test_make_task_external_module_class)
+  - `TestTaskFactory` (methods: test_parse_methods_default, test_parse_methods_default_bv, test_parse_methods_default_grover, test_make_task_builtin_maxcut, test_make_task_external_module_class, test_make_task_external_file_path_class)
 - Top-level functions: _none_
 
 ### `claimstab/tasks/tests/test_ghz_structural.py`
@@ -814,9 +841,13 @@ This page is auto-generated from tracked repository files.
   - `MyTaskPlugin` (methods: __init__, instances, build)
 - Top-level functions: _none_
 
+### `claimstab/tests/helpers_characterization.py`
+- Classes: _none_
+- Top-level functions: _run_command, run_main_smoke, run_multidevice_smoke, _normalize_path, _normalize_runtime, _normalize_artifacts, _normalize_cep, normalize_payload
+
 ### `claimstab/tests/test_cli.py`
 - Classes:
-  - `TestCLI` (methods: test_init_external_task_starter, test_examples_subcommand, test_validate_spec_subcommand, test_validate_evidence_subcommand, test_run_dry_run_main, test_run_dry_run_main_with_debug_attribution_flag, test_run_dry_run_main_with_trace_cache_flags, test_run_dry_run_external_task, test_run_dry_run_multidevice_with_trace_flags, test_run_dry_run_bv_decision_only_no_ranking_pairs, test_export_definitions, test_publish_result_and_validate_atlas, test_export_dataset_registry, test_atlas_compare_command)
+  - `TestCLI` (methods: test_init_external_task_starter, test_examples_subcommand, test_validate_spec_subcommand, test_validate_spec_accepts_optional_stress_space_presets, test_validate_evidence_subcommand, test_validate_evidence_requires_schema_unless_allow_flag, test_run_dry_run_main, test_run_dry_run_main_with_debug_attribution_flag, test_run_dry_run_main_with_trace_cache_flags, test_run_dry_run_external_task, test_run_dry_run_multidevice_with_trace_flags, test_run_dry_run_bv_decision_only_no_ranking_pairs, test_export_definitions, test_publish_result_and_validate_atlas, test_export_dataset_registry, test_atlas_compare_command)
 - Top-level functions: _none_
 
 ### `claimstab/tests/test_distribution_pipeline_end_to_end.py`
@@ -828,6 +859,16 @@ This page is auto-generated from tracked repository files.
 - Classes:
   - `TestEvidenceProtocol` (methods: test_validate_evidence_payload_passes_with_matching_trace, test_validate_evidence_payload_flags_unmatched_query, test_validate_evidence_file_roundtrip)
 - Top-level functions: _write_trace, _valid_payload
+
+### `claimstab/tests/test_exp_boundary_challenge.py`
+- Classes:
+  - `TestBoundaryChallengeScript` (methods: _write_payload, test_boundary_signal_detected, test_require_boundary_signal_fails_without_signal)
+- Top-level functions: _none_
+
+### `claimstab/tests/test_exp_rq4_adaptive.py`
+- Classes:
+  - `TestExpRQ4AdaptiveScript` (methods: _write_claim_json, test_skip_run_builds_summary_and_agreement)
+- Top-level functions: _none_
 
 ### `claimstab/tests/test_export_paper_pack.py`
 - Classes:
@@ -864,10 +905,20 @@ This page is auto-generated from tracked repository files.
   - `TestMultideviceReplaySmoke` (methods: test_transpile_only_replay_trace)
 - Top-level functions: _none_
 
+### `claimstab/tests/test_pipeline_characterization.py`
+- Classes:
+  - `TestPipelineCharacterization` (methods: test_main_maxcut_randomk, test_main_bv_adaptive, test_multidevice_transpile_only)
+- Top-level functions: _load_fixture
+
 ### `claimstab/tests/test_pipeline_common.py`
 - Classes:
-  - `TestPipelineCommon` (methods: test_parse_deltas_requires_non_empty, test_parse_claim_pairs_supports_fallback, test_canonical_aliases, test_make_space_combined_light_override, test_baseline_helpers)
+  - `TestPipelineCommon` (methods: test_parse_deltas_requires_non_empty, test_parse_claim_pairs_supports_fallback, test_canonical_aliases, test_make_space_combined_light_override, test_make_space_optional_stress_presets, test_baseline_helpers)
 - Top-level functions: _none_
+
+### `claimstab/tests/test_refactor_artifact_compat.py`
+- Classes:
+  - `TestRefactorArtifactCompat` (methods: test_main_artifact_diff_and_semantic_contract, test_multidevice_artifact_diff, test_check_refactor_compat_script_smoke)
+- Top-level functions: _load_fixture
 
 ### `claimstab/tests/test_report_section_registry.py`
 - Classes:
@@ -900,46 +951,4 @@ This page is auto-generated from tracked repository files.
 
 ## Example Python Modules
 
-### `examples/atlas_bv_workflow.py`
-- Classes: _none_
-- Top-level functions: parse_args, _run_command, main
-
-### `examples/claim_stability_demo.py`
-- Classes: _none_
-- Top-level functions: _none_
-
-### `examples/community_contrib_demo/portfolio_task.py`
-- Classes:
-  - `PortfolioPayload` (methods: -)
-  - `PortfolioAllocationTask` (methods: __init__, instances, build)
-- Top-level functions: _make_weights
-
-### `examples/custom_task_demo/toy_task.py`
-- Classes:
-  - `ToyPayload` (methods: -)
-  - `ToyTask` (methods: __init__, instances, build)
-- Top-level functions: _none_
-
-### `examples/exp_comprehensive_calibration.py`
-- Classes: _none_
-- Top-level functions: parse_args, main
-
-### `examples/exp_comprehensive_large.py`
-- Classes: _none_
-- Top-level functions: parse_args, main
-
-### `examples/exp_rq4_adaptive.py`
-- Classes: _none_
-- Top-level functions: _run, _as_float, _load_json, _extract_strategy_record, _attach_agreement, parse_args, main
-
-### `examples/exp_structural_compilation.py`
-- Classes: _none_
-- Top-level functions: parse_args, main
-
-### `examples/grover_distribution_demo.py`
-- Classes: _none_
-- Top-level functions: parse_args, main
-
-### `examples/multidevice_demo.py`
-- Classes: _none_
-- Top-level functions: _none_
+- _(none)_

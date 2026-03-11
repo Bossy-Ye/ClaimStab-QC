@@ -31,7 +31,7 @@ This checklist defines minimal readiness for a GitHub Release in the current sub
 5. Canonical spec validation passes:
 
 ```bash
-./.venv/bin/python -m claimstab.cli validate-spec --spec specs/paper_main.yml
+./.venv/bin/python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_main.yml
 ```
 
 6. Evidence validation smoke passes:

@@ -100,7 +100,7 @@ class TestExpRQ4AdaptiveScript(unittest.TestCase):
 
             cmd = [
                 sys.executable,
-                "examples/exp_rq4_adaptive.py",
+                "paper/experiments/scripts/exp_rq4_adaptive.py",
                 "--out",
                 str(out_dir),
                 "--skip-run",
