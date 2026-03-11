@@ -42,10 +42,10 @@ Command:
 PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.multidevice_app \
   --run all \
   --suite standard \
-  --out-dir output/multidevice_full
+  --out-dir output/paper/multidevice
 ```
 
-Output snippet (`output/multidevice_full/transpile_only/transpile_only_summary.json`):
+Output snippet (`output/paper/multidevice/transpile_only/transpile_only_summary.json`):
 ```json
 {
   "batch": {
@@ -148,7 +148,7 @@ Notes:
 
 Command:
 ```bash
-PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_structural_compilation.py --out-dir output/paper_artifact/structural
+PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_structural_compilation.py --out-dir output/paper/artifact/structural
 ```
 
 What this evaluates:

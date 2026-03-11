@@ -16,7 +16,7 @@ def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(
         description="One-command paper reproduction: runs experiments, reports, and figures."
     )
-    ap.add_argument("--out-root", default="output/paper_artifact")
+    ap.add_argument("--out-root", default="output/paper/artifact")
     ap.add_argument("--backend-engine", choices=["auto", "aer", "basic"], default="basic")
     ap.add_argument("--sample-size-large", type=int, default=64)
     ap.add_argument("--sample-size-structural", type=int, default=48)

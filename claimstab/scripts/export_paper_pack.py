@@ -431,8 +431,8 @@ def _remap_paths_to_appendix(value: Any, appendix_dir: Path) -> Any:
 
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Export paper-ready tables/figures + reproducibility manifest.")
-    ap.add_argument("--input-root", default="output/presentation_large", help="Root directory holding large/calibration runs.")
-    ap.add_argument("--out", default="output/paper_pack", help="Output paper pack directory.")
+    ap.add_argument("--input-root", default="output/presentations", help="Root directory holding large/calibration runs.")
+    ap.add_argument("--out", default="output/paper/pack", help="Output paper pack directory.")
     ap.add_argument("--which", default="large", choices=["large", "calibration"], help="Which run family to package.")
     ap.add_argument(
         "--paper-claims",
@@ -574,10 +574,14 @@ def main() -> None:
         if args.rq4_summary
         else _pick_existing_path(
             [
+                resolved_input_dir / "rq4_adaptive" / "rq4_adaptive_tuned_summary.json",
+                resolved_input_dir / "rq4_adaptive" / "rq4_adaptive_summary.json",
                 input_root / "rq4_adaptive" / "rq4_adaptive_tuned_summary.json",
                 input_root / "rq4_adaptive" / "rq4_adaptive_summary.json",
                 resolved_input_dir.parent / "rq4_adaptive" / "rq4_adaptive_tuned_summary.json",
                 resolved_input_dir.parent / "rq4_adaptive" / "rq4_adaptive_summary.json",
+                Path("output/presentations/large/rq4_adaptive/rq4_adaptive_tuned_summary.json"),
+                Path("output/presentations/large/rq4_adaptive/rq4_adaptive_summary.json"),
                 Path("output/presentation_large/rq4_adaptive/rq4_adaptive_tuned_summary.json"),
                 Path("output/presentation_large/rq4_adaptive/rq4_adaptive_summary.json"),
             ]
@@ -605,8 +609,12 @@ def main() -> None:
             [
                 input_root / "multidevice_full" / "claim_stability.json",
                 input_root / "multidevice_full" / "combined_summary.json",
+                input_root / "paper" / "multidevice" / "claim_stability.json",
+                input_root / "paper" / "multidevice" / "combined_summary.json",
                 resolved_input_dir.parent / "multidevice_full" / "claim_stability.json",
                 resolved_input_dir.parent / "multidevice_full" / "combined_summary.json",
+                Path("output/paper/multidevice/claim_stability.json"),
+                Path("output/paper/multidevice/combined_summary.json"),
                 Path("output/multidevice_full/claim_stability.json"),
                 Path("output/multidevice_full/combined_summary.json"),
                 Path("output/multidevice/combined_summary.json"),

@@ -9,7 +9,7 @@ def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(
         description="Structural compilation benchmark: GHZ linear vs star under perturbations."
     )
-    ap.add_argument("--out-dir", default="output/exp_structural_compilation")
+    ap.add_argument("--out-dir", default="output/paper/artifact/structural")
     ap.add_argument("--sample-size", type=int, default=48)
     ap.add_argument("--sample-seed", type=int, default=17)
     ap.add_argument("--backend-engine", choices=["auto", "aer", "basic"], default="basic")

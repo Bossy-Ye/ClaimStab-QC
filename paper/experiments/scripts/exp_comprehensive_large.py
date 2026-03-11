@@ -9,7 +9,7 @@ def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(
         description="Main-paper large-scale track: random-k comparative claim evaluation on large suite."
     )
-    ap.add_argument("--out-dir", default="output/exp_comprehensive_large")
+    ap.add_argument("--out-dir", default="output/presentations/large")
     ap.add_argument("--sample-size", type=int, default=64)
     ap.add_argument("--sample-seed", type=int, default=42)
     ap.add_argument("--backend-engine", choices=["auto", "aer", "basic"], default="basic")

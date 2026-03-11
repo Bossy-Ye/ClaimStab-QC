@@ -45,8 +45,8 @@ Additional tracks used for generality:
 - Naive baseline reporting is dual-policy:
   - `naive_baseline` (`legacy_strict_all`) keeps historical comparability.
   - `naive_baseline_realistic` (`default_researcher_v1`) reflects default-practice interpretation.
-  - Policy-by-delta counts are exported in `output/paper_pack/tables/naive_policy_delta_snapshot.csv`.
+  - Policy-by-delta counts are exported in `output/paper/pack/tables/naive_policy_delta_snapshot.csv`.
 
 ## Scope Note (Output Consistency)
-- Full RQ1-RQ7 and dual-naive baseline fields are guaranteed in the `large/maxcut_ranking` track and in `output/paper_pack`.
+- Full RQ1-RQ7 and dual-naive baseline fields are guaranteed in the `large/maxcut_ranking` track and in `output/paper/pack`.
 - Other tracks can contain an intentional subset of sections depending on claim type and experiment objective (for example decision/distribution-only runs).

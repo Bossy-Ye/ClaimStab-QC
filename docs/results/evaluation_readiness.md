@@ -18,19 +18,19 @@ No new tasks, claim types, or perturbation spaces were added.
 
 ## Final Experiment Counts
 
-- E1 (`output/presentation_large/large/maxcut_ranking/claim_stability.json`):
+- E1 (`output/presentations/large/maxcut_ranking/claim_stability.json`):
   - 27 comparative rows: 24 unstable, 2 stable, 1 inconclusive
   - by space:
     - `compilation_only`: 2 stable, 1 inconclusive, 6 unstable
     - `sampling_only`: 9 unstable
     - `combined_light`: 9 unstable
-- E2 (`output/presentation_large/large/ghz_structural/claim_stability.json`):
+- E2 (`output/presentations/large/ghz_structural/claim_stability.json`):
   - 12/12 stable
-- E3 (`output/presentation_large/large/bv_decision/claim_stability.json`):
+- E3 (`output/presentations/large/bv_decision/claim_stability.json`):
   - 4/4 stable
-- E4 (`output/presentation_large/large/grover_distribution/claim_stability.json`):
+- E4 (`output/presentations/large/grover_distribution/claim_stability.json`):
   - 4/4 unstable
-- E5 (`output/presentation_large/rq4_adaptive/rq4_adaptive_tuned_summary.json`):
+- E5 (`output/presentations/large/rq4_adaptive/rq4_adaptive_tuned_summary.json`):
   - strategies: `full_factorial`, `random_k_32`, `random_k_64`, `adaptive_ci`, `adaptive_ci_tuned`
   - all strategies match full-factorial decisions on both deltas (`agreement_with_factorial.rate = 1.0`)
 
@@ -55,23 +55,23 @@ No new tasks, claim types, or perturbation spaces were added.
 
 Main-paper figures:
 
-- `output/paper_pack/figures/main/fig1_stability_profile.(pdf|svg|png)` (RQ1)
-- `output/paper_pack/figures/main/fig2_robustness_cells_by_delta.(pdf|png)` (RQ2-supporting robustness contrast in main set)
-- `output/paper_pack/figures/main/fig3_claim_distribution.(pdf|svg|png)` (RQ3)
-- `output/paper_pack/figures/main/fig4_cost_confidence_tradeoff.(pdf|svg|png)` (RQ4)
+- `output/paper/pack/figures/main/fig1_stability_profile.(pdf|svg|png)` (RQ1)
+- `output/paper/pack/figures/main/fig2_robustness_cells_by_delta.(pdf|png)` (RQ2-supporting robustness contrast in main set)
+- `output/paper/pack/figures/main/fig3_claim_distribution.(pdf|svg|png)` (RQ3)
+- `output/paper/pack/figures/main/fig4_cost_confidence_tradeoff.(pdf|svg|png)` (RQ4)
 
 RQ2 mechanism diagnostics and older variants are retained in legacy archive form under:
 
-- `output/paper_pack/figures/_archive_legacy/`
+- `output/paper/pack/figures/_archive_legacy/`
 
 Appendix figures:
 
-- staged under `output/paper_pack/figures/appendix/`
+- staged under `output/paper/pack/figures/appendix/`
 - includes degenerate/near-constant control panels (GHZ/BV), multidevice heatmaps, and Grover near-constant strips
 
 Figure staging manifest:
 
-- `output/paper_pack/figures/paper_figure_map.json`
+- `output/paper/pack/figures/paper_figure_map.json`
 
 ## Freeze Confirmation
 

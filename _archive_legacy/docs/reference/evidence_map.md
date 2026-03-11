@@ -1,19 +1,19 @@
 # ClaimStab-QC: Contribution-to-Evidence Map
 
-This page maps each paper claim to concrete artifacts in `output/paper_pack/` so reviewers can audit decisions and provenance quickly.
+This page maps each paper claim to concrete artifacts in `output/paper/pack/` so reviewers can audit decisions and provenance quickly.
 The locked command set is in `docs/experiment_matrix.md`, and compatibility guarantees are in `docs/compatibility_contract.md`.
 
 ## C1. Claim-centric stability decisions under perturbation spaces
 - Contribution: Evaluate whether a claim remains valid across software-visible perturbations, not just single-point scores.
 - Evidence:
-  - `output/paper_pack/tables/space_claim_delta.csv` (per space/claim/delta stability outcomes)
-  - `output/paper_pack/tables/rq_summary.csv` (RQ1/RQ2 aggregate summaries)
+  - `output/paper/pack/tables/space_claim_delta.csv` (per space/claim/delta stability outcomes)
+  - `output/paper/pack/tables/rq_summary.csv` (RQ1/RQ2 aggregate summaries)
 
 ## C2. Conservative CI-based decision policy
 - Contribution: Use confidence intervals with a conservative rule (`stable` iff CI lower bound >= threshold) to avoid over-claiming.
 - Evidence:
-  - `output/paper_pack/tables/space_claim_delta.csv` (`stability_ci_low/high`, `decision`)
-  - `output/paper_pack/paper_pack_manifest.json` (reproduce command + input hashes + commit)
+  - `output/paper/pack/tables/space_claim_delta.csv` (`stability_ci_low/high`, `decision`)
+  - `output/paper/pack/paper_pack_manifest.json` (reproduce command + input hashes + commit)
 
 ## C3. Diagnostics from overall outcome to actionable conditions
 - Contribution: Move from a single label to diagnostics: robustness-map cells, robust core, failure frontier, and minimal lockdown set.
@@ -24,29 +24,29 @@ The locked command set is in `docs/experiment_matrix.md`, and compatibility guar
 ## C4. Paper-style claim prevalence (text-to-result linkage)
 - Contribution: Map natural-language paper claims to executable claim rows and summarize outcome prevalence.
 - Evidence:
-  - `output/paper_pack/tables/paper_claims_outcomes.csv`
-  - `output/paper_pack/tables/paper_claims_prevalence.csv`
-  - `output/paper_pack/figures/appendix/paper_claims_outcomes.pdf`
+  - `output/paper/pack/tables/paper_claims_outcomes.csv`
+  - `output/paper/pack/tables/paper_claims_prevalence.csv`
+  - `output/paper/pack/figures/appendix/paper_claims_outcomes.pdf`
 
 ## C5. Cost vs confidence tradeoff (RQ4 adaptive sampling)
 - Contribution: Compare `full_factorial`, `random_k`, and `adaptive_ci` on agreement/cost/CI width.
 - Evidence:
-  - `output/paper_pack/tables/rq4_adaptive_summary.json`
-  - `output/paper_pack/figures/main/fig4_cost_confidence_tradeoff.pdf`
+  - `output/paper/pack/tables/rq4_adaptive_summary.json`
+  - `output/paper/pack/figures/main/fig4_cost_confidence_tradeoff.pdf`
   - run-level practicality fields in `claim_stability.json -> meta.practicality`
     (`num_workers`, `total_wall_time`, `throughput_runs_per_sec`).
 
 ## C6. Hardware-aware variability reporting (multi-device)
 - Contribution: Show device-dependent stability and confidence behavior.
 - Evidence:
-  - `output/paper_pack/figures/appendix/fig_multidevice_stability_hat_heatmap.pdf`
-  - `output/paper_pack/figures/appendix/fig_multidevice_ci_low_heatmap.pdf`
+  - `output/paper/pack/figures/appendix/fig_multidevice_stability_hat_heatmap.pdf`
+  - `output/paper/pack/figures/appendix/fig_multidevice_ci_low_heatmap.pdf`
 
 ## C7. Cross-task fragility beyond MaxCut
 - Contribution: Demonstrate instability behavior on non-MaxCut tasks via distribution claims (Grover).
 - Evidence:
-  - run output `output/presentation_large/grover_dist/claim_stability.json`
-  - `output/presentation_large/grover_dist/stability_report.html`
+  - run output `output/presentations/large/grover_dist/claim_stability.json`
+  - `output/presentations/large/grover_dist/stability_report.html`
   - spec: `examples/community/specs/grover_dist_spec.yaml`
 
 ## Reproducibility contract

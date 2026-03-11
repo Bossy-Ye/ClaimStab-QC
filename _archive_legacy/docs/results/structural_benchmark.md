@@ -18,7 +18,7 @@ Rationale: on line-like coupling maps, star fanout generally induces more routin
 ## Run Command
 
 ```bash
-PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_structural_compilation.py --out-dir output/paper_artifact/structural
+PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_structural_compilation.py --out-dir output/paper/artifact/structural
 ```
 
 ## Spec
@@ -27,9 +27,9 @@ PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_structural_compila
 
 ## Expected Artifacts
 
-- `output/paper_artifact/structural/claim_stability.json`
-- `output/paper_artifact/structural/scores.csv`
-- `output/paper_artifact/structural/rq_summary.json`
-- `output/paper_artifact/structural/stability_report.html` (if report generation is invoked)
+- `output/paper/artifact/structural/claim_stability.json`
+- `output/paper/artifact/structural/scores.csv`
+- `output/paper/artifact/structural/rq_summary.json`
+- `output/paper/artifact/structural/stability_report.html` (if report generation is invoked)
 
-Legacy ad-hoc path `output/exp_structural_compilation` remains supported, but canonical submission artifacts use `output/paper_artifact/structural`.
+Legacy ad-hoc path `output/exp_structural_compilation` remains supported, but canonical submission artifacts use `output/paper/artifact/structural`.

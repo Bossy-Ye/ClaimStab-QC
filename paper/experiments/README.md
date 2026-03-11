@@ -7,7 +7,7 @@ It is intentionally separate from community onboarding examples.
 
 - `specs/`: canonical paper specs.
 - `scripts/`: canonical experiment batch scripts.
-- paper-facing generated outputs are stored under `output/presentation_large/` and `output/paper_pack/`.
+- paper-facing generated outputs are stored under `output/presentations/large/` and `output/paper/pack/`.
 - `_archive_legacy/`: archived legacy experiment artifacts/scripts.
 
 ## Canonical Experiments (Frozen)
@@ -39,11 +39,11 @@ In the frozen baseline evidence package, S3 is treated as non-evidence and can b
 
 ```bash
 python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_main.yml
-python -m claimstab.cli run --spec paper/experiments/specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
+python -m claimstab.cli run --spec paper/experiments/specs/paper_main.yml --out-dir output/presentations/large/maxcut_ranking --report
 ```
 
 For full matrix execution, use scripts in `paper/experiments/scripts/` or `make reproduce-paper`.
 
 Output conventions:
-- canonical experiment outputs: `output/presentation_large/...`
-- paper packaging: `output/paper_pack/...`
+- canonical experiment outputs: `output/presentations/large/...`
+- paper packaging: `output/paper/pack/...`

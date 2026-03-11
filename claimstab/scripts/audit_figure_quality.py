@@ -371,9 +371,9 @@ def write_markdown(rows: list[dict[str, str]], out_path: Path, fig_dir: Path) ->
 
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Audit current paper figures and emit redesign diagnostics.")
-    ap.add_argument("--fig-dir", default="output/paper_pack/figures")
-    ap.add_argument("--input-root", default="output/presentation_large")
-    ap.add_argument("--out", default="output/paper_pack/figures/FIGURE_AUDIT_REDESIGN.md")
+    ap.add_argument("--fig-dir", default="output/paper/pack/figures")
+    ap.add_argument("--input-root", default="output/presentations/large")
+    ap.add_argument("--out", default="output/paper/pack/figures/FIGURE_AUDIT_REDESIGN.md")
     return ap.parse_args()
 
 

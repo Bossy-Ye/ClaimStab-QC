@@ -113,7 +113,7 @@ def _attach_agreement(summary: dict[str, Any]) -> None:
 
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Run RQ4 adaptive sampling comparison and generate summary figures.")
-    ap.add_argument("--out", default="output/presentation_large/rq4_adaptive")
+    ap.add_argument("--out", default="output/presentations/large/rq4_adaptive")
     ap.add_argument("--backend-engine", choices=["auto", "aer", "basic"], default="basic")
     ap.add_argument("--suite", default="standard")
     ap.add_argument("--sample-seed", type=int, default=42)

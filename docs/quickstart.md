@@ -44,7 +44,7 @@ PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_structural_compila
 
 Device-targeted extension:
 ```bash
-PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.multidevice_app --run all --suite standard --out-dir output/multidevice_full
+PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.multidevice_app --run all --suite standard --out-dir output/paper/multidevice
 ```
 
 External task plugin demo:

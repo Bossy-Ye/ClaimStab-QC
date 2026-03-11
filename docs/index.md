@@ -62,10 +62,9 @@ Experimental quantum-software conclusions are often sensitive to compiler/sampli
 
 These are preserved as future-facing infrastructure assets, but are not required for first-time onboarding:
 
-- [Live Claim Explorer](explorer.md)
-- [Dataset Registry (from ClaimAtlas)](dataset_registry.md)
 - [ClaimAtlas Guide](atlas.md)
-- [Custom Task Quickstart](custom_task_quickstart.md)
+- [Dataset Registry (from ClaimAtlas)](dataset_registry.md)
+- [Live Claim Explorer](explorer.md)
 
 ## Deep-Dive Links
 
@@ -73,4 +72,3 @@ These are preserved as future-facing infrastructure assets, but are not required
 - [Main Results](results/main_results.md)
 - [Reproduction Contract](reproduction_contract.md)
 - [Compatibility Contract](compatibility_contract.md)
-- [Evidence Map](evidence_map.md)

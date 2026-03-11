@@ -18,9 +18,9 @@ Equivalent command:
 
 ```bash
 PYTHONPATH=. ./.venv/bin/python -m claimstab.scripts.make_paper_figures \
-  --input-dir output/paper_artifact/large/maxcut_ranking \
-  --also-calibration output/paper_artifact/calibration/maxcut_ranking \
-  --output-dir output/paper_artifact/figures/main
+  --input-dir output/paper/artifact/large/maxcut_ranking \
+  --also-calibration output/paper/artifact/calibration/maxcut_ranking \
+  --output-dir output/paper/artifact/figures/main
 ```
 
 This is the same target used by `make figures`.
@@ -36,7 +36,7 @@ This is the same target used by `make figures`.
 - CI-width shrink curve (adaptive sampling, when available).
 - Naive baseline vs ClaimStab comparison plot.
 
-Generated files are indexed in `output/paper_artifact/figures/main/manifest.json`.
+Generated files are indexed in `output/paper/artifact/figures/main/manifest.json`.
 
 ## Main-Paper vs Appendix Mapping
 
@@ -62,19 +62,17 @@ Appendix/default-supplement figures (completeness, controls, or degenerate profi
 
 The paper-pack exporter stages this split automatically into:
 
-- `output/paper_pack/figures/main/`
-- `output/paper_pack/figures/appendix/`
-- `output/paper_pack/figures/paper_figure_map.json`
+- `output/paper/pack/figures/main/`
+- `output/paper/pack/figures/appendix/`
+- `output/paper/pack/figures/paper_figure_map.json`
 
-`output/exp_*` figure inputs are still supported for ad-hoc experiments, but canonical paper figures should come from `output/paper_artifact/`.
+`output/exp_*` figure inputs are still supported for ad-hoc experiments, but canonical paper figures should come from `output/paper/artifact/`.
 
 ## Figure Quality Audit
 
 For paper-pack outputs, the legacy redesign audit material is archived at:
 
-- `output/paper_pack/figures/_archive_legacy/root_files/FIGURE_AUDIT_REDESIGN.md`
-- before-vs-after examples in `output/paper_pack/figures/_archive_legacy/dirs/redesign_examples/`
+- `output/paper/pack/figures/_archive_legacy/root_files/FIGURE_AUDIT_REDESIGN.md`
+- before-vs-after examples in `output/paper/pack/figures/_archive_legacy/dirs/redesign_examples/`
 
-Chart-type selection rules are documented in:
-
-- [Figure Policy](figure_policy.md)
+Chart-type selection rules are documented in the plotting code under `claimstab/figures/` and test coverage in `claimstab/tests/`.

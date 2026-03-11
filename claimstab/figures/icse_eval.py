@@ -115,7 +115,7 @@ def plot_stability_profile(df: pd.DataFrame, *, threshold: float = 0.95) -> Figu
     )
     if n_panels == 1:
         axes = [axes]
-    fig.subplots_adjust(left=0.22, right=0.79, top=0.90, bottom=0.11, wspace=0.02)
+    fig.subplots_adjust(left=0.22, right=0.80, top=0.90, bottom=0.11, wspace=0.02)
 
     for idx, (ax, space) in enumerate(zip(axes, spaces)):
         sframe = frame[frame["space_preset"].astype(str) == space].copy()
@@ -175,7 +175,8 @@ def plot_stability_profile(df: pd.DataFrame, *, threshold: float = 0.95) -> Figu
         handles=handles,
         frameon=False,
         loc="center left",
-        bbox_to_anchor=(0.80, 0.50),
+        bbox_to_anchor=(1.01, 0.50),
+        bbox_transform=fig.transFigure,
         ncol=1,
         fontsize=8.2,
         title="decision",

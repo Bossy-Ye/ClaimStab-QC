@@ -15,9 +15,9 @@ This document defines the backward-compatibility guarantees for ClaimStab-QC.
 4. Evidence protocol compatibility remains stable:
    - `experiments[*].evidence.cep` fields stay schema-compatible
 5. Paper-pack export contract remains stable:
-   - `output/paper_pack/tables/*`
-   - `output/paper_pack/figures/*`
-   - `output/paper_pack/paper_pack_manifest.json`
+   - `output/paper/pack/tables/*`
+   - `output/paper/pack/figures/*`
+   - `output/paper/pack/paper_pack_manifest.json`
 
 ## Allowed Changes (Non-breaking)
 - Additive JSON fields.
@@ -36,7 +36,7 @@ This document defines the backward-compatibility guarantees for ClaimStab-QC.
 python -m pytest -q
 python -m claimstab.scripts.check_refactor_compat --mode all
 python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_main.yml
-python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
+python -m claimstab.cli validate-evidence --json output/presentations/large/maxcut_ranking/claim_stability.json
 python -m mkdocs build --strict
 ```
 

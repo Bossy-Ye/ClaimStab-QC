@@ -118,7 +118,7 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--threshold", type=float, default=0.95)
     ap.add_argument("--confidence-level", type=float, default=0.95)
     ap.add_argument("--seed", type=int, default=7)
-    ap.add_argument("--out", default="output/presentation_large/synthetic_truth.json")
+    ap.add_argument("--out", default="output/presentations/large/synthetic_truth.json")
     return ap.parse_args()
 
 

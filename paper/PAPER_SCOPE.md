@@ -21,13 +21,13 @@ The repository intentionally contains a broader infrastructure surface than the 
 
 ## Headline Experiment Packs
 
-1. `output/presentation_large/large/maxcut_ranking`
+1. `output/presentations/large/maxcut_ranking`
    - Main fragility/robustness evidence for ranking claims.
-2. `output/presentation_large/rq4_adaptive`
+2. `output/presentations/large/rq4_adaptive`
    - Adaptive stopping and cost/decision tradeoff.
-3. `output/presentation_large/grover_dist`
+3. `output/presentations/large/grover_dist`
    - Non-MaxCut distribution-claim fragility control.
-4. `output/multidevice_full` (when available)
+4. `output/paper/multidevice` (when available)
    - Device-aware variation evidence via transpile/noisy-sim modes.
 
 ## Supporting Artifact Layer (Not Main Novelty Claim)

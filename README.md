@@ -6,7 +6,7 @@
 
 ClaimStab-QC is a claim-centric framework for checking whether paper conclusions remain valid under software-visible perturbations in quantum software pipelines.
 
-Repository scope note: this repository surface is broader than the accompanying paper scope. The paper intentionally focuses on the fully validated methodological core; broader infrastructure is kept for reproducibility and future community adoption. See [PAPER_SCOPE.md](./PAPER_SCOPE.md).
+Repository scope note: this repository surface is broader than the accompanying paper scope. The paper intentionally focuses on the fully validated methodological core; broader infrastructure is kept for reproducibility and future community adoption. See [paper/PAPER_SCOPE.md](./paper/PAPER_SCOPE.md).
 
 ## What Problem It Solves
 
@@ -67,13 +67,13 @@ python -m pip install -e .
 
 ```bash
 python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_main.yml
-python -m claimstab.cli run --spec paper/experiments/specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report
+python -m claimstab.cli run --spec paper/experiments/specs/paper_main.yml --out-dir output/presentations/large/maxcut_ranking --report
 ```
 
 3. Validate evidence links:
 
 ```bash
-python -m claimstab.cli validate-evidence --json output/presentation_large/large/maxcut_ranking/claim_stability.json
+python -m claimstab.cli validate-evidence --json output/presentations/large/maxcut_ranking/claim_stability.json
 ```
 
 Only this CLI path is recommended for first-time onboarding. Pipeline module entrypoints are available for advanced/internal workflows (see below).
@@ -153,14 +153,20 @@ Paper-only evaluation assets are isolated under:
 - [paper/experiments/specs](./paper/experiments/specs)
 - [paper/experiments/scripts](./paper/experiments/scripts)
 
-Paper runs should write under `output/presentation_large/...` and packaged artifacts under `output/paper_pack/...`.
+Paper runs should write under `output/presentations/large/...` and packaged artifacts under `output/paper/pack/...`.
+
+Recommended `output/` layout:
+- `output/examples/` for onboarding/community runs
+- `output/paper/` for artifact/pack/multidevice paper assets
+- `output/presentations/` for curated presentation bundles
+- `output/demos/` for local exploratory demos
+- `output/tmp_smoke/` for temporary smoke/check runs
 
 ## Advanced / Community-Facing Capabilities
 
 - Live Claim Explorer: [docs/explorer.md](./docs/explorer.md)
 - Dataset Registry: [docs/dataset_registry.md](./docs/dataset_registry.md)
-- ClaimAtlas guide: [docs/atlas.md](./docs/atlas.md)
-- Custom task onboarding: [docs/custom_task_quickstart.md](./docs/custom_task_quickstart.md)
+- ClaimAtlas guide (advanced dataset/publication workflow): [docs/atlas.md](./docs/atlas.md)
 
 Advanced secondary entrypoints (not the canonical onboarding path):
 
@@ -217,8 +223,6 @@ Build docs:
 
 ## Project Policies and Scope
 
-- Paper scope lock: [PAPER_SCOPE.md](./PAPER_SCOPE.md)
+- Paper scope lock: [paper/PAPER_SCOPE.md](./paper/PAPER_SCOPE.md)
 - Contributing: [CONTRIBUTING.md](./CONTRIBUTING.md)
 - Compatibility contract: [docs/compatibility_contract.md](./docs/compatibility_contract.md)
-- Architecture: [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
-- Threats to validity: [docs/concepts/threats_to_validity.md](./docs/concepts/threats_to_validity.md)

@@ -20,12 +20,12 @@ PYTHONPATH=. ./.venv/bin/python -m pytest -q
 ## Run Experiments
 Main paper track (calibration):
 ```bash
-PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_comprehensive_calibration.py --out-dir output/presentation_large/calibration
+PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_comprehensive_calibration.py --out-dir output/presentations/calibration
 ```
 
 Main paper track (large):
 ```bash
-PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_comprehensive_large.py --out-dir output/presentation_large/large
+PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_comprehensive_large.py --out-dir output/presentations/large
 ```
 
 Legacy/core smoke:
@@ -42,7 +42,7 @@ PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --sampling-mode random_k \
   --sample-size 64 \
   --sample-seed 42 \
-  --out-dir output/presentation_large/large/maxcut_ranking
+  --out-dir output/presentations/large/maxcut_ranking
 ```
 
 Device-aware extension:

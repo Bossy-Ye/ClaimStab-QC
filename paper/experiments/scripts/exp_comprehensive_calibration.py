@@ -9,7 +9,7 @@ def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(
         description="Main-paper calibration track: exhaustive comparative claim evaluation on standard suite."
     )
-    ap.add_argument("--out-dir", default="output/exp_comprehensive_calibration")
+    ap.add_argument("--out-dir", default="output/presentations/calibration")
     ap.add_argument("--backend-engine", choices=["auto", "aer", "basic"], default="basic")
     ap.add_argument(
         "--include-structural",

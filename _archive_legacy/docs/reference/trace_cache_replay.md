@@ -12,10 +12,10 @@ PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --sampling-mode random_k \
   --sample-size 8 \
   --sample-seed 7 \
-  --cache-db output/demo_main/cache.sqlite \
-  --trace-out output/demo_main/trace.jsonl \
-  --events-out output/demo_main/events.jsonl \
-  --out-dir output/demo_main
+  --cache-db output/demos/demo_main/cache.sqlite \
+  --trace-out output/demos/demo_main/trace.jsonl \
+  --events-out output/demos/demo_main/events.jsonl \
+  --out-dir output/demos/demo_main
 ```
 
 ## 2) Main pipeline replay (no execution)
@@ -25,8 +25,8 @@ PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.claim_stability_app \
   --task maxcut \
   --suite core \
   --space-preset sampling_only \
-  --replay-trace output/demo_main/trace.jsonl \
-  --out-dir output/demo_main_replay
+  --replay-trace output/demos/demo_main/trace.jsonl \
+  --out-dir output/demos/demo_main_replay
 ```
 
 ## 3) Multi-device transpile-only with cache + trace + events
@@ -68,6 +68,6 @@ PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.multidevice_app \
 ## 5) Validate CEP evidence links
 
 ```bash
-python -m claimstab.cli validate-evidence --json output/demo_main_replay/claim_stability.json
+python -m claimstab.cli validate-evidence --json output/demos/demo_main_replay/claim_stability.json
 python -m claimstab.cli validate-evidence --json output/multidevice_demo_replay/combined_summary.json --no-trace-check
 ```

@@ -106,6 +106,8 @@ def _pick_rq4_summary_path(*, input_dirs: list[Path], explicit: str | None) -> P
         )
     candidates.extend(
         [
+            Path("output/presentations/large/rq4_adaptive/rq4_adaptive_tuned_summary.json"),
+            Path("output/presentations/large/rq4_adaptive/rq4_adaptive_summary.json"),
             Path("output/presentation_large/rq4_adaptive/rq4_adaptive_tuned_summary.json"),
             Path("output/presentation_large/rq4_adaptive/rq4_adaptive_summary.json"),
         ]
@@ -153,7 +155,7 @@ def _rq4_points_to_df(summary: dict[str, Any]) -> pd.DataFrame:
 
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Generate paper-ready figures from ClaimStab outputs")
-    ap.add_argument("--input-dir", default="output/exp_comprehensive_large", help="Directory containing claim_stability.json")
+    ap.add_argument("--input-dir", default="output/presentations/large", help="Directory containing claim_stability.json")
     ap.add_argument("--also-calibration", default=None, help="Optional second directory to include")
     ap.add_argument("--output-dir", default="figures", help="Output figure directory")
     ap.add_argument("--threshold", type=float, default=0.95)
