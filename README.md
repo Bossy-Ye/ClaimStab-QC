@@ -157,10 +157,10 @@ Paper runs should write under `output/presentations/large/...` and packaged arti
 
 Recommended `output/` layout:
 - `output/examples/` for onboarding/community runs
-- `output/paper/` for artifact/pack/multidevice paper assets
-- `output/presentations/` for curated presentation bundles
-- `output/demos/` for local exploratory demos
-- `output/tmp_smoke/` for temporary smoke/check runs
+- `output/paper/` for canonical paper artifacts (`artifact/`, `pack/`, `multidevice`)
+- `output/presentations/` for curated narrative result bundles
+- `output/demos/` for local exploratory checks
+- `output/tmp_smoke/` for disposable smoke/audit runs
 
 ## Advanced / Community-Facing Capabilities
 

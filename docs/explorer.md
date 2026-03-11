@@ -18,7 +18,7 @@
 
     Recommended examples:
     - `output/presentations/large/maxcut_ranking/claim_stability.json`
-    - `output/presentations/large/grover_dist/claim_stability.json`
+    - `output/presentations/large/grover_distribution/claim_stability.json`
     - `output/tmp_smoke/adaptive_bv_smoke/claim_stability.json`
 
     Minimum structure:

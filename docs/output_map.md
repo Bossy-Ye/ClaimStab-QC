@@ -12,6 +12,14 @@ This page is the single source of truth for where commands write artifacts.
 
 Legacy ad-hoc paths (`output/exp_*`) are still supported, but not preferred for submission packaging.
 
+## Category Semantics
+
+- `examples`: stable onboarding runs you can copy for your own tasks.
+- `demos`: exploratory/local demos kept for quick interactive checks.
+- `paper`: canonical artifact and paper-pack outputs used for submission/review.
+- `presentations`: curated larger runs for result narration and slide-friendly summaries.
+- `tmp_smoke`: disposable smoke/audit runs; not part of canonical evidence.
+
 ## Script/Spec -> Output Mapping
 
 | Entry point | Recommended command | Output directory |

@@ -98,21 +98,26 @@ def plot_rq5_robustness_map(payload: dict[str, Any], out_path: str | Path) -> di
         )
         return save_fig(fig, out_path)
 
+    totals = [max(1, s + i + u) for s, i, u in zip(stable, inconclusive, unstable)]
+    stable_pct = [100.0 * float(s) / float(t) for s, t in zip(stable, totals)]
+    inconclusive_pct = [100.0 * float(i) / float(t) for i, t in zip(inconclusive, totals)]
+    unstable_pct = [100.0 * float(u) / float(t) for u, t in zip(unstable, totals)]
+
     x = list(range(len(ordered_deltas)))
-    ax.bar(x, stable, color=decision_color("stable"), label="stable", edgecolor=PAPER_GRAY_DARK, linewidth=0.45)
+    ax.bar(x, stable_pct, color=decision_color("stable"), label="stable", edgecolor=PAPER_GRAY_DARK, linewidth=0.45)
     ax.bar(
         x,
-        inconclusive,
-        bottom=stable,
+        inconclusive_pct,
+        bottom=stable_pct,
         color=decision_color("inconclusive"),
         label="inconclusive",
         edgecolor=PAPER_GRAY_DARK,
         linewidth=0.45,
     )
-    stacked_bottom = [s + i for s, i in zip(stable, inconclusive)]
+    stacked_bottom = [s + i for s, i in zip(stable_pct, inconclusive_pct)]
     ax.bar(
         x,
-        unstable,
+        unstable_pct,
         bottom=stacked_bottom,
         color=decision_color("unstable"),
         label="unstable",
@@ -122,13 +127,10 @@ def plot_rq5_robustness_map(payload: dict[str, Any], out_path: str | Path) -> di
     ax.set_xticks(x)
     ax.set_xticklabels(ordered_deltas)
     ax.set_xlabel("delta")
-    ax.set_ylabel("number of condition cells")
-    totals = [max(1, s + i + u) for s, i, u in zip(stable, inconclusive, unstable)]
-    for idx, (s, i, u, tot) in enumerate(zip(stable, inconclusive, unstable, totals)):
-        dominant = max([("stable", s), ("inconclusive", i), ("unstable", u)], key=lambda item: item[1])
-        pct = int(round((float(dominant[1]) / float(tot)) * 100.0))
-        if pct >= 60:
-            ax.text(idx, s + i + u + max(0.2, (s + i + u) * 0.015), f"{pct}%", ha="center", va="bottom", fontsize=7.8, color="#303030")
+    ax.set_ylabel("condition cells (%)")
+    ax.set_ylim(0.0, 104.0)
+    for idx, pct in enumerate(unstable_pct):
+        ax.text(idx, 101.5, f"{pct:.0f}% unstable", ha="center", va="bottom", fontsize=7.6, color="#303030")
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.10), ncol=3, frameon=False, fontsize=8.0)
     ax.grid(axis="y", alpha=0.2, linewidth=0.45)
     ax.grid(axis="x", alpha=0.0)

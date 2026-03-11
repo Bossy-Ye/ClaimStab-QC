@@ -25,7 +25,7 @@ The repository intentionally contains a broader infrastructure surface than the 
    - Main fragility/robustness evidence for ranking claims.
 2. `output/presentations/large/rq4_adaptive`
    - Adaptive stopping and cost/decision tradeoff.
-3. `output/presentations/large/grover_dist`
+3. `output/presentations/large/grover_distribution`
    - Non-MaxCut distribution-claim fragility control.
 4. `output/paper/multidevice` (when available)
    - Device-aware variation evidence via transpile/noisy-sim modes.
