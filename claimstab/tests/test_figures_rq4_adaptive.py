@@ -41,11 +41,21 @@ class TestRQ4AdaptiveFigures(unittest.TestCase):
                         {"delta": 0.01, "n_claim_evals": 1740, "stability_ci_low": 0.69, "stability_ci_high": 0.85},
                     ],
                 },
+                {
+                    "strategy": "adaptive_ci_tuned",
+                    "strategy_group": "adaptive_ci_tuned",
+                    "k_used": 42,
+                    "agreement_with_factorial": {"rate": 1.0},
+                    "rows_by_delta": [
+                        {"delta": 0.0, "n_claim_evals": 1260, "stability_ci_low": 0.73, "stability_ci_high": 0.90},
+                        {"delta": 0.01, "n_claim_evals": 1260, "stability_ci_low": 0.67, "stability_ci_high": 0.86},
+                    ],
+                },
             ]
         }
         with tempfile.TemporaryDirectory() as td:
             refs = plot_rq4_adaptive(summary, Path(td))
-            self.assertEqual(int(refs["points"]), 3)
+            self.assertEqual(int(refs["points"]), 4)
             ci = refs.get("ci_width_vs_cost") or {}
             ag = refs.get("agreement_vs_cost") or {}
             self.assertTrue(Path(str(ci.get("pdf"))).exists())

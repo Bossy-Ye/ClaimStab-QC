@@ -34,9 +34,11 @@ nav:
       - Extending: concepts/extending.md
   - Results:
       - Main Results: results/main_results.md
+      - Evaluation Readiness: results/evaluation_readiness.md
       - Structural Benchmark: results/structural_benchmark.md
       - Device-aware Results: results/device_aware.md
       - Figures: results/figures.md
+      - Figure Policy: results/figure_policy.md
   - Explore & Community:
       - Live Claim Explorer: explorer.md
       - Dataset Registry (from ClaimAtlas): dataset_registry.md

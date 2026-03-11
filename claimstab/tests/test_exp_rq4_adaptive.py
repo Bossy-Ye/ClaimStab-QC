@@ -90,6 +90,13 @@ class TestExpRQ4AdaptiveScript(unittest.TestCase):
                 decisions=("stable", "stable"),
                 adaptive_enabled=True,
             )
+            self._write_claim_json(
+                runs_dir / "adaptive_ci_tuned" / "claim_stability.json",
+                sampling_mode="adaptive_ci",
+                k_used=40,
+                decisions=("stable", "stable"),
+                adaptive_enabled=True,
+            )
 
             cmd = [
                 sys.executable,
@@ -104,13 +111,15 @@ class TestExpRQ4AdaptiveScript(unittest.TestCase):
             self.assertTrue(summary_path.exists())
             summary = json.loads(summary_path.read_text(encoding="utf-8"))
             strategies = summary.get("strategies", [])
-            self.assertEqual(len(strategies), 4)
+            self.assertEqual(len(strategies), 5)
 
             by_name = {str(row.get("strategy")): row for row in strategies if isinstance(row, dict)}
             self.assertEqual(by_name["full_factorial"].get("agreement_with_factorial", {}).get("rate"), 1.0)
             self.assertEqual(by_name["random_k_32"].get("agreement_with_factorial", {}).get("rate"), 0.5)
             self.assertEqual(by_name["random_k_64"].get("agreement_with_factorial", {}).get("rate"), 1.0)
             self.assertEqual(by_name["adaptive_ci"].get("agreement_with_factorial", {}).get("rate"), 1.0)
+            self.assertEqual(by_name["adaptive_ci_tuned"].get("agreement_with_factorial", {}).get("rate"), 1.0)
+            self.assertTrue((out_dir / "rq4_adaptive_tuned_summary.json").exists())
 
             figures = summary.get("figures", {})
             ci_ref = figures.get("ci_width_vs_cost", {}) if isinstance(figures, dict) else {}

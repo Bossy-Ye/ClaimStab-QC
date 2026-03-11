@@ -117,6 +117,12 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--backend-engine", choices=["auto", "aer", "basic"], default="basic")
     ap.add_argument("--suite", default="standard")
     ap.add_argument("--sample-seed", type=int, default=42)
+    ap.add_argument(
+        "--adaptive-tuned-target-ci-width",
+        type=float,
+        default=0.11,
+        help="Relaxed CI-width target for the tuned adaptive strategy.",
+    )
     ap.add_argument("--skip-run", action="store_true", help="Skip execution and only summarize existing outputs.")
     return ap.parse_args()
 
@@ -140,6 +146,21 @@ def main() -> None:
             "extra": [
                 "--target-ci-width",
                 "0.05",
+                "--max-sample-size",
+                "128",
+                "--min-sample-size",
+                "16",
+                "--step-size",
+                "8",
+            ],
+        },
+        {
+            "name": "adaptive_ci_tuned",
+            "group": "adaptive_ci_tuned",
+            "sampling_mode": "adaptive_ci",
+            "extra": [
+                "--target-ci-width",
+                str(args.adaptive_tuned_target_ci_width),
                 "--max-sample-size",
                 "128",
                 "--min-sample-size",
@@ -199,6 +220,7 @@ def main() -> None:
         "space_preset": "sampling_only",
         "claim_pair": "QAOA_p2>QAOA_p1",
         "deltas": [0.0, 0.01],
+        "adaptive_tuned_target_ci_width": float(args.adaptive_tuned_target_ci_width),
         "strategies": strategy_rows,
     }
     _attach_agreement(summary)
@@ -208,8 +230,11 @@ def main() -> None:
 
     summary_path = out_root / "rq4_adaptive_summary.json"
     summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    tuned_summary_path = out_root / "rq4_adaptive_tuned_summary.json"
+    tuned_summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print("Wrote:")
     print(" ", summary_path.resolve())
+    print(" ", tuned_summary_path.resolve())
     if isinstance(refs.get("ci_width_vs_cost"), dict):
         print(" ", refs["ci_width_vs_cost"].get("pdf"))
         print(" ", refs["ci_width_vs_cost"].get("png"))

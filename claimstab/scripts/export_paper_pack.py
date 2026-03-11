@@ -292,6 +292,68 @@ def _run_make_paper_figures(input_dir: Path, out_dir: Path) -> dict[str, Any]:
     return {"command": " ".join(cmd), "manifest": str((out_dir / "manifest.json").resolve())}
 
 
+def _stage_main_and_appendix_figures(figures_dir: Path) -> dict[str, Any]:
+    main_dir = figures_dir / "main_paper"
+    appendix_dir = figures_dir / "appendix"
+    main_dir.mkdir(parents=True, exist_ok=True)
+    appendix_dir.mkdir(parents=True, exist_ok=True)
+
+    main_stems = [
+        "space_profile_composite_maxcut_ranking",
+        "fig_rq5_robustness_map_maxcut_ranking",
+        "fig_attribution_top_maxcut_ranking",
+        "fig_rq7_main_effects_maxcut_ranking",
+    ]
+    main_sources: list[Path] = []
+    for stem in main_stems:
+        for suffix in (".pdf", ".png"):
+            candidate = figures_dir / f"{stem}{suffix}"
+            if candidate.exists():
+                main_sources.append(candidate)
+    for suffix in (".pdf", ".png"):
+        candidate = figures_dir / "rq4_adaptive" / f"fig_rq4_ci_width_vs_cost{suffix}"
+        if candidate.exists():
+            main_sources.append(candidate)
+
+    copied_main: list[str] = []
+    for src in main_sources:
+        dst = main_dir / src.name
+        shutil.copy2(src, dst)
+        copied_main.append(str(dst.resolve()))
+
+    appendix_patterns = (
+        "*ghz_structural*",
+        "*bv_decision*",
+        "*grover_distribution*",
+        "multidevice/*",
+    )
+    appendix_sources: set[Path] = set()
+    for pattern in appendix_patterns:
+        for path in figures_dir.glob(pattern):
+            if path.is_file() and path.suffix.lower() in {".pdf", ".png"}:
+                appendix_sources.add(path)
+
+    copied_appendix: list[str] = []
+    for src in sorted(appendix_sources):
+        dst = appendix_dir / src.name
+        shutil.copy2(src, dst)
+        copied_appendix.append(str(dst.resolve()))
+
+    manifest = {
+        "main_paper": copied_main,
+        "appendix": copied_appendix,
+    }
+    manifest_path = figures_dir / "paper_figure_map.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    return {
+        "main_dir": str(main_dir.resolve()),
+        "appendix_dir": str(appendix_dir.resolve()),
+        "map_json": str(manifest_path.resolve()),
+        "main_count": len(copied_main),
+        "appendix_count": len(copied_appendix),
+    }
+
+
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Export paper-ready tables/figures + reproducibility manifest.")
     ap.add_argument("--input-root", default="output/presentation_large", help="Root directory holding large/calibration runs.")
@@ -413,6 +475,7 @@ def main() -> None:
     figure_meta: dict[str, Any] = {"skipped": bool(args.skip_figures)}
     if not args.skip_figures:
         figure_meta = _run_make_paper_figures(resolved_input_dir, figures_dir)
+        figure_meta["paper_figure_map"] = _stage_main_and_appendix_figures(figures_dir)
 
     paper_claims_meta: dict[str, Any] | None = None
     claims_path = Path(args.paper_claims)
@@ -437,8 +500,11 @@ def main() -> None:
         if args.rq4_summary
         else _pick_existing_path(
             [
+                input_root / "rq4_adaptive" / "rq4_adaptive_tuned_summary.json",
                 input_root / "rq4_adaptive" / "rq4_adaptive_summary.json",
+                resolved_input_dir.parent / "rq4_adaptive" / "rq4_adaptive_tuned_summary.json",
                 resolved_input_dir.parent / "rq4_adaptive" / "rq4_adaptive_summary.json",
+                Path("output/presentation_large/rq4_adaptive/rq4_adaptive_tuned_summary.json"),
                 Path("output/presentation_large/rq4_adaptive/rq4_adaptive_summary.json"),
             ]
         )
@@ -448,9 +514,12 @@ def main() -> None:
         rq4_refs = plot_rq4_adaptive(rq4_payload, figures_dir / "rq4_adaptive")
         copied_summary = tables_dir / "rq4_adaptive_summary.json"
         shutil.copy2(rq4_summary_path, copied_summary)
+        copied_tuned_summary = tables_dir / "rq4_adaptive_tuned_summary.json"
+        shutil.copy2(rq4_summary_path, copied_tuned_summary)
         rq4_meta = {
             "summary_source": str(rq4_summary_path.resolve()),
             "summary_copy": str(copied_summary.resolve()),
+            "summary_tuned_copy": str(copied_tuned_summary.resolve()),
             "figures": rq4_refs,
         }
 
