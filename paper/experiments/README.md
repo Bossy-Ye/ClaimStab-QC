@@ -7,7 +7,7 @@ It is intentionally separate from community onboarding examples.
 
 - `specs/`: canonical paper specs.
 - `scripts/`: canonical experiment batch scripts.
-- `summaries/`, `figures/`, `appendix/`: reserved staging locations for paper-facing assets.
+- paper-facing generated outputs are stored under `output/presentation_large/` and `output/paper_pack/`.
 - `_archive_legacy/`: archived legacy experiment artifacts/scripts.
 
 ## Canonical Experiments (Frozen)
