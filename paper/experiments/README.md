@@ -25,10 +25,13 @@ The active rerun scaffold now lives under `specs/evaluation_v2/` and writes into
   Spec: `specs/evaluation_v2/s2_boundary.yml`
 - QEC: supporting portability illustration  
   Spec: `specs/evaluation_v2/qec_portability.yml`
+- E5: policy comparison on the expanded 495-configuration grid  
+  Script: `scripts/exp_rq4_evaluation_v2.py`
+- S1: backend-conditioned transpile-only structural portability  
+  Spec: `specs/evaluation_v2/s1_multidevice_portability.yml`
 
-Staged but not yet finalized:
-- E5: multi-claim policy comparison
-- S1: multidevice portability
+Scope note:
+- `S1` is intentionally narrower than a full noisy-device rerun and should be written as controlled structural portability.
 
 ## Supporting / Legacy Scripts
 
@@ -50,4 +53,4 @@ For individual runs, invoke the specs in `paper/experiments/specs/evaluation_v2/
 
 Output conventions:
 - canonical experiment outputs: `output/paper/evaluation_v2/runs/...`
-- derived RQ tables/figures: `output/paper/evaluation_v2/{derived,pack}/...`
+- derived RQ tables/figures: `output/paper/evaluation_v2/{derived_paper_evaluation,pack}/...`

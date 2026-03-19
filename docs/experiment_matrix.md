@@ -15,15 +15,15 @@ Older output roots under `output/presentations/large` and `output/paper/{artifac
 | E2 | Structural ranking calibration (GHZ) | `python -m claimstab.cli run --spec paper/experiments/specs/evaluation_v2/e2_ghz_structural.yml --out-dir output/paper/evaluation_v2/runs/E2_ghz_structural --report` | `full_factorial`, exact compilation/mixed scopes | `claim_stability.json`, `rq_summary.json` |
 | E3 | Decision-claim calibration (BV) | `python -m claimstab.cli run --spec paper/experiments/specs/evaluation_v2/e3_bv_decision.yml --out-dir output/paper/evaluation_v2/runs/E3_bv_decision --report` | `full_factorial`, exact execution/mixed scopes | `claim_stability.json`, `rq_summary.json` |
 | E4 | Distribution-claim fragility case (Grover) | `python -m claimstab.cli run --spec paper/experiments/specs/evaluation_v2/e4_grover_distribution.yml --out-dir output/paper/evaluation_v2/runs/E4_grover_distribution --report` | `full_factorial`, exact execution/mixed scopes | `claim_stability.json`, `rq_summary.json` |
+| E5 | Multi-claim policy comparison | `python paper/experiments/scripts/exp_rq4_evaluation_v2.py --out output/paper/evaluation_v2/runs/E5_policy_comparison` | expanded 495-config `sampling_policy_eval`; reference = `full_factorial` | `rq4_policy_summary.json`, RQ4 figures |
+| S1 | Backend-conditioned structural portability | `python -m claimstab.cli run --spec paper/experiments/specs/evaluation_v2/s1_multidevice_portability.yml --out-dir output/paper/evaluation_v2/runs/S1_multidevice_portability` | transpile-only structural portability across five fake backends | `combined_summary.json` |
 | S2 | Boundary challenge pack | `python paper/experiments/scripts/exp_boundary_challenge.py --spec paper/experiments/specs/evaluation_v2/s2_boundary.yml --out output/paper/evaluation_v2/runs/S2_boundary` | `full_factorial`, exact execution/mixed scopes | `claim_stability.json`, `boundary_summary.json` |
 | QEC | Supporting portability illustration | `python -m claimstab.cli run --spec paper/experiments/specs/evaluation_v2/qec_portability.yml --out-dir output/paper/evaluation_v2/runs/QEC_portability --report` | `full_factorial`, exact execution/mixed scopes | `claim_stability.json`, `robustness_map.json` |
 
-## Pending Studies
+## Supporting Studies
 
 | ID | Purpose | Command | Output |
 |---|---|---|---|
-| E5 | Multi-claim policy comparison | design alignment pending | `output/paper/evaluation_v2/runs/E5_policy_comparison` |
-| S1 | Backend-conditioned portability | pipeline alignment pending | `output/paper/evaluation_v2/runs/S1_multidevice_portability` |
 | S4 | Synthetic-truth calibration | `python -m claimstab.analysis.synthetic_truth --out output/paper/evaluation_v2/derived_paper_evaluation/RQ4_practicality/synthetic_truth.json` | synthetic coverage/decision calibration summary |
 | S5 | Mutation sanity check | `python paper/experiments/scripts/exp_mutation_sanity.py --run-dir output/paper/evaluation_v2/runs/E1_maxcut_main --out output/paper/evaluation_v2/derived_paper_evaluation/RQ2_semantics/mutation_sanity_summary.json` | `mutation_sanity_summary.json` |
 

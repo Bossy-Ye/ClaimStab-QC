@@ -1,35 +1,44 @@
 # Community Examples
 
-This directory contains onboarding-first examples for external users.
+This directory contains the public-facing, lightweight examples that are safest to point new users to.
 
-## What Is Here
+## Canonical Public Entry Points
 
-- `specs/atlas_bv_demo.yml`: smallest end-to-end runnable spec.
-- `specs/claim_spec.yaml`: minimal claim-spec template.
-- `specs/perturbation_spec.yaml`: perturbation template.
-- `claim_stability_demo.py`: simple CLI demo runner.
-- `atlas_bv_workflow.py`: run + publish to ClaimAtlas flow.
-- `grover_distribution_demo.py`: distribution-claim demo.
-- `multidevice_demo.py`: optional multidevice demo.
-- `custom_task_demo/`: external task plugin example.
-- `community_contrib_demo/`: community-style contributed problem example.
-- `qec_pilot_demo/`: external repetition-code-style decoder comparison pilot.
+- `claim_stability_demo.py`
+  Thin wrapper around the standard CLI app; writes by default to `output/examples/claim_stability_demo/`.
+- `multidevice_demo.py`
+  Thin wrapper around the multidevice pipeline; writes by default to `output/examples/multidevice_demo/`.
+- `qec_pilot_demo/`
+  External repetition-code-style decoder comparison example used as a portability illustration.
 
-## Quick Start
+## Recommended Commands
+
+Lightweight claim-stability demo:
 
 ```bash
-python -m claimstab.cli validate-spec --spec examples/community/specs/atlas_bv_demo.yml
-python -m claimstab.cli run --spec examples/community/specs/atlas_bv_demo.yml --out-dir output/examples/quickstart --report
+python examples/community/claim_stability_demo.py \
+  --suite core \
+  --sampling-mode random_k \
+  --sample-size 8 \
+  --sample-seed 1
 ```
 
-Default output conventions:
+QEC portability demo:
 
-- quickstart run: `output/examples/quickstart/`
-- direct `claim_stability_demo.py`: `output/examples/claim_stability_demo/` (if `--out-dir` omitted)
-- direct `multidevice_demo.py`: `output/examples/multidevice_demo/` (if `--out-dir` omitted)
-- atlas workflow helper: `output/examples/atlas_bv_demo/`
-- custom task demo: `output/examples/toy/`
-- community-contributed portfolio demo: `output/examples/community_portfolio_demo/`
-- QEC pilot demo: `output/examples/qec_pilot_demo/`
+```bash
+python -m claimstab.cli run \
+  --spec examples/community/qec_pilot_demo/spec_qec_decoder.yml \
+  --out-dir output/examples/qec_pilot_demo \
+  --report
+```
 
-Use this folder if you are learning ClaimStab or contributing a new dataset/task.
+Multidevice demo:
+
+```bash
+python examples/community/multidevice_demo.py --run transpile_only --suite standard
+```
+
+## Scope Notes
+
+- Older Atlas/community-contribution scaffolds remain in the repository for reference, but some of their historical spec defaults are no longer part of the canonical public workflow.
+- If you need a guaranteed working public entrypoint, use the three commands above.

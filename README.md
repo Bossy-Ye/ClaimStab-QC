@@ -139,10 +139,12 @@ Use these first for onboarding and external contributions:
 
 - [examples/community](./examples/community)
 - [examples/community/README.md](./examples/community/README.md)
-- [examples/community/specs/atlas_bv_demo.yml](./examples/community/specs/atlas_bv_demo.yml)
-- [examples/community/custom_task_demo/spec_toy.yml](./examples/community/custom_task_demo/spec_toy.yml)
+- [examples/community/claim_stability_demo.py](./examples/community/claim_stability_demo.py)
+- [examples/community/multidevice_demo.py](./examples/community/multidevice_demo.py)
+- [examples/community/qec_pilot_demo/spec_qec_decoder.yml](./examples/community/qec_pilot_demo/spec_qec_decoder.yml)
 
 Community runs should write under `output/examples/...` (for example `output/examples/quickstart`).
+Staged Atlas/external-task examples remain in the repository for reference, but the files above are the canonical public onboarding entrypoints.
 
 ## Paper Experiments
 
@@ -178,21 +180,19 @@ Advanced secondary entrypoints (not the canonical onboarding path):
 - [paper/experiments/specs/evaluation_v2/e2_ghz_structural.yml](./paper/experiments/specs/evaluation_v2/e2_ghz_structural.yml)
 - [paper/experiments/specs/evaluation_v2/e3_bv_decision.yml](./paper/experiments/specs/evaluation_v2/e3_bv_decision.yml)
 - [paper/experiments/specs/evaluation_v2/e4_grover_distribution.yml](./paper/experiments/specs/evaluation_v2/e4_grover_distribution.yml)
+- [paper/experiments/specs/evaluation_v2/s1_multidevice_portability.yml](./paper/experiments/specs/evaluation_v2/s1_multidevice_portability.yml)
 - [paper/experiments/specs/evaluation_v2/s2_boundary.yml](./paper/experiments/specs/evaluation_v2/s2_boundary.yml)
 - [paper/experiments/specs/evaluation_v2/qec_portability.yml](./paper/experiments/specs/evaluation_v2/qec_portability.yml)
-- [paper/experiments/specs/paper_distribution.yml](./paper/experiments/specs/paper_distribution.yml)
-- [paper/experiments/specs/paper_device.yml](./paper/experiments/specs/paper_device.yml)
-- [paper/experiments/specs/paper_boundary.yml](./paper/experiments/specs/paper_boundary.yml)
+- [paper/experiments/scripts/exp_rq4_evaluation_v2.py](./paper/experiments/scripts/exp_rq4_evaluation_v2.py)
 
 Community demo spec:
-- [examples/community/specs/atlas_bv_demo.yml](./examples/community/specs/atlas_bv_demo.yml)
+- [examples/community/qec_pilot_demo/spec_qec_decoder.yml](./examples/community/qec_pilot_demo/spec_qec_decoder.yml)
 
 ## Contribute a Dataset (Minimal Flow)
 
 ```bash
-python -m claimstab.cli validate-spec --spec examples/community/specs/atlas_bv_demo.yml
-python -m claimstab.cli run --spec examples/community/specs/atlas_bv_demo.yml --out-dir output/examples/atlas_bv_demo --report
-python -m claimstab.cli publish-result --run-dir output/examples/atlas_bv_demo --atlas-root atlas --contributor your_name
+python examples/community/claim_stability_demo.py --suite core --sampling-mode random_k --sample-size 8 --sample-seed 1
+python -m claimstab.cli publish-result --run-dir output/examples/claim_stability_demo --atlas-root atlas --contributor your_name
 python -m claimstab.cli validate-atlas --atlas-root atlas
 python -m claimstab.cli export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md
 ```
@@ -202,19 +202,19 @@ python -m claimstab.cli export-dataset-registry --atlas-root atlas --out docs/da
 Run tests:
 
 ```bash
-./.venv/bin/python -m pytest -q
+./venv/bin/python -m pytest -q
 ```
 
 Compatibility check:
 
 ```bash
-./.venv/bin/python -m claimstab.scripts.check_refactor_compat --mode all
+./venv/bin/python -m claimstab.scripts.check_refactor_compat --mode all
 ```
 
 Build docs:
 
 ```bash
-./.venv/bin/python -m mkdocs build --strict
+./venv/bin/python -m mkdocs build --strict
 ```
 
 ## Current Validated Stack

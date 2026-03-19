@@ -1,43 +1,61 @@
 # Reproduction Contract
 
-This contract defines what is required to reproduce the **main paper evaluation** versus optional extension tracks.
-The locked experiment matrix is documented in `docs/experiment_matrix.md`.
+This contract defines the active reproduction scope for the `evaluation_v2` paper bundle.
 
 ## Scope
-- **Main paper evaluation**: comprehensive claim-stability experiments from `paper/experiments/scripts/exp_comprehensive_*.py`.
-- **Structural benchmark track**: `paper/experiments/scripts/exp_structural_compilation.py` (GHZ compilation claims).
-- **Device-aware extension**: `claimstab/pipelines/multidevice_app.py` (transpile-only + optional noisy simulation).
+
+Main paper-facing reproduction now means:
+
+- exact-scope battleground and calibration runs under `paper/experiments/specs/evaluation_v2/`
+- derived paper summaries under `output/paper/evaluation_v2/derived_paper_evaluation/`
+- publication-facing figures under `output/paper/evaluation_v2/pack/figures/`
+
+The locked experiment matrix is documented in [Experiment Matrix](experiment_matrix.md).
 
 ## Supported Runtime Contract
 
-Checked in the project `venv` on **March 2, 2026**.
+Validated in the project `venv` with:
 
 | Component | Contract |
 |---|---|
-| Python | `3.10` / `3.11` officially supported for artifact runs |
-| Qiskit core | `qiskit==2.2.3` validated |
-| Aer | optional for main track, required for noisy simulation (`qiskit-aer==0.17.2` validated) |
-| IBM runtime | optional, needed for IBM fake backend device profiles (`qiskit-ibm-runtime==0.45.1` validated) |
+| Python | `3.10` / `3.11` official artifact targets; newer local environments may work but are not the portability baseline |
+| Qiskit core | `qiskit==2.2.3` |
+| Aer | `qiskit-aer==0.17.2` |
+| IBM runtime | `qiskit-ibm-runtime==0.45.1` |
 
 ## Required vs Optional
-- `examples/community/claim_stability_demo.py`: required for community-size demo reproduction.
-- `examples/community/multidevice_demo.py --run transpile_only`: optional extension, reproducible without real hardware.
-- `examples/community/multidevice_demo.py --run noisy_sim`: optional extension; may be environment-sensitive and does **not** block main-result reproducibility.
 
-## Practical Note
-Python 3.13 may show native Aer instability for noisy simulation in some environments; this does not affect the main-paper track.
+Required for the active paper bundle:
 
-## Canonical Install
+- `E1`, `E2`, `E3`, `E4`, `E5`, `S2`, and `QEC`
+
+Supported with scope note:
+
+- `S1` backend-conditioned transpile-only structural portability
+
+Not part of the main contract:
+
+- legacy `output/presentations/...` runs
+- legacy `output/paper/artifact/...` pack generation
+- replay-consistency reruns beyond the currently materialized bundle
+
+## Canonical Commands
+
 ```bash
-python -m pip install -e ".[dev]"
-python -m pip install -e ".[aer,ibm]"
+python paper/experiments/scripts/reproduce_evaluation_v2.py
+python paper/experiments/scripts/derive_paper_evaluation.py --root output/paper/evaluation_v2
+python paper/experiments/scripts/generate_eval_v2_focus_figures.py --root output/paper/evaluation_v2
+python -m claimstab.cli validate-evidence --json output/paper/evaluation_v2/runs/E1_maxcut_main/claim_stability.json
 ```
 
-## Canonical Main Commands
+## Practical Note
+
+`S1` should be interpreted as a controlled structural portability study, not as a full noisy-device claim-centric rerun. This is a scope note, not a reproduction failure.
+
+## Validation Gates
+
 ```bash
-PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_comprehensive_calibration.py
-PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_comprehensive_large.py
-PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_structural_compilation.py
-python -m claimstab.cli validate-evidence --json output/presentations/large/maxcut_ranking/claim_stability.json
-make reproduce-paper
+./venv/bin/python -m pytest -q
+./venv/bin/python -m claimstab.scripts.check_refactor_compat --mode all
+./venv/bin/python -m mkdocs build --strict
 ```

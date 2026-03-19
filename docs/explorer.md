@@ -17,8 +17,8 @@
     Use a ClaimStab output file named `claim_stability.json`.
 
     Recommended examples:
-    - `output/presentations/large/maxcut_ranking/claim_stability.json`
-    - `output/presentations/large/grover_distribution/claim_stability.json`
+    - `output/paper/evaluation_v2/runs/E1_maxcut_main/claim_stability.json`
+    - `output/paper/evaluation_v2/runs/E4_grover_distribution/claim_stability.json`
     - `output/tmp_smoke/adaptive_bv_smoke/claim_stability.json`
 
     Minimum structure:
