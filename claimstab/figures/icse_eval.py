@@ -23,7 +23,14 @@ DECISION_COLORS: dict[str, str] = {
     "inconclusive": "#7f7f7f",
 }
 
-SPACE_ORDER = ["compilation_only", "combined_light", "sampling_only"]
+SPACE_ORDER = [
+    "compilation_only",
+    "compilation_only_exact",
+    "combined_light",
+    "combined_light_exact",
+    "sampling_only",
+    "sampling_only_exact",
+]
 TASK_ORDER = ["MaxCut", "GHZ", "BV", "Grover"]
 
 
@@ -140,7 +147,14 @@ def plot_stability_profile(df: pd.DataFrame, *, threshold: float = 0.95) -> Figu
     frame["sort_delta"] = frame["delta"].map(_delta_sort_key)
     frame = frame.sort_values(["sort_claim", "sort_delta", "space_preset"]).reset_index(drop=True)
 
-    profile_space_order = ["compilation_only", "sampling_only", "combined_light"]
+    profile_space_order = [
+        "compilation_only",
+        "compilation_only_exact",
+        "sampling_only",
+        "sampling_only_exact",
+        "combined_light",
+        "combined_light_exact",
+    ]
     spaces = [space for space in profile_space_order if space in set(frame["space_preset"].astype(str).tolist())]
     if not spaces:
         spaces = sorted(frame["space_preset"].astype(str).unique().tolist())

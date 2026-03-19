@@ -35,6 +35,22 @@ class ExecutionPerturbation:
     shots: int
     seed_simulator: int
 
+
+# -------------------------
+# Level 3 (L3): Hybrid-optimization-level
+# -------------------------
+@dataclass(frozen=True)
+class HybridOptimizationPerturbation:
+    """
+    Optional hybrid optimization knobs for tasks that support them (e.g., MaxCut/QAOA).
+
+    These are intentionally orthogonal to compilation/execution knobs.
+    """
+
+    init_strategy: str  # "fixed" | "random"
+    init_seed: int
+
+
 # -------------------------
 # Unified config (a single run)
 # -------------------------
@@ -45,6 +61,7 @@ class PerturbationConfig:
     """
     compilation: CompilationPerturbation
     execution: ExecutionPerturbation
+    hybrid_opt: HybridOptimizationPerturbation | None = None
 
 
 @dataclass(frozen=True)
@@ -55,35 +72,63 @@ class PerturbationSpace:
 
     shots_list: List[int]
     seeds_simulator: List[int]
+    hybrid_init_strategies: List[str] | None = None
+    hybrid_init_seeds: List[int] | None = None
 
     def iter_configs(self) -> Iterable[PerturbationConfig]:
+        hybrid_strategies = self.hybrid_init_strategies if self.hybrid_init_strategies else [None]
+        hybrid_seeds = self.hybrid_init_seeds if self.hybrid_init_seeds else [None]
         for st in self.seeds_transpiler:
             for o in self.opt_levels:
                 for l in self.layout_methods:
                     for shots in self.shots_list:
                         for ss in self.seeds_simulator:
-                            yield PerturbationConfig(
-                                compilation=CompilationPerturbation(
-                                    seed_transpiler=st,
-                                    optimization_level=o,
-                                    layout_method=l,
-                                ),
-                                execution=ExecutionPerturbation(
-                                    shots=shots,
-                                    seed_simulator=ss,
-                                )
-                            )
+                            for init_strategy in hybrid_strategies:
+                                for init_seed in hybrid_seeds:
+                                    hybrid_opt = None
+                                    if init_strategy is not None and init_seed is not None:
+                                        hybrid_opt = HybridOptimizationPerturbation(
+                                            init_strategy=str(init_strategy),
+                                            init_seed=int(init_seed),
+                                        )
+                                    yield PerturbationConfig(
+                                        compilation=CompilationPerturbation(
+                                            seed_transpiler=st,
+                                            optimization_level=o,
+                                            layout_method=l,
+                                        ),
+                                        execution=ExecutionPerturbation(
+                                            shots=shots,
+                                            seed_simulator=ss,
+                                        ),
+                                        hybrid_opt=hybrid_opt,
+                                    )
 
-    def iter_configs_with_operators(self) -> Iterable[PerturbationConfig]:
-        """
-        Optional operator-shim path (backward-compatible).
-        Default callers still use iter_configs().
-        """
-        from claimstab.perturbations.operators import iter_space_configs_via_operators
+    def with_hybrid_optimization(
+        self,
+        *,
+        init_strategies: list[str],
+        init_seeds: list[int],
+    ) -> "PerturbationSpace":
+        return PerturbationSpace(
+            seeds_transpiler=list(self.seeds_transpiler),
+            opt_levels=list(self.opt_levels),
+            layout_methods=list(self.layout_methods),
+            shots_list=list(self.shots_list),
+            seeds_simulator=list(self.seeds_simulator),
+            hybrid_init_strategies=[str(v) for v in init_strategies],
+            hybrid_init_seeds=[int(v) for v in init_seeds],
+        )
 
-        yield from iter_space_configs_via_operators(self)
+    def has_hybrid_axis(self) -> bool:
+        return bool(self.hybrid_init_strategies and self.hybrid_init_seeds)
 
-    def size(self) -> int:
+    def hybrid_axis_size(self) -> int:
+        if not self.has_hybrid_axis():
+            return 1
+        return len(self.hybrid_init_strategies or []) * len(self.hybrid_init_seeds or [])
+
+    def _core_size(self) -> int:
         return (
             len(self.seeds_transpiler)
             * len(self.opt_levels)
@@ -91,6 +136,9 @@ class PerturbationSpace:
             * len(self.shots_list)
             * len(self.seeds_simulator)
         )
+
+    def size(self) -> int:
+        return self._core_size() * self.hybrid_axis_size()
 
     @staticmethod
     def conf_level_default() -> "PerturbationSpace":
@@ -147,6 +195,51 @@ class PerturbationSpace:
         )
 
     @staticmethod
+    def compilation_only_exact() -> "PerturbationSpace":
+        """
+        Small exact compilation grid used by the evaluation_v2 rerun scaffold.
+
+        Size = 3 transpiler seeds x 3 optimization levels x 3 layout methods = 27.
+        """
+        return PerturbationSpace(
+            seeds_transpiler=[0, 1, 2],
+            opt_levels=[0, 1, 2],
+            layout_methods=["trivial", "dense", "sabre"],
+            shots_list=[1024],
+            seeds_simulator=[0],
+        )
+
+    @staticmethod
+    def sampling_only_exact() -> "PerturbationSpace":
+        """
+        Small exact execution grid used by the evaluation_v2 rerun scaffold.
+
+        Size = 4 shot values x 5 simulator seeds = 20.
+        """
+        return PerturbationSpace(
+            seeds_transpiler=[0],
+            opt_levels=[1],
+            layout_methods=["sabre"],
+            shots_list=[16, 64, 256, 1024],
+            seeds_simulator=[0, 1, 2, 3, 4],
+        )
+
+    @staticmethod
+    def combined_light_exact() -> "PerturbationSpace":
+        """
+        Small mixed grid used by the evaluation_v2 rerun scaffold.
+
+        Size = 3 transpiler seeds x 2 layouts x 5 simulator seeds = 30.
+        """
+        return PerturbationSpace(
+            seeds_transpiler=[0, 1, 2],
+            opt_levels=[1],
+            layout_methods=["trivial", "sabre"],
+            shots_list=[64],
+            seeds_simulator=[0, 1, 2, 3, 4],
+        )
+
+    @staticmethod
     def compilation_stress() -> "PerturbationSpace":
         """
         Optional expanded compilation-focused preset.
@@ -173,6 +266,21 @@ class PerturbationSpace:
         )
 
     @staticmethod
+    def sampling_policy_eval() -> "PerturbationSpace":
+        """
+        E5-only expanded execution grid for policy-comparison studies.
+
+        Size = 9 shot values x 55 simulator seeds = 495.
+        """
+        return PerturbationSpace(
+            seeds_transpiler=[0],
+            opt_levels=[1],
+            layout_methods=["sabre"],
+            shots_list=[8, 16, 32, 64, 128, 256, 512, 1024, 2048],
+            seeds_simulator=list(range(55)),
+        )
+
+    @staticmethod
     def combined_stress() -> "PerturbationSpace":
         """
         Optional mixed preset for stronger stress testing across both dimensions.
@@ -184,3 +292,12 @@ class PerturbationSpace:
             shots_list=[16, 64, 256, 1024],
             seeds_simulator=[0, 1, 2, 3, 4],
         )
+
+    def iter_configs_with_operators(self) -> Iterable[PerturbationConfig]:
+        """
+        Optional operator-shim path (backward-compatible).
+        Default callers still use iter_configs().
+        """
+        from claimstab.perturbations.operators import iter_space_configs_via_operators
+
+        yield from iter_space_configs_via_operators(self)

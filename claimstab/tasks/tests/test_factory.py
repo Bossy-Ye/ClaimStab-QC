@@ -53,6 +53,31 @@ class TestTaskFactory(unittest.TestCase):
         self.assertIsNotNone(circuit)
         self.assertEqual(circuit.num_qubits, 4)
 
+    def test_make_task_external_qec_pilot_module_class(self) -> None:
+        task, suite = make_task(
+            {
+                "kind": "external",
+                "entrypoint": "examples.community.qec_pilot_demo.qec_decoder_task:RepetitionCodeDecoderTask",
+                "suite": "core",
+                "params": {"distance": 5, "physical_error_rate": 0.15, "num_instances": 4},
+            },
+            default_suite="core",
+        )
+        self.assertEqual(suite, "core")
+        instances = task.instances("core")
+        self.assertEqual(len(instances), 4)
+        methods = parse_methods(
+            {
+                "methods": [
+                    {"name": "GlobalMajority", "kind": "global_majority"},
+                ]
+            }
+        )
+        built = task.build(instances[0], methods[0])
+        circuit = getattr(built, "circuit", None)
+        self.assertIsNotNone(circuit)
+        self.assertEqual(circuit.num_qubits, 5)
+
     def test_make_task_external_file_path_class(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             module_path = Path(td) / "external_task.py"

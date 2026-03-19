@@ -2,48 +2,52 @@
 
 This directory is the paper-only experiment bundle used to reproduce evaluation artifacts.
 It is intentionally separate from community onboarding examples.
+The active rerun scaffold now lives under `specs/evaluation_v2/` and writes into `output/paper/evaluation_v2/`.
 
 ## Layout
 
 - `specs/`: canonical paper specs.
 - `scripts/`: canonical experiment batch scripts.
-- paper-facing generated outputs are stored under `output/presentations/large/` and `output/paper/pack/`.
+- active paper-facing generated outputs are stored under `output/paper/evaluation_v2/`.
 - `_archive_legacy/`: archived legacy experiment artifacts/scripts.
 
-## Canonical Experiments (Frozen)
+## Active Evaluation v2
 
-- E1: MaxCut ranking prevalence/heterogeneity  
-  Spec: `specs/paper_main.yml`
-- E2: GHZ structural ranking control  
-  Spec: `specs/paper_structural.yml`
-- E3: BV decision control  
-  Spec: `specs/paper_decision.yml`
-- E4: Grover distribution stress  
-  Spec: `specs/paper_distribution.yml`
-- E5: Cost-confidence/adaptive comparison  
-  Script: `scripts/exp_rq4_adaptive.py`
-
-## Supporting Packs
-
-- S1: Multidevice variability  
-  Spec: `specs/paper_device.yml`
+- E1: MaxCut main battleground  
+  Spec: `specs/evaluation_v2/e1_maxcut_main.yml`
+- E2: GHZ structural calibration  
+  Spec: `specs/evaluation_v2/e2_ghz_structural.yml`
+- E3: BV decision calibration  
+  Spec: `specs/evaluation_v2/e3_bv_decision.yml`
+- E4: Grover distribution fragility case  
+  Spec: `specs/evaluation_v2/e4_grover_distribution.yml`
 - S2: Boundary challenge  
-  Spec/script: `specs/paper_boundary.yml`, `scripts/exp_boundary_challenge.py`
-- S4: Synthetic truth calibration  
-  Analysis command under `claimstab.analysis.synthetic_truth`
+  Spec: `specs/evaluation_v2/s2_boundary.yml`
+- QEC: supporting portability illustration  
+  Spec: `specs/evaluation_v2/qec_portability.yml`
+
+Staged but not yet finalized:
+- E5: multi-claim policy comparison
+- S1: multidevice portability
+
+## Supporting / Legacy Scripts
+
+- E5 legacy adaptive study: `scripts/exp_rq4_adaptive.py`
+- S4 synthetic calibration: `claimstab.analysis.synthetic_truth`
+- S5 mutation sanity check: `scripts/exp_mutation_sanity.py`
 
 S3 methodset batch is optional and currently not part of core evidence.
-In the frozen baseline evidence package, S3 is treated as non-evidence and can be left empty.
+It is treated as non-evidence and can be left empty.
 
 ## Reproduction Entry
 
 ```bash
-python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_main.yml
-python -m claimstab.cli run --spec paper/experiments/specs/paper_main.yml --out-dir output/presentations/large/maxcut_ranking --report
+python paper/experiments/scripts/reproduce_evaluation_v2.py --layout-only
+python paper/experiments/scripts/reproduce_evaluation_v2.py
 ```
 
-For full matrix execution, use scripts in `paper/experiments/scripts/` or `make reproduce-paper`.
+For individual runs, invoke the specs in `paper/experiments/specs/evaluation_v2/`.
 
 Output conventions:
-- canonical experiment outputs: `output/presentations/large/...`
-- paper packaging: `output/paper/pack/...`
+- canonical experiment outputs: `output/paper/evaluation_v2/runs/...`
+- derived RQ tables/figures: `output/paper/evaluation_v2/{derived,pack}/...`

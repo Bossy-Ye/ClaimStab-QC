@@ -58,7 +58,22 @@ def estimate_clustered_stability(
         raise ValueError("n_boot must be > 0")
 
     if isinstance(baseline_config, tuple):
-        baseline_key = baseline_config
+        if len(baseline_config) == 7:
+            baseline_key = baseline_config
+        elif len(baseline_config) == 5:
+            baseline_key = (
+                int(baseline_config[0]),
+                int(baseline_config[1]),
+                None if baseline_config[2] is None else str(baseline_config[2]),
+                int(baseline_config[3]),
+                None if baseline_config[4] is None else int(baseline_config[4]),
+                None,
+                None,
+            )
+        else:
+            raise ValueError(
+                "baseline_config tuple must have length 5 (legacy) or 7 (with optional hybrid fields)."
+            )
     else:
         baseline_key = (
             int(baseline_config["seed_transpiler"]),
@@ -66,6 +81,12 @@ def estimate_clustered_stability(
             str(baseline_config["layout_method"]) if baseline_config["layout_method"] is not None else None,
             int(baseline_config["shots"]),
             int(baseline_config["seed_simulator"]) if baseline_config["seed_simulator"] is not None else None,
+            (
+                str(baseline_config["init_strategy"])
+                if baseline_config.get("init_strategy") is not None
+                else None
+            ),
+            int(baseline_config["init_seed"]) if baseline_config.get("init_seed") is not None else None,
         )
 
     rows_by_instance: dict[str, list[ScoreRow]] = {}

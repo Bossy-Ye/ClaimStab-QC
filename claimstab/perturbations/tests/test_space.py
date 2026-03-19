@@ -13,6 +13,16 @@ class TestSpace(unittest.TestCase):
         self.assertEqual(first.execution.shots, 1024)
         self.assertEqual(first.execution.seed_simulator, 0)
 
+    def test_exact_eval_spaces_have_expected_sizes(self) -> None:
+        self.assertEqual(PerturbationSpace.compilation_only_exact().size(), 27)
+        self.assertEqual(PerturbationSpace.sampling_only_exact().size(), 20)
+        self.assertEqual(PerturbationSpace.combined_light_exact().size(), 30)
+        self.assertEqual(PerturbationSpace.sampling_policy_eval().size(), 495)
+
+    def test_exact_compilation_space_uses_three_layout_methods(self) -> None:
+        first_space = PerturbationSpace.compilation_only_exact()
+        self.assertEqual(first_space.layout_methods, ["trivial", "dense", "sabre"])
+
 
 if __name__ == "__main__":
     unittest.main()

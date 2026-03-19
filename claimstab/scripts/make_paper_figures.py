@@ -87,7 +87,30 @@ def _task_label_from_run_name(run_name: str) -> str:
         return "BV"
     if "grover" in token:
         return "Grover"
+    if "qec" in token:
+        return "QEC"
     return run_name
+
+
+def _canonical_run_id(json_path: Path, root: Path) -> str:
+    rel_parent = json_path.parent.relative_to(root)
+    parts = rel_parent.parts
+    if len(parts) >= 2 and parts[-1] == "run":
+        return parts[-2]
+    return parts[-1] if parts else json_path.parent.name
+
+
+def _pick_maxcut_run_id(run_frames: dict[str, pd.DataFrame]) -> str | None:
+    preferred = [name for name in run_frames if "e1" in name.lower() and "maxcut" in name.lower()]
+    if preferred:
+        return preferred[0]
+    fallback = [name for name in run_frames if "maxcut" in name.lower()]
+    if fallback:
+        return fallback[0]
+    legacy = "maxcut_ranking"
+    if legacy in run_frames:
+        return legacy
+    return None
 
 
 def _pick_rq4_summary_path(*, input_dirs: list[Path], explicit: str | None) -> Path | None:
@@ -174,32 +197,45 @@ def main() -> None:
 
     manifests: dict[str, Any] = {"inputs": [str(p) for p in input_dirs], "figures": {}, "icse_main": {}, "icse_appendix": {}}
     json_jobs: list[Path] = []
+    seen_jobs: set[Path] = set()
     for in_dir in input_dirs:
         root_json = in_dir / "claim_stability.json"
         if root_json.exists():
+            seen_jobs.add(root_json.resolve())
             json_jobs.append(root_json)
-            continue
-        for candidate in sorted(in_dir.glob("*/claim_stability.json")):
+        for candidate in sorted(in_dir.rglob("claim_stability.json")):
+            resolved = candidate.resolve()
+            if resolved in seen_jobs:
+                continue
+            seen_jobs.add(resolved)
             json_jobs.append(candidate)
 
     run_frames: dict[str, pd.DataFrame] = {}
     run_payloads: dict[str, dict[str, Any]] = {}
     for json_path in json_jobs:
-        in_dir = json_path.parent
+        input_root = next((root for root in input_dirs if root in json_path.parents or root == json_path.parent), json_path.parent)
+        run_id = _canonical_run_id(json_path, input_root)
         payload = load_claim_json(json_path)
-        run_payloads[in_dir.name] = payload
+        run_payloads[run_id] = payload
         comparative_df = comparative_dataframe(payload)
-        run_frames[in_dir.name] = comparative_df.copy()
-        for space in ["compilation_only", "sampling_only", "combined_light"]:
+        run_frames[run_id] = comparative_df.copy()
+        for space in [
+            "compilation_only",
+            "compilation_only_exact",
+            "sampling_only",
+            "sampling_only_exact",
+            "combined_light",
+            "combined_light_exact",
+        ]:
             if comparative_df.empty or "space_preset" not in comparative_df.columns:
                 continue
             space_df = comparative_df[comparative_df["space_preset"] == space]
-            fig_key = f"heatmap_{in_dir.name}_{space}"
+            fig_key = f"heatmap_{run_id}_{space}"
             ref = plot_fliprate_heatmap(space_df, output_dir / fig_key)
             if ref:
                 manifests["figures"][fig_key] = ref
         if not comparative_df.empty and "space_preset" in comparative_df.columns and comparative_df["space_preset"].nunique() >= 2:
-            fig_key = f"space_profile_composite_{in_dir.name}"
+            fig_key = f"space_profile_composite_{run_id}"
             ref = plot_space_profile_composite(comparative_df, output_dir / fig_key)
             if ref:
                 manifests["figures"][fig_key] = ref
@@ -208,41 +244,41 @@ def main() -> None:
         if isinstance(rq, dict):
             rq2 = rq.get("rq2_drivers", {})
             attr_df = pd.DataFrame(rq2.get("all_dimensions", []) if isinstance(rq2, dict) else [])
-            ref = plot_top_attribution_bars(attr_df, output_dir / f"fig_attribution_top_{in_dir.name}")
+            ref = plot_top_attribution_bars(attr_df, output_dir / f"fig_attribution_top_{run_id}")
             if ref:
-                manifests["figures"][f"attribution_{in_dir.name}"] = ref
-            ref = plot_rq5_robustness_map(payload, output_dir / f"fig_rq5_robustness_map_{in_dir.name}")
+                manifests["figures"][f"attribution_{run_id}"] = ref
+            ref = plot_rq5_robustness_map(payload, output_dir / f"fig_rq5_robustness_map_{run_id}")
             if ref:
-                manifests["figures"][f"rq5_robustness_map_{in_dir.name}"] = ref
+                manifests["figures"][f"rq5_robustness_map_{run_id}"] = ref
             rq6 = rq.get("rq6_stratified_stability", {})
             ref = plot_rq6_decision_counts(
                 rq6 if isinstance(rq6, dict) else {},
-                output_dir / f"fig_rq6_decisions_{in_dir.name}",
+                output_dir / f"fig_rq6_decisions_{run_id}",
             )
             if ref:
-                manifests["figures"][f"rq6_decisions_{in_dir.name}"] = ref
+                manifests["figures"][f"rq6_decisions_{run_id}"] = ref
             rq7 = rq.get("rq7_effect_diagnostics", {})
             ref = plot_rq7_top_main_effects(
                 rq7 if isinstance(rq7, dict) else {},
-                output_dir / f"fig_rq7_main_effects_{in_dir.name}",
+                output_dir / f"fig_rq7_main_effects_{run_id}",
             )
             if ref:
-                manifests["figures"][f"rq7_effects_{in_dir.name}"] = ref
+                manifests["figures"][f"rq7_effects_{run_id}"] = ref
 
         shots_df = _collect_shots_rows(payload, threshold=args.threshold)
-        ref = plot_stability_vs_shots(shots_df, output_dir / f"fig_stability_vs_shots_{in_dir.name}", threshold=args.threshold)
+        ref = plot_stability_vs_shots(shots_df, output_dir / f"fig_stability_vs_shots_{run_id}", threshold=args.threshold)
         if ref:
-            manifests["figures"][f"shots_{in_dir.name}"] = ref
+            manifests["figures"][f"shots_{run_id}"] = ref
 
         adaptive_df = _collect_adaptive_rows(payload)
-        ref = plot_ci_width_vs_budget(adaptive_df, output_dir / f"fig_ci_width_shrink_{in_dir.name}")
+        ref = plot_ci_width_vs_budget(adaptive_df, output_dir / f"fig_ci_width_shrink_{run_id}")
         if ref:
-            manifests["figures"][f"adaptive_{in_dir.name}"] = ref
+            manifests["figures"][f"adaptive_{run_id}"] = ref
 
         naive_df = _collect_naive_rows(payload)
-        ref = plot_naive_vs_claimstab(naive_df, output_dir / f"fig_naive_vs_claimstab_{in_dir.name}")
+        ref = plot_naive_vs_claimstab(naive_df, output_dir / f"fig_naive_vs_claimstab_{run_id}")
         if ref:
-            manifests["figures"][f"naive_{in_dir.name}"] = ref
+            manifests["figures"][f"naive_{run_id}"] = ref
 
     # ICSE main four-figure bundle.
     main_dir = output_dir / "main"
@@ -251,13 +287,14 @@ def main() -> None:
     appendix_dir.mkdir(parents=True, exist_ok=True)
 
     # Figure 1 + Figure 2 from MaxCut main track.
-    maxcut_df = run_frames.get("maxcut_ranking")
+    maxcut_run_id = _pick_maxcut_run_id(run_frames)
+    maxcut_df = run_frames.get(maxcut_run_id) if maxcut_run_id else None
     if isinstance(maxcut_df, pd.DataFrame) and not maxcut_df.empty:
         fig = plot_stability_profile(maxcut_df, threshold=args.threshold)
         ref = save_publication_figure(fig, main_dir / "fig1_stability_profile")
         manifests["icse_main"]["fig1_stability_profile"] = ref
         # Paper figure 2: robustness summary by delta (maxcut, mechanism contrast).
-        maxcut_payload = run_payloads.get("maxcut_ranking", {})
+        maxcut_payload = run_payloads.get(maxcut_run_id or "", {})
         ref = plot_rq5_robustness_map(maxcut_payload, main_dir / "fig2_robustness_cells_by_delta")
         if ref:
             manifests["icse_main"]["fig2_robustness_cells_by_delta"] = ref
@@ -286,7 +323,14 @@ def main() -> None:
             manifests["icse_main"]["rq4_summary_source"] = str(rq4_summary_path)
 
     # Stage degenerate/supporting panels into appendix.
-    appendix_patterns = ("*ghz_structural*.*", "*bv_decision*.*", "*grover_distribution*.*", "multidevice/*.*")
+    appendix_patterns = (
+        "*ghz_structural*.*",
+        "*bv_decision*.*",
+        "*grover_distribution*.*",
+        "*S2_boundary*.*",
+        "*QEC_portability*.*",
+        "multidevice/*.*",
+    )
     appendix_refs: list[str] = []
     for pattern in appendix_patterns:
         for src in output_dir.glob(pattern):
@@ -295,6 +339,16 @@ def main() -> None:
                 dst.write_bytes(src.read_bytes())
                 appendix_refs.append(str(dst))
     if appendix_refs:
+        manifests["icse_appendix"]["staged_files"] = appendix_refs
+
+    qec_compare = output_dir / "qec_pilot_scope_compare.png"
+    if qec_compare.exists():
+        for suffix in (".png", ".pdf", ".svg"):
+            src = output_dir / f"qec_pilot_scope_compare{suffix}"
+            if src.exists():
+                dst = appendix_dir / src.name
+                dst.write_bytes(src.read_bytes())
+                appendix_refs.append(str(dst))
         manifests["icse_appendix"]["staged_files"] = appendix_refs
 
     manifest_path = output_dir / "manifest.json"

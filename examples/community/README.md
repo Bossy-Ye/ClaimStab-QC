@@ -13,6 +13,7 @@ This directory contains onboarding-first examples for external users.
 - `multidevice_demo.py`: optional multidevice demo.
 - `custom_task_demo/`: external task plugin example.
 - `community_contrib_demo/`: community-style contributed problem example.
+- `qec_pilot_demo/`: external repetition-code-style decoder comparison pilot.
 
 ## Quick Start
 
@@ -29,5 +30,6 @@ Default output conventions:
 - atlas workflow helper: `output/examples/atlas_bv_demo/`
 - custom task demo: `output/examples/toy/`
 - community-contributed portfolio demo: `output/examples/community_portfolio_demo/`
+- QEC pilot demo: `output/examples/qec_pilot_demo/`
 
 Use this folder if you are learning ClaimStab or contributing a new dataset/task.

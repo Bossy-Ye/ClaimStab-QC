@@ -105,6 +105,42 @@ class TestSpecValidation(unittest.TestCase):
         }
         validate_spec(spec)
 
+    def test_validate_accepts_exact_eval_space_presets(self) -> None:
+        spec = {
+            "spec_version": 1,
+            "suite": "large",
+            "task": {"kind": "maxcut", "suite": "large", "params": {}},
+            "methods": [
+                {"name": "QAOA_p1", "kind": "qaoa", "params": {"p": 1}},
+                {"name": "QAOA_p2", "kind": "qaoa", "params": {"p": 2}},
+            ],
+            "claims": [
+                {"type": "ranking", "method_a": "QAOA_p2", "method_b": "QAOA_p1", "deltas": [0.0]}
+            ],
+            "perturbations": {"presets": ["compilation_only_exact", "sampling_only_exact", "combined_light_exact"]},
+            "sampling": {"mode": "full_factorial", "seed": 0},
+            "decision_rule": {"threshold": 0.95, "confidence_level": 0.95},
+        }
+        validate_spec(spec)
+
+    def test_validate_accepts_sampling_policy_eval_preset(self) -> None:
+        spec = {
+            "spec_version": 1,
+            "suite": "large",
+            "task": {"kind": "maxcut", "suite": "large", "params": {}},
+            "methods": [
+                {"name": "QAOA_p1", "kind": "qaoa", "params": {"p": 1}},
+                {"name": "QAOA_p2", "kind": "qaoa", "params": {"p": 2}},
+            ],
+            "claims": [
+                {"type": "ranking", "method_a": "QAOA_p2", "method_b": "QAOA_p1", "deltas": [0.0]}
+            ],
+            "perturbations": {"presets": ["sampling_policy_eval"]},
+            "sampling": {"mode": "full_factorial", "seed": 0},
+            "decision_rule": {"threshold": 0.95, "confidence_level": 0.95},
+        }
+        validate_spec(spec)
+
 
 if __name__ == "__main__":
     unittest.main()

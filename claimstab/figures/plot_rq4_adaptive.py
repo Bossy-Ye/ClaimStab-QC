@@ -15,6 +15,7 @@ from claimstab.figures.adaptive import plot_compact_table
 from claimstab.figures.style import (
     FIG_H_WIDE,
     FIG_W_WIDE,
+    PAPER_BLUE_MUTED,
     PAPER_GRAY_DARK,
     PAPER_GRAY_LIGHT,
     PAPER_GRAY_MEDIUM,
@@ -79,15 +80,24 @@ def _plot_ci_width_vs_cost(points: list[dict[str, Any]], out_path: Path) -> dict
         return None
 
     apply_style()
-    fig, ax = plt.subplots(figsize=(FIG_W_WIDE, FIG_H_WIDE), layout="constrained")
+    fig, ax = plt.subplots(figsize=(FIG_W_WIDE, FIG_H_WIDE), constrained_layout=False)
+    fig.subplots_adjust(left=0.12, right=0.98, bottom=0.17, top=0.86)
     strategy_style = {
-        "full_factorial": {"color": PAPER_GRAY_MEDIUM, "marker": "s", "size": 58.0, "label": "full_factorial"},
-        "random_k_32": {"color": PAPER_GRAY_LIGHT, "marker": "o", "size": 56.0, "label": "random_k_32"},
-        "random_k_64": {"color": PAPER_GRAY_DARK, "marker": "o", "size": 56.0, "label": "random_k_64"},
-        "adaptive_ci": {"color": PAPER_RED_DARK, "marker": "D", "size": 64.0, "label": "adaptive_ci"},
-        "adaptive_ci_tuned": {"color": PAPER_RED_LIGHT, "marker": "D", "size": 64.0, "label": "adaptive_ci_tuned"},
+        "full_factorial": {"color": PAPER_GRAY_MEDIUM, "marker": "s", "size": 68.0, "label": "full_factorial"},
+        "random_k_32": {"color": PAPER_GRAY_LIGHT, "marker": "o", "size": 60.0, "label": "random_k_32"},
+        "random_k_64": {"color": PAPER_GRAY_DARK, "marker": "o", "size": 60.0, "label": "random_k_64"},
+        "adaptive_ci": {"color": PAPER_RED_DARK, "marker": "D", "size": 68.0, "label": "adaptive_ci"},
+        "adaptive_ci_tuned": {"color": PAPER_RED_LIGHT, "marker": "D", "size": 76.0, "label": "adaptive_ci_tuned"},
     }
     rows_sorted = sorted(points, key=lambda r: (_as_float(r.get("cost_mean")), str(r.get("strategy"))))
+    label_offsets = {
+        "full_factorial": (8, 10),
+        "random_k_32": (8, 8),
+        "random_k_64": (8, -12),
+        "adaptive_ci": (8, 10),
+        "adaptive_ci_tuned": (8, -12),
+    }
+    ax.axhline(1.0, color=PAPER_GRAY_MEDIUM, linestyle=(0, (4, 3)), linewidth=1.0, zorder=1)
     for row in rows_sorted:
         strategy = str(row.get("strategy", "unknown"))
         style = strategy_style.get(
@@ -95,8 +105,7 @@ def _plot_ci_width_vs_cost(points: list[dict[str, Any]], out_path: Path) -> dict
             {"color": PAPER_GRAY_DARK, "marker": "o", "size": 54.0, "label": strategy},
         )
         x = _as_float(row.get("cost_mean"))
-        y = _as_float(row.get("ci_width_mean"))
-        ax.vlines(x, 0.0, y, color=PAPER_GRAY_LIGHT, linewidth=1.0, alpha=0.55, zorder=1)
+        y = _as_float(row.get("agreement_rate"))
         ax.scatter(
             [x],
             [y],
@@ -108,10 +117,37 @@ def _plot_ci_width_vs_cost(points: list[dict[str, Any]], out_path: Path) -> dict
             label=str(style["label"]),
             zorder=3,
         )
-    ax.set_xlabel("cost (n_claim_evals)")
-    ax.set_ylabel("mean CI width")
-    ax.set_ylim(bottom=0.0)
-    ax.legend(loc="upper right", ncol=2, frameon=False, fontsize=10, handletextpad=0.4, columnspacing=1.2)
+        dx, dy = label_offsets.get(strategy, (8, 8))
+        ax.annotate(
+            strategy,
+            xy=(x, y),
+            xytext=(dx, dy),
+            textcoords="offset points",
+            fontsize=8.4,
+            color=PAPER_GRAY_DARK,
+            ha="left",
+            va="center",
+        )
+    ax.set_xscale("log")
+    ax.set_xlabel("mean evaluation cost (n_claim_evals)")
+    ax.set_ylabel("agreement with full_factorial")
+    ax.set_ylim(0.965, 1.005)
+    ax.set_yticks([0.97, 0.98, 0.99, 1.00], ["0.97", "0.98", "0.99", "1.00"])
+    ax.grid(axis="y", alpha=0.16)
+    ax.grid(axis="x", alpha=0.12)
+    fig.text(0.12, 0.965, "Cost--Agreement Tradeoff of Configuration-Selection Policies", ha="left", va="top", fontsize=11.2, color=PAPER_GRAY_DARK)
+    fig.text(0.12, 0.928, "Adaptive policies preserve full-factorial decisions at a fraction of the evaluation cost.", ha="left", va="top", fontsize=8.6, color=PAPER_BLUE_MUTED)
+    ax.text(
+        0.03,
+        0.08,
+        "Cheapest exact-agreement point:\nadaptive_ci_tuned",
+        transform=ax.transAxes,
+        ha="left",
+        va="bottom",
+        fontsize=8.4,
+        color=PAPER_RED_DARK,
+        bbox={"facecolor": "#f7f7f7", "edgecolor": "#d7d7d7", "boxstyle": "round,pad=0.3"},
+    )
     return save_fig(fig, out_path)
 
 

@@ -25,6 +25,7 @@ from claimstab.claims.stability import (
 from claimstab.core import ArtifactManifest, TraceIndex, TraceRecord
 from claimstab.pipelines.aggregate import aggregate_factor_attribution, build_method_scores_by_key
 from claimstab.pipelines.common import (
+    PerturbationKey,
     baseline_from_keys,
     build_baseline_config,
     config_from_key,
@@ -80,9 +81,20 @@ class MainExecutionResult:
     practicality: dict[str, Any]
 
 
-def make_space(preset: str):
+def make_space(
+    preset: str,
+    *,
+    hybrid_init_strategies: list[str] | None = None,
+    hybrid_init_seeds: list[int] | None = None,
+):
     # Preserve main pipeline's wider combined_light shots for stability-vs-cost.
-    return _make_space(preset, combined_light_shots=[64, 256, 1024])
+    space = _make_space(preset, combined_light_shots=[64, 256, 1024])
+    if hybrid_init_strategies and hybrid_init_seeds:
+        return space.with_hybrid_optimization(
+            init_strategies=list(hybrid_init_strategies),
+            init_seeds=list(hybrid_init_seeds),
+        )
+    return space
 
 
 def build_evidence_ref(
@@ -184,6 +196,150 @@ def _effective_k_with_baseline(
     return k_used if k_used > 0 else None
 
 
+def _decision_reason(
+    *,
+    ci_low: float,
+    ci_high: float,
+    threshold: float,
+) -> str:
+    if ci_low >= threshold:
+        return "ci_low_meets_threshold"
+    if ci_high < threshold:
+        return "ci_high_below_threshold"
+    return "ci_overlaps_threshold"
+
+
+def _build_decision_explanation(
+    *,
+    estimate: float,
+    ci_low: float,
+    ci_high: float,
+    threshold: float,
+    decision: str,
+) -> dict[str, Any]:
+    return {
+        "threshold": threshold,
+        "estimate": estimate,
+        "ci_low": ci_low,
+        "ci_high": ci_high,
+        "decision": decision,
+        "reason": _decision_reason(ci_low=ci_low, ci_high=ci_high, threshold=threshold),
+    }
+
+
+def _build_inconclusive_reason(
+    *,
+    decision: str,
+    ci_low: float,
+    ci_high: float,
+    threshold: float,
+    adaptive_enabled: bool,
+    stop_reason: str | None,
+    n_claim_evals: int,
+) -> str | None:
+    if decision != "inconclusive":
+        return None
+    if n_claim_evals <= 0 or stop_reason == "no_candidate_configs":
+        return "no_candidate_configs"
+    if adaptive_enabled and stop_reason == "max_budget_reached":
+        return "budget_exhausted_before_target_ci"
+    if ci_low < threshold <= ci_high:
+        return "ci_overlaps_threshold"
+    return "ci_overlaps_threshold"
+
+
+def _build_adaptive_stop_reason_detail(
+    *,
+    stop_reason: str | None,
+    target_ci_width: float | None,
+    achieved_ci_width: float | None,
+    budget_used: int | None,
+    budget_limit: int | None,
+) -> dict[str, Any] | None:
+    if stop_reason is None:
+        return None
+
+    if stop_reason == "target_ci_width_reached":
+        explanation = "adaptive sampling stopped after the configured CI-width target was reached"
+    elif stop_reason == "max_budget_reached":
+        explanation = "adaptive sampling exhausted its configuration budget before reaching the CI-width target"
+    elif stop_reason == "no_candidate_configs":
+        explanation = "adaptive sampling had no non-baseline configurations available to expand"
+    else:
+        explanation = "adaptive sampling stopped with an implementation-defined reason"
+
+    target_met = (
+        achieved_ci_width is not None
+        and target_ci_width is not None
+        and float(achieved_ci_width) <= float(target_ci_width)
+    )
+    return {
+        "status": stop_reason,
+        "explanation": explanation,
+        "target_met": bool(target_met),
+        "budget_exhausted": stop_reason == "max_budget_reached",
+        "budget_used": budget_used,
+        "budget_limit": budget_limit,
+        "target_ci_width": target_ci_width,
+        "achieved_ci_width": achieved_ci_width,
+    }
+
+
+def _enrich_adaptive_info(adaptive_info: Mapping[str, Any] | None) -> dict[str, Any] | None:
+    if not isinstance(adaptive_info, Mapping):
+        return None
+
+    enabled = bool(adaptive_info.get("enabled"))
+    info = dict(adaptive_info)
+    budget_used = _as_int(info.get("selected_configurations_without_baseline"), 0) if enabled else None
+    budget_limit = _as_int(info.get("evaluated_configurations_without_baseline"), 0) if enabled else None
+    stop_reason = str(info.get("stop_reason")) if enabled and info.get("stop_reason") is not None else None
+    target_ci_width = (
+        _as_float(info.get("target_ci_width"))
+        if enabled and info.get("target_ci_width") is not None
+        else None
+    )
+    achieved_ci_width = (
+        _as_float(info.get("achieved_ci_width"))
+        if enabled and info.get("achieved_ci_width") is not None
+        else None
+    )
+    detail = _build_adaptive_stop_reason_detail(
+        stop_reason=stop_reason,
+        target_ci_width=target_ci_width,
+        achieved_ci_width=achieved_ci_width,
+        budget_used=budget_used,
+        budget_limit=budget_limit,
+    )
+    if enabled:
+        info["budget_used"] = budget_used
+        info["budget_limit"] = budget_limit
+    info["stop_reason_detail"] = detail
+    return info
+
+
+def _build_claim_interpretation(
+    *,
+    claim_type: str,
+    space_name: str,
+    sampling_mode: str,
+) -> dict[str, Any]:
+    property_map = {
+        "ranking": "conditional robustness of reported ranking claim",
+        "decision": "conditional robustness of reported decision claim",
+        "distribution": "conditional robustness of reported distribution claim",
+    }
+    return {
+        "validated_property": property_map.get(claim_type, "conditional robustness of reported claim"),
+        "perturbation_scope": (
+            f"software-visible evaluation perturbations within space preset '{space_name}' "
+            f"sampled via '{sampling_mode}'"
+        ),
+        "non_goal": "scientific correctness",
+        "claim_perturbation_mode": "none in default runs; claim perturbations are reserved for supporting validation",
+    }
+
+
 def _build_evaluation_profile(
     *,
     sampling_payload: Mapping[str, Any],
@@ -206,6 +362,21 @@ def _build_evaluation_profile(
         if adaptive_enabled and isinstance(adaptive_info, Mapping) and adaptive_info.get("stop_reason") is not None
         else None
     )
+    budget_used = (
+        _as_int(adaptive_info.get("budget_used"))
+        if adaptive_enabled and isinstance(adaptive_info, Mapping) and adaptive_info.get("budget_used") is not None
+        else None
+    )
+    budget_limit = (
+        _as_int(adaptive_info.get("budget_limit"))
+        if adaptive_enabled and isinstance(adaptive_info, Mapping) and adaptive_info.get("budget_limit") is not None
+        else None
+    )
+    stop_reason_detail = (
+        adaptive_info.get("stop_reason_detail")
+        if adaptive_enabled and isinstance(adaptive_info, Mapping)
+        else None
+    )
     return {
         "profile_version": "icse_eval_v1",
         "sampling_mode": str(sampling_payload.get("mode", "unknown")),
@@ -215,10 +386,18 @@ def _build_evaluation_profile(
         "adaptive_enabled": adaptive_enabled,
         "adaptive_achieved_ci_width": achieved_ci_width,
         "adaptive_stop_reason": stop_reason,
+        "adaptive_stop_reason_detail": stop_reason_detail,
+        "budget_used": budget_used,
+        "budget_limit": budget_limit,
     }
 
 
-def _with_common_eval_metrics(summary_row: Mapping[str, Any], eval_profile: Mapping[str, Any]) -> dict[str, Any]:
+def _with_common_eval_metrics(
+    summary_row: Mapping[str, Any],
+    eval_profile: Mapping[str, Any],
+    *,
+    threshold: float,
+) -> dict[str, Any]:
     out = dict(summary_row)
     ci_low = _as_float(out.get("stability_ci_low"), 0.0)
     ci_high = _as_float(out.get("stability_ci_high"), 0.0)
@@ -227,6 +406,32 @@ def _with_common_eval_metrics(summary_row: Mapping[str, Any], eval_profile: Mapp
     out["k_used_without_baseline"] = eval_profile.get("k_used_without_baseline")
     if eval_profile.get("target_ci_width") is not None:
         out["target_ci_width"] = eval_profile.get("target_ci_width")
+    if eval_profile.get("budget_used") is not None:
+        out["budget_used"] = eval_profile.get("budget_used")
+    if eval_profile.get("budget_limit") is not None:
+        out["budget_limit"] = eval_profile.get("budget_limit")
+    decision = str(out.get("decision", "inconclusive"))
+    explanation = _build_decision_explanation(
+        estimate=_as_float(out.get("stability_hat"), 0.0),
+        ci_low=ci_low,
+        ci_high=ci_high,
+        threshold=threshold,
+        decision=decision,
+    )
+    out["decision_explanation"] = explanation
+    out["inconclusive_reason"] = _build_inconclusive_reason(
+        decision=decision,
+        ci_low=ci_low,
+        ci_high=ci_high,
+        threshold=threshold,
+        adaptive_enabled=bool(eval_profile.get("adaptive_enabled")),
+        stop_reason=(
+            str(eval_profile.get("adaptive_stop_reason"))
+            if eval_profile.get("adaptive_stop_reason") is not None
+            else None
+        ),
+        n_claim_evals=_as_int(out.get("n_claim_evals"), 0),
+    )
     return out
 
 
@@ -281,8 +486,17 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
     rows_by_space_metric_graph: dict[str, dict[str, dict[str, list[ScoreRow]]]] = {}
     sampling_by_space: dict[str, dict[str, object]] = {}
     baseline_by_space: dict[str, dict[str, int | str | None]] = {}
-    baseline_key_by_space: dict[str, tuple[int, int, str | None, int, int | None]] = {}
+    baseline_key_by_space: dict[str, PerturbationKey] = {}
     sampled_configs_by_space: dict[str, list[PerturbationConfig]] = {}
+    hybrid_init_strategies: list[str] | None = None
+    hybrid_init_seeds: list[int] | None = None
+    if task_kind == "maxcut":
+        axes_fn = getattr(task_plugin, "hybrid_space_axes", None)
+        if callable(axes_fn):
+            raw_strategies, raw_seeds = axes_fn()
+            if isinstance(raw_strategies, list) and isinstance(raw_seeds, list) and raw_strategies and raw_seeds:
+                hybrid_init_strategies = [str(v) for v in raw_strategies]
+                hybrid_init_seeds = [int(v) for v in raw_seeds]
 
     if args.replay_trace:
         replay_path = Path(args.replay_trace)
@@ -300,7 +514,11 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
             if not keys:
                 continue
             try:
-                default_space = make_space(space_name)
+                default_space = make_space(
+                    space_name,
+                    hybrid_init_strategies=hybrid_init_strategies,
+                    hybrid_init_seeds=hybrid_init_seeds,
+                )
                 baseline_cfg_default, _, baseline_key_default = build_baseline_config(default_space)
                 if baseline_key_default in keys:
                     baseline_cfg = baseline_cfg_default
@@ -342,7 +560,11 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
 
         try:
             for space_name in selected_spaces:
-                space = make_space(space_name)
+                space = make_space(
+                    space_name,
+                    hybrid_init_strategies=hybrid_init_strategies,
+                    hybrid_init_seeds=hybrid_init_seeds,
+                )
                 baseline_cfg, baseline_pc, baseline_key = build_baseline_config(space)
                 sampled_configs = sample_configs(space, sampling_policy, use_operator_shim=args.use_operator_shim)
                 sampled_configs = ensure_config_included(sampled_configs, baseline_pc)
@@ -398,6 +620,12 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     "perturbation_space_size": space.size(),
                     "operator_shim": bool(args.use_operator_shim),
                 }
+                if hybrid_init_strategies and hybrid_init_seeds:
+                    sampling_by_space[space_name]["hybrid_optimization"] = {
+                        "enabled": True,
+                        "init_strategies": list(hybrid_init_strategies),
+                        "init_seeds": list(hybrid_init_seeds),
+                    }
         finally:
             if cache_store is not None:
                 cache_store.close()
@@ -465,12 +693,13 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     min_sample_size=max(1, int(sampling_policy.min_sample_size)),
                     step_size=max(1, int(sampling_policy.step_size)),
                 )
+            enriched_adaptive_info = _enrich_adaptive_info(adaptive_info)
             ranking_sampling_payload: dict[str, object] = dict(sampling_by_space[space_name])
-            if adaptive_info.get("enabled"):
-                ranking_sampling_payload["adaptive_stopping"] = adaptive_info
+            if isinstance(enriched_adaptive_info, dict) and enriched_adaptive_info.get("enabled"):
+                ranking_sampling_payload["adaptive_stopping"] = enriched_adaptive_info
             ranking_eval_profile = _build_evaluation_profile(
                 sampling_payload=ranking_sampling_payload,
-                adaptive_info=adaptive_info,
+                adaptive_info=enriched_adaptive_info,
             )
 
             for graph_id, graph_rows in space_rows.items():
@@ -586,7 +815,11 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                         "inconclusive": sum(1 for d in decisions if d == "inconclusive"),
                     },
                 }
-                row = _with_common_eval_metrics(row, ranking_eval_profile)
+                row = _with_common_eval_metrics(
+                    row,
+                    ranking_eval_profile,
+                    threshold=args.stability_threshold,
+                )
                 naive = evaluate_naive_baseline(
                     claim_type="ranking",
                     baseline_holds=bool(
@@ -737,6 +970,11 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
             experiment = {
                 "experiment_id": f"{space_name}:{method_a}>{method_b}",
                 "claim": claim_payload,
+                "interpretation": _build_claim_interpretation(
+                    claim_type="ranking",
+                    space_name=space_name,
+                    sampling_mode=str(ranking_sampling_payload.get("mode", "unknown")),
+                ),
                 "baseline": baseline_by_space[space_name],
                 "stability_rule": {
                     "threshold": args.stability_threshold,
@@ -852,12 +1090,13 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     min_sample_size=max(1, int(sampling_policy.min_sample_size)),
                     step_size=max(1, int(sampling_policy.step_size)),
                 )
+            enriched_adaptive_info = _enrich_adaptive_info(adaptive_info)
             decision_sampling_payload: dict[str, object] = dict(sampling_by_space[space_name])
-            if adaptive_info.get("enabled"):
-                decision_sampling_payload["adaptive_stopping"] = adaptive_info
+            if isinstance(enriched_adaptive_info, dict) and enriched_adaptive_info.get("enabled"):
+                decision_sampling_payload["adaptive_stopping"] = enriched_adaptive_info
             decision_eval_profile = _build_evaluation_profile(
                 sampling_payload=decision_sampling_payload,
-                adaptive_info=adaptive_info,
+                adaptive_info=enriched_adaptive_info,
             )
             for graph_id, graph_rows in decision_space_rows.items():
                 inst = suite_by_id.get(graph_id)
@@ -913,7 +1152,11 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     "inconclusive": 1 if aggregate_decision == "inconclusive" else 0,
                 },
             }
-            summary_row = _with_common_eval_metrics(summary_row, decision_eval_profile)
+            summary_row = _with_common_eval_metrics(
+                summary_row,
+                decision_eval_profile,
+                threshold=args.stability_threshold,
+            )
             naive = evaluate_naive_baseline(
                 claim_type="decision",
                 baseline_holds=bool(accepted_total == eval_total and eval_total > 0),
@@ -959,6 +1202,11 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                 {
                     "experiment_id": f"{space_name}:{method}:decision_top{top_k}",
                     "claim": decision_claim_payload,
+                    "interpretation": _build_claim_interpretation(
+                        claim_type="decision",
+                        space_name=space_name,
+                        sampling_mode=str(decision_sampling_payload.get("mode", "unknown")),
+                    ),
                     "baseline": baseline_by_space[space_name],
                     "stability_rule": {
                         "threshold": args.stability_threshold,
@@ -1063,12 +1311,13 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     min_sample_size=max(1, int(sampling_policy.min_sample_size)),
                     step_size=max(1, int(sampling_policy.step_size)),
                 )
+            enriched_adaptive_info = _enrich_adaptive_info(adaptive_info)
             distribution_sampling_payload: dict[str, object] = dict(sampling_by_space[space_name])
-            if adaptive_info.get("enabled"):
-                distribution_sampling_payload["adaptive_stopping"] = adaptive_info
+            if isinstance(enriched_adaptive_info, dict) and enriched_adaptive_info.get("enabled"):
+                distribution_sampling_payload["adaptive_stopping"] = enriched_adaptive_info
             distribution_eval_profile = _build_evaluation_profile(
                 sampling_payload=distribution_sampling_payload,
-                adaptive_info=adaptive_info,
+                adaptive_info=enriched_adaptive_info,
             )
 
             for graph_id, graph_rows in distribution_space_rows.items():
@@ -1133,7 +1382,11 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     "inconclusive": sum(1 for d in decisions if d == "inconclusive"),
                 },
             }
-            summary_row = _with_common_eval_metrics(summary_row, distribution_eval_profile)
+            summary_row = _with_common_eval_metrics(
+                summary_row,
+                distribution_eval_profile,
+                threshold=args.stability_threshold,
+            )
             naive = evaluate_naive_baseline(
                 claim_type="distribution",
                 baseline_holds=bool(accepted_total == eval_total and eval_total > 0),
@@ -1181,6 +1434,11 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                 {
                     "experiment_id": f"{space_name}:{method}:distribution",
                     "claim": distribution_claim_payload,
+                    "interpretation": _build_claim_interpretation(
+                        claim_type="distribution",
+                        space_name=space_name,
+                        sampling_mode=str(distribution_sampling_payload.get("mode", "unknown")),
+                    ),
                     "baseline": baseline_by_space[space_name],
                     "stability_rule": {
                         "threshold": args.stability_threshold,

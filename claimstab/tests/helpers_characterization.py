@@ -158,11 +158,35 @@ def _normalize_cep(payload: dict[str, Any]) -> None:
                 components["dependencies"] = {}
 
 
+def _drop_additive_fields(value: Any) -> Any:
+    additive_keys = {
+        "adaptive_stop_reason_detail",
+        "budget_limit",
+        "budget_used",
+        "decision_explanation",
+        "inconclusive_reason",
+        "interpretation",
+        "interpretation_defaults",
+        "stop_reason_detail",
+    }
+    if isinstance(value, dict):
+        cleaned: dict[str, Any] = {}
+        for key, item in value.items():
+            if key in additive_keys:
+                continue
+            cleaned[key] = _drop_additive_fields(item)
+        return cleaned
+    if isinstance(value, list):
+        return [_drop_additive_fields(item) for item in value]
+    return value
+
+
 def normalize_payload(payload: dict[str, Any], *, kind: Literal["main", "multidevice"]) -> dict[str, Any]:
     out = copy.deepcopy(payload)
     _normalize_runtime(out)
     _normalize_artifacts(out)
     _normalize_cep(out)
+    out = _drop_additive_fields(out)
     if kind == "main":
         comparative = out.get("comparative")
         if isinstance(comparative, dict):

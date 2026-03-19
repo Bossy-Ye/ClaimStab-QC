@@ -63,17 +63,17 @@ source .venv/bin/activate
 python -m pip install -e .
 ```
 
-2. Validate and run the canonical paper spec:
+2. Validate and run the active evaluation rerun scaffold:
 
 ```bash
-python -m claimstab.cli validate-spec --spec paper/experiments/specs/paper_main.yml
-python -m claimstab.cli run --spec paper/experiments/specs/paper_main.yml --out-dir output/presentations/large/maxcut_ranking --report
+python -m claimstab.cli validate-spec --spec paper/experiments/specs/evaluation_v2/e1_maxcut_main.yml
+python -m claimstab.cli run --spec paper/experiments/specs/evaluation_v2/e1_maxcut_main.yml --out-dir output/paper/evaluation_v2/runs/E1_maxcut_main --report
 ```
 
 3. Validate evidence links:
 
 ```bash
-python -m claimstab.cli validate-evidence --json output/presentations/large/maxcut_ranking/claim_stability.json
+python -m claimstab.cli validate-evidence --json output/paper/evaluation_v2/runs/E1_maxcut_main/claim_stability.json
 ```
 
 Only this CLI path is recommended for first-time onboarding. Pipeline module entrypoints are available for advanced/internal workflows (see below).
@@ -153,14 +153,13 @@ Paper-only evaluation assets are isolated under:
 - [paper/experiments/specs](./paper/experiments/specs)
 - [paper/experiments/scripts](./paper/experiments/scripts)
 
-Paper runs should write under `output/presentations/large/...` and packaged artifacts under `output/paper/pack/...`.
+Paper reruns should write under `output/paper/evaluation_v2/...`.
+Legacy paper output roots such as `output/presentations/large`, `output/paper/artifact`, and `output/paper/pack` have been retired from the active workflow.
 
 Recommended `output/` layout:
 - `output/examples/` for onboarding/community runs
-- `output/paper/` for canonical paper artifacts (`artifact/`, `pack/`, `multidevice`)
-- `output/presentations/` for curated narrative result bundles
+- `output/paper/evaluation_v2/` for the active paper evaluation bundle
 - `output/demos/` for local exploratory checks
-- `output/tmp_smoke/` for disposable smoke/audit runs
 
 ## Advanced / Community-Facing Capabilities
 
@@ -173,11 +172,14 @@ Advanced secondary entrypoints (not the canonical onboarding path):
 - `python -m claimstab.pipelines.claim_stability_app ...`
 - `python -m claimstab.pipelines.multidevice_app ...`
 
-## Paper Specs
+## Active Paper Specs
 
-- [paper/experiments/specs/paper_main.yml](./paper/experiments/specs/paper_main.yml)
-- [paper/experiments/specs/paper_structural.yml](./paper/experiments/specs/paper_structural.yml)
-- [paper/experiments/specs/paper_decision.yml](./paper/experiments/specs/paper_decision.yml)
+- [paper/experiments/specs/evaluation_v2/e1_maxcut_main.yml](./paper/experiments/specs/evaluation_v2/e1_maxcut_main.yml)
+- [paper/experiments/specs/evaluation_v2/e2_ghz_structural.yml](./paper/experiments/specs/evaluation_v2/e2_ghz_structural.yml)
+- [paper/experiments/specs/evaluation_v2/e3_bv_decision.yml](./paper/experiments/specs/evaluation_v2/e3_bv_decision.yml)
+- [paper/experiments/specs/evaluation_v2/e4_grover_distribution.yml](./paper/experiments/specs/evaluation_v2/e4_grover_distribution.yml)
+- [paper/experiments/specs/evaluation_v2/s2_boundary.yml](./paper/experiments/specs/evaluation_v2/s2_boundary.yml)
+- [paper/experiments/specs/evaluation_v2/qec_portability.yml](./paper/experiments/specs/evaluation_v2/qec_portability.yml)
 - [paper/experiments/specs/paper_distribution.yml](./paper/experiments/specs/paper_distribution.yml)
 - [paper/experiments/specs/paper_device.yml](./paper/experiments/specs/paper_device.yml)
 - [paper/experiments/specs/paper_boundary.yml](./paper/experiments/specs/paper_boundary.yml)

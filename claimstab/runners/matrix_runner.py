@@ -43,6 +43,8 @@ class ScoreRow:
     transpile_time_ms: float | None = None
     execute_time_ms: float | None = None
     wall_time_ms: float | None = None
+    init_strategy: str | None = None
+    init_seed: int | None = None
 
 
 class MatrixRunner:
@@ -74,14 +76,22 @@ class MatrixRunner:
         return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
     @staticmethod
+    def _is_objective_like_metric(metric_name: str) -> bool:
+        return metric_name not in {"circuit_depth", "two_qubit_count", "swap_count"}
+
+    @staticmethod
     def _config_dict(pc: PerturbationConfig) -> dict[str, Any]:
-        return {
+        payload: dict[str, Any] = {
             "seed_transpiler": pc.compilation.seed_transpiler,
             "optimization_level": pc.compilation.optimization_level,
             "layout_method": pc.compilation.layout_method,
             "shots": pc.execution.shots,
             "seed_simulator": pc.execution.seed_simulator,
         }
+        if pc.hybrid_opt is not None:
+            payload["init_strategy"] = pc.hybrid_opt.init_strategy
+            payload["init_seed"] = pc.hybrid_opt.init_seed
+        return payload
 
     @staticmethod
     def _fingerprint(
@@ -145,12 +155,24 @@ class MatrixRunner:
         run_configs = configs if configs is not None else list(space.iter_configs())
 
         for method in methods:
-            circuit, metric_fn = task.build(method)
-            circuit_digest = self._circuit_digest(circuit)
+            build_with_config = getattr(task, "build_with_config", None)
+            supports_config_build = callable(build_with_config)
+            if not supports_config_build:
+                circuit, metric_fn = task.build(method)
+                circuit_digest = self._circuit_digest(circuit)
+            else:
+                circuit = None
+                metric_fn = None
+                circuit_digest = ""
 
             for pc in run_configs:
+                if supports_config_build:
+                    circuit, metric_fn = task.build_with_config(method, pc)
+                    circuit_digest = self._circuit_digest(circuit)
+                assert circuit is not None and metric_fn is not None
                 comp = pc.compilation
                 exe = pc.execution
+                hybrid = pc.hybrid_opt
                 config_payload = self._config_dict(pc)
                 fp = self._fingerprint(
                     instance_id=getattr(task, "instance_id", "unknown"),
@@ -189,6 +211,8 @@ class MatrixRunner:
                                 layout_method=comp.layout_method,
                                 seed_simulator=exe.seed_simulator,
                                 shots=exe.shots,
+                                init_strategy=(hybrid.init_strategy if hybrid is not None else None),
+                                init_seed=(int(hybrid.init_seed) if hybrid is not None else None),
                                 device_provider=cached.get("device_provider"),
                                 device_name=cached.get("device_name"),
                                 device_mode=cached.get("device_mode"),
@@ -252,7 +276,7 @@ class MatrixRunner:
                     device_snapshot_summary=device_snapshot_summary,
                 )
 
-                if metric_name == "objective":
+                if self._is_objective_like_metric(metric_name):
                     effective_score = score
                 elif metric_name == "circuit_depth":
                     effective_score = float(details.transpiled_depth)
@@ -263,7 +287,7 @@ class MatrixRunner:
                 else:
                     raise ValueError(
                         f"Unsupported metric_name '{metric_name}'. "
-                        "Use one of: objective, circuit_depth, two_qubit_count, swap_count."
+                        "Use a non-empty objective-like name or one of: circuit_depth, two_qubit_count, swap_count."
                     )
 
                 rows.append(
@@ -279,6 +303,8 @@ class MatrixRunner:
                         layout_method=comp.layout_method,
                         seed_simulator=exe.seed_simulator,
                         shots=exe.shots,
+                        init_strategy=(hybrid.init_strategy if hybrid is not None else None),
+                        init_seed=(int(hybrid.init_seed) if hybrid is not None else None),
                         device_provider=details.device_provider,
                         device_name=details.device_name,
                         device_mode=details.device_mode,

@@ -16,10 +16,14 @@ ALLOWED_DEVICE_MODES = {"transpile_only", "noisy_sim"}
 ALLOWED_SPACE_PRESETS = {
     "baseline",
     "compilation_only",
+    "compilation_only_exact",
     "sampling_only",
+    "sampling_only_exact",
     "combined_light",
+    "combined_light_exact",
     "compilation_stress",
     "sampling_stress",
+    "sampling_policy_eval",
     "combined_stress",
     "day1_default",
 }

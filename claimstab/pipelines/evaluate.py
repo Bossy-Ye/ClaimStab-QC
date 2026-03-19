@@ -48,6 +48,49 @@ def _bucket_two_qubit_count(two_q: int | None) -> str | None:
     return "twoq_high"
 
 
+def _decision_reason(*, ci_low: float, ci_high: float, threshold: float) -> str:
+    if ci_low >= threshold:
+        return "ci_low_meets_threshold"
+    if ci_high < threshold:
+        return "ci_high_below_threshold"
+    return "ci_overlaps_threshold"
+
+
+def _decision_explanation(
+    *,
+    estimate: float,
+    ci_low: float,
+    ci_high: float,
+    threshold: float,
+    decision: str,
+) -> dict[str, object]:
+    return {
+        "threshold": threshold,
+        "estimate": estimate,
+        "ci_low": ci_low,
+        "ci_high": ci_high,
+        "decision": decision,
+        "reason": _decision_reason(ci_low=ci_low, ci_high=ci_high, threshold=threshold),
+    }
+
+
+def _inconclusive_reason(
+    *,
+    decision: str,
+    ci_low: float,
+    ci_high: float,
+    threshold: float,
+    total: int,
+) -> str | None:
+    if decision != "inconclusive":
+        return None
+    if total <= 0:
+        return "no_candidate_configs"
+    if ci_low < threshold <= ci_high:
+        return "ci_overlaps_threshold"
+    return "ci_overlaps_threshold"
+
+
 def derive_instance_strata(
     *,
     task_kind: str,
@@ -308,6 +351,20 @@ def evaluate_claim_on_rows(
             "claim_holds_count": claim_holds_count,
             "claim_total_count": len(paired_scores),
             "claim_holds_rate": claim_holds_rate,
+            "decision_explanation": _decision_explanation(
+                estimate=estimate.rate,
+                ci_low=estimate.ci_low,
+                ci_high=estimate.ci_high,
+                threshold=stability_threshold,
+                decision=decision,
+            ),
+            "inconclusive_reason": _inconclusive_reason(
+                decision=decision,
+                ci_low=estimate.ci_low,
+                ci_high=estimate.ci_high,
+                threshold=stability_threshold,
+                total=summary.total,
+            ),
         }
         delta_sweep.append(delta_record)
         by_delta_flip[delta].append(summary.flip_rate)
@@ -413,6 +470,20 @@ def evaluate_decision_claim_on_rows(
         "ci_low": result.ci_low,
         "ci_high": result.ci_high,
         "decision": result.decision.value,
+        "decision_explanation": _decision_explanation(
+            estimate=result.acceptance_rate,
+            ci_low=result.ci_low,
+            ci_high=result.ci_high,
+            threshold=stability_threshold,
+            decision=result.decision.value,
+        ),
+        "inconclusive_reason": _inconclusive_reason(
+            decision=result.decision.value,
+            ci_low=result.ci_low,
+            ci_high=result.ci_high,
+            threshold=stability_threshold,
+            total=result.total,
+        ),
         "top_failures": failures[:5],
     }
 
@@ -449,6 +520,17 @@ def evaluate_distribution_claim_on_rows(
                 estimate=estimate,
                 stability_threshold=stability_threshold,
             ).value,
+            "decision_explanation": _decision_explanation(
+                estimate=estimate.rate,
+                ci_low=estimate.ci_low,
+                ci_high=estimate.ci_high,
+                threshold=stability_threshold,
+                decision=conservative_stability_decision(
+                    estimate=estimate,
+                    stability_threshold=stability_threshold,
+                ).value,
+            ),
+            "inconclusive_reason": "no_candidate_configs",
             "reference_config": None,
             "reference_shots": reference_shots,
             "top_violations": [],
@@ -527,6 +609,20 @@ def evaluate_distribution_claim_on_rows(
         "ci_low": estimate.ci_low,
         "ci_high": estimate.ci_high,
         "decision": decision,
+        "decision_explanation": _decision_explanation(
+            estimate=estimate.rate,
+            ci_low=estimate.ci_low,
+            ci_high=estimate.ci_high,
+            threshold=stability_threshold,
+            decision=decision,
+        ),
+        "inconclusive_reason": _inconclusive_reason(
+            decision=decision,
+            ci_low=estimate.ci_low,
+            ci_high=estimate.ci_high,
+            threshold=stability_threshold,
+            total=total,
+        ),
         "reference_config": {
             "seed_transpiler": int(reference_key[0]),
             "optimization_level": int(reference_key[1]),
