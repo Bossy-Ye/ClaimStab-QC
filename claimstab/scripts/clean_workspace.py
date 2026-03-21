@@ -54,8 +54,8 @@ def _collect_targets(repo_root: Path) -> list[CleanupEntry]:
         ("output/profile_perf_opt", "profiling artifacts"),
         ("output/sample_problem_demo", "local demo output"),
         ("output/sample_problem_demo_run", "local demo output"),
-        ("output/community_portfolio_demo", "local demo output"),
-        ("output/atlas_bv_demo", "local demo output"),
+        ("output/examples/community_portfolio_demo", "local demo output"),
+        ("output/examples/atlas_bv_demo", "local demo output"),
     ]
 
     targets: list[CleanupEntry] = []

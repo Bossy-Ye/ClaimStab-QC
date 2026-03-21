@@ -193,7 +193,7 @@ def resolve_main_plan(
             for method_a, method_b in parse_claim_pairs_fn(args.claim_pairs, (args.method_a, args.method_b))
         ]
 
-    allowed_metrics = {"objective", "circuit_depth", "two_qubit_count", "swap_count"}
+    structural_metrics = {"circuit_depth", "two_qubit_count", "swap_count"}
     for job in ranking_jobs:
         method_a = str(job["method_a"])
         method_b = str(job["method_b"])
@@ -203,11 +203,10 @@ def resolve_main_plan(
             )
         if method_a == method_b:
             raise ValueError("Claim pair must compare two different methods.")
-        metric_name = str(job.get("metric_name", "objective"))
-        if metric_name not in allowed_metrics:
-            raise ValueError(
-                f"Unsupported ranking metric '{metric_name}'. Use one of: {sorted(allowed_metrics)}"
-            )
+        metric_name = str(job.get("metric_name", "objective")).strip()
+        if not metric_name:
+            raise ValueError("Ranking claim metric_name must be non-empty.")
+        job["metric_name"] = metric_name
         dvals = job.get("deltas")
         if not isinstance(dvals, list) or not dvals:
             raise ValueError("Ranking claim job must include non-empty deltas.")
@@ -220,11 +219,9 @@ def resolve_main_plan(
     if decision_claims and decision_metric_name not in metrics_needed:
         metrics_needed.append(decision_metric_name)
     for distribution_claim in distribution_claims:
-        metric_name = str(distribution_claim.get("metric_name", "objective"))
-        if metric_name not in allowed_metrics:
-            raise ValueError(
-                f"Unsupported distribution metric '{metric_name}'. Use one of: {sorted(allowed_metrics)}"
-            )
+        metric_name = str(distribution_claim.get("metric_name", "objective")).strip()
+        if not metric_name:
+            raise ValueError("Distribution claim metric_name must be non-empty.")
         method_name = str(distribution_claim.get("method", ""))
         if method_name not in method_names:
             raise ValueError(f"Unknown distribution claim method '{method_name}'. Available: {sorted(method_names)}")

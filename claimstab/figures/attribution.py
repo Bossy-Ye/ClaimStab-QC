@@ -8,7 +8,8 @@ matplotlib.use("Agg", force=True)
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from claimstab.figures.style import FIG_H_WIDE, FIG_W_WIDE, apply_style, save_fig
+from claimstab.figures.adaptive import plot_ordered_lollipop, plot_stat_card
+from claimstab.figures.style import FIG_H_WIDE, FIG_W_WIDE, PAPER_GRAY_DARK, PAPER_RED_MEDIUM, apply_style, save_fig
 
 
 def _select_attribution_metric(frame: pd.DataFrame) -> tuple[str | None, str]:
@@ -33,33 +34,34 @@ def plot_top_attribution_bars(attrib_df: pd.DataFrame, out_path: str | Path, top
         return None
     frame = frame.sort_values(metric_col, ascending=False).head(max(1, int(top_k)))
     frame = frame.iloc[::-1]
+    values = frame[metric_col].astype(float).tolist()
+    labels = frame["dimension"].astype(str).tolist()
+    value_min = min(values) if values else 0.0
+    value_max = max(values) if values else 0.0
+    value_range = value_max - value_min
 
     apply_style()
     fig, ax = plt.subplots(figsize=(FIG_W_WIDE, FIG_H_WIDE), layout="constrained")
-    bars = ax.barh(
-        frame["dimension"].astype(str),
-        frame[metric_col].astype(float),
-        color="#4c78a8",
-        edgecolor="#2f2f2f",
-        linewidth=0.5,
-    )
-    ax.set_xlabel(metric_label)
-    ax.set_ylabel("Dimension")
-    ax.set_title("Top Perturbation Drivers")
-    max_val = float(frame[metric_col].max()) if not frame.empty else 1.0
-    if metric_col == "flip_rate":
-        ax.set_xlim(0.0, max(0.1, min(1.0, max_val * 1.18)))
-    else:
-        ax.set_xlim(0.0, max(0.1, max_val * 1.18))
-    for bar in bars:
-        w = float(bar.get_width())
-        ax.text(
-            w + 0.01,
-            bar.get_y() + bar.get_height() / 2.0,
-            f"{w:.2f}",
-            va="center",
-            ha="left",
-            fontsize=8.5,
-            color="#2f2f2f",
+    if len(values) <= 1 or value_range < 1e-6:
+        plot_stat_card(
+            ax,
+            title="Perturbation driver summary",
+            lines=[
+                ("metric", metric_label),
+                ("dimensions", str(len(values))),
+                ("observed range", f"{value_min:.4f} .. {value_max:.4f}"),
+            ],
+            note="Top-driver bar chart suppressed because all dimensions have indistinguishable scores.",
         )
+        return save_fig(fig, out_path)
+
+    plot_ordered_lollipop(
+        ax,
+        labels=labels,
+        values=values,
+        xlabel=metric_label,
+        title="Top perturbation drivers",
+        color=PAPER_RED_MEDIUM,
+    )
+    ax.set_ylabel("dimension")
     return save_fig(fig, out_path)

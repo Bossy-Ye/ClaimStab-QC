@@ -21,7 +21,7 @@ body:
       label: Reproduction steps
       description: Include exact command(s) and minimal input.
       placeholder: |
-        1. PYTHONPATH=. ./venv/bin/python examples/claim_stability_demo.py ...
+        1. PYTHONPATH=. ./venv/bin/python examples/community/claim_stability_demo.py ...
         2. Open output/claim_stability.json
     validations:
       required: true

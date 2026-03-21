@@ -42,10 +42,10 @@ Command:
 PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.multidevice_app \
   --run all \
   --suite standard \
-  --out-dir output/multidevice_full
+  --out-dir output/paper/multidevice
 ```
 
-Output snippet (`output/multidevice_full/transpile_only/transpile_only_summary.json`):
+Output snippet (`output/paper/multidevice/transpile_only/transpile_only_summary.json`):
 ```json
 {
   "batch": {
@@ -99,29 +99,29 @@ In this environment (Python 3.13), noisy simulation is skipped with explicit rea
 
 Command:
 ```bash
-python -m claimstab.cli run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy
+python -m claimstab.cli run --spec examples/community/custom_task_demo/spec_toy.yml --out-dir output/examples/toy
 ```
 
 Spec entrypoint:
 ```yaml
 task:
   kind: external
-  entrypoint: examples.custom_task_demo.toy_task:ToyTask
+  entrypoint: examples.community.custom_task_demo.toy_task:ToyTask
 ```
 
 ## Example E — Non-MaxCut BV -> ClaimAtlas (end-to-end)
 
 Command:
 ```bash
-PYTHONPATH=. ./.venv/bin/python examples/atlas_bv_workflow.py \
-  --spec specs/atlas_bv_demo.yml \
-  --run-dir output/atlas_bv_demo \
+PYTHONPATH=. ./.venv/bin/python examples/community/atlas_bv_workflow.py \
+  --spec examples/community/specs/atlas_bv_demo.yml \
+  --run-dir output/examples/atlas_bv_demo \
   --atlas-root atlas \
   --contributor your_name
 ```
 
 What this does:
-1. Runs BV decision-claim stability (`top_k=1`, `top_k=3`) using `specs/atlas_bv_demo.yml`.
+1. Runs BV decision-claim stability (`top_k=1`, `top_k=3`) using `examples/community/specs/atlas_bv_demo.yml`.
 2. Publishes the run into `atlas/submissions/<submission_id>/`.
 3. Validates `atlas/index.json` and artifact references.
 
@@ -136,8 +136,8 @@ Published artifacts:
 
 Command:
 ```bash
-python -m claimstab.cli run --spec examples/community_contrib_demo/spec_portfolio.yml --out-dir output/community_portfolio_demo --report
-python -m claimstab.cli publish-result --run-dir output/community_portfolio_demo --atlas-root atlas --contributor your_name
+python -m claimstab.cli run --spec examples/community/community_contrib_demo/spec_portfolio.yml --out-dir output/examples/community_portfolio_demo --report
+python -m claimstab.cli publish-result --run-dir output/examples/community_portfolio_demo --atlas-root atlas --contributor your_name
 ```
 
 Notes:
@@ -148,7 +148,7 @@ Notes:
 
 Command:
 ```bash
-PYTHONPATH=. ./.venv/bin/python examples/exp_structural_compilation.py --out-dir output/paper_artifact/structural
+PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_structural_compilation.py --out-dir output/paper/artifact/structural
 ```
 
 What this evaluates:

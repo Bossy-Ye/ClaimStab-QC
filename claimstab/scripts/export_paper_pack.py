@@ -292,14 +292,151 @@ def _run_make_paper_figures(input_dir: Path, out_dir: Path) -> dict[str, Any]:
     return {"command": " ".join(cmd), "manifest": str((out_dir / "manifest.json").resolve())}
 
 
+def _stage_main_and_appendix_figures(figures_dir: Path) -> dict[str, Any]:
+    canonical_main_dir = figures_dir / "main"
+    appendix_dir = figures_dir / "appendix"
+    archive_dir = figures_dir / "_archive_legacy"
+    canonical_main_dir.mkdir(parents=True, exist_ok=True)
+    appendix_dir.mkdir(parents=True, exist_ok=True)
+    archive_dir.mkdir(parents=True, exist_ok=True)
+
+    def _archive_path(src: Path, subdir: str) -> str:
+        dst_dir = archive_dir / subdir
+        dst_dir.mkdir(parents=True, exist_ok=True)
+        dst = dst_dir / src.name
+        if dst.exists():
+            stem = dst.stem
+            suffix = dst.suffix
+            i = 1
+            while True:
+                candidate = dst_dir / f"{stem}.{i}{suffix}"
+                if not candidate.exists():
+                    dst = candidate
+                    break
+                i += 1
+        shutil.move(str(src), str(dst))
+        return str(dst.resolve())
+
+    # Normalize canonical main figure names (fallback from prior naming).
+    if not (canonical_main_dir / "fig4_cost_confidence_tradeoff.pdf").exists() and (canonical_main_dir / "fig4_cost_vs_ci.pdf").exists():
+        for ext in ("pdf", "png", "svg"):
+            src = canonical_main_dir / f"fig4_cost_vs_ci.{ext}"
+            if src.exists():
+                shutil.copy2(src, canonical_main_dir / f"fig4_cost_confidence_tradeoff.{ext}")
+    if not (canonical_main_dir / "fig2_robustness_cells_by_delta.pdf").exists() and (figures_dir / "fig_rq5_robustness_map_maxcut_ranking.pdf").exists():
+        for ext in ("pdf", "png"):
+            src = figures_dir / f"fig_rq5_robustness_map_maxcut_ranking.{ext}"
+            if src.exists():
+                shutil.copy2(src, canonical_main_dir / f"fig2_robustness_cells_by_delta.{ext}")
+
+    expected_main_stems = [
+        "fig1_stability_profile",
+        "fig2_robustness_cells_by_delta",
+        "fig3_claim_distribution",
+        "fig4_cost_confidence_tradeoff",
+    ]
+    keep_main_names: set[str] = set()
+    for stem in expected_main_stems:
+        for ext in (".pdf", ".png", ".svg"):
+            path = canonical_main_dir / f"{stem}{ext}"
+            if path.exists():
+                keep_main_names.add(path.name)
+
+    appendix_patterns = (
+        "*ghz_structural*",
+        "*bv_decision*",
+        "*grover_distribution*",
+        "multidevice/*",
+        "rq4_adaptive/*",
+        "paper_claims_outcomes.*",
+        "*boundary*",
+        "*synthetic*",
+    )
+    appendix_sources: set[Path] = set()
+    for pattern in appendix_patterns:
+        for path in figures_dir.glob(pattern):
+            if path.is_file() and path.suffix.lower() in {".pdf", ".png"}:
+                appendix_sources.add(path)
+
+    copied_appendix: list[str] = []
+    for src in sorted(appendix_sources):
+        dst = appendix_dir / src.name
+        shutil.copy2(src, dst)
+        copied_appendix.append(str(dst.resolve()))
+
+    # Archive legacy/superseded artifacts to keep active dirs clean.
+    archived: list[str] = []
+
+    legacy_alias_dir = figures_dir / "main_paper"
+    if legacy_alias_dir.exists() and legacy_alias_dir.is_dir():
+        archived.append(_archive_path(legacy_alias_dir, "dirs"))
+
+    # Archive non-canonical files inside main.
+    for path in sorted(canonical_main_dir.glob("*")):
+        if not path.is_file():
+            continue
+        if path.name not in keep_main_names:
+            archived.append(_archive_path(path, "main_extras"))
+
+    # Archive root-level figure files and old figure subdirs; keep only active dirs + manifests.
+    keep_root_files = {"manifest.json", "paper_figure_map.json"}
+    keep_root_dirs = {"main", "appendix", "_archive_legacy"}
+    for path in sorted(figures_dir.iterdir()):
+        if path.name in keep_root_files or path.name in keep_root_dirs:
+            continue
+        if path.is_file():
+            if path.name == ".DS_Store":
+                try:
+                    path.unlink()
+                except Exception:
+                    pass
+                continue
+            archived.append(_archive_path(path, "root_files"))
+        elif path.is_dir():
+            archived.append(_archive_path(path, "dirs"))
+
+    copied_main: list[str] = []
+    for path in sorted(canonical_main_dir.glob("*")):
+        if path.is_file() and path.suffix.lower() in {".pdf", ".png", ".svg"}:
+            copied_main.append(str(path.resolve()))
+
+    manifest = {"main": copied_main, "appendix": copied_appendix, "archived_legacy": archived}
+    manifest_path = figures_dir / "paper_figure_map.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    return {
+        "main_dir": str(canonical_main_dir.resolve()),
+        "appendix_dir": str(appendix_dir.resolve()),
+        "archive_dir": str(archive_dir.resolve()),
+        "map_json": str(manifest_path.resolve()),
+        "main_count": len(copied_main),
+        "appendix_count": len(copied_appendix),
+        "archived_count": len(archived),
+    }
+
+
+def _remap_paths_to_appendix(value: Any, appendix_dir: Path) -> Any:
+    if isinstance(value, dict):
+        return {k: _remap_paths_to_appendix(v, appendix_dir) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_remap_paths_to_appendix(v, appendix_dir) for v in value]
+    if isinstance(value, str):
+        p = Path(value)
+        if p.exists():
+            return value
+        candidate = appendix_dir / p.name
+        if candidate.exists():
+            return str(candidate.resolve())
+    return value
+
+
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Export paper-ready tables/figures + reproducibility manifest.")
-    ap.add_argument("--input-root", default="output/presentation_large", help="Root directory holding large/calibration runs.")
-    ap.add_argument("--out", default="output/paper_pack", help="Output paper pack directory.")
+    ap.add_argument("--input-root", default="output/presentations", help="Root directory holding large/calibration runs.")
+    ap.add_argument("--out", default="output/paper/pack", help="Output paper pack directory.")
     ap.add_argument("--which", default="large", choices=["large", "calibration"], help="Which run family to package.")
     ap.add_argument(
         "--paper-claims",
-        default="examples/specs/paper_claims.yaml",
+        default="paper/experiments/specs/paper_claims.yaml",
         help="Optional paper claims YAML. If it exists, export paper_claims_outcomes.{csv,pdf,png}.",
     )
     ap.add_argument(
@@ -437,8 +574,15 @@ def main() -> None:
         if args.rq4_summary
         else _pick_existing_path(
             [
+                resolved_input_dir / "rq4_adaptive" / "rq4_adaptive_tuned_summary.json",
+                resolved_input_dir / "rq4_adaptive" / "rq4_adaptive_summary.json",
+                input_root / "rq4_adaptive" / "rq4_adaptive_tuned_summary.json",
                 input_root / "rq4_adaptive" / "rq4_adaptive_summary.json",
+                resolved_input_dir.parent / "rq4_adaptive" / "rq4_adaptive_tuned_summary.json",
                 resolved_input_dir.parent / "rq4_adaptive" / "rq4_adaptive_summary.json",
+                Path("output/presentations/large/rq4_adaptive/rq4_adaptive_tuned_summary.json"),
+                Path("output/presentations/large/rq4_adaptive/rq4_adaptive_summary.json"),
+                Path("output/presentation_large/rq4_adaptive/rq4_adaptive_tuned_summary.json"),
                 Path("output/presentation_large/rq4_adaptive/rq4_adaptive_summary.json"),
             ]
         )
@@ -448,9 +592,12 @@ def main() -> None:
         rq4_refs = plot_rq4_adaptive(rq4_payload, figures_dir / "rq4_adaptive")
         copied_summary = tables_dir / "rq4_adaptive_summary.json"
         shutil.copy2(rq4_summary_path, copied_summary)
+        copied_tuned_summary = tables_dir / "rq4_adaptive_tuned_summary.json"
+        shutil.copy2(rq4_summary_path, copied_tuned_summary)
         rq4_meta = {
             "summary_source": str(rq4_summary_path.resolve()),
             "summary_copy": str(copied_summary.resolve()),
+            "summary_tuned_copy": str(copied_tuned_summary.resolve()),
             "figures": rq4_refs,
         }
 
@@ -462,8 +609,12 @@ def main() -> None:
             [
                 input_root / "multidevice_full" / "claim_stability.json",
                 input_root / "multidevice_full" / "combined_summary.json",
+                input_root / "paper" / "multidevice" / "claim_stability.json",
+                input_root / "paper" / "multidevice" / "combined_summary.json",
                 resolved_input_dir.parent / "multidevice_full" / "claim_stability.json",
                 resolved_input_dir.parent / "multidevice_full" / "combined_summary.json",
+                Path("output/paper/multidevice/claim_stability.json"),
+                Path("output/paper/multidevice/combined_summary.json"),
                 Path("output/multidevice_full/claim_stability.json"),
                 Path("output/multidevice_full/combined_summary.json"),
                 Path("output/multidevice/combined_summary.json"),
@@ -477,6 +628,17 @@ def main() -> None:
             "input_json": str(multidevice_json_path.resolve()),
             "figures": multidevice_refs,
         }
+
+    if not args.skip_figures:
+        staged_meta = _stage_main_and_appendix_figures(figures_dir)
+        figure_meta["paper_figure_map"] = staged_meta
+        appendix_dir = Path(staged_meta["appendix_dir"])
+        if paper_claims_meta is not None:
+            paper_claims_meta = _remap_paths_to_appendix(paper_claims_meta, appendix_dir)
+        if rq4_meta is not None:
+            rq4_meta = _remap_paths_to_appendix(rq4_meta, appendix_dir)
+        if multidevice_meta is not None:
+            multidevice_meta = _remap_paths_to_appendix(multidevice_meta, appendix_dir)
 
     input_files: list[dict[str, Any]] = []
     for path in claim_paths:

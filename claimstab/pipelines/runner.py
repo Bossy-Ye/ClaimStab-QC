@@ -28,6 +28,16 @@ class BoundTask:
             return built.circuit, built.metric_fn
         return built
 
+    def build_with_config(self, method, config):
+        build_with_config = getattr(self.plugin, "build_with_config", None)
+        if callable(build_with_config):
+            built = build_with_config(self.instance, method, config)
+        else:
+            built = self.plugin.build(self.instance, method)
+        if isinstance(built, BuiltWorkflow):
+            return built.circuit, built.metric_fn
+        return built
+
     def infer_num_qubits(self, methods: list[MethodSpec]) -> int:
         payload = getattr(self.instance, "payload", None)
         graph_nodes = getattr(payload, "num_nodes", None)

@@ -1,0 +1,45 @@
+spec_version: 1
+pipeline: main
+meta:
+  name: evaluation_v2_e2_ghz_structural
+  description: Stable-control calibration for the ranking claim family under exact-scope evaluation.
+suite: standard
+task:
+  kind: ghz
+  suite: standard
+  params:
+    min_qubits: 6
+    max_qubits: 14
+    step: 2
+methods:
+  - name: GHZ_Linear
+    kind: ghz_linear
+  - name: GHZ_Star
+    kind: ghz_star
+  - name: RandomBaseline
+    kind: random_baseline
+claims:
+  - type: ranking
+    method_a: GHZ_Linear
+    method_b: GHZ_Star
+    metric_name: circuit_depth
+    higher_is_better: false
+    deltas: [0.0, 1.0, 2.0]
+  - type: ranking
+    method_a: GHZ_Linear
+    method_b: GHZ_Star
+    metric_name: two_qubit_count
+    higher_is_better: false
+    deltas: [0.0, 1.0, 2.0]
+perturbations:
+  presets: [compilation_only_exact, combined_light_exact]
+sampling:
+  mode: full_factorial
+  seed: 17
+  include_baseline: true
+decision_rule:
+  threshold: 0.95
+  confidence_level: 0.95
+backend:
+  engine: basic
+  noise_model: none

@@ -5,7 +5,7 @@ from typing import Dict, List, Tuple
 
 from claimstab.runners.matrix_runner import ScoreRow
 
-PerturbationKey = Tuple[int, int, str | None, int, int | None]
+PerturbationKey = Tuple[int, int, str | None, int, int | None, str | None, int | None]
 ScorePair = Tuple[float, float]
 
 
@@ -16,6 +16,8 @@ def perturbation_key(row: ScoreRow) -> PerturbationKey:
         row.layout_method,
         row.shots,
         row.seed_simulator,
+        row.init_strategy,
+        row.init_seed,
     )
 
 

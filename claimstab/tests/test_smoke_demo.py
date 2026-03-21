@@ -47,17 +47,24 @@ class TestSmokeDemo(unittest.TestCase):
         self.assertIn("experiments", payload)
         self.assertGreater(len(payload["experiments"]), 0)
         self.assertEqual(payload.get("meta", {}).get("evidence_chain", {}).get("protocol"), "cep_v1")
+        self.assertIn("interpretation_defaults", payload.get("meta", {}))
         practicality = payload.get("meta", {}).get("practicality", {})
         self.assertEqual(practicality.get("num_workers"), 1)
         self.assertIn("total_wall_time", practicality)
         self.assertIn("throughput_runs_per_sec", practicality)
         self.assertIn("runner_timing", practicality)
         first = payload.get("experiments", [])[0]
+        self.assertIn("interpretation", first)
         self.assertIn("cep", first.get("evidence", {}))
+        first_delta = first.get("overall", {}).get("delta_sweep", [])[0]
+        self.assertIn("decision_explanation", first_delta)
+        self.assertIn("inconclusive_reason", first_delta)
         comparative = payload.get("comparative", {}).get("space_claim_delta", [])
         self.assertTrue(comparative)
         self.assertIn("naive_baseline", comparative[0])
         self.assertIn("naive_baseline_realistic", comparative[0])
+        self.assertIn("decision_explanation", comparative[0])
+        self.assertIn("inconclusive_reason", comparative[0])
 
     def test_bv_decision_smoke(self) -> None:
         payload = self._run_demo(task="bv")
@@ -141,6 +148,13 @@ class TestSmokeDemo(unittest.TestCase):
                 self.assertIsInstance(adaptive, dict)
                 self.assertTrue(bool(adaptive.get("enabled")))
                 self.assertIsNotNone(adaptive.get("stop_reason"))
+                self.assertIn("stop_reason_detail", adaptive)
+                self.assertIn("budget_used", adaptive)
+                self.assertIn("budget_limit", adaptive)
+                eval_profile = exp.get("overall", {}).get("evaluation_profile", {})
+                self.assertIn("adaptive_stop_reason_detail", eval_profile)
+                self.assertIn("budget_used", eval_profile)
+                self.assertIn("budget_limit", eval_profile)
 
     def test_replay_trace_smoke(self) -> None:
         with tempfile.TemporaryDirectory() as td:

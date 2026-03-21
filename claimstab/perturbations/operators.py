@@ -4,7 +4,13 @@ from dataclasses import dataclass
 from itertools import product
 from typing import Iterable, Protocol
 
-from claimstab.perturbations.space import CompilationPerturbation, ExecutionPerturbation, PerturbationConfig, PerturbationSpace
+from claimstab.perturbations.space import (
+    CompilationPerturbation,
+    ExecutionPerturbation,
+    HybridOptimizationPerturbation,
+    PerturbationConfig,
+    PerturbationSpace,
+)
 
 
 class PerturbationOperator(Protocol):
@@ -29,6 +35,7 @@ class SeedTranspilerOperator:
                 layout_method=base_config.compilation.layout_method,
             ),
             execution=base_config.execution,
+            hybrid_opt=base_config.hybrid_opt,
         )
 
 
@@ -45,6 +52,7 @@ class OptimizationLevelOperator:
                 layout_method=base_config.compilation.layout_method,
             ),
             execution=base_config.execution,
+            hybrid_opt=base_config.hybrid_opt,
         )
 
 
@@ -61,6 +69,7 @@ class LayoutMethodOperator:
                 layout_method=str(self.value),
             ),
             execution=base_config.execution,
+            hybrid_opt=base_config.hybrid_opt,
         )
 
 
@@ -76,6 +85,7 @@ class ShotsOperator:
                 shots=int(self.value),
                 seed_simulator=base_config.execution.seed_simulator,
             ),
+            hybrid_opt=base_config.hybrid_opt,
         )
 
 
@@ -91,10 +101,17 @@ class SeedSimulatorOperator:
                 shots=base_config.execution.shots,
                 seed_simulator=int(self.value),
             ),
+            hybrid_opt=base_config.hybrid_opt,
         )
 
 
 def base_config_for_space(space: PerturbationSpace) -> PerturbationConfig:
+    hybrid_opt = None
+    if space.hybrid_init_strategies and space.hybrid_init_seeds:
+        hybrid_opt = HybridOptimizationPerturbation(
+            init_strategy=str(space.hybrid_init_strategies[0]),
+            init_seed=int(space.hybrid_init_seeds[0]),
+        )
     return PerturbationConfig(
         compilation=CompilationPerturbation(
             seed_transpiler=int(space.seeds_transpiler[0]),
@@ -105,6 +122,7 @@ def base_config_for_space(space: PerturbationSpace) -> PerturbationConfig:
             shots=int(space.shots_list[0]),
             seed_simulator=int(space.seeds_simulator[0]),
         ),
+        hybrid_opt=hybrid_opt,
     )
 
 
@@ -116,14 +134,30 @@ def iter_space_configs_via_operators(space: PerturbationSpace) -> Iterable[Pertu
     seed_transpiler -> optimization_level -> layout_method -> shots -> seed_simulator.
     """
     base = base_config_for_space(space)
-    for st, opt, layout, shots, seed_sim in product(
+    hybrid_strategies = list(space.hybrid_init_strategies or [None])
+    hybrid_seeds = list(space.hybrid_init_seeds or [None])
+    for st, opt, layout, shots, seed_sim, init_strategy, init_seed in product(
         space.seeds_transpiler,
         space.opt_levels,
         space.layout_methods,
         space.shots_list,
         space.seeds_simulator,
+        hybrid_strategies,
+        hybrid_seeds,
     ):
         cfg = base
+        cfg = PerturbationConfig(
+            compilation=cfg.compilation,
+            execution=cfg.execution,
+            hybrid_opt=(
+                None
+                if init_strategy is None or init_seed is None
+                else HybridOptimizationPerturbation(
+                    init_strategy=str(init_strategy),
+                    init_seed=int(init_seed),
+                )
+            ),
+        )
         for op in (
             SeedTranspilerOperator(st),
             OptimizationLevelOperator(opt),

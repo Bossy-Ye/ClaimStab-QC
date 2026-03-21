@@ -45,6 +45,17 @@ class _Task:
         return object(), (lambda _counts: 0.0)
 
 
+class _TaskWithConfig(_Task):
+    def __init__(self) -> None:
+        self.seen_configs = 0
+
+    def build_with_config(self, method, config):
+        _ = method
+        if getattr(config, "hybrid_opt", None) is not None:
+            self.seen_configs += 1
+        return object(), (lambda _counts: 0.0)
+
+
 class TestMatrixRunner(unittest.TestCase):
     def test_runner_uses_provided_sampled_configs(self) -> None:
         space = PerturbationSpace(
@@ -124,6 +135,29 @@ class TestMatrixRunner(unittest.TestCase):
         self.assertIsNone(rows[0].device_name)
         self.assertIsNone(rows[0].device_mode)
 
+    def test_custom_metric_name_uses_objective_score_path(self) -> None:
+        space = PerturbationSpace(
+            seeds_transpiler=[4],
+            opt_levels=[0],
+            layout_methods=["trivial"],
+            shots_list=[64],
+            seeds_simulator=[0],
+        )
+        sampled = list(space.iter_configs())
+
+        runner = MatrixRunner(backend=_Backend())
+        rows = runner.run(
+            task=_Task(),
+            methods=[MethodSpec(name="M1", kind="random")],
+            space=space,
+            configs=sampled,
+            coupling_map=None,
+            metric_name="logical_error_rate",
+        )
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0].metric_name, "logical_error_rate")
+        self.assertEqual(rows[0].score, 4.0)
+
     def test_cache_hit_skips_backend_execution(self) -> None:
         space = PerturbationSpace(
             seeds_transpiler=[3],
@@ -171,6 +205,35 @@ class TestMatrixRunner(unittest.TestCase):
             self.assertEqual(rows2[0].execute_time_ms, 2.0)
             self.assertEqual(rows2[0].wall_time_ms, 3.0)
             self.assertTrue(any(str(e.get("event_type")) == "cache_hit" for e in events))
+
+    def test_runner_supports_config_aware_task_build(self) -> None:
+        from claimstab.perturbations.space import HybridOptimizationPerturbation
+
+        space = PerturbationSpace(
+            seeds_transpiler=[0],
+            opt_levels=[0],
+            layout_methods=["trivial"],
+            shots_list=[64],
+            seeds_simulator=[0],
+            hybrid_init_strategies=["random"],
+            hybrid_init_seeds=[1, 2],
+        )
+        sampled = list(space.iter_configs())
+        task = _TaskWithConfig()
+
+        runner = MatrixRunner(backend=_Backend())
+        rows = runner.run(
+            task=task,
+            methods=[MethodSpec(name="M1", kind="random")],
+            space=space,
+            configs=sampled,
+            coupling_map=None,
+        )
+        self.assertEqual(len(rows), len(sampled))
+        self.assertEqual(task.seen_configs, len(sampled))
+        self.assertTrue(all(isinstance(pc.hybrid_opt, HybridOptimizationPerturbation) for pc in sampled))
+        self.assertEqual({row.init_strategy for row in rows}, {"random"})
+        self.assertEqual({row.init_seed for row in rows}, {1, 2})
 
 
 if __name__ == "__main__":

@@ -1,41 +1,41 @@
-# Experiment Matrix (Locked)
+# Experiment Matrix
 
-This matrix defines the canonical experiment set for evaluation and artifact review.
+This matrix defines the active `evaluation_v2` experiment set for evaluation and artifact review.
+Older output roots under `output/presentations/large` and `output/paper/{artifact,pack,multidevice}` have been retired.
 
 ## Scope Classes
 - **Core**: required for paper claims and primary figures.
 - **Supporting**: broadens external validity but is not required for accepting core methodology claims.
 
-## Core Matrix
+## Active Matrix
 
 | ID | Purpose | Spec / Command | Fixed Controls | Primary Outputs |
 |---|---|---|---|---|
-| E1 | Ranking prevalence + heterogeneity (MaxCut) | `python -m claimstab.cli run --spec specs/paper_main.yml --out-dir output/presentation_large/large/maxcut_ranking --report` | `random_k`, seed-controlled, spaces = `compilation_only,sampling_only,combined_light` | `claim_stability.json`, `rq_summary.json`, `robustness_map.json`, `stability_report.html` |
-| E2 | Structural ranking control (GHZ) | `python -m claimstab.cli run --spec specs/paper_structural.yml --out-dir output/presentation_large/large/ghz_structural --report` | transpile-centric structural metrics | `claim_stability.json`, `rq_summary.json` |
-| E3 | Decision-claim control (BV) | `python -m claimstab.cli run --spec specs/paper_decision.yml --out-dir output/presentation_large/large/bv_decision --report` | top-k decision claims, seeded perturbation sampling | `claim_stability.json`, `rq_summary.json` |
-| E4 | Distribution-claim stress (Grover) | `python -m claimstab.cli run --spec specs/paper_distribution.yml --out-dir output/presentation_large/large/grover_distribution --report` | JS/TVD distance claims with explicit epsilon | `claim_stability.json`, `rq_summary.json` |
-| E5 | Cost-confidence tradeoff | `python examples/exp_rq4_adaptive.py --out output/presentation_large/rq4_adaptive` | full/random_k/adaptive_ci side-by-side | `rq4_adaptive_summary.json`, RQ4 figures |
+| E1 | Main empirical battleground (MaxCut) | `python -m claimstab.cli run --spec paper/experiments/specs/evaluation_v2/e1_maxcut_main.yml --out-dir output/paper/evaluation_v2/runs/E1_maxcut_main --report` | `full_factorial`, exact scopes = `compilation_only_exact,sampling_only_exact,combined_light_exact` | `claim_stability.json`, `rq_summary.json`, `robustness_map.json`, `stability_report.html` |
+| E2 | Structural ranking calibration (GHZ) | `python -m claimstab.cli run --spec paper/experiments/specs/evaluation_v2/e2_ghz_structural.yml --out-dir output/paper/evaluation_v2/runs/E2_ghz_structural --report` | `full_factorial`, exact compilation/mixed scopes | `claim_stability.json`, `rq_summary.json` |
+| E3 | Decision-claim calibration (BV) | `python -m claimstab.cli run --spec paper/experiments/specs/evaluation_v2/e3_bv_decision.yml --out-dir output/paper/evaluation_v2/runs/E3_bv_decision --report` | `full_factorial`, exact execution/mixed scopes | `claim_stability.json`, `rq_summary.json` |
+| E4 | Distribution-claim fragility case (Grover) | `python -m claimstab.cli run --spec paper/experiments/specs/evaluation_v2/e4_grover_distribution.yml --out-dir output/paper/evaluation_v2/runs/E4_grover_distribution --report` | `full_factorial`, exact execution/mixed scopes | `claim_stability.json`, `rq_summary.json` |
+| S2 | Boundary challenge pack | `python paper/experiments/scripts/exp_boundary_challenge.py --spec paper/experiments/specs/evaluation_v2/s2_boundary.yml --out output/paper/evaluation_v2/runs/S2_boundary` | `full_factorial`, exact execution/mixed scopes | `claim_stability.json`, `boundary_summary.json` |
+| QEC | Supporting portability illustration | `python -m claimstab.cli run --spec paper/experiments/specs/evaluation_v2/qec_portability.yml --out-dir output/paper/evaluation_v2/runs/QEC_portability --report` | `full_factorial`, exact execution/mixed scopes | `claim_stability.json`, `robustness_map.json` |
 
-## Supporting Matrix
+## Pending Studies
 
 | ID | Purpose | Command | Output |
 |---|---|---|---|
-| S1 | Device-aware variability | `python -m claimstab.cli run --spec specs/paper_device.yml --out-dir output/multidevice_full` | `combined_summary.json` and per-mode summaries |
-| S2 | Boundary challenge pack | `python examples/exp_boundary_challenge.py --out output/presentation_large/boundary` | `claim_stability.json`, `boundary_summary.json` |
-| S3 | Optional method-set batch | `python examples/exp_icse_methodset.py --out output/presentation_large/icse_methodset` | per-track runs + `methodset_summary.json` |
-| S4 | Synthetic-truth calibration | `python -m claimstab.analysis.synthetic_truth --out output/presentation_large/synthetic_truth.json` | synthetic coverage/decision calibration summary |
+| E5 | Multi-claim policy comparison | design alignment pending | `output/paper/evaluation_v2/runs/E5_policy_comparison` |
+| S1 | Backend-conditioned portability | pipeline alignment pending | `output/paper/evaluation_v2/runs/S1_multidevice_portability` |
+| S4 | Synthetic-truth calibration | `python -m claimstab.analysis.synthetic_truth --out output/paper/evaluation_v2/derived_paper_evaluation/RQ4_practicality/synthetic_truth.json` | synthetic coverage/decision calibration summary |
+| S5 | Mutation sanity check | `python paper/experiments/scripts/exp_mutation_sanity.py --run-dir output/paper/evaluation_v2/runs/E1_maxcut_main --out output/paper/evaluation_v2/derived_paper_evaluation/RQ2_semantics/mutation_sanity_summary.json` | `mutation_sanity_summary.json` |
 
-## Canonical Packaging
+## Evaluation v2 Orchestration
 
 ```bash
-python -m claimstab.scripts.export_paper_pack \
-  --input-root output/presentation_large \
-  --out output/paper_pack \
-  --which large
+python paper/experiments/scripts/reproduce_evaluation_v2.py --layout-only
+python paper/experiments/scripts/reproduce_evaluation_v2.py
 ```
 
 ## Lock Rules
+- Keep `output/paper/evaluation_v2/` as the active paper output root.
 - Keep CLI commands and argument semantics backward compatible.
-- Keep JSON/CSV artifact paths and key names backward compatible.
-- Additive fields are allowed; destructive renames are not.
+- Additive fields are allowed; destructive renames of core artifact keys are not.
 - Any behavior-affecting change must pass `check_refactor_compat` and `validate-evidence`.

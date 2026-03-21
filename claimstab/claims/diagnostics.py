@@ -9,14 +9,29 @@ from claimstab.claims.ranking import HigherIsBetter, RankingClaim, Relation
 from claimstab.claims.stability import conservative_stability_decision, estimate_binomial_rate
 from claimstab.runners.matrix_runner import ScoreRow
 
-DIMENSION_NAMES = [
+CORE_DIMENSION_NAMES = [
     "seed_transpiler",
     "optimization_level",
     "layout_method",
     "shots",
     "seed_simulator",
 ]
+HYBRID_DIMENSION_NAMES = [
+    "init_strategy",
+    "init_seed",
+]
+DIMENSION_NAMES = CORE_DIMENSION_NAMES + HYBRID_DIMENSION_NAMES
 DIMENSION_INDEX = {name: idx for idx, name in enumerate(DIMENSION_NAMES)}
+
+
+def _analysis_dimensions(paired_scores: Mapping[PerturbationKey, ScorePair]) -> list[str]:
+    dims = list(CORE_DIMENSION_NAMES)
+    keys = list(paired_scores.keys())
+    if any(len(k) > 5 and k[5] is not None for k in keys):
+        dims.append("init_strategy")
+    if any(len(k) > 6 and k[6] is not None for k in keys):
+        dims.append("init_seed")
+    return dims
 
 
 def _parse_ranking_claim(claim_spec: RankingClaim | Mapping[str, Any]) -> RankingClaim:
@@ -58,10 +73,22 @@ def _parse_baseline_key(
 ) -> PerturbationKey | None:
     if baseline_config is None:
         return None
-    if isinstance(baseline_config, tuple) and len(baseline_config) == 5:
-        return baseline_config
+    if isinstance(baseline_config, tuple):
+        if len(baseline_config) == 7:
+            return baseline_config
+        if len(baseline_config) == 5:
+            return (
+                int(baseline_config[0]),
+                int(baseline_config[1]),
+                None if baseline_config[2] is None else str(baseline_config[2]),
+                int(baseline_config[3]),
+                None if baseline_config[4] is None else int(baseline_config[4]),
+                None,
+                None,
+            )
     if isinstance(baseline_config, Mapping):
-        if not all(dim in baseline_config for dim in DIMENSION_NAMES):
+        core_dims = ["seed_transpiler", "optimization_level", "layout_method", "shots", "seed_simulator"]
+        if not all(dim in baseline_config for dim in core_dims):
             return None
         return (
             int(baseline_config["seed_transpiler"]),
@@ -69,18 +96,25 @@ def _parse_baseline_key(
             str(baseline_config["layout_method"]) if baseline_config["layout_method"] is not None else None,
             int(baseline_config["shots"]),
             int(baseline_config["seed_simulator"]) if baseline_config["seed_simulator"] is not None else None,
+            str(baseline_config["init_strategy"]) if baseline_config.get("init_strategy") is not None else None,
+            int(baseline_config["init_seed"]) if baseline_config.get("init_seed") is not None else None,
         )
     raise TypeError("baseline_config must be None, PerturbationKey tuple, or mapping")
 
 
 def _key_to_config(key: PerturbationKey) -> dict[str, int | str | None]:
-    return {
+    out: dict[str, int | str | None] = {
         "seed_transpiler": key[0],
         "optimization_level": key[1],
         "layout_method": key[2],
         "shots": key[3],
         "seed_simulator": key[4],
     }
+    if key[5] is not None:
+        out["init_strategy"] = key[5]
+    if key[6] is not None:
+        out["init_seed"] = key[6]
+    return out
 
 
 def _claim_margin(claim: RankingClaim, score_a: float, score_b: float) -> float:
@@ -168,7 +202,7 @@ def single_knob_lockdown_recommendation(
     top_k: int = 2,
 ) -> dict[str, Any]:
     candidates: list[dict[str, Any]] = []
-    for dim_name in DIMENSION_NAMES:
+    for dim_name in _analysis_dimensions(paired_scores):
         dim_idx = DIMENSION_INDEX[dim_name]
         values = sorted({k[dim_idx] for k in paired_scores})
         for value in values:
@@ -709,9 +743,10 @@ def rank_flip_root_cause_by_dimension(
 ) -> Dict[str, Any]:
     baseline_relation = claim.relation(*baseline_scores)
     baseline_margin = _claim_margin(claim, *baseline_scores)
+    active_dimensions = _analysis_dimensions(paired_scores)
 
-    totals_by_dim_value: dict[str, dict[str, int]] = {d: {} for d in DIMENSION_NAMES}
-    flips_by_dim_value: dict[str, dict[str, int]] = {d: {} for d in DIMENSION_NAMES}
+    totals_by_dim_value: dict[str, dict[str, int]] = {d: {} for d in active_dimensions}
+    flips_by_dim_value: dict[str, dict[str, int]] = {d: {} for d in active_dimensions}
     flip_events: list[dict[str, Any]] = []
 
     total_perturbations = 0
@@ -748,14 +783,15 @@ def rank_flip_root_cause_by_dimension(
                 }
             )
 
-        for dim_idx, dim_name in enumerate(DIMENSION_NAMES):
+        for dim_name in active_dimensions:
+            dim_idx = DIMENSION_INDEX[dim_name]
             value = str(key[dim_idx])
             totals_by_dim_value[dim_name][value] = totals_by_dim_value[dim_name].get(value, 0) + 1
             if is_flip:
                 flips_by_dim_value[dim_name][value] = flips_by_dim_value[dim_name].get(value, 0) + 1
 
     by_dimension: dict[str, dict[str, dict[str, float | int]]] = {}
-    for dim_name in DIMENSION_NAMES:
+    for dim_name in active_dimensions:
         dim_stats: dict[str, dict[str, float | int]] = {}
         for value, total in sorted(totals_by_dim_value[dim_name].items()):
             flips = flips_by_dim_value[dim_name].get(value, 0)

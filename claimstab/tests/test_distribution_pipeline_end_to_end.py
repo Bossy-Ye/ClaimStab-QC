@@ -79,9 +79,13 @@ class TestDistributionPipelineEndToEnd(unittest.TestCase):
             self.assertTrue(experiments)
             self.assertIn("distribution", {str(exp.get("claim", {}).get("type")) for exp in experiments})
             first = experiments[0]
+            self.assertIn("interpretation", first)
             violations = first.get("overall", {}).get("distribution_violations", [])
             self.assertIsInstance(violations, list)
             self.assertGreater(len(violations), 0)
+            summary_row = first.get("overall", {}).get("delta_sweep", [])[0]
+            self.assertIn("decision_explanation", summary_row)
+            self.assertIn("inconclusive_reason", summary_row)
 
     def test_grover_distribution_adaptive_sampling_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as td:
@@ -154,6 +158,13 @@ class TestDistributionPipelineEndToEnd(unittest.TestCase):
             self.assertIsInstance(adaptive, dict)
             self.assertTrue(bool(adaptive.get("enabled")))
             self.assertIsNotNone(adaptive.get("stop_reason"))
+            self.assertIn("stop_reason_detail", adaptive)
+            self.assertIn("budget_used", adaptive)
+            self.assertIn("budget_limit", adaptive)
+            eval_profile = experiments[0].get("overall", {}).get("evaluation_profile", {})
+            self.assertIn("adaptive_stop_reason_detail", eval_profile)
+            self.assertIn("budget_used", eval_profile)
+            self.assertIn("budget_limit", eval_profile)
 
 
 if __name__ == "__main__":

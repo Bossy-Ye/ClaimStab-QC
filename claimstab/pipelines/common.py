@@ -6,11 +6,17 @@ from typing import Any, Callable, Iterable, Mapping, Sequence
 
 from claimstab.core import ArtifactManifest, ExecutionEvent, JsonlEventLogger, TraceIndex
 from claimstab.pipelines.emit import write_rows_csv as _write_rows_csv
-from claimstab.perturbations.space import CompilationPerturbation, ExecutionPerturbation, PerturbationConfig, PerturbationSpace
+from claimstab.perturbations.space import (
+    CompilationPerturbation,
+    ExecutionPerturbation,
+    HybridOptimizationPerturbation,
+    PerturbationConfig,
+    PerturbationSpace,
+)
 from claimstab.runners.matrix_runner import ScoreRow
 from claimstab.spec import load_spec
 
-PerturbationKey = tuple[int, int, str | None, int, int | None]
+PerturbationKey = tuple[int, int, str | None, int, int | None, str | None, int | None]
 
 SUITE_ALIASES: dict[str, str] = {
     "core": "core",
@@ -26,10 +32,14 @@ LEGACY_SUITE_ALIASES: set[str] = {"day1", "day2", "day2_large"}
 SPACE_ALIASES: dict[str, str] = {
     "baseline": "baseline",
     "compilation_only": "compilation_only",
+    "compilation_only_exact": "compilation_only_exact",
     "sampling_only": "sampling_only",
+    "sampling_only_exact": "sampling_only_exact",
     "combined_light": "combined_light",
+    "combined_light_exact": "combined_light_exact",
     "compilation_stress": "compilation_stress",
     "sampling_stress": "sampling_stress",
+    "sampling_policy_eval": "sampling_policy_eval",
     "combined_stress": "combined_stress",
     "day1_default": "baseline",
 }
@@ -109,8 +119,12 @@ def make_space(name: str, *, combined_light_shots: Sequence[int] | None = None) 
         return PerturbationSpace.conf_level_default()
     if name == "compilation_only":
         return PerturbationSpace.compilation_only()
+    if name == "compilation_only_exact":
+        return PerturbationSpace.compilation_only_exact()
     if name == "sampling_only":
         return PerturbationSpace.sampling_only()
+    if name == "sampling_only_exact":
+        return PerturbationSpace.sampling_only_exact()
     if name == "combined_light":
         if combined_light_shots is None:
             return PerturbationSpace.combined_light()
@@ -122,10 +136,14 @@ def make_space(name: str, *, combined_light_shots: Sequence[int] | None = None) 
             shots_list=shots,
             seeds_simulator=[0, 1, 2],
         )
+    if name == "combined_light_exact":
+        return PerturbationSpace.combined_light_exact()
     if name == "compilation_stress":
         return PerturbationSpace.compilation_stress()
     if name == "sampling_stress":
         return PerturbationSpace.sampling_stress()
+    if name == "sampling_policy_eval":
+        return PerturbationSpace.sampling_policy_eval()
     if name == "combined_stress":
         return PerturbationSpace.combined_stress()
     raise ValueError(f"Unknown preset: {name}")
@@ -140,6 +158,9 @@ def build_baseline_config(space: PerturbationSpace) -> tuple[dict[str, int | str
         "shots": first.execution.shots,
         "seed_simulator": first.execution.seed_simulator,
     }
+    if first.hybrid_opt is not None:
+        baseline_cfg["init_strategy"] = first.hybrid_opt.init_strategy
+        baseline_cfg["init_seed"] = int(first.hybrid_opt.init_seed)
     baseline_pc = PerturbationConfig(
         compilation=CompilationPerturbation(
             seed_transpiler=first.compilation.seed_transpiler,
@@ -149,6 +170,14 @@ def build_baseline_config(space: PerturbationSpace) -> tuple[dict[str, int | str
         execution=ExecutionPerturbation(
             shots=first.execution.shots,
             seed_simulator=first.execution.seed_simulator,
+        ),
+        hybrid_opt=(
+            HybridOptimizationPerturbation(
+                init_strategy=first.hybrid_opt.init_strategy,
+                init_seed=int(first.hybrid_opt.init_seed),
+            )
+            if first.hybrid_opt is not None
+            else None
         ),
     )
     baseline_key = config_key(baseline_pc)
@@ -162,16 +191,20 @@ def config_key(pc: PerturbationConfig) -> PerturbationKey:
         pc.compilation.layout_method,
         pc.execution.shots,
         pc.execution.seed_simulator,
+        (pc.hybrid_opt.init_strategy if pc.hybrid_opt is not None else None),
+        (int(pc.hybrid_opt.init_seed) if pc.hybrid_opt is not None else None),
     )
 
 
-def key_sort_value(key: PerturbationKey) -> tuple[int, int, str, int, int]:
+def key_sort_value(key: PerturbationKey) -> tuple[int, int, str, int, int, str, int]:
     return (
         int(key[0]),
         int(key[1]),
         "" if key[2] is None else str(key[2]),
         int(key[3]),
         -1 if key[4] is None else int(key[4]),
+        "" if key[5] is None else str(key[5]),
+        -1 if key[6] is None else int(key[6]),
     )
 
 
@@ -185,6 +218,14 @@ def config_from_key(key: PerturbationKey) -> PerturbationConfig:
         execution=ExecutionPerturbation(
             shots=int(key[3]),
             seed_simulator=None if key[4] is None else int(key[4]),
+        ),
+        hybrid_opt=(
+            None
+            if key[5] is None or key[6] is None
+            else HybridOptimizationPerturbation(
+                init_strategy=str(key[5]),
+                init_seed=int(key[6]),
+            )
         ),
     )
 
@@ -200,6 +241,10 @@ def baseline_from_keys(keys: set[PerturbationKey]) -> tuple[dict[str, int | str 
         "shots": int(baseline_key[3]),
         "seed_simulator": None if baseline_key[4] is None else int(baseline_key[4]),
     }
+    if baseline_key[5] is not None:
+        baseline_cfg["init_strategy"] = str(baseline_key[5])
+    if baseline_key[6] is not None:
+        baseline_cfg["init_seed"] = int(baseline_key[6])
     return baseline_cfg, baseline_key
 
 
@@ -258,6 +303,8 @@ def _key_from_row(row: ScoreRow) -> PerturbationKey:
         row.layout_method,
         int(row.shots),
         None if row.seed_simulator is None else int(row.seed_simulator),
+        None if row.init_strategy is None else str(row.init_strategy),
+        None if row.init_seed is None else int(row.init_seed),
     )
 
 

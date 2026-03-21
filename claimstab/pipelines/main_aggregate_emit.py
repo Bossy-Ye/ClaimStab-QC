@@ -21,6 +21,17 @@ class MainOutputBundle:
     robustness_map_payload: dict[str, Any]
 
 
+def _build_interpretation_defaults() -> dict[str, Any]:
+    return {
+        "validated_property": "conditional robustness of reported claims",
+        "perturbation_scope": (
+            "software-visible evaluation perturbations under the selected space preset and sampling policy"
+        ),
+        "non_goal": "scientific correctness",
+        "claim_perturbation_mode": "none in default runs; claim perturbations are reserved for supporting validation",
+    }
+
+
 def build_main_outputs(plan: MainPlan, exec_result: MainExecutionResult) -> MainOutputBundle:
     args = plan.args
     spec_payload = plan.spec_payload
@@ -67,6 +78,7 @@ def build_main_outputs(plan: MainPlan, exec_result: MainExecutionResult) -> Main
             "reproduce_command": "PYTHONPATH=. ./venv/bin/python " + " ".join(shlex.quote(a) for a in sys.argv),
             "runtime": runtime_meta,
             "practicality": practicality,
+            "interpretation_defaults": _build_interpretation_defaults(),
             "artifacts": {
                 "trace_jsonl": artifact_manifest.trace_jsonl,
                 "events_jsonl": artifact_manifest.events_jsonl,
@@ -124,6 +136,7 @@ def build_main_outputs(plan: MainPlan, exec_result: MainExecutionResult) -> Main
         payload["sampling"] = exp["sampling"]
         payload["backend_engine"] = exp["backend"]["engine"]
         payload["perturbation_space_size"] = exp["sampling"]["perturbation_space_size"]
+        payload["interpretation"] = exp.get("interpretation")
         payload["per_graph"] = exp["per_graph"]
         payload["overall"] = exp["overall"]
 

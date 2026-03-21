@@ -13,6 +13,7 @@ matplotlib.use("Agg", force=True)
 import matplotlib.pyplot as plt
 import numpy as np
 
+from claimstab.figures.adaptive import classify_matrix_encoding, diagnose_matrix, plot_compact_table, plot_ordered_lollipop, plot_stat_card
 from claimstab.figures.style import FIG_H_WIDE, FIG_W_WIDE, apply_style, save_fig
 
 
@@ -105,7 +106,62 @@ def _plot_heatmap(
 
     apply_style()
     fig, ax = plt.subplots(figsize=(FIG_W_WIDE, FIG_H_WIDE), layout="constrained")
-    im = ax.imshow(matrix, aspect="auto", cmap="YlGnBu", vmin=0.0, vmax=1.0)
+    diag = diagnose_matrix(matrix)
+    encoding = classify_matrix_encoding(diag, near_constant_tol=0.008)
+    if encoding == "empty":
+        return None
+    if encoding == "single_value":
+        plot_stat_card(
+            ax,
+            title=title,
+            lines=[
+                ("value", f"{diag.value_min:.3f}"),
+                ("devices x metrics", f"{diag.rows} x {diag.cols}"),
+            ],
+            note="Heatmap replaced by compact card because only one informative value is available.",
+        )
+        return save_fig(fig, out_base)
+    if encoding in {"strip", "strip_constant"}:
+        labels: list[str] = []
+        values: list[float] = []
+        for i, device in enumerate(devices):
+            for j, metric in enumerate(metrics):
+                value = matrix[i, j]
+                if np.isnan(value):
+                    continue
+                labels.append(f"{device} | {metric}")
+                values.append(float(value))
+        plot_ordered_lollipop(
+            ax,
+            labels=labels,
+            values=values,
+            xlabel="value",
+            title=title,
+        )
+        ax.set_ylabel("device/metric")
+        return save_fig(fig, out_base)
+    if encoding == "constant_table":
+        plot_compact_table(
+            ax,
+            row_labels=devices,
+            col_labels=metrics,
+            matrix=matrix,
+            title=title,
+            note="Heatmap suppressed because values are near-constant.",
+        )
+        return save_fig(fig, out_base)
+
+    if diag.value_range >= 0.2:
+        vmin, vmax = 0.0, 1.0
+    else:
+        margin = max(0.02, diag.value_range * 0.35)
+        vmin = max(0.0, diag.value_min - margin)
+        vmax = min(1.0, diag.value_max + margin)
+        if vmax - vmin < 0.05:
+            center = (vmin + vmax) / 2.0
+            vmin = max(0.0, center - 0.03)
+            vmax = min(1.0, center + 0.03)
+    im = ax.imshow(matrix, aspect="auto", cmap="cividis", vmin=vmin, vmax=vmax)
     cbar = fig.colorbar(im, ax=ax)
     cbar.set_label("value")
     ax.set_xticks(range(len(metrics)))
@@ -114,7 +170,7 @@ def _plot_heatmap(
     ax.set_yticklabels(devices)
     ax.set_xlabel("metric")
     ax.set_ylabel("device")
-    ax.set_title(title)
+    ax.set_title(title, loc="left")
 
     for i, device in enumerate(devices):
         for j, metric in enumerate(metrics):
@@ -125,7 +181,8 @@ def _plot_heatmap(
             if annotate_decision:
                 decision = decisions.get((device, metric), "inconclusive")
                 txt = f"{value:.2f}\n{decision}"
-            ax.text(j, i, txt, ha="center", va="center", fontsize=8.2, color="#1f1f1f")
+            txt_color = "white" if value >= (vmin + vmax) / 2.0 else "#1f1f1f"
+            ax.text(j, i, txt, ha="center", va="center", fontsize=8.2, color=txt_color)
 
     return save_fig(fig, out_base)
 
@@ -149,13 +206,13 @@ def plot_multidevice_heatmaps(
     devices, metrics, stability_matrix, decisions = _aggregate_matrix(rows, value_key="stability_hat")
     _, _, ci_low_matrix, _ = _aggregate_matrix(rows, value_key="stability_ci_low")
 
-    title_suffix = f"claim_pair={pair or 'N/A'}, delta={selected_delta if selected_delta is not None else 'N/A'}"
+    title_suffix = f"claim={pair or 'N/A'}, Δ={selected_delta if selected_delta is not None else 'N/A'}"
     ref_stability = _plot_heatmap(
         devices=devices,
         metrics=metrics,
         matrix=stability_matrix,
         decisions=decisions,
-        title=f"Multi-Device Stability Hat Heatmap ({title_suffix})",
+        title=f"Multidevice stability ({title_suffix})",
         out_base=out_dir / "fig_multidevice_stability_hat_heatmap",
         annotate_decision=True,
     )
@@ -164,7 +221,7 @@ def plot_multidevice_heatmaps(
         metrics=metrics,
         matrix=ci_low_matrix,
         decisions=decisions,
-        title=f"Multi-Device CI Low Heatmap ({title_suffix})",
+        title=f"Multidevice CI-low ({title_suffix})",
         out_base=out_dir / "fig_multidevice_ci_low_heatmap",
         annotate_decision=False,
     )

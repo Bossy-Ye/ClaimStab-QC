@@ -30,6 +30,8 @@ class TraceRecord:
     transpile_time_ms: float | None = None
     execute_time_ms: float | None = None
     wall_time_ms: float | None = None
+    init_strategy: str | None = None
+    init_seed: int | None = None
     device_provider: str | None = None
     device_name: str | None = None
     device_mode: str | None = None
@@ -58,6 +60,8 @@ class TraceRecord:
             transpile_time_ms=row.transpile_time_ms,
             execute_time_ms=row.execute_time_ms,
             wall_time_ms=row.wall_time_ms,
+            init_strategy=row.init_strategy,
+            init_seed=row.init_seed,
             device_provider=row.device_provider,
             device_name=row.device_name,
             device_mode=row.device_mode,
@@ -88,6 +92,8 @@ class TraceRecord:
             transpile_time_ms=self.transpile_time_ms,
             execute_time_ms=self.execute_time_ms,
             wall_time_ms=self.wall_time_ms,
+            init_strategy=self.init_strategy,
+            init_seed=self.init_seed,
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -121,6 +127,8 @@ class TraceRecord:
                 None if payload.get("execute_time_ms") is None else float(payload.get("execute_time_ms"))
             ),
             wall_time_ms=(None if payload.get("wall_time_ms") is None else float(payload.get("wall_time_ms"))),
+            init_strategy=(None if payload.get("init_strategy") is None else str(payload.get("init_strategy"))),
+            init_seed=(None if payload.get("init_seed") is None else int(payload.get("init_seed"))),
             device_provider=(None if payload.get("device_provider") is None else str(payload.get("device_provider"))),
             device_name=(None if payload.get("device_name") is None else str(payload.get("device_name"))),
             device_mode=(None if payload.get("device_mode") is None else str(payload.get("device_mode"))),

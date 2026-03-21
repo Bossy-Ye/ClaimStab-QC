@@ -35,7 +35,7 @@ class TestBoundaryChallengeScript(unittest.TestCase):
             self._write_payload(root, decisions=["stable", "inconclusive"])
             cmd = [
                 sys.executable,
-                "examples/exp_boundary_challenge.py",
+                "paper/experiments/scripts/exp_boundary_challenge.py",
                 "--out",
                 str(root),
                 "--skip-run",
@@ -52,7 +52,7 @@ class TestBoundaryChallengeScript(unittest.TestCase):
             self._write_payload(root, decisions=["stable", "stable"])
             cmd = [
                 sys.executable,
-                "examples/exp_boundary_challenge.py",
+                "paper/experiments/scripts/exp_boundary_challenge.py",
                 "--out",
                 str(root),
                 "--skip-run",

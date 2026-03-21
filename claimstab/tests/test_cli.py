@@ -334,7 +334,7 @@ class TestCLI(unittest.TestCase):
                 pipeline: main
                 task:
                   kind: external
-                  entrypoint: examples.custom_task_demo.toy_task:ToyTask
+                  entrypoint: examples.community.custom_task_demo.toy_task:ToyTask
                   suite: toy
                   params:
                     num_qubits: 4

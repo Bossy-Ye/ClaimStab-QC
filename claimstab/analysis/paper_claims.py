@@ -12,7 +12,8 @@ matplotlib.use("Agg", force=True)
 
 import matplotlib.pyplot as plt
 
-from claimstab.figures.style import FIG_H_WIDE, FIG_W_WIDE, apply_style, save_fig
+from claimstab.figures.adaptive import plot_compact_table
+from claimstab.figures.style import FIG_H_WIDE, FIG_W_WIDE, apply_style, decision_color, save_fig
 
 
 def _norm_str(value: Any) -> str:
@@ -212,44 +213,50 @@ def plot_claim_outcomes(rows: list[dict[str, Any]], out_path: Path) -> dict[str,
         err_low.append(max(0.0, hat - (low if low is not None else hat)))
         err_high.append(max(0.0, (high if high is not None else hat) - hat))
 
-    color_map = {
-        "stable": "#2a9d8f",
-        "inconclusive": "#e9c46a",
-        "unstable": "#e76f51",
-        "missing": "#a0a0a0",
-    }
-    colors = [color_map.get(d, "#a0a0a0") for d in decisions]
+    colors = [decision_color(d) for d in decisions]
 
     apply_style()
     fig, ax = plt.subplots(figsize=(FIG_W_WIDE, FIG_H_WIDE), layout="constrained")
-    x = list(range(len(labels)))
-    bars = ax.bar(x, values, color=colors, edgecolor="#2f2f2f", linewidth=0.55)
-    ax.errorbar(
-        x,
-        values,
-        yerr=[err_low, err_high],
-        fmt="none",
-        ecolor="#2f2f2f",
-        elinewidth=1.0,
-        capsize=3.0,
-    )
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels, rotation=20, ha="right")
-    ax.set_ylim(0.0, 1.02)
-    ax.set_ylabel("stability_hat")
-    ax.set_xlabel("paper claim id")
-    ax.set_title("Paper-Style Claim Outcomes")
-    for bar, decision in zip(bars, decisions):
-        ax.text(
-            bar.get_x() + bar.get_width() / 2.0,
-            bar.get_height() + 0.02,
-            decision,
-            ha="center",
-            va="bottom",
-            fontsize=8.5,
-            color="#2f2f2f",
-            rotation=25,
+    if len(labels) <= 2 or max(values) - min(values) < 0.01:
+        import numpy as np
+
+        table_rows = []
+        for label, decision, hat, lo, hi in zip(labels, decisions, values, err_low, err_high):
+            table_rows.append([hat, hat - lo, hat + hi, decision])
+        matrix = np.array([[float(r[0]), float(r[1]), float(r[2])] for r in table_rows], dtype=float)
+        plot_compact_table(
+            ax,
+            row_labels=labels,
+            col_labels=["stability_hat", "ci_low", "ci_high"],
+            matrix=matrix,
+            title="Paper claims: stability with CI",
+            note="Compact table used because visual spread is limited.",
         )
+        return save_fig(fig, out_path)
+
+    y = list(range(len(labels)))
+    ax.hlines(y, xmin=0.0, xmax=1.0, color="#d8d8d8", linewidth=0.8, alpha=0.6)
+    ax.errorbar(
+        values,
+        y,
+        xerr=[err_low, err_high],
+        fmt="o",
+        ecolor="#6a6a6a",
+        elinewidth=1.0,
+        capsize=3.2,
+        markersize=4.6,
+        color="#5f5f5f",
+        zorder=3,
+    )
+    for yi, label, value, decision, color in zip(y, labels, values, decisions, colors):
+        ax.scatter([value], [yi], s=42, color=color, zorder=4, edgecolor="#2f2f2f", linewidth=0.4)
+        ax.text(1.01, yi, decision, va="center", ha="left", fontsize=8.0, color="#4a4a4a")
+    ax.set_yticks(y)
+    ax.set_yticklabels(labels)
+    ax.set_xlim(0.0, 1.08)
+    ax.set_xlabel("stability_hat (with CI)")
+    ax.set_ylabel("paper claim id")
+    ax.set_title("Paper claims: stability with CI", loc="left")
     return save_fig(fig, out_path)
 
 

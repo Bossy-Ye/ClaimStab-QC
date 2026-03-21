@@ -1,5 +1,8 @@
 # ClaimAtlas Dataset
 
+ClaimAtlas is an advanced/community-facing surface. It is not part of the primary first-run onboarding path.
+Start with `Quickstart` first, then use this page when you need dataset publication and registry workflows.
+
 ClaimAtlas is the canonical dataset store for ClaimStab outcomes.
 Use this page as the contributor/storage guide. For browsing records, use the generated registry view.
 
@@ -65,14 +68,14 @@ backend:
 1. Run experiment (built-in or custom task):
 
 ```bash
-python -m claimstab.cli run --spec examples/custom_task_demo/spec_toy.yml --out-dir output/toy --report
+python -m claimstab.cli run --spec examples/community/custom_task_demo/spec_toy.yml --out-dir output/examples/toy --report
 ```
 
 2. Publish artifacts to dataset:
 
 ```bash
 python -m claimstab.cli publish-result \
-  --run-dir output/toy \
+  --run-dir output/examples/toy \
   --atlas-root atlas \
   --contributor your_name
 ```

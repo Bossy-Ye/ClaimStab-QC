@@ -1,0 +1,45 @@
+spec_version: 1
+pipeline: main
+meta:
+  name: evaluation_v2_qec_portability
+  description: Supporting repetition-code portability illustration under exact-scope evaluation.
+
+task:
+  kind: external
+  entrypoint: examples.community.qec_pilot_demo.qec_decoder_task:RepetitionCodeDecoderTask
+  suite: core
+  params:
+    distance: 5
+    physical_error_rate: 0.15
+    num_instances: 8
+    decoder_window: 3
+
+methods:
+  - name: GlobalMajority
+    kind: global_majority
+  - name: SingleReadout
+    kind: single_readout
+
+claims:
+  - type: ranking
+    method_a: GlobalMajority
+    method_b: SingleReadout
+    metric_name: logical_error_rate
+    higher_is_better: false
+    deltas: [0.0, 0.05]
+
+perturbations:
+  presets: [sampling_only_exact, combined_light_exact]
+
+sampling:
+  mode: full_factorial
+  seed: 23
+  include_baseline: true
+
+decision_rule:
+  threshold: 0.95
+  confidence_level: 0.95
+
+backend:
+  engine: basic
+  noise_model: none

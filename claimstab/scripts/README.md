@@ -7,7 +7,7 @@ Canonical entrypoints:
 - `export_paper_pack.py`: package an existing run family into `tables/`, `figures/`, and a reproducibility manifest.
 - `make_paper_figures.py`: generate paper-ready figures from run outputs.
 - `generate_stability_report.py`: render HTML report from `claim_stability.json`.
-- `generate_implementation_catalog.py`: regenerate docs implementation catalog.
+- `generate_implementation_catalog.py`: regenerate archived internal implementation catalog.
 - `check_expected.py`: lightweight output expectation check used by docs/workflows.
 - `clean_workspace.py`: delete local caches/generated scratch artifacts (safe for regeneration).
 

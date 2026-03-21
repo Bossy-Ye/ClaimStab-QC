@@ -8,7 +8,15 @@ matplotlib.use("Agg", force=True)
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from claimstab.figures.style import FIG_H, FIG_W, apply_style, save_fig
+from claimstab.figures.adaptive import plot_stat_card
+from claimstab.figures.style import (
+    FIG_H,
+    FIG_W,
+    PAPER_GRAY_MEDIUM,
+    apply_style,
+    plot_line_with_ci,
+    save_fig,
+)
 
 
 def _majority_label(values: pd.Series) -> str:
@@ -44,16 +52,43 @@ def plot_stability_vs_shots(df_shots: pd.DataFrame, out_path: str | Path, thresh
 
     apply_style()
     fig, ax = plt.subplots(figsize=(FIG_W, FIG_H), layout="constrained")
-    ax.fill_between(xs, y_low, y_hi, color="#98c1d9", alpha=0.25, linewidth=0.0, label="CI band")
-    ax.plot(xs, y_low, marker="o", color="#1d3557", linewidth=2.2, label="CI lower bound")
-    ax.plot(xs, y_hat, marker="o", color="#457b9d", alpha=0.85, linestyle=(0, (3, 2)), label="stability_hat")
-    yerr_low = [max(0.0, h - l) for h, l in zip(y_hat, y_low)]
-    yerr_high = [max(0.0, u - h) for h, u in zip(y_hat, y_hi)]
-    ax.errorbar(xs, y_hat, yerr=[yerr_low, yerr_high], fmt="none", ecolor="#457b9d", elinewidth=1.0, alpha=0.8)
-    ax.axhline(float(threshold), linestyle=(0, (5, 3)), color="#7a7a7a", linewidth=1.2, label="stability threshold")
+    if len(xs) <= 1 or len(set(xs)) <= 1:
+        single_shot = int(xs[0]) if xs else 0
+        decision = ""
+        if "decision" in frame.columns:
+            decision = str(frame.iloc[0].get("decision", "")) if not frame.empty else ""
+        plot_stat_card(
+            ax,
+            title="Stability vs shots (single cost level)",
+            lines=[
+                ("shots", str(single_shot)),
+                ("stability_hat", f"{float(y_hat[0]):.3f}" if y_hat else "NA"),
+                ("CI", f"[{float(y_low[0]):.3f}, {float(y_hi[0]):.3f}]" if y_low and y_hi else "NA"),
+                ("decision", decision or "n/a"),
+            ],
+            note="Curve suppressed because only one shot level is available for this run.",
+        )
+        return save_fig(fig, out_path)
+
+    plot_line_with_ci(
+        ax,
+        x=xs,
+        y=y_hat,
+        ci_low=y_low,
+        ci_high=y_hi,
+        label="stability estimate",
+        ci_label="95% CI",
+    )
+    ax.axhline(
+        float(threshold),
+        linestyle=(0, (5, 3)),
+        color=PAPER_GRAY_MEDIUM,
+        linewidth=1.1,
+        label="stability threshold",
+    )
     ax.set_xlabel("Shots")
     ax.set_ylabel("Stability (CI)")
-    ax.set_title("Stability vs Cost (Shots)")
+    ax.set_title("Stability vs shots", loc="left")
     ax.set_xscale("log", base=2)
     ax.set_xticks(xs)
     ax.set_xticklabels([str(x) for x in xs])
@@ -81,14 +116,5 @@ def plot_stability_vs_shots(df_shots: pd.DataFrame, out_path: str | Path, thresh
                 fontsize=8,
                 color="#303030",
             )
-    if len(xs) == 1:
-        ax.text(
-            xs[0],
-            min(0.99, y_low[0] + 0.03),
-            "single-point only",
-            ha="center",
-            va="bottom",
-            fontsize=8.5,
-        )
     ax.legend(loc="lower right")
     return save_fig(fig, out_path)

@@ -9,7 +9,22 @@ matplotlib.use("Agg", force=True)
 
 import matplotlib.pyplot as plt
 
-from claimstab.figures.style import FIG_H_WIDE, FIG_W_WIDE, apply_style, save_fig
+from claimstab.figures.adaptive import plot_compact_table, plot_ordered_lollipop, plot_stat_card
+from claimstab.figures.style import FIG_H_WIDE, FIG_W_WIDE, PAPER_GRAY_DARK, PAPER_GRAY_LIGHT, PAPER_GRAY_MEDIUM, PAPER_RED_MEDIUM, apply_style, decision_color, save_fig
+
+
+def _apply_camera_ready_style() -> None:
+    apply_style()
+    plt.rcParams.update(
+        {
+            "font.size": 9.0,
+            "axes.labelsize": 9.2,
+            "xtick.labelsize": 8.2,
+            "ytick.labelsize": 8.2,
+            "legend.fontsize": 8.2,
+            "grid.alpha": 0.2,
+        }
+    )
 
 
 def plot_rq5_robustness_map(payload: dict[str, Any], out_path: str | Path) -> dict[str, str] | None:
@@ -58,35 +73,67 @@ def plot_rq5_robustness_map(payload: dict[str, Any], out_path: str | Path) -> di
     if sum(stable) + sum(inconclusive) + sum(unstable) <= 0:
         return None
 
-    apply_style()
+    _apply_camera_ready_style()
     fig, ax = plt.subplots(figsize=(FIG_W_WIDE, FIG_H_WIDE), layout="constrained")
+    if (
+        len(ordered_deltas) <= 1
+        or (
+            max(stable) - min(stable) == 0
+            and max(inconclusive) - min(inconclusive) == 0
+            and max(unstable) - min(unstable) == 0
+        )
+    ):
+        matrix = []
+        for idx in range(len(ordered_deltas)):
+            matrix.append([float(stable[idx]), float(inconclusive[idx]), float(unstable[idx])])
+        import numpy as np
+
+        plot_compact_table(
+            ax,
+            row_labels=ordered_deltas,
+            col_labels=["stable", "inconclusive", "unstable"],
+            matrix=np.array(matrix, dtype=float),
+            title="",
+            note="Stacked bars suppressed because decision counts are near-constant across deltas.",
+        )
+        return save_fig(fig, out_path)
+
+    totals = [max(1, s + i + u) for s, i, u in zip(stable, inconclusive, unstable)]
+    stable_pct = [100.0 * float(s) / float(t) for s, t in zip(stable, totals)]
+    inconclusive_pct = [100.0 * float(i) / float(t) for i, t in zip(inconclusive, totals)]
+    unstable_pct = [100.0 * float(u) / float(t) for u, t in zip(unstable, totals)]
+
     x = list(range(len(ordered_deltas)))
-    ax.bar(x, stable, color="#2a9d8f", label="stable", edgecolor="#2f2f2f", linewidth=0.45)
+    ax.bar(x, stable_pct, color=decision_color("stable"), label="stable", edgecolor=PAPER_GRAY_DARK, linewidth=0.45)
     ax.bar(
         x,
-        inconclusive,
-        bottom=stable,
-        color="#e9c46a",
+        inconclusive_pct,
+        bottom=stable_pct,
+        color=decision_color("inconclusive"),
         label="inconclusive",
-        edgecolor="#2f2f2f",
+        edgecolor=PAPER_GRAY_DARK,
         linewidth=0.45,
     )
-    stacked_bottom = [s + i for s, i in zip(stable, inconclusive)]
+    stacked_bottom = [s + i for s, i in zip(stable_pct, inconclusive_pct)]
     ax.bar(
         x,
-        unstable,
+        unstable_pct,
         bottom=stacked_bottom,
-        color="#e76f51",
+        color=decision_color("unstable"),
         label="unstable",
-        edgecolor="#2f2f2f",
+        edgecolor=PAPER_GRAY_DARK,
         linewidth=0.45,
     )
     ax.set_xticks(x)
     ax.set_xticklabels(ordered_deltas)
     ax.set_xlabel("delta")
-    ax.set_ylabel("number of condition cells")
-    ax.set_title("Robustness Map (RQ5): Cell Decisions by Delta")
-    ax.legend(loc="upper right")
+    ax.set_ylabel("condition cells (%)")
+    ax.set_ylim(0.0, 104.0)
+    for idx, pct in enumerate(unstable_pct):
+        ax.text(idx, 101.5, f"{pct:.0f}% unstable", ha="center", va="bottom", fontsize=7.6, color="#303030")
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.10), ncol=3, frameon=False, fontsize=8.0)
+    ax.grid(axis="y", alpha=0.2, linewidth=0.45)
+    ax.grid(axis="x", alpha=0.0)
     return save_fig(fig, out_path)
 
 
@@ -101,22 +148,32 @@ def plot_rq6_decision_counts(rq6: dict[str, Any], out_path: str | Path) -> dict[
     if sum(values) <= 0:
         return None
 
-    apply_style()
+    _apply_camera_ready_style()
     fig, ax = plt.subplots(figsize=(FIG_W_WIDE, FIG_H_WIDE), layout="constrained")
-    colors = ["#2a9d8f", "#e9c46a", "#e76f51"]
-    bars = ax.bar(labels, values, color=colors, edgecolor="#2f2f2f", linewidth=0.55)
-    ax.set_ylabel("Count")
-    ax.set_title("Stratified Stability Decisions (RQ6)")
-    for bar, value in zip(bars, values):
-        ax.text(
-            bar.get_x() + bar.get_width() / 2.0,
-            bar.get_height() + 0.1,
-            str(value),
-            ha="center",
-            va="bottom",
-            fontsize=9,
-            color="#2f2f2f",
+    nonzero = sum(1 for v in values if v > 0)
+    if nonzero <= 1:
+        dominant_idx = max(range(len(values)), key=lambda i: values[i])
+        plot_stat_card(
+            ax,
+            title="",
+            lines=[
+                ("stable", str(values[0])),
+                ("inconclusive", str(values[1])),
+                ("unstable", str(values[2])),
+                ("dominant", labels[dominant_idx]),
+            ],
+            note="Bar chart suppressed because only one decision category is informative.",
         )
+        return save_fig(fig, out_path)
+    plot_ordered_lollipop(
+        ax,
+        labels=labels,
+        values=values,
+        xlabel="count",
+        title="",
+        color=PAPER_RED_MEDIUM,
+    )
+    ax.set_ylabel("decision")
     return save_fig(fig, out_path)
 
 
@@ -152,22 +209,28 @@ def plot_rq7_top_main_effects(
     labels = [item[0] for item in selected]
     values = [item[1] for item in selected]
 
-    apply_style()
+    _apply_camera_ready_style()
     fig, ax = plt.subplots(figsize=(FIG_W_WIDE, FIG_H_WIDE), layout="constrained")
-    bars = ax.barh(labels, values, color="#4c78a8", edgecolor="#2f2f2f", linewidth=0.55)
-    ax.set_xlabel("effect score (joint spread by dimension)")
-    ax.set_ylabel("Dimension")
-    ax.set_title("Top Main Effects (RQ7)")
-    max_val = max(values) if values else 0.0
-    ax.set_xlim(0.0, max(0.1, max_val * 1.18))
-    for bar, value in zip(bars, values):
-        ax.text(
-            value + 0.01,
-            bar.get_y() + bar.get_height() / 2.0,
-            f"{value:.2f}",
-            va="center",
-            ha="left",
-            fontsize=8.5,
-            color="#2f2f2f",
+    min_v = min(values) if values else 0.0
+    max_v = max(values) if values else 0.0
+    if max_v - min_v < 1e-6:
+        plot_stat_card(
+            ax,
+            title="",
+            lines=[
+                ("dimensions", str(len(values))),
+                ("effect score", f"{min_v:.3f}"),
+            ],
+            note="Ranking chart suppressed because all effect scores are identical.",
         )
+        return save_fig(fig, out_path)
+    plot_ordered_lollipop(
+        ax,
+        labels=labels,
+        values=values,
+        xlabel="effect score (joint spread by dimension)",
+        title="",
+        color=PAPER_RED_MEDIUM,
+    )
+    ax.set_ylabel("dimension")
     return save_fig(fig, out_path)

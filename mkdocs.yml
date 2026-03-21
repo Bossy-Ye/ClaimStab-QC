@@ -22,38 +22,23 @@ nav:
   - Start Here:
       - Overview: index.md
       - Quickstart: quickstart.md
+      - Examples & Outputs: examples.md
       - Reproduce: reproduce.md
       - Output Map: output_map.md
       - Experiment Matrix: experiment_matrix.md
+  - Paper Reproducibility:
+      - Main Results: results/main_results.md
+      - Evaluation Readiness: results/evaluation_readiness.md
+      - Figures: results/figures.md
+      - Reproduction Contract: reproduction_contract.md
+      - Compatibility Contract: compatibility_contract.md
   - Concepts:
       - Claims: concepts/claims.md
       - Perturbations: concepts/perturbations.md
-      - Formal Definitions: concepts/formal_definitions.md
-      - Naive Baseline Policy: concepts/naive_baseline_policy.md
-      - Threats to Validity: concepts/threats_to_validity.md
-      - Extending: concepts/extending.md
-  - Results:
-      - Main Results: results/main_results.md
-      - Structural Benchmark: results/structural_benchmark.md
-      - Device-aware Results: results/device_aware.md
-      - Figures: results/figures.md
-  - Explore & Community:
+  - Advanced & Community:
+      - ClaimAtlas Guide (Advanced): atlas.md
       - Live Claim Explorer: explorer.md
-      - Dataset Registry (from ClaimAtlas): dataset_registry.md
-      - ClaimAtlas Guide: atlas.md
-      - Custom Task Quickstart: custom_task_quickstart.md
-      - Examples & Outputs: examples.md
-      - Trace Cache Replay: trace_cache_replay.md
-  - Artifact & Appendix:
-      - Artifact Guide: artifact.md
-      - Reproduction Contract: reproduction_contract.md
-      - Release Checklist: release_checklist.md
-      - Release Notes Template: release_notes_template.md
-      - Evidence Map: evidence_map.md
-      - Architecture: ARCHITECTURE.md
-      - Compatibility Contract: compatibility_contract.md
-      - Experiment Playbook: EXPERIMENT_PLAYBOOK.md
-      - Implementation Catalog: generated/implementation_catalog.md
+      - Dataset Registry (Advanced): dataset_registry.md
   - Cite: cite.md
 
 plugins:

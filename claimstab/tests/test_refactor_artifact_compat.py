@@ -44,12 +44,18 @@ class TestRefactorArtifactCompat(unittest.TestCase):
 
         experiments = payload.get("experiments", [])
         self.assertGreater(len(experiments), 0)
+        self.assertIn("interpretation_defaults", payload.get("meta", {}))
         for exp in experiments:
+            self.assertIn("interpretation", exp)
             evidence = exp.get("evidence", {})
             self.assertIn("cep", evidence)
             cep = evidence.get("cep", {})
             self.assertIn("config_fingerprint", cep)
             self.assertIn("observation", cep)
+            delta_rows = exp.get("overall", {}).get("delta_sweep", [])
+            self.assertTrue(delta_rows)
+            self.assertIn("decision_explanation", delta_rows[0])
+            self.assertIn("inconclusive_reason", delta_rows[0])
 
         rq_summary = payload.get("rq_summary", {})
         for key in RQ_KEYS:
