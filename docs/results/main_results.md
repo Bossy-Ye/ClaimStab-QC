@@ -1,6 +1,9 @@
 # Main Results
 
-This page summarizes the active `evaluation_v2` bundle under `output/paper/evaluation_v2/`.
+This page summarizes the current paper evaluation state:
+
+- `evaluation_v2` core bundle under `output/paper/evaluation_v2/`
+- `evaluation_v3` strengthening bundle under `output/paper/evaluation_v3/`
 
 ## Evaluation Design
 
@@ -22,6 +25,13 @@ The core experiments (`E1`-`E4`, `S2`, `QEC`) are evaluated over small exact sco
 - `combined_light_exact`
 
 `E5` uses an expanded `sampling_policy_eval` space to make cost tradeoffs non-trivial.
+
+The strengthening bundle adds:
+
+- `W1`: second-family extensions (`VQE/H2` pilot and `Max-2-SAT/QAOA`)
+- `W3`: stronger metric-centric baselines for RQ1
+- `W4`: admissibility-study checklist plus inter-rater summary pipeline
+- `W5`: near-boundary policy pack
 
 ## Headline Findings
 
@@ -125,6 +135,15 @@ The strongest practical result is therefore:
 
 ## Scope Caveat
 
+## Strengthening Additions (`evaluation_v3`)
+
+- `W1 VQE/H2 pilot`: `15 stable / 2 unstable / 1 inconclusive`
+- `W1 Max-2-SAT`: `13 stable / 4 unstable / 1 inconclusive`
+- `W3 matched-scope metric baseline`: `9/9` metric-supportive E1 variants remain false reassurance
+- `W3 sensitivity`: the metric false-reassurance rate stays at `1.0` from `10` through `495` sampled configurations on the expanded grid
+- `W5 near-boundary`: adaptive policies remain correct but consume much more budget (`adaptive_ci`: `57 -> 257`; `adaptive_ci_tuned`: `17 -> 65`)
+- `W4`: the repository now includes the 15-item admissibility checklist, simulated rater files, and a pairwise-kappa summary pipeline
+
 Conditional robustness is not the same as correctness.
 
 All `stable`, `unstable`, and `inconclusive` outcomes reported here are relative to:
@@ -137,7 +156,10 @@ This is especially important for the MaxCut ranking results: a stable verdict me
 
 ## Artifact Entry Points
 
-- summary root: `output/paper/evaluation_v2/README.md`
-- raw runs: `output/paper/evaluation_v2/runs/`
-- derived tables: `output/paper/evaluation_v2/derived_paper_evaluation/`
-- figure pack: `output/paper/evaluation_v2/pack/figures/`
+- core summary root: `output/paper/evaluation_v2/README.md`
+- strengthening summary root: `output/paper/evaluation_v3/README.md`
+- core raw runs: `output/paper/evaluation_v2/runs/`
+- strengthening runs: `output/paper/evaluation_v3/runs/`
+- core derived tables: `output/paper/evaluation_v2/derived_paper_evaluation/`
+- strengthening derived tables: `output/paper/evaluation_v3/derived_paper_evaluation/`
+- strengthening figure pack: `output/paper/evaluation_v3/pack/figures/`

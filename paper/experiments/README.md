@@ -2,13 +2,17 @@
 
 This directory is the paper-only experiment bundle used to reproduce evaluation artifacts.
 It is intentionally separate from community onboarding examples.
-The active rerun scaffold now lives under `specs/evaluation_v2/` and writes into `output/paper/evaluation_v2/`.
+The active paper rerun scaffold is split into:
+
+- `specs/evaluation_v2/` -> core evaluation bundle in `output/paper/evaluation_v2/`
+- `specs/evaluation_v3/` -> strengthening bundle in `output/paper/evaluation_v3/`
 
 ## Layout
 
 - `specs/`: canonical paper specs.
 - `scripts/`: canonical experiment batch scripts.
-- active paper-facing generated outputs are stored under `output/paper/evaluation_v2/`.
+- core paper-facing generated outputs are stored under `output/paper/evaluation_v2/`.
+- strengthening outputs are stored under `output/paper/evaluation_v3/`.
 - `_archive_legacy/`: archived legacy experiment artifacts/scripts.
 
 ## Active Evaluation v2
@@ -33,6 +37,19 @@ The active rerun scaffold now lives under `specs/evaluation_v2/` and writes into
 Scope note:
 - `S1` is intentionally narrower than a full noisy-device rerun and should be written as controlled structural portability.
 
+## Active Evaluation v3
+
+- W1-VQE: chemistry-flavored second-family pilot  
+  Spec: `specs/evaluation_v3/w1_vqe_pilot.yml`
+- W1-Max-2-SAT: counts-based second-family variational experiment  
+  Spec: `specs/evaluation_v3/w1_max2sat_second_family.yml`
+- W3: stronger metric-centric baselines  
+  Script: `scripts/derive_rq1_metric_baselines_v3.py`
+- W4: admissibility-study checklist and inter-rater summary  
+  Script: `scripts/summarize_admissibility_v3.py`
+- W5: near-boundary policy comparison  
+  Script: `scripts/exp_rq4_near_boundary_v3.py`
+
 ## Supporting / Legacy Scripts
 
 - E5 legacy adaptive study: `scripts/exp_rq4_adaptive.py`
@@ -47,10 +64,12 @@ It is treated as non-evidence and can be left empty.
 ```bash
 python paper/experiments/scripts/reproduce_evaluation_v2.py --layout-only
 python paper/experiments/scripts/reproduce_evaluation_v2.py
+python paper/experiments/scripts/reproduce_evaluation_v3.py --layout-only
 ```
 
-For individual runs, invoke the specs in `paper/experiments/specs/evaluation_v2/`.
+For individual runs, invoke the specs in both `paper/experiments/specs/evaluation_v2/` and `paper/experiments/specs/evaluation_v3/`.
 
 Output conventions:
-- canonical experiment outputs: `output/paper/evaluation_v2/runs/...`
-- derived RQ tables/figures: `output/paper/evaluation_v2/{derived_paper_evaluation,pack}/...`
+- core experiment outputs: `output/paper/evaluation_v2/runs/...`
+- strengthening experiment outputs: `output/paper/evaluation_v3/runs/...`
+- derived RQ tables/figures: `output/paper/evaluation_v2/{derived_paper_evaluation,pack}/...` and `output/paper/evaluation_v3/{derived_paper_evaluation,pack}/...`

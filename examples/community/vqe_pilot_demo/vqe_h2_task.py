@@ -12,7 +12,7 @@ from claimstab.tasks.instances import ProblemInstance
 @dataclass(frozen=True)
 class VQEH2Payload:
     bond_length: float
-    energy_by_state: dict[str, float]
+    z_hamiltonian: dict[str, float]
     theta_hea: float
     theta_uccsd: float
 
@@ -27,16 +27,16 @@ def _instance_library() -> list[VQEH2Payload]:
         (1.35, 0.76, 1.16),
         (1.55, 0.80, 1.20),
     ]:
-        energy_by_state = {
-            "00": -0.18 - 0.04 * bond_length,
-            "01": -0.52 - 0.03 * bond_length,
-            "10": -0.79 - 0.02 * bond_length,
-            "11": -1.02 - 0.05 * bond_length + 0.03 * (bond_length - 1.15) ** 2,
+        z_hamiltonian = {
+            "c0": -0.85 - 0.05 * bond_length,
+            "z0": 0.18 + 0.03 * (bond_length - 1.0),
+            "z1": 0.14 - 0.02 * (bond_length - 1.0),
+            "zz": 0.56 + 0.03 * abs(bond_length - 1.1),
         }
         payloads.append(
             VQEH2Payload(
                 bond_length=bond_length,
-                energy_by_state=energy_by_state,
+                z_hamiltonian=z_hamiltonian,
                 theta_hea=theta_hea,
                 theta_uccsd=theta_uccsd,
             )
@@ -103,17 +103,36 @@ class VQEH2PilotTask:
             raise TaskSpecError(f"Unsupported VQE method kind: {method.kind}")
 
         qc.measure_all()
-        ground_energy = min(payload.energy_by_state.values())
+        coeffs = payload.z_hamiltonian
+        ground_energy = (
+            coeffs["c0"]
+            - abs(coeffs["z0"])
+            - abs(coeffs["z1"])
+            - abs(coeffs["zz"])
+        )
 
         def metric_fn(counts: dict[str, int]) -> float:
             total = sum(counts.values())
             if total <= 0:
                 return 1.0
 
-            energy = 0.0
+            exp_z0 = 0.0
+            exp_z1 = 0.0
+            exp_zz = 0.0
             for bitstring, shot_count in counts.items():
-                state = bitstring[::-1]
-                energy += (shot_count / total) * payload.energy_by_state.get(state, 0.0)
+                bits = [int(bit) for bit in bitstring[::-1]]
+                z0 = 1.0 if bits[0] == 0 else -1.0
+                z1 = 1.0 if bits[1] == 0 else -1.0
+                weight = shot_count / total
+                exp_z0 += weight * z0
+                exp_z1 += weight * z1
+                exp_zz += weight * z0 * z1
+            energy = (
+                coeffs["c0"]
+                + coeffs["z0"] * exp_z0
+                + coeffs["z1"] * exp_z1
+                + coeffs["zz"] * exp_zz
+            )
             return max(0.0, energy - ground_energy)
 
         return BuiltWorkflow(circuit=qc, metric_fn=metric_fn)

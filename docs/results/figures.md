@@ -1,10 +1,14 @@
 # Paper Figures
 
-The active paper figure bundle is generated from the `evaluation_v2` rerun under `output/paper/evaluation_v2/pack/figures/`.
+The current paper figures are split between:
+
+- the `evaluation_v2` core bundle under `output/paper/evaluation_v2/pack/figures/`
+- the `evaluation_v3` strengthening bundle under `output/paper/evaluation_v3/pack/figures/`
 
 ## Active Figure Roots
 
-- main-paper figures: `output/paper/evaluation_v2/pack/figures/main/`
+- core main-paper figures: `output/paper/evaluation_v2/pack/figures/main/`
+- strengthening figures: `output/paper/evaluation_v3/pack/figures/main/`
 - appendix/supporting figures: `output/paper/evaluation_v2/pack/figures/appendix/`
 - generated-figure manifest: `output/paper/evaluation_v2/pack/figures/manifest.json`
 - figure index: `output/paper/evaluation_v2/pack/figures/README.md`
@@ -49,6 +53,16 @@ The publication-ready PNG/PDF copies live in:
 
 - `output/paper/evaluation_v2/pack/figures/main/`
 
+The strengthening bundle adds:
+
+- `fig_w1_second_family_verdicts`
+- `fig_w3_metric_baseline_sensitivity`
+- `fig_w5_near_boundary_tradeoff`
+
+These live in:
+
+- `output/paper/evaluation_v3/pack/figures/main/`
+
 ## Figure Roles
 
 - `fig4_e1_prevalence_by_scope`: RQ1 prevalence in the main E1 battleground.
@@ -74,4 +88,4 @@ These cover:
 ## Scope Note
 
 Legacy figure roots such as `output/paper/artifact/figures/` and `output/paper/pack/figures/` are retired from the active workflow.
-They may still appear in old commits, but the current website and paper narrative should refer only to the `evaluation_v2` figure bundle.
+The current website and paper narrative should refer to the `evaluation_v2` core bundle plus the `evaluation_v3` strengthening bundle.

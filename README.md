@@ -155,12 +155,16 @@ Paper-only evaluation assets are isolated under:
 - [paper/experiments/specs](./paper/experiments/specs)
 - [paper/experiments/scripts](./paper/experiments/scripts)
 
-Paper reruns should write under `output/paper/evaluation_v2/...`.
+Paper reruns should write under:
+
+- `output/paper/evaluation_v2/...` for the core evaluation bundle
+- `output/paper/evaluation_v3/...` for the strengthening bundle (`W1`, `W3`, `W4`, `W5`)
 Legacy paper output roots such as `output/presentations/large`, `output/paper/artifact`, and `output/paper/pack` have been retired from the active workflow.
 
 Recommended `output/` layout:
 - `output/examples/` for onboarding/community runs
-- `output/paper/evaluation_v2/` for the active paper evaluation bundle
+- `output/paper/evaluation_v2/` for the core paper evaluation bundle
+- `output/paper/evaluation_v3/` for the strengthening evaluation bundle
 - `output/demos/` for local exploratory checks
 
 ## Advanced / Community-Facing Capabilities
@@ -184,6 +188,9 @@ Advanced secondary entrypoints (not the canonical onboarding path):
 - [paper/experiments/specs/evaluation_v2/s2_boundary.yml](./paper/experiments/specs/evaluation_v2/s2_boundary.yml)
 - [paper/experiments/specs/evaluation_v2/qec_portability.yml](./paper/experiments/specs/evaluation_v2/qec_portability.yml)
 - [paper/experiments/scripts/exp_rq4_evaluation_v2.py](./paper/experiments/scripts/exp_rq4_evaluation_v2.py)
+- [paper/experiments/specs/evaluation_v3/w1_vqe_pilot.yml](./paper/experiments/specs/evaluation_v3/w1_vqe_pilot.yml)
+- [paper/experiments/specs/evaluation_v3/w1_max2sat_second_family.yml](./paper/experiments/specs/evaluation_v3/w1_max2sat_second_family.yml)
+- [paper/experiments/scripts/reproduce_evaluation_v3.py](./paper/experiments/scripts/reproduce_evaluation_v3.py)
 
 Community demo spec:
 - [examples/community/qec_pilot_demo/spec_qec_decoder.yml](./examples/community/qec_pilot_demo/spec_qec_decoder.yml)

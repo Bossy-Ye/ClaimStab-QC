@@ -1,13 +1,13 @@
 # Experiment Matrix
 
-This matrix defines the active `evaluation_v2` experiment set for evaluation and artifact review.
+This matrix defines the active paper experiment set for evaluation and artifact review.
 Older output roots under `output/presentations/large` and `output/paper/{artifact,pack,multidevice}` have been retired.
 
 ## Scope Classes
 - **Core**: required for paper claims and primary figures.
 - **Supporting**: broadens external validity but is not required for accepting core methodology claims.
 
-## Active Matrix
+## Core Matrix (`evaluation_v2`)
 
 | ID | Purpose | Spec / Command | Fixed Controls | Primary Outputs |
 |---|---|---|---|---|
@@ -39,3 +39,13 @@ python paper/experiments/scripts/reproduce_evaluation_v2.py
 - Keep CLI commands and argument semantics backward compatible.
 - Additive fields are allowed; destructive renames of core artifact keys are not.
 - Any behavior-affecting change must pass `check_refactor_compat` and `validate-evidence`.
+
+## Strengthening Matrix (`evaluation_v3`)
+
+| ID | Purpose | Spec / Command | Fixed Controls | Primary Outputs |
+|---|---|---|---|---|
+| W1-VQE | Supporting chemistry-flavored second-family pilot | `python -m claimstab.cli run --spec paper/experiments/specs/evaluation_v3/w1_vqe_pilot.yml --out-dir output/paper/evaluation_v3/runs/W1_vqe_pilot --report` | `full_factorial`, exact compilation/mixed scopes, lower-is-better `energy_error` | `claim_stability.json`, `stability_report.html` |
+| W1-Max2SAT | Counts-based second-family variational experiment | `python -m claimstab.cli run --spec paper/experiments/specs/evaluation_v3/w1_max2sat_second_family.yml --out-dir output/paper/evaluation_v3/runs/W1_max2sat_second_family --report` | `full_factorial`, exact compilation/mixed scopes | `claim_stability.json`, `stability_report.html` |
+| W3 | Stronger metric-centric baselines | `python paper/experiments/scripts/derive_rq1_metric_baselines_v3.py --source-root output/paper/evaluation_v2 --out-root output/paper/evaluation_v3` | reanalysis only; no new quantum execution | `RQ1_necessity/*.json`, `*.csv` |
+| W4 | Admissibility-study checklist and inter-rater summary | `python paper/experiments/scripts/summarize_admissibility_v3.py --out-root output/paper/evaluation_v3` | human ratings over a 15-item checklist | `admissibility_study_status.json`, `admissibility_pairwise_kappa.csv`, `admissibility_disagreement_table.csv` |
+| W5 | Near-boundary policy comparison | `python paper/experiments/scripts/exp_rq4_near_boundary_v3.py --out output/paper/evaluation_v3/runs/W5_near_boundary_policy` | expanded 495-config `sampling_policy_eval`; near-boundary MaxCut ranking variants | `rq4_near_boundary_summary.json`, `RQ4_practicality/*.csv` |
