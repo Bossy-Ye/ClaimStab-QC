@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from claimstab.figures.style import (
+    DECISION_COLOR_MAP,
     FIG_H_WIDE,
     FIG_W_WIDE,
     PAPER_BLUE_MUTED,
@@ -170,8 +171,60 @@ def _plot_w5_tradeoff(e5_summary_path: Path, w5_summary_path: Path, out_base: Pa
     return save_fig(fig, out_base)
 
 
+def _plot_w1_second_family(counts_csv: Path, out_base: Path) -> dict[str, str]:
+    df = pd.read_csv(counts_csv)
+    apply_style()
+    fig, ax = plt.subplots(figsize=(FIG_W_WIDE - 0.4, FIG_H_WIDE), constrained_layout=False)
+    fig.subplots_adjust(left=0.12, right=0.98, bottom=0.16, top=0.82)
+
+    decisions = ["stable", "inconclusive", "unstable"]
+    bottoms = [0.0] * len(df)
+    x = range(len(df))
+    labels = [str(value).replace("_", "-") for value in df["family"]]
+    totals = df["total"].astype(float)
+
+    for decision in decisions:
+        values = (df[decision].astype(float) / totals) * 100.0
+        ax.bar(
+            x,
+            values,
+            bottom=bottoms,
+            color=DECISION_COLOR_MAP[decision],
+            edgecolor="white",
+            linewidth=0.8,
+            label=decision,
+        )
+        for idx, value in enumerate(values):
+            if value < 7.0:
+                continue
+            ax.text(
+                idx,
+                bottoms[idx] + value / 2.0,
+                f"{int(round(value))}%",
+                ha="center",
+                va="center",
+                fontsize=8.2,
+                color="white",
+                fontweight="semibold",
+            )
+        bottoms = [bottom + value for bottom, value in zip(bottoms, values)]
+
+    for idx, total in enumerate(df["total"].astype(int)):
+        ax.text(idx, 101.5, f"n={total}", ha="center", va="bottom", fontsize=8.1, color=PAPER_GRAY_MEDIUM)
+
+    ax.set_ylim(0.0, 106.0)
+    ax.set_ylabel("verdict share (%)")
+    ax.set_xticks(list(x), labels)
+    ax.grid(axis="y", alpha=0.16)
+    ax.grid(axis="x", alpha=0.0)
+    ax.legend(loc="upper right", ncol=3)
+    fig.text(0.12, 0.965, "Second-Family Verdict Distribution", ha="left", va="top", fontsize=11.2, color=PAPER_GRAY_DARK)
+    fig.text(0.12, 0.928, "VQE/H2 pilot is mostly stable; Max-2-SAT shows mixed stable, unstable, and inconclusive behavior.", ha="left", va="top", fontsize=8.6, color=PAPER_BLUE_MUTED)
+    return save_fig(fig, out_base)
+
+
 def parse_args() -> argparse.Namespace:
-    ap = argparse.ArgumentParser(description="Generate evaluation_v3 figures for W3 and W5.")
+    ap = argparse.ArgumentParser(description="Generate evaluation_v3 figures for W1, W3, and W5.")
     ap.add_argument("--root", default="output/paper/evaluation_v3")
     ap.add_argument("--source-e5-summary", default="output/paper/evaluation_v2/runs/E5_policy_comparison/rq4_policy_summary.json")
     return ap.parse_args()
@@ -185,6 +238,10 @@ def main() -> None:
     main_dir.mkdir(parents=True, exist_ok=True)
 
     refs = {
+        "fig_w1_second_family_verdicts": _plot_w1_second_family(
+            derived / "RQ2_semantics" / "w1_second_family_verdict_counts.csv",
+            main_dir / "fig_w1_second_family_verdicts",
+        ),
         "fig_w3_metric_baseline_sensitivity": _plot_w3_sensitivity(
             derived / "RQ1_necessity" / "metric_baseline_sensitivity_summary.csv",
             main_dir / "fig_w3_metric_baseline_sensitivity",
