@@ -192,6 +192,10 @@ Advanced secondary entrypoints (not the canonical onboarding path):
 - [paper/experiments/specs/evaluation_v3/w1_max2sat_second_family.yml](./paper/experiments/specs/evaluation_v3/w1_max2sat_second_family.yml)
 - [paper/experiments/scripts/reproduce_evaluation_v3.py](./paper/experiments/scripts/reproduce_evaluation_v3.py)
 
+W4 scope note:
+- the repository includes the admissibility checklist and summarization pipeline
+- submission-facing inter-rater agreement should only be reported after collecting real human ratings
+
 Community demo spec:
 - [examples/community/qec_pilot_demo/spec_qec_decoder.yml](./examples/community/qec_pilot_demo/spec_qec_decoder.yml)
 

@@ -45,7 +45,7 @@ Scope note:
   Spec: `specs/evaluation_v3/w1_max2sat_second_family.yml`
 - W3: stronger metric-centric baselines  
   Script: `scripts/derive_rq1_metric_baselines_v3.py`
-- W4: admissibility-study checklist and inter-rater summary  
+- W4: admissibility-study checklist and human-rating summary scaffold  
   Script: `scripts/summarize_admissibility_v3.py`
 - W5: near-boundary policy comparison  
   Script: `scripts/exp_rq4_near_boundary_v3.py`
@@ -68,6 +68,10 @@ python paper/experiments/scripts/reproduce_evaluation_v3.py --layout-only
 ```
 
 For individual runs, invoke the specs in both `paper/experiments/specs/evaluation_v2/` and `paper/experiments/specs/evaluation_v3/`.
+
+W4 note:
+- `paper/experiments/data/admissibility_v1/admissibility_items_v1.csv` includes admissible, non-admissible, and borderline items such as noise scaling and 10x shot budgets
+- no rater CSVs are bundled as paper evidence; place real human labels under `paper/experiments/data/admissibility_v1/ratings/` before reporting kappa
 
 Output conventions:
 - core experiment outputs: `output/paper/evaluation_v2/runs/...`

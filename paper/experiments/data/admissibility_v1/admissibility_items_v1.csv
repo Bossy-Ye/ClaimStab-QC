@@ -3,14 +3,17 @@ P01,transpiler seed,compilation,admissible,Seed changes compilation nondetermini
 P02,layout method,compilation,admissible,Alternative transpiler layout is in-scope.
 P03,optimization level,compilation,admissible,Compiler optimization choice is an admissible perturbation.
 P04,simulator seed,execution,admissible,Random sampling variation is in-scope.
-P05,shot budget,execution,admissible,Measurement budget changes sampling precision only.
+P05,shot budget,execution,admissible,Moderate shot-budget changes affect precision only.
 P06,device snapshot from same fake-backend family,backend,admissible,Controlled backend-conditioned variation.
 P07,hybrid initialization seed,hybrid,borderline,Relevant when the workflow explicitly includes initialization randomness.
 P08,hybrid initialization strategy,hybrid,borderline,Borderline if the reported method family presupposes a fixed strategy.
 P09,backend noise strength scaling by 5%,backend,borderline,Small synthetic stress may or may not be admitted.
-P10,benchmark graph instance,benchmark,non_admissible,Changes the problem instance rather than the execution setting.
-P11,target metric definition,analysis,non_admissible,Changes the claim semantics rather than a perturbation setting.
-P12,claim margin delta,analysis,non_admissible,Claim specification is not an admissible execution perturbation.
-P13,method family replacement,method,non_admissible,Switching the algorithm changes the evaluated claim population.
-P14,basis set change for chemistry problem,benchmark,non_admissible,Changes the underlying scientific task.
-P15,number of QAOA layers p,method,non_admissible,Alters the method definition rather than execution conditions.
+P10,shot budget scaled by 10x,execution,borderline,Extreme budget changes may alter the practical regime rather than just precision.
+P11,backend noise strength scaling by 20%,backend,borderline,Aggressive synthetic stress is often better treated as stress testing than admissible variation.
+P12,optimizer type swap in a hybrid workflow,hybrid,borderline,Borderline because it may change the search process rather than execution conditions only.
+P13,benchmark graph instance,benchmark,non_admissible,Changes the problem instance rather than the execution setting.
+P14,target metric definition,analysis,non_admissible,Changes the claim semantics rather than a perturbation setting.
+P15,claim margin delta,analysis,non_admissible,Claim specification is not an admissible execution perturbation.
+P16,method family replacement,method,non_admissible,Switching the algorithm changes the evaluated claim population.
+P17,basis set change for chemistry problem,benchmark,non_admissible,Changes the underlying scientific task.
+P18,number of QAOA layers p,method,non_admissible,Alters the method definition rather than execution conditions.
