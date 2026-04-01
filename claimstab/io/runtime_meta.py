@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 import importlib.util
 import platform
 import subprocess
@@ -8,6 +9,7 @@ from importlib.metadata import PackageNotFoundError, version
 from typing import Any
 
 
+@functools.cache
 def _safe_package_version(pkg: str) -> str | None:
     try:
         return version(pkg)
