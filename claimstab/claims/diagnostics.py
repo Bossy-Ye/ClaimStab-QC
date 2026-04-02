@@ -103,6 +103,7 @@ def _parse_baseline_key(
 
 
 def _key_to_config(key: PerturbationKey) -> dict[str, int | str | None]:
+    key_len = len(key)
     out: dict[str, int | str | None] = {
         "seed_transpiler": key[0],
         "optimization_level": key[1],
@@ -110,9 +111,9 @@ def _key_to_config(key: PerturbationKey) -> dict[str, int | str | None]:
         "shots": key[3],
         "seed_simulator": key[4],
     }
-    if key[5] is not None:
+    if key_len > 5 and key[5] is not None:
         out["init_strategy"] = key[5]
-    if key[6] is not None:
+    if key_len > 6 and key[6] is not None:
         out["init_seed"] = key[6]
     return out
 
@@ -377,6 +378,7 @@ def _build_minimal_lockdown_set(
     stability_threshold: float,
     max_lock_dims: int,
     top_k: int,
+    stop_at_first_depth: bool = True,
 ) -> dict[str, Any]:
     if not observations:
         return {"best": None, "candidates": []}
@@ -417,7 +419,7 @@ def _build_minimal_lockdown_set(
                     }
                 )
         # Minimal lockdown means the first depth where stable candidates exist.
-        if all_candidates:
+        if all_candidates and stop_at_first_depth:
             break
 
     if not all_candidates:
@@ -450,6 +452,7 @@ def build_conditional_robustness_summary(
     robust_core_by_delta: dict[str, list[dict[str, Any]]] = {}
     failure_frontier_by_delta: dict[str, list[dict[str, Any]]] = {}
     minimal_lockdown_set_by_delta: dict[str, dict[str, Any]] = {}
+    exact_mos_by_delta: dict[str, dict[str, Any]] = {}
 
     for delta, observations in observations_by_delta.items():
         grouped: dict[tuple[Any, ...], dict[str, int]] = defaultdict(lambda: {"total": 0, "flips": 0})
@@ -532,6 +535,20 @@ def build_conditional_robustness_summary(
             max_lock_dims=max_lock_dims,
             top_k=top_k,
         )
+        exact_payload = _build_minimal_lockdown_set(
+            observations,
+            varying_dimensions=cell_dimensions,
+            context_conditions=context_conditions,
+            confidence_level=confidence_level,
+            stability_threshold=stability_threshold,
+            max_lock_dims=len(cell_dimensions),
+            top_k=top_k,
+        )
+        exact_payload["search_mode"] = "exact_subset_search"
+        exact_payload["search_depth"] = len(cell_dimensions)
+        exact_mos_by_delta[str(delta)] = exact_payload
+        minimal_lockdown_set_by_delta[str(delta)]["search_mode"] = "bounded_subset_search"
+        minimal_lockdown_set_by_delta[str(delta)]["search_depth"] = min(max_lock_dims, len(cell_dimensions))
 
     return {
         "condition_dimensions": list(cell_dimensions),
@@ -540,6 +557,7 @@ def build_conditional_robustness_summary(
         "robust_core_by_delta": robust_core_by_delta,
         "failure_frontier_by_delta": failure_frontier_by_delta,
         "minimal_lockdown_set_by_delta": minimal_lockdown_set_by_delta,
+        "exact_mos_by_delta": exact_mos_by_delta,
     }
 
 

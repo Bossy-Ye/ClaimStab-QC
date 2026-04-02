@@ -37,14 +37,14 @@ atlas/
 1. Run any ClaimStab experiment:
 
 ```bash
-claimstab run --spec paper/experiments/specs/paper_main.yml --out-dir output/paper_main --report
+claimstab run --spec examples/community/custom_task_demo/spec_toy.yml --out-dir output/examples/toy_task_demo --report
 ```
 
 2. Publish outputs into ClaimAtlas:
 
 ```bash
 claimstab publish-result \
-  --run-dir output/paper_main \
+  --run-dir output/examples/toy_task_demo \
   --atlas-root atlas \
   --contributor your_name
 ```

@@ -55,7 +55,7 @@ What must still be written carefully:
 - `E2` is mixed (`stable` + `inconclusive`), not a pure stable control.
 - `S2` became direct fragility rather than abstention.
 - `S1` is a controlled transpile-only structural portability result, not a full noisy-device portability study.
-- exact MOS objects are not materialized; the current diagnostics page uses a conservative proxy.
+- exact MOS objects are now materialized on the main-paper exact spaces; supplementary comparisons are staged under `output/paper/evaluation_v4/pack/tables/tab_c_exact_vs_greedy_mos.csv`.
 
 ## Main Figure Mapping
 

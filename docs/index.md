@@ -1,74 +1,53 @@
 # ClaimStab-QC
 
-ClaimStab-QC is a claim-centric framework for checking whether paper conclusions remain valid under software-visible perturbations in quantum software pipelines.
+ClaimStab-QC validates quantum-software claims under controlled perturbation spaces and returns conservative verdicts:
 
-## Start Here (2-3 Minutes)
+- `stable`
+- `unstable`
+- `inconclusive`
 
-If this is your first visit, follow this order:
+## Use This Site For One Of Three Jobs
 
-1. [Quickstart](quickstart.md)
-2. [Reproduce](reproduce.md)
-3. [Output Directory Map](output_map.md)
+### 1. Design And Run Your Own Case
 
-Locked run set:
+Start here if you want to use ClaimStab as a framework rather than reproduce the paper:
+
+- [Design Your Own Case](design_your_own_case.md)
+- [Examples & Outputs](examples.md)
+- [Quickstart](quickstart.md)
+
+### 2. Inspect The Paper Evidence
+
+Start here if you are reading the paper, reviewing the artifact, or checking current results:
+
+- [Main Results](results/main_results.md)
+- [Figures](results/figures.md)
 - [Experiment Matrix](experiment_matrix.md)
+- [Reproduce](reproduce.md)
 
-## What ClaimStab Checks
+### 3. Use Advanced Publication Surfaces
 
-ClaimStab evaluates claim outcomes (not only raw scores) under sampled perturbation configurations and returns conservative decisions:
+Only use these after you already know the basic run workflow:
 
-- `stable`: CI lower bound >= threshold
-- `unstable`: CI upper bound < threshold
-- `inconclusive`: otherwise
-
-Supported claim types:
-
-- `ranking`
-- `decision`
-- `distribution`
-
-Canonical schema:
-- [claimstab/spec/schema_v1.json](https://github.com/Bossy-Ye/ClaimStab-QC/blob/main/claimstab/spec/schema_v1.json)
-
-## Why This Matters
-
-Experimental quantum-software conclusions are often sensitive to compiler/sampling settings. ClaimStab makes this explicit by:
-
-1. defining claims in executable form,
-2. evaluating them across perturbation spaces,
-3. quantifying uncertainty with confidence intervals,
-4. emitting auditable evidence and reproducible artifacts.
+- [ClaimAtlas guide](atlas.md)
+- [Dataset Registry](dataset_registry.md)
+- [Live Claim Explorer](explorer.md)
 
 ## Core Outputs
 
 | File | Purpose |
 |---|---|
 | `claim_stability.json` | Per-experiment claim outcomes, CI, decisions, and evidence links |
-| `rq_summary.json` | Aggregated RQ summaries and diagnostics |
-| `robustness_map.json` | Conditional stability cells + robust core/frontier/lockdown summaries |
-| `scores.csv` | Raw score/evaluation rows with timing metadata |
+| `rq_summary.json` | Aggregated summaries and diagnostics |
+| `robustness_map.json` | Conditional stability cells and compact witness summaries |
+| `scores.csv` | Raw evaluation rows |
 | `stability_report.html` | Human-readable report |
-
-## Snapshot
-
-!!! info "Current empirical signal"
-    - `compilation_only` tends to be the most stable space.
-    - `sampling_only` is the strongest instability driver.
-    - `combined_light` still exposes near-tie fragility.
 
 ![ClaimStab Pipeline](assets/pipeline.svg)
 
-## Explore / Community Capabilities (Advanced)
+## Concepts
 
-These are preserved as future-facing infrastructure assets, but are not required for first-time onboarding:
-
-- [ClaimAtlas Guide](atlas.md)
-- [Dataset Registry (from ClaimAtlas)](dataset_registry.md)
-- [Live Claim Explorer](explorer.md)
-
-## Deep-Dive Links
-
-- [Concepts](concepts/claims.md)
-- [Main Results](results/main_results.md)
-- [Reproduction Contract](reproduction_contract.md)
+- [Claims](concepts/claims.md)
+- [Formal Definitions](concepts/formal_definitions.md)
+- [Perturbations](concepts/perturbations.md)
 - [Compatibility Contract](compatibility_contract.md)

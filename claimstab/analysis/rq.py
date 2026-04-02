@@ -47,6 +47,7 @@ def _build_rq5_conditional_robustness(experiments: list[dict[str, Any]]) -> dict
     robust_core_rows: list[dict[str, Any]] = []
     failure_frontier_rows: list[dict[str, Any]] = []
     minimal_lockdown_rows: list[dict[str, Any]] = []
+    exact_mos_rows: list[dict[str, Any]] = []
     experiments_with_map = 0
 
     for exp in experiments:
@@ -118,6 +119,26 @@ def _build_rq5_conditional_robustness(experiments: list[dict[str, Any]]) -> dict
                     "decision": str(best.get("decision", "inconclusive")),
                 }
             )
+        for delta, payload in robustness.get("exact_mos_by_delta", {}).items():
+            if not isinstance(payload, dict):
+                continue
+            best = payload.get("best")
+            if not isinstance(best, dict):
+                continue
+            exact_mos_rows.append(
+                {
+                    "experiment_id": exp_id,
+                    "claim_type": claim_type,
+                    "delta": str(delta),
+                    "lock_dimensions": best.get("lock_dimensions", []),
+                    "conditions": best.get("conditions", {}),
+                    "n_eval": _as_int(best.get("n_eval"), 0),
+                    "stability_hat": _as_float(best.get("stability_hat"), 0.0),
+                    "stability_ci_low": _as_float(best.get("stability_ci_low"), 0.0),
+                    "stability_ci_high": _as_float(best.get("stability_ci_high"), 0.0),
+                    "decision": str(best.get("decision", "inconclusive")),
+                }
+            )
 
     robust_core_rows.sort(
         key=lambda row: (
@@ -138,12 +159,20 @@ def _build_rq5_conditional_robustness(experiments: list[dict[str, Any]]) -> dict
         key=lambda row: min(_as_int(row.get("stable_n_eval"), 0), _as_int(row.get("unstable_n_eval"), 0)),
         reverse=True,
     )
+    exact_mos_rows.sort(
+        key=lambda row: (
+            len(row.get("lock_dimensions", [])),
+            -_as_int(row.get("n_eval"), 0),
+            -_as_float(row.get("stability_ci_low"), 0.0),
+        ),
+    )
 
     return {
         "experiments_with_map": experiments_with_map,
         "robust_core_examples": robust_core_rows[:20],
         "failure_frontier_examples": failure_frontier_rows[:20],
         "minimal_lockdown_examples": minimal_lockdown_rows[:20],
+        "exact_mos_examples": exact_mos_rows[:20],
     }
 
 

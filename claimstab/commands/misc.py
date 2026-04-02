@@ -8,21 +8,16 @@ from pathlib import Path
 
 def cmd_examples(_: argparse.Namespace) -> int:
     print("Ready-to-run examples:")
-    print("  claimstab init-external-task --name my_problem --out-dir examples/my_problem_demo")
-    print("  claimstab run --spec paper/experiments/specs/paper_main.yml --out-dir output/paper_main --report")
-    print("  claimstab run --spec paper/experiments/specs/paper_structural.yml --out-dir output/paper_structural --report")
-    print("  claimstab run --spec paper/experiments/specs/paper_device.yml --out-dir output/paper_device")
-    print("  claimstab run --spec examples/community/custom_task_demo/spec_toy.yml --out-dir output/examples/toy")
-    print("  claimstab run --spec examples/community/specs/atlas_bv_demo.yml --out-dir output/examples/atlas_bv_demo --report")
-    print("  PYTHONPATH=. ./venv/bin/python examples/community/atlas_bv_workflow.py --contributor your_name")
-    print("  claimstab report --json output/paper_main/claim_stability.json --out output/paper_main/stability_report.html")
-    print("  claimstab validate-spec --spec paper/experiments/specs/paper_main.yml")
-    print("  claimstab validate-evidence --json output/paper_main/claim_stability.json")
+    print("  python examples/community/claim_stability_demo.py --suite core --sampling-mode random_k --sample-size 8 --sample-seed 1")
+    print("  claimstab run --spec examples/community/custom_task_demo/spec_toy.yml --out-dir output/examples/toy_task_demo --report")
+    print("  claimstab run --spec examples/community/qec_pilot_demo/spec_qec_decoder.yml --out-dir output/examples/qec_pilot_demo --report")
+    print("  claimstab run --spec paper/experiments/specs/evaluation_v2/e1_maxcut_main.yml --out-dir output/paper/evaluation_v2/runs/E1_maxcut_main --report")
+    print("  claimstab validate-spec --spec examples/community/custom_task_demo/spec_toy.yml")
+    print("  claimstab validate-evidence --json output/examples/toy_task_demo/claim_stability.json")
     print("  claimstab export-definitions --out docs/generated/definitions.md")
-    print("  claimstab publish-result --run-dir output/paper_main --atlas-root atlas --contributor your_name")
+    print("  claimstab publish-result --run-dir output/examples/toy_task_demo --atlas-root atlas --contributor your_name")
     print("  claimstab validate-atlas --atlas-root atlas")
     print("  claimstab export-dataset-registry --atlas-root atlas --out docs/dataset_registry.md")
-    print("  make reproduce-paper")
     return 0
 
 

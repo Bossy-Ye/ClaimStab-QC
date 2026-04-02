@@ -243,6 +243,7 @@ def render_conditional_robustness(
     robust_core = robustness.get("robust_core_by_delta", {})
     failure_frontier = robustness.get("failure_frontier_by_delta", {})
     lockdown = robustness.get("minimal_lockdown_set_by_delta", {})
+    exact_mos = robustness.get("exact_mos_by_delta", {})
     cells = robustness.get("cells_by_delta", {})
 
     deltas = [str(r.get("delta")) for r in delta_rows if r.get("delta") is not None]
@@ -260,6 +261,8 @@ def render_conditional_robustness(
         frontier_rows = failure_frontier.get(delta, []) if isinstance(failure_frontier, dict) else []
         lock_payload = lockdown.get(delta, {}) if isinstance(lockdown, dict) else {}
         lock_best = lock_payload.get("best", {}) if isinstance(lock_payload, dict) else {}
+        exact_payload = exact_mos.get(delta, {}) if isinstance(exact_mos, dict) else {}
+        exact_best = exact_payload.get("best", {}) if isinstance(exact_payload, dict) else {}
         cell_rows = cells.get(delta, []) if isinstance(cells, dict) else []
 
         out.append(f"<h4>delta={html.escape(delta)}</h4>")
@@ -293,6 +296,13 @@ def render_conditional_robustness(
                 f"lock_dimensions={html.escape(str(lock_best.get('lock_dimensions', [])))}, "
                 f"conditions={html.escape(str(lock_best.get('conditions', {})))}, "
                 f"decision={html.escape(str(lock_best.get('decision')))}</p>"
+            )
+        if isinstance(exact_best, dict) and exact_best:
+            out.append(
+                "<p><b>Exact MOS:</b> "
+                f"lock_dimensions={html.escape(str(exact_best.get('lock_dimensions', [])))}, "
+                f"conditions={html.escape(str(exact_best.get('conditions', {})))}, "
+                f"decision={html.escape(str(exact_best.get('decision')))}</p>"
             )
 
     return "".join(out) if out else "<p>No conditional robustness map available.</p>"

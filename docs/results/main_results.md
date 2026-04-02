@@ -104,12 +104,13 @@ Driver explanations are reasonably consistent across neighboring unstable varian
 - `E1` top-driver consistency: `0.8333`
 - `S2` top-driver consistency: `0.9444`
 
-The current artifact does not materialize exact MOS objects, so the derived package reports a conservative explanation-compression proxy instead of exact MOS size:
+The current repository now materializes exact MOS objects on the main-paper exact spaces (`compilation_only_exact`, `sampling_only_exact`, `combined_light_exact`).
 
-- `E1` median proxy constraint count: `1`
-- `S2` median proxy constraint count: `1`
+Supplementary comparison outputs live under:
 
-These are useful as compact explanatory witnesses, but they should not be overstated as exact minimal sufficient sets.
+- `output/paper/evaluation_v4/pack/tables/tab_c_exact_vs_greedy_mos.csv`
+
+These should still be written as compact sufficient perturbation subsets / explanatory witnesses, not as causal root-cause claims.
 
 ## RQ4: Cost-efficiency and Practicality
 

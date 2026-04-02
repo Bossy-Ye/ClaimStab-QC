@@ -20,13 +20,6 @@ Older output roots under `output/presentations/large` and `output/paper/{artifac
 | S2 | Boundary challenge pack | `python paper/experiments/scripts/exp_boundary_challenge.py --spec paper/experiments/specs/evaluation_v2/s2_boundary.yml --out output/paper/evaluation_v2/runs/S2_boundary` | `full_factorial`, exact execution/mixed scopes | `claim_stability.json`, `boundary_summary.json` |
 | QEC | Supporting portability illustration | `python -m claimstab.cli run --spec paper/experiments/specs/evaluation_v2/qec_portability.yml --out-dir output/paper/evaluation_v2/runs/QEC_portability --report` | `full_factorial`, exact execution/mixed scopes | `claim_stability.json`, `robustness_map.json` |
 
-## Supporting Studies
-
-| ID | Purpose | Command | Output |
-|---|---|---|---|
-| S4 | Synthetic-truth calibration | `python -m claimstab.analysis.synthetic_truth --out output/paper/evaluation_v2/derived_paper_evaluation/RQ4_practicality/synthetic_truth.json` | synthetic coverage/decision calibration summary |
-| S5 | Mutation sanity check | `python paper/experiments/scripts/exp_mutation_sanity.py --run-dir output/paper/evaluation_v2/runs/E1_maxcut_main --out output/paper/evaluation_v2/derived_paper_evaluation/RQ2_semantics/mutation_sanity_summary.json` | `mutation_sanity_summary.json` |
-
 ## Evaluation v2 Orchestration
 
 ```bash

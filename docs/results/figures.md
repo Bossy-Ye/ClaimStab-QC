@@ -4,6 +4,7 @@ The current paper figures are split between:
 
 - the `evaluation_v2` core bundle under `output/paper/evaluation_v2/pack/figures/`
 - the `evaluation_v3` strengthening bundle under `output/paper/evaluation_v3/pack/figures/`
+- the `evaluation_v4` ICSE-strengthening bundle under `output/paper/evaluation_v4/pack/figures/`
 
 ## Active Figure Roots
 
@@ -62,6 +63,11 @@ The strengthening bundle adds:
 These live in:
 
 - `output/paper/evaluation_v3/pack/figures/main/`
+
+The ICSE-strengthening bundle adds:
+
+- `fig_a_cross_family_verdicts`
+- `fig_b_scope_robustness`
 
 ## Figure Roles
 

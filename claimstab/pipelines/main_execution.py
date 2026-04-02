@@ -68,6 +68,16 @@ EVIDENCE_LOOKUP_FIELDS = [
     "seed_simulator",
 ]
 
+ROBUSTNESS_DIMENSION_NAMES = [
+    "seed_transpiler",
+    "optimization_level",
+    "layout_method",
+    "shots",
+    "seed_simulator",
+    "init_strategy",
+    "init_seed",
+]
+
 
 @dataclass
 class MainExecutionResult:
@@ -95,6 +105,15 @@ def make_space(
             init_seeds=list(hybrid_init_seeds),
         )
     return space
+
+
+def _varying_robustness_dimensions(rows: list[ScoreRow]) -> list[str]:
+    varying: list[str] = []
+    for name in ROBUSTNESS_DIMENSION_NAMES:
+        values = {getattr(row, name) for row in rows if getattr(row, name) is not None}
+        if len(values) > 1:
+            varying.append(name)
+    return varying
 
 
 def build_evidence_ref(
@@ -766,6 +785,7 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                 for graph_rows in space_rows.values()
                 for row in (graph_rows if allowed_keys is None else filter_rows_by_keys(graph_rows, allowed_keys))
             ]
+            robustness_dimensions = _varying_robustness_dimensions(all_selected_rows)
             overall_delta = []
             for delta in claim_deltas:
                 flips = by_delta_flip[delta]
@@ -875,6 +895,7 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     "device_mode": resolved_device.profile.mode,
                     "noise_model": noise_model_mode,
                 },
+                cell_dimensions=robustness_dimensions,
             )
             effect_diagnostics_summary = compute_effect_diagnostics(
                 observations_by_delta=robustness_observations_by_delta,
@@ -883,6 +904,7 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
                     "device_mode": resolved_device.profile.mode,
                     "noise_model": noise_model_mode,
                 },
+                varying_dimensions=robustness_dimensions,
                 top_k=max(3, args.top_k_unstable),
             )
             stratified_stability_by_delta: dict[str, list[dict[str, object]]] = {}

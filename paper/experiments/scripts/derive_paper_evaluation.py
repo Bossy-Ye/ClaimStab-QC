@@ -446,7 +446,7 @@ def _aggregate_rq3(payloads: dict[str, dict[str, Any]], layout: dict[str, Path])
     e4_payload = payloads["E4"]
 
     e1_scores = pd.read_csv(Path(e1_payload["meta"]["artifacts"]["trace_jsonl"]).parent / "scores.csv")
-    s2_scores = pd.read_csv(Path("/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v2/runs/S2_boundary/run/scores.csv"))
+    s2_scores = pd.read_csv(Path(s2_payload["meta"]["artifacts"]["trace_jsonl"]).parent / "scores.csv")
     e4_scores = pd.read_csv(Path(e4_payload["meta"]["artifacts"]["trace_jsonl"]).parent / "scores.csv")
 
     proxy_rows: list[dict[str, Any]] = []
