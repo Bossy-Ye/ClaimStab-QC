@@ -142,7 +142,7 @@ The strongest practical result is therefore:
 - `W3 matched-scope metric baseline`: `9/9` metric-supportive E1 variants remain false reassurance
 - `W3 sensitivity`: the metric false-reassurance rate stays at `1.0` from `10` through `495` sampled configurations on the expanded grid
 - `W5 near-boundary`: adaptive policies remain correct but consume much more budget (`adaptive_ci`: `57 -> 257`; `adaptive_ci_tuned`: `17 -> 65`)
-- `W4`: the repository now includes an 18-item admissibility checklist with borderline cases such as noise scaling and 10x shot budgets, plus a human-rating summary pipeline
+- `W4`: the repository now includes an 18-item admissibility checklist with author-side reference labels and explicit Q1/Q2/Q3 trigger rules for borderline cases such as noise scaling and 10x shot budgets, plus a human-rating summary pipeline
 
 The default repository state intentionally does not report a submission-facing kappa value. Inter-rater agreement should only be reported after collecting real external ratings; otherwise W4 should be described as a checklist and analysis scaffold, not as completed human-subject evidence.
 

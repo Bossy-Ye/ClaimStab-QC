@@ -175,7 +175,7 @@ def _plot_w1_second_family(counts_csv: Path, out_base: Path) -> dict[str, str]:
     df = pd.read_csv(counts_csv)
     apply_style()
     fig, ax = plt.subplots(figsize=(FIG_W_WIDE - 0.4, FIG_H_WIDE), constrained_layout=False)
-    fig.subplots_adjust(left=0.12, right=0.98, bottom=0.16, top=0.82)
+    fig.subplots_adjust(left=0.12, right=0.98, bottom=0.16, top=0.78)
 
     decisions = ["stable", "inconclusive", "unstable"]
     bottoms = [0.0] * len(df)
@@ -217,7 +217,7 @@ def _plot_w1_second_family(counts_csv: Path, out_base: Path) -> dict[str, str]:
     ax.set_xticks(list(x), labels)
     ax.grid(axis="y", alpha=0.16)
     ax.grid(axis="x", alpha=0.0)
-    ax.legend(loc="upper right", ncol=3)
+    ax.legend(loc="upper right", ncol=3, bbox_to_anchor=(0.98, 1.08), borderaxespad=0.0)
     fig.text(0.12, 0.965, "Second-Family Verdict Distribution", ha="left", va="top", fontsize=11.2, color=PAPER_GRAY_DARK)
     fig.text(0.12, 0.928, "VQE/H2 pilot is mostly stable; Max-2-SAT shows mixed stable, unstable, and inconclusive behavior.", ha="left", va="top", fontsize=8.6, color=PAPER_BLUE_MUTED)
     return save_fig(fig, out_base)

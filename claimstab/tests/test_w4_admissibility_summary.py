@@ -17,9 +17,9 @@ class TestW4AdmissibilitySummary(unittest.TestCase):
             ratings = root / "ratings"
             ratings.mkdir(parents=True, exist_ok=True)
             items.write_text(
-                "item_id,perturbation,category,expected_zone,notes\n"
-                "P01,transpiler seed,compilation,admissible,.\n"
-                "P02,benchmark graph,benchmark,non_admissible,.\n",
+                "item_id,perturbation,category,expected_label,trigger_rule,notes\n"
+                "P01,transpiler seed,compilation,admissible,,.\n"
+                "P02,benchmark graph,benchmark,non_admissible,Q1,.\n",
                 encoding="utf-8",
             )
             for idx, rows in enumerate(

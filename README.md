@@ -144,6 +144,7 @@ Use these first for onboarding and external contributions:
 - [examples/community/qec_pilot_demo/spec_qec_decoder.yml](./examples/community/qec_pilot_demo/spec_qec_decoder.yml)
 
 Community runs should write under `output/examples/...` (for example `output/examples/quickstart`).
+The community README is also the canonical guide for designing your own case.
 Staged Atlas/external-task examples remain in the repository for reference, but the files above are the canonical public onboarding entrypoints.
 
 ## Paper Experiments

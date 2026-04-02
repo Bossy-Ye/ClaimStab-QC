@@ -105,7 +105,8 @@ def main() -> None:
             {
                 "item_id": item_id,
                 "perturbation": item["perturbation"],
-                "expected_zone": item["expected_zone"],
+                "expected_label": item["expected_label"],
+                "trigger_rule": item["trigger_rule"],
                 **labels,
                 "agreement": "yes" if agreement else "no",
             }
