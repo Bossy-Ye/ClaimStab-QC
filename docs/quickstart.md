@@ -1,117 +1,112 @@
 # Quickstart
 
 ## Install
+
 Core install:
 
 ```bash
 python -m pip install -e .
 ```
 
-CLI check:
-```bash
-python -m claimstab.cli --help
-```
-
-With optional extras:
+With common extras:
 
 ```bash
 python -m pip install -e ".[aer,ibm,docs,dev]"
 ```
 
-## Minimal Run
-Run a small claim-stability demo:
+CLI check:
 
 ```bash
-python -m claimstab.cli validate-spec --spec examples/community/specs/atlas_bv_demo.yml
-python -m claimstab.cli run --spec examples/community/specs/atlas_bv_demo.yml --out-dir output/examples/quickstart --report
-python -m claimstab.cli validate-evidence --json output/examples/quickstart/claim_stability.json
+python -m claimstab.cli --help
+```
+
+## Fastest Working Demo
+
+Run the lightweight community demo:
+
+```bash
+python examples/community/claim_stability_demo.py \
+  --suite core \
+  --sampling-mode random_k \
+  --sample-size 8 \
+  --sample-seed 1
+python -m claimstab.cli validate-evidence --json output/examples/claim_stability_demo/claim_stability.json
 ```
 
 Expected outputs:
-- `output/examples/quickstart/scores.csv`
-- `output/examples/quickstart/claim_stability.json`
-- `output/examples/quickstart/rq_summary.json`
-- `output/examples/quickstart/robustness_map.json`
-- `output/examples/quickstart/stability_report.html`
 
-## Evaluation Tracks
-Main paper tracks:
+- `output/examples/claim_stability_demo/scores.csv`
+- `output/examples/claim_stability_demo/claim_stability.json`
+- `output/examples/claim_stability_demo/rq_summary.json`
+- `output/examples/claim_stability_demo/robustness_map.json`
+- `output/examples/claim_stability_demo/stability_report.html`
+
+## Canonical Paper Run
+
+Run the active E1 battleground:
+
 ```bash
-PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_comprehensive_calibration.py
-PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_comprehensive_large.py
-PYTHONPATH=. ./.venv/bin/python paper/experiments/scripts/exp_structural_compilation.py
+python -m claimstab.cli validate-spec --spec paper/experiments/specs/evaluation_v2/e1_maxcut_main.yml
+python -m claimstab.cli run \
+  --spec paper/experiments/specs/evaluation_v2/e1_maxcut_main.yml \
+  --out-dir output/paper/evaluation_v2/runs/E1_maxcut_main \
+  --report
+python -m claimstab.cli validate-evidence \
+  --json output/paper/evaluation_v2/runs/E1_maxcut_main/claim_stability.json
 ```
 
-Device-targeted extension:
+## Current Evaluation Tracks
+
+Core paper-facing tracks:
+
+- `paper/experiments/specs/evaluation_v2/e1_maxcut_main.yml`
+- `paper/experiments/specs/evaluation_v2/e2_ghz_structural.yml`
+- `paper/experiments/specs/evaluation_v2/e3_bv_decision.yml`
+- `paper/experiments/specs/evaluation_v2/e4_grover_distribution.yml`
+- `paper/experiments/specs/evaluation_v2/s2_boundary.yml`
+- `paper/experiments/specs/evaluation_v2/qec_portability.yml`
+
+Practicality / supporting tracks:
+
+- `paper/experiments/scripts/exp_rq4_evaluation_v2.py`
+- `paper/experiments/specs/evaluation_v2/s1_multidevice_portability.yml`
+
+## Generate Paper-facing Summaries and Figures
+
 ```bash
-PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.multidevice_app --run all --suite standard --out-dir output/paper/multidevice
+python paper/experiments/scripts/derive_paper_evaluation.py --root output/paper/evaluation_v2
+python paper/experiments/scripts/generate_eval_v2_focus_figures.py --root output/paper/evaluation_v2
 ```
 
-External task plugin demo:
-```bash
-python -m claimstab.cli run --spec examples/community/custom_task_demo/spec_toy.yml --out-dir output/examples/toy
-```
+Main figures will be staged under:
 
-Generate your own external-task starter:
-```bash
-python -m claimstab.cli init-external-task --name my_problem --out-dir examples/my_problem_demo
-```
+- `output/paper/evaluation_v2/pack/figures/main/`
 
-Then run it:
-```bash
-python -m claimstab.cli run --spec examples/my_problem_demo/spec_my_problem.yml --out-dir output/my_problem --report
-```
+## Community QEC Example
 
-One-command artifact build (experiments + reports + figures):
 ```bash
-make reproduce-paper
-```
-
-## Generate HTML Report
-```bash
-PYTHONPATH=. ./.venv/bin/python -m claimstab.scripts.generate_stability_report \
-  --json output/examples/quickstart/claim_stability.json \
-  --out output/examples/quickstart/stability_report.html
+python -m claimstab.cli run \
+  --spec examples/community/qec_pilot_demo/spec_qec_decoder.yml \
+  --out-dir output/examples/qec_pilot_demo \
+  --report
 ```
 
 ## Useful CLI Options
+
 - `--suite core|standard|large`
-- `--space-preset baseline|compilation_only|sampling_only|combined_light`
-- `--space-presets ...` for comparative multi-space runs
-- `--claim-pairs "A>B,C>D"` for batch claim evaluation
-- `--sampling-mode full_factorial|random_k`
-- `--sample-size N` (with `random_k`)
+- `--sampling-mode full_factorial|random_k|adaptive_ci`
+- `--sample-size N`
 - `--out-dir output/<run_name>`
 
-## Spec Format
-Template specs are available in:
-- `examples/community/specs/claim_spec.yaml`
-- `examples/community/specs/perturbation_spec.yaml`
-- `examples/community/specs/atlas_bv_demo.yml` (small end-to-end publishable example)
-
-Advanced direct pipeline entrypoint (secondary path):
+## Validation
 
 ```bash
-PYTHONPATH=. ./.venv/bin/python -m claimstab.pipelines.claim_stability_app \
-  --suite core \
-  --spec examples/community/specs/claim_spec.yaml \
-  --out-dir output/spec_run
+./venv/bin/python -m pytest -q
+./venv/bin/python -m claimstab.scripts.check_refactor_compat --mode all
+./venv/bin/python -m mkdocs build --strict
 ```
 
-Minimal publish path from a spec run:
+## Notes
 
-```bash
-python -m claimstab.cli validate-spec --spec examples/community/specs/atlas_bv_demo.yml
-python -m claimstab.cli run --spec examples/community/specs/atlas_bv_demo.yml --out-dir output/examples/atlas_bv_demo --report
-python -m claimstab.cli publish-result --run-dir output/examples/atlas_bv_demo --atlas-root atlas --contributor your_name
-```
-
-Plot-enabled report:
-
-```bash
-MPLBACKEND=Agg MPLCONFIGDIR=/tmp/mplcache XDG_CACHE_HOME=/tmp/cache \
-PYTHONPATH=. ./.venv/bin/python -m claimstab.scripts.generate_stability_report \
-  --json output/examples/quickstart/claim_stability.json \
-  --out output/examples/quickstart/stability_report_plots.html \
-  --with-plots
-```
+- Some older Atlas and external-task example scaffolds remain in the repository for reference, but they are not the canonical quickstart path.
+- The active paper bundle is `output/paper/evaluation_v2/`, not the older `output/presentations/...` layout.

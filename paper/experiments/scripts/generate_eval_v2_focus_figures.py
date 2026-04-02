@@ -11,6 +11,7 @@ matplotlib.use("Agg", force=True)
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from matplotlib.lines import Line2D
 
 from claimstab.figures.style import (
     DECISION_COLOR_MAP,
@@ -118,7 +119,6 @@ def plot_e1_prevalence_by_scope(csv_path: Path, out_base: Path) -> dict[str, str
 def plot_claim_metric_mismatch(json_path: Path, out_base: Path) -> dict[str, str]:
     payload = _read_json(json_path)
     case = payload["selected_case"]
-    siblings = payload.get("all_delta_variants_for_same_claim_space", [])
 
     metric_mean = float(case["metric_mean_diff"])
     metric_low = float(case["metric_ci_low"])
@@ -133,96 +133,106 @@ def plot_claim_metric_mismatch(json_path: Path, out_base: Path) -> dict[str, str
 
     apply_style()
     fig, axes = plt.subplots(1, 2, figsize=(FIG_W_WIDE + 1.0, FIG_H_WIDE), constrained_layout=False)
-    fig.subplots_adjust(left=0.07, right=0.98, bottom=0.18, top=0.84, wspace=0.07)
+    fig.subplots_adjust(left=0.07, right=0.98, bottom=0.18, top=0.84, wspace=0.08)
 
     left, right = axes
-    left.axvspan(metric_xmin, 0.0, color=PAPER_RED_LIGHT, alpha=0.12, zorder=0)
-    left.axvspan(0.0, metric_xmax, color="#dfead8", alpha=0.25, zorder=0)
     left.axvline(0.0, color=PAPER_GRAY_MEDIUM, linestyle=(0, (4, 3)), linewidth=1.0)
     left.hlines(0.5, metric_low, metric_high, color=PAPER_GRAY_DARK, linewidth=2.2)
     left.vlines([metric_low, metric_high], 0.42, 0.58, color=PAPER_GRAY_DARK, linewidth=1.4)
-    left.scatter([metric_mean], [0.5], s=64, color=PAPER_BLUE_MUTED, edgecolor="white", linewidth=0.8, zorder=3)
+    left.scatter([metric_mean], [0.5], s=66, color=PAPER_BLUE_MUTED, edgecolor="white", linewidth=0.8, zorder=3)
     left.set_xlim(metric_xmin, metric_xmax)
     left.set_ylim(0.0, 1.0)
     left.set_yticks([])
-    left.set_xlabel("mean metric difference")
+    left.set_xlabel("metric mean difference")
     left.text(0.02, 0.92, "Traditional metric view", transform=left.transAxes, ha="left", va="top", fontsize=10.0, color=PAPER_GRAY_DARK)
     left.text(
         0.02,
-        0.86,
+        0.84,
         "Consistent advantage",
         transform=left.transAxes,
         ha="left",
         va="top",
-        fontsize=9.0,
+        fontsize=9.2,
         color="#2ca02c",
         fontweight="semibold",
     )
     left.text(
         0.02,
-        0.20,
+        0.18,
         f"mean diff = {metric_mean:.4f}\n95% CI = [{metric_low:.4f}, {metric_high:.4f}]",
         transform=left.transAxes,
         ha="left",
         va="bottom",
-        fontsize=9.0,
+        fontsize=8.8,
         color=PAPER_GRAY_DARK,
-        bbox={"facecolor": "#f7f7f7", "edgecolor": "#d7d7d7", "boxstyle": "round,pad=0.35"},
+        bbox={"facecolor": "#f7f7f7", "edgecolor": "#d7d7d7", "boxstyle": "round,pad=0.34"},
     )
-    left.text(0.0, 0.02, "0", transform=left.get_xaxis_transform(), ha="center", va="bottom", fontsize=8.4, color=PAPER_GRAY_MEDIUM)
+    left.text(0.0, 0.02, "0", transform=left.get_xaxis_transform(), ha="center", va="bottom", fontsize=8.3, color=PAPER_GRAY_MEDIUM)
+    left.grid(axis="x", alpha=0.10)
+    left.grid(axis="y", alpha=0.0)
 
-    right.axvspan(0.0, tau, color=PAPER_RED_LIGHT, alpha=0.16, zorder=0)
-    right.axvspan(tau, 1.02, color="#dfead8", alpha=0.28, zorder=0)
+    right.axvspan(tau, 1.02, color="#e6f3e1", alpha=0.26, zorder=0)
     right.axvline(tau, color=PAPER_RED_DARK, linestyle=(0, (4, 3)), linewidth=1.2)
     right.hlines(0.5, stability_low, stability_high, color=PAPER_GRAY_DARK, linewidth=2.2)
     right.vlines([stability_low, stability_high], 0.42, 0.58, color=PAPER_GRAY_DARK, linewidth=1.4)
-    right.scatter([stability_hat], [0.5], s=64, color=_decision_color("unstable"), edgecolor="white", linewidth=0.8, zorder=3)
+    right.scatter([stability_hat], [0.5], s=66, color=_decision_color("unstable"), edgecolor="white", linewidth=0.8, zorder=3)
     right.set_xlim(0.0, 1.02)
     right.set_ylim(0.0, 1.0)
     right.set_yticks([])
-    right.set_xlabel("claim stability estimate")
+    right.set_xlabel(r"claim stability estimate $\hat{s}$")
     right.text(0.02, 0.92, "Claim-centric view", transform=right.transAxes, ha="left", va="top", fontsize=10.0, color=PAPER_GRAY_DARK)
     right.text(
         0.02,
-        0.86,
+        0.84,
         "Unstable claim",
         transform=right.transAxes,
         ha="left",
         va="top",
-        fontsize=9.0,
+        fontsize=9.2,
         color=_decision_color("unstable"),
         fontweight="semibold",
     )
     right.text(
         0.02,
-        0.20,
-        f"$\\hat{{s}}$ = {stability_hat:.4f}\nWilson CI = [{stability_low:.4f}, {stability_high:.4f}]\n$\\tau$ = {tau:.2f}",
+        0.18,
+        f"$\\hat{{s}}$ = {stability_hat:.4f}\nWilson 95% CI = [{stability_low:.4f}, {stability_high:.4f}]",
         transform=right.transAxes,
         ha="left",
         va="bottom",
-        fontsize=9.0,
+        fontsize=8.8,
         color=PAPER_GRAY_DARK,
-        bbox={"facecolor": "#f7f7f7", "edgecolor": "#d7d7d7", "boxstyle": "round,pad=0.35"},
+        bbox={"facecolor": "#f7f7f7", "edgecolor": "#d7d7d7", "boxstyle": "round,pad=0.34"},
     )
     right.text(
         tau + 0.01,
         0.08,
         "stable region",
         color=PAPER_BLUE_MUTED,
-        fontsize=8.2,
+        fontsize=8.1,
         ha="left",
         va="bottom",
     )
-    right.text(tau, 0.02, r"$\tau = 0.95$", transform=right.get_xaxis_transform(), ha="center", va="bottom", fontsize=8.4, color=PAPER_RED_DARK)
-
-    fig.text(0.50, 0.975, "Claim–Metric Mismatch", ha="center", va="top", fontsize=11.2, color=PAPER_GRAY_DARK)
-    fig.text(
-        0.50,
-        0.035,
-        f"{case['claim_pair']}   |   {case['space_preset']}, δ = {float(case['delta']):.2f}",
+    right.text(
+        tau,
+        0.02,
+        r"$\tau = 0.95$",
+        transform=right.get_xaxis_transform(),
         ha="center",
         va="bottom",
-        fontsize=8.4,
+        fontsize=8.3,
+        color=PAPER_RED_DARK,
+    )
+    right.grid(axis="x", alpha=0.10)
+    right.grid(axis="y", alpha=0.0)
+
+    fig.text(0.50, 0.965, "Claim–Metric Mismatch", ha="center", va="top", fontsize=11.2, color=PAPER_GRAY_DARK)
+    fig.text(
+        0.50,
+        0.04,
+        f"{case['claim_pair']} | {case['space_preset']} | δ = {float(case['delta']):.2f}",
+        ha="center",
+        va="bottom",
+        fontsize=8.5,
         color=PAPER_BLUE_MUTED,
     )
 
