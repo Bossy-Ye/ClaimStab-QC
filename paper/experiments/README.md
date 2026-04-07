@@ -2,6 +2,11 @@
 
 This directory is the paper-only surface. It is intentionally separate from community onboarding.
 
+Current paper target:
+
+- ClaimStab-QC is a software-engineering methodology paper instantiated in quantum software experiments.
+- The core thesis is that empirical evaluation often validates outcomes, but not conclusions.
+
 ## Active Bundles
 
 - `specs/evaluation_v2/`
@@ -17,6 +22,7 @@ This directory is the paper-only surface. It is intentionally separate from comm
 Revision checklist:
 
 - [ICSE_STRENGTHENING_TODO.md](./ICSE_STRENGTHENING_TODO.md)
+- [ICSE 2027 sprint backlog](./backlog_icse_2027/README.md)
 
 ## Core Entry Points
 

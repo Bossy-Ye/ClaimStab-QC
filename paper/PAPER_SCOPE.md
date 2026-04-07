@@ -19,16 +19,14 @@ The repository intentionally contains a broader infrastructure surface than the 
    - full-factorial, random-k, adaptive-ci
    - agreement vs cost and CI-width behavior
 
-## Headline Experiment Packs
+## Active Experiment Packs
 
-1. `output/presentations/large/maxcut_ranking`
-   - Main fragility/robustness evidence for ranking claims.
-2. `output/presentations/large/rq4_adaptive`
-   - Adaptive stopping and cost/decision tradeoff.
-3. `output/presentations/large/grover_distribution`
-   - Non-MaxCut distribution-claim fragility control.
-4. `output/paper/multidevice` (when available)
-   - Device-aware variation evidence via transpile/noisy-sim modes.
+1. `output/paper/evaluation_v2`
+   - core paper bundle and main battleground results
+2. `output/paper/evaluation_v3`
+   - strengthening studies for W1/W3/W4/W5
+3. `output/paper/evaluation_v4`
+   - ICSE-strengthening analyses and hardware-slice preparation
 
 ## Supporting Artifact Layer (Not Main Novelty Claim)
 

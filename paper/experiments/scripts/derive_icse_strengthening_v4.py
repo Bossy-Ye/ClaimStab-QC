@@ -109,6 +109,14 @@ def _parse_claim_pair(claim_pair: str) -> tuple[str, str]:
     return left, right
 
 
+def _claim_validation_outcome(*, baseline_claim_holds: bool | None, stability_decision: str) -> str:
+    if stability_decision == "stable":
+        return "validated" if baseline_claim_holds else "refuted"
+    if stability_decision == "unstable":
+        return "unstable"
+    return "inconclusive"
+
+
 def _extract_comparative_rows(payload: dict[str, Any]) -> list[dict[str, Any]]:
     rows = payload.get("comparative", {}).get("space_claim_delta", [])
     return [row for row in rows if isinstance(row, dict)]
@@ -145,15 +153,26 @@ def _derive_cross_family_metric_baselines(out_root: Path) -> dict[str, Any]:
             scoped = pivot[pivot["space_preset"] == space].copy()
             for claim_pair in sorted({str(row["claim_pair"]) for row in space_claim_rows}):
                 method_a, method_b = _parse_claim_pair(claim_pair)
+                pair_claim_rows = [r for r in space_claim_rows if str(r["claim_pair"]) == claim_pair]
+                representative = pair_claim_rows[0]
+                higher_is_better = bool(representative.get("higher_is_better", True))
                 diffs = scoped.copy()
-                diffs["diff"] = diffs[method_a] - diffs[method_b]
+                if higher_is_better:
+                    diffs["diff"] = diffs[method_a] - diffs[method_b]
+                else:
+                    diffs["diff"] = diffs[method_b] - diffs[method_a]
                 grouped = diffs.groupby(CONFIG_COLUMNS, dropna=False)["diff"].mean().reset_index()
                 values = grouped["diff"].astype(float).tolist()
                 mean_diff, ci_low, ci_high = _metric_ci(values)
                 consistent = bool(mean_diff > 0 and ci_low > 0)
 
-                for row in [r for r in space_claim_rows if str(r["claim_pair"]) == claim_pair]:
+                for row in pair_claim_rows:
                     decision = str(row["decision"])
+                    baseline_claim_holds = row.get("naive_baseline_realistic", {}).get("naive_holds")
+                    claim_outcome = _claim_validation_outcome(
+                        baseline_claim_holds=bool(baseline_claim_holds) if baseline_claim_holds is not None else None,
+                        stability_decision=decision,
+                    )
                     expanded_rows.append(
                         {
                             "family": family,
@@ -161,15 +180,21 @@ def _derive_cross_family_metric_baselines(out_root: Path) -> dict[str, Any]:
                             "claim_pair": claim_pair,
                             "space_preset": space,
                             "delta": float(row["delta"]),
+                            "higher_is_better": higher_is_better,
                             "metric_mean_diff": mean_diff,
                             "metric_ci_low": ci_low,
                             "metric_ci_high": ci_high,
                             "metric_supportive": consistent,
                             "claimstab_decision": decision,
+                            "baseline_claim_holds": baseline_claim_holds,
+                            "baseline_claim_holds_rate": row.get("naive_baseline_realistic", {}).get("naive_holds_rate"),
+                            "claim_holds_rate_mean": row.get("holds_rate_mean"),
+                            "claim_validation_outcome": claim_outcome,
                             "stability_hat": float(row["stability_hat"]),
                             "stability_ci_low": float(row["stability_ci_low"]),
                             "stability_ci_high": float(row["stability_ci_high"]),
-                            "false_reassurance": bool(consistent and decision != "stable"),
+                            "false_reassurance": bool(consistent and claim_outcome != "validated"),
+                            "false_reassurance_refuted": bool(consistent and claim_outcome == "refuted"),
                             "false_reassurance_unstable": bool(consistent and decision == "unstable"),
                             "false_reassurance_inconclusive": bool(consistent and decision == "inconclusive"),
                         }
@@ -186,8 +211,11 @@ def _derive_cross_family_metric_baselines(out_root: Path) -> dict[str, Any]:
                 "stable_count": verdict_counts["stable"],
                 "inconclusive_count": verdict_counts["inconclusive"],
                 "unstable_count": verdict_counts["unstable"],
+                "validated_count": sum(1 for row in family_rows if row["claim_validation_outcome"] == "validated"),
+                "refuted_count": sum(1 for row in family_rows if row["claim_validation_outcome"] == "refuted"),
                 "metric_supportive_count": len(supportive_rows),
                 "false_reassurance_count": len(false_rows),
+                "false_reassurance_refuted_count": sum(1 for row in false_rows if row["claim_validation_outcome"] == "refuted"),
                 "false_reassurance_unstable_count": sum(1 for row in false_rows if row["claimstab_decision"] == "unstable"),
                 "false_reassurance_inconclusive_count": sum(1 for row in false_rows if row["claimstab_decision"] == "inconclusive"),
                 "conditional_false_reassurance_rate": (len(false_rows) / len(supportive_rows)) if supportive_rows else None,

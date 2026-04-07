@@ -1,6 +1,10 @@
 # ClaimStab-QC
 
-ClaimStab-QC validates quantum-software claims under controlled perturbation spaces and returns conservative verdicts:
+ClaimStab-QC is a claim-centric validation methodology for quantum software experiments.
+
+Its central claim is that empirical evaluation often validates outcomes, but not conclusions.
+
+The method evaluates reported claims under controlled perturbation spaces and returns conservative verdicts:
 
 - `stable`
 - `unstable`

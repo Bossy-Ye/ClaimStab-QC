@@ -113,17 +113,13 @@ class MaxCutTask:
             gamma = gammas[layer]
             beta = betas[layer]
 
-            # ---- Cost unitary for MaxCut: ZZ interactions on edges
+            # Cost unitary for MaxCut: each RZZ(2*gamma) realizes exp(-i * gamma * Z_i Z_j).
+            # The omitted identity term from (I - Z_i Z_j) / 2 contributes only a global
+            # phase, so it does not affect optimization or rank ordering of bitstrings.
             for (i, j) in self.edges:
-                # Option A (preferred if available): direct ZZ rotation
                 qc.rzz(2 * gamma, i, j)
 
-                # Option B (equivalent decomposition), if you prefer:
-                # qc.cx(i, j)
-                # qc.rz(2 * gamma, j)
-                # qc.cx(i, j)
-
-            # ---- Mixer unitary: X rotations
+            # Standard transverse-field mixer.
             qc.rx(2 * beta, range(self.num_qubits))
 
         # Fixed-default or seeded-random initialization (no optimizer loop in this benchmark).

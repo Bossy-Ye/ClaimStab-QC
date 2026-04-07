@@ -131,6 +131,10 @@ class Max2SATQAOAPilotTask:
             if not negated:
                 qc.x(qubit)
                 flipped.append(qubit)
+        # After literal-aligned X gates, the unique unsatisfied assignment for the
+        # clause is mapped to |11>. CP(gamma) therefore applies an exact diagonal
+        # phase gadget for the clause-unsatisfied projector, up to the sign
+        # convention absorbed into gamma.
         qc.cp(gamma, clause.left, clause.right)
         for qubit in reversed(flipped):
             qc.x(qubit)

@@ -4,9 +4,11 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](./LICENSE)
 [![Status](https://img.shields.io/badge/status-research%20framework-orange.svg)](#)
 
-ClaimStab-QC is a claim-centric framework for checking whether reported quantum-software conclusions remain valid under software-visible perturbations.
+ClaimStab-QC is a claim-centric validation methodology for quantum software experiments.
 
-It answers one question: does a formalized claim stay true across an admissible perturbation space?
+Its central claim is that empirical evaluation often validates outcomes, but not conclusions.
+
+It answers one question: does a formalized reported claim stay true across an admissible perturbation space?
 
 Core verdicts:
 
@@ -89,6 +91,22 @@ If you want the evidence index first, start with:
 - [docs/results/main_results.md](./docs/results/main_results.md)
 - [docs/results/figures.md](./docs/results/figures.md)
 - [docs/experiment_matrix.md](./docs/experiment_matrix.md)
+
+## ICSE 2027 Sprint Lock
+
+For the current paper sprint, the contribution boundary is fixed to:
+
+1. treating reported claims as first-class validation objects
+2. making admissible perturbation scope explicit
+3. using conservative tri-decision inference
+4. emitting explanatory evidence rather than verdicts alone
+
+This sprint does not expand ClaimStab-QC into:
+
+- a full protocol compiler
+- a full workflow validation layer
+- CI / release-gate infrastructure
+- a broad platform redesign
 
 ## Advanced Surface
 

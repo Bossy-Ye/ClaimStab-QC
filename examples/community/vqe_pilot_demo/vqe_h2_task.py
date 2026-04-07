@@ -44,13 +44,35 @@ def _instance_library() -> list[VQEH2Payload]:
     return payloads
 
 
+def _exact_diagonal_ground_energy(coeffs: dict[str, float]) -> float:
+    """Return the exact minimum eigenvalue of the implemented diagonal proxy.
+
+    The pilot Hamiltonian is diagonal in the computational basis, so its exact
+    ground energy is obtained by enumerating the four Z-basis eigenstates. This
+    keeps the proxy internally exact without implying a chemistry-faithful
+    Qiskit Nature workflow.
+    """
+
+    energies: list[float] = []
+    for z0 in (1.0, -1.0):
+        for z1 in (1.0, -1.0):
+            energies.append(
+                coeffs["c0"]
+                + coeffs["z0"] * z0
+                + coeffs["z1"] * z1
+                + coeffs["zz"] * z0 * z1
+            )
+    return min(energies)
+
+
 class VQEH2PilotTask:
     """Lightweight VQE-style H2 pilot with a diagonal energy proxy.
 
     This pilot stays within the current ClaimStab task contract by using a
     single measurement circuit per (instance, method) and computing an energy
     error metric from observed bitstring frequencies. It is a chemistry-flavored
-    supporting case, not a full multi-term Hamiltonian VQE implementation.
+    supporting case, not a full multi-term Hamiltonian VQE implementation or a
+    Qiskit Nature ground-state workflow.
     """
 
     name = "vqe_h2_pilot"
@@ -104,12 +126,7 @@ class VQEH2PilotTask:
 
         qc.measure_all()
         coeffs = payload.z_hamiltonian
-        ground_energy = (
-            coeffs["c0"]
-            - abs(coeffs["z0"])
-            - abs(coeffs["z1"])
-            - abs(coeffs["zz"])
-        )
+        ground_energy = _exact_diagonal_ground_energy(coeffs)
 
         def metric_fn(counts: dict[str, int]) -> float:
             total = sum(counts.values())
