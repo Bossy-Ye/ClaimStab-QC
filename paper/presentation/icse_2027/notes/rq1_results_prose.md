@@ -47,6 +47,23 @@ Instead, the discrepancy persists across several operational slices, with the
 execution-heavy slice exhibiting the most severe fragility in the present
 comparison surface.
 
+## Delta-aware paragraph
+
+The mismatch is not confined to a single practical margin setting. Across the
+current `delta` sweep, the conditional false-reassurance rate is `44.4%` at
+`delta = 0.00`, `55.6%` at `delta = 0.01`, and `55.6%` at `delta = 0.05`.
+This pattern indicates that the `RQ1` result is not an artifact of one
+especially permissive or especially strict margin value.
+
+## Sensitivity paragraph
+
+The main `RQ1` conclusion also survives family-level sensitivity checks.
+Restricting the analysis to the primary MaxCut family alone still yields a
+`100.0%` conditional false-reassurance rate (`9/9` metric-positive variants are
+non-validated). Excluding the weakest proxy family (`VQE/H2`) leaves the
+overall result unchanged at `14/27 = 51.9%`. This shows that the central
+mismatch does not depend on the proxy family.
+
 ## Limitation paragraph
 
 This result should be read with two explicit boundaries. First, the mismatch

@@ -164,4 +164,9 @@ Implementation completed via:
 - `output/paper/icse_pack/derived/RQ1/metric_claim_comparison_dataset.csv`
 - `output/paper/icse_pack/tables/tab_mismatch_summary.csv`
 - `output/paper/icse_pack/tables/tab_false_reassurance_breakdown.csv`
+- `output/paper/icse_pack/tables/tab_rq1_family_breakdown.csv`
+- `output/paper/icse_pack/tables/tab_rq1_scope_breakdown.csv`
+- `output/paper/icse_pack/tables/tab_rq1_delta_breakdown.csv`
+- `output/paper/icse_pack/tables/tab_rq1_primary_family_sensitivity.csv`
+- `output/paper/icse_pack/tables/tab_rq1_leave_one_family_out_sensitivity.csv`
 - `output/paper/icse_pack/figures/main/fig1_metric_claim_discrepancy_matrix.png`

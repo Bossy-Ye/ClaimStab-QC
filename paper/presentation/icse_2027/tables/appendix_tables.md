@@ -13,10 +13,14 @@ Purpose:
 
 Generated source:
 - [tab_false_reassurance_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_false_reassurance_breakdown.csv)
+- Curated companion sources:
+  - [tab_rq1_family_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_family_breakdown.csv)
+  - [tab_rq1_scope_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_scope_breakdown.csv)
+  - [tab_rq1_delta_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_delta_breakdown.csv)
 
 Current status:
 - `ready as source`
-- `needs curated appendix formatting`
+- `family/scope/delta curated tables now available`
 
 ### Tab A2. Analysis Unit Clarification
 
@@ -79,10 +83,25 @@ Purpose:
 - show that the main `RQ1` conclusion does not depend on the weakest family
 
 Generated source:
-- pending
+- [tab_rq1_primary_family_sensitivity.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_primary_family_sensitivity.csv)
+- [tab_rq1_leave_one_family_out_sensitivity.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_leave_one_family_out_sensitivity.csv)
 
 Current status:
-- `not started`
+- `ready as source`
+- `appendix placement recommended`
+
+### Tab A6. Baseline Disagreement Summary
+
+Purpose:
+- detailed appendix support for the `RQ1` baseline-comparison figure
+- provides exact counts behind the main-paper comparison plot
+
+Generated source:
+- [tab_baseline_disagreement_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_baseline_disagreement_summary.csv)
+
+Current status:
+- `ready as source`
+- `appendix placement recommended if main paper keeps only the capability matrix`
 
 ## Recommendation
 
@@ -91,4 +110,4 @@ Appendix should definitely include:
 - `Tab A3`
 - `Tab A4`
 
-`Tab A5` is valuable but optional if time becomes tight.
+`Tab A5` and `Tab A6` are valuable but optional if time becomes tight.

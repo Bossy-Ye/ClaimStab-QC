@@ -6,6 +6,11 @@ metric-vs-claim result.
 Primary source tables:
 - [tab_mismatch_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_mismatch_summary.csv)
 - [tab_false_reassurance_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_false_reassurance_breakdown.csv)
+- [tab_rq1_family_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_family_breakdown.csv)
+- [tab_rq1_scope_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_scope_breakdown.csv)
+- [tab_rq1_delta_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_delta_breakdown.csv)
+- [tab_rq1_primary_family_sensitivity.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_primary_family_sensitivity.csv)
+- [tab_rq1_leave_one_family_out_sensitivity.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_leave_one_family_out_sensitivity.csv)
 
 ## Why these breakdowns matter
 
@@ -33,7 +38,7 @@ So the current conditional false-reassurance rate is:
 
 ## Breakdown by algorithm family
 
-From [tab_mismatch_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_mismatch_summary.csv):
+From [tab_rq1_family_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_family_breakdown.csv):
 
 - `MaxCut QAOA`
   - `27` variants total
@@ -59,7 +64,7 @@ Interpretation:
 
 ## Breakdown by perturbation scope
 
-From [tab_mismatch_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_mismatch_summary.csv):
+From [tab_rq1_scope_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_scope_breakdown.csv):
 
 - `compilation_only_exact`
   - `27` variants
@@ -86,20 +91,57 @@ Interpretation:
 
 ## Breakdown by delta
 
-The current generated table [tab_false_reassurance_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_false_reassurance_breakdown.csv)
-already contains the `algorithm_family × scope × delta` surface.
+From [tab_rq1_delta_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_delta_breakdown.csv):
 
-Paper-facing expectation:
 - `delta = 0.00`
+  - `21` variants
+  - `9` metric-positive
+  - `4` false-reassurance cases
+  - conditional false-reassurance rate = `44.4%`
+
 - `delta = 0.01`
+  - `21` variants
+  - `9` metric-positive
+  - `5` false-reassurance cases
+  - conditional false-reassurance rate = `55.6%`
+
 - `delta = 0.05`
+  - `21` variants
+  - `9` metric-positive
+  - `5` false-reassurance cases
+  - conditional false-reassurance rate = `55.6%`
 
-This should be summarized in the paper to show that the mismatch is not an
-artifact of a single margin choice.
+Interpretation:
+- the mismatch is not confined to a single practical margin choice
+- the delta trend is qualitatively stable across the current three-point margin sweep
 
-Current note:
-- the source data for this breakdown already exists
-- a dedicated delta-summary table or small figure is still pending curation
+## Sensitivity checks
+
+From [tab_rq1_primary_family_sensitivity.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_primary_family_sensitivity.csv):
+
+- `MaxCut` primary-family-only:
+  - `27` variants
+  - `9` metric-positive
+  - `9` false-reassurance cases
+  - conditional false-reassurance rate = `100.0%`
+
+From [tab_rq1_leave_one_family_out_sensitivity.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_leave_one_family_out_sensitivity.csv):
+
+- leave out `VQE/H2`
+  - `45` variants
+  - `27` metric-positive
+  - `14` false-reassurance cases
+  - conditional false-reassurance rate = `51.9%`
+
+- leave out `Max-2-SAT QAOA`
+  - `45` variants
+  - `9` metric-positive
+  - `9` false-reassurance cases
+  - conditional false-reassurance rate = `100.0%`
+
+Interpretation:
+- the main `RQ1` conclusion does not depend on the weakest proxy family
+- the primary MaxCut battleground alone remains sufficient to recover the central mismatch
 
 ## Recommended paper wording
 
@@ -129,5 +171,6 @@ Appendix:
 
 - family breakdown: ready
 - scope breakdown: ready
-- delta breakdown source data: ready
-- delta breakdown curated presentation: pending
+- delta breakdown: ready
+- primary-family-only sensitivity: ready
+- leave-one-family-out sensitivity: ready

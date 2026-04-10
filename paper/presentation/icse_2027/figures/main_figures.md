@@ -4,29 +4,47 @@ This file is the canonical shortlist of main-paper figures for the ICSE 2027 sub
 
 ## Figure inventory
 
-### Fig 1. Metric-Claim Discrepancy Matrix
+### Fig 1. Metric-Positive Outcomes vs Claim Validation
 
 Purpose:
 - primary `RQ1` figure
-- operationalizes the central mismatch claim:
-  - metric support does not imply claim validation
+- delivers the main `RQ1` headline in one view:
+  - among metric-positive variants, how many are actually claim-validated?
 
 Generated source:
-- [fig1_metric_claim_discrepancy_matrix.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig1_metric_claim_discrepancy_matrix.png)
-- [fig1_metric_claim_discrepancy_matrix.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig1_metric_claim_discrepancy_matrix.pdf)
+- [fig1_metric_positive_validation_bar.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig1_metric_positive_validation_bar.png)
+- [fig1_metric_positive_validation_bar.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig1_metric_positive_validation_bar.pdf)
 
 Expected paper role:
 - main `RQ1` anchor figure
-- highlighted cells:
-  - `metric positive + unstable`
-  - `metric positive + inconclusive`
-  - `metric positive + refuted` if any appear in future revisions
+- visually punch the headline:
+  - `27` metric-positive variants
+  - `13` validated
+  - `14` false reassurance
 
 Current status:
 - `ready as source`
 - `main-paper priority = highest`
 
-### Fig 2. Cross-Family Verdict Distribution
+### Fig 2. Validated vs False Reassurance Among Baseline-Supportive Variants
+
+Purpose:
+- `RQ1` strengthening figure
+- shows, for each method, how many supportive variants were actually validated versus how many produced false reassurance
+
+Generated source:
+- [fig2_validated_vs_false_reassurance.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig2_validated_vs_false_reassurance.png)
+- [fig2_validated_vs_false_reassurance.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig2_validated_vs_false_reassurance.pdf)
+
+Expected paper role:
+- block the reviewer objection that `RQ1` only defeats one frozen metric baseline
+- compare baseline-supportive verdicts against claim-level validation outcomes on identical claim units in a direct count-based view
+
+Current status:
+- `ready as source`
+- `main-paper use recommended`
+
+### Fig 3. Cross-Family Verdict Distribution
 
 Purpose:
 - primary `RQ2` figure
@@ -44,7 +62,7 @@ Current status:
 - `ready as source`
 - `needs final caption and paper numbering`
 
-### Fig 3. Scope Robustness / Protocol Sensitivity
+### Fig 4. Scope Robustness / Protocol Sensitivity
 
 Purpose:
 - primary `RQ3` figure
@@ -61,7 +79,7 @@ Current status:
 - `ready as source`
 - `paper-facing wording needs final tightening`
 
-### Fig 4. Cost / Configuration Tradeoff
+### Fig 5. Cost / Configuration Tradeoff
 
 Purpose:
 - primary `RQ4` figure

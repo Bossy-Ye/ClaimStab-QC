@@ -234,6 +234,237 @@ def _build_summary_tables(dataset: pd.DataFrame) -> tuple[list[dict[str, Any]], 
     return summary_rows, breakdown_rows
 
 
+def _curate_family_breakdown(dataset: pd.DataFrame) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for family in sorted(dataset["algorithm_family"].unique()):
+        group_df = dataset[dataset["algorithm_family"] == family]
+        summary = _make_summary_row("algorithm_family", family, group_df)
+        rows.append(
+            {
+                "algorithm_family": family,
+                "n_total": summary["n_total"],
+                "metric_positive": summary["metric_positive"],
+                "claim_validated": summary["claim_validated"],
+                "claim_refuted": summary["claim_refuted"],
+                "claim_unstable": summary["claim_unstable"],
+                "claim_inconclusive": summary["claim_inconclusive"],
+                "metric_positive_non_validated": (
+                    summary["metric_positive_claim_refuted"]
+                    + summary["metric_positive_claim_unstable"]
+                    + summary["metric_positive_claim_inconclusive"]
+                ),
+                "conditional_false_reassurance_rate": summary["conditional_false_reassurance_rate"],
+                "support_alignment_rate": summary["support_alignment_rate"],
+            }
+        )
+    return rows
+
+
+def _curate_scope_breakdown(dataset: pd.DataFrame) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for scope in SCOPE_ORDER:
+        group_df = dataset[dataset["scope"] == scope]
+        if group_df.empty:
+            continue
+        summary = _make_summary_row("scope", scope, group_df)
+        rows.append(
+            {
+                "scope": scope,
+                "scope_label": SCOPE_LABELS.get(scope, scope),
+                "n_total": summary["n_total"],
+                "metric_positive": summary["metric_positive"],
+                "claim_validated": summary["claim_validated"],
+                "claim_refuted": summary["claim_refuted"],
+                "claim_unstable": summary["claim_unstable"],
+                "claim_inconclusive": summary["claim_inconclusive"],
+                "metric_positive_non_validated": (
+                    summary["metric_positive_claim_refuted"]
+                    + summary["metric_positive_claim_unstable"]
+                    + summary["metric_positive_claim_inconclusive"]
+                ),
+                "conditional_false_reassurance_rate": summary["conditional_false_reassurance_rate"],
+                "support_alignment_rate": summary["support_alignment_rate"],
+            }
+        )
+    return rows
+
+
+def _curate_delta_breakdown(dataset: pd.DataFrame) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for delta in sorted(dataset["delta"].unique()):
+        group_df = dataset[dataset["delta"] == delta]
+        summary = _make_summary_row("delta", f"{delta:.2f}", group_df)
+        rows.append(
+            {
+                "delta": float(delta),
+                "n_total": summary["n_total"],
+                "metric_positive": summary["metric_positive"],
+                "claim_validated": summary["claim_validated"],
+                "claim_refuted": summary["claim_refuted"],
+                "claim_unstable": summary["claim_unstable"],
+                "claim_inconclusive": summary["claim_inconclusive"],
+                "metric_positive_non_validated": (
+                    summary["metric_positive_claim_refuted"]
+                    + summary["metric_positive_claim_unstable"]
+                    + summary["metric_positive_claim_inconclusive"]
+                ),
+                "conditional_false_reassurance_rate": summary["conditional_false_reassurance_rate"],
+                "support_alignment_rate": summary["support_alignment_rate"],
+            }
+        )
+    return rows
+
+
+def _curate_primary_family_sensitivity(dataset: pd.DataFrame) -> list[dict[str, Any]]:
+    slices = [
+        ("all_families", "All families", dataset),
+        ("primary_family_only", "MaxCut primary family only", dataset[dataset["algorithm_family"] == "MaxCut QAOA"]),
+    ]
+    rows: list[dict[str, Any]] = []
+    for slice_key, slice_label, group_df in slices:
+        summary = _make_summary_row("sensitivity", slice_key, group_df)
+        rows.append(
+            {
+                "analysis_slice": slice_key,
+                "label": slice_label,
+                "included_families": ", ".join(sorted(group_df["algorithm_family"].unique())),
+                "n_total": summary["n_total"],
+                "metric_positive": summary["metric_positive"],
+                "claim_validated": summary["claim_validated"],
+                "claim_refuted": summary["claim_refuted"],
+                "claim_unstable": summary["claim_unstable"],
+                "claim_inconclusive": summary["claim_inconclusive"],
+                "metric_positive_non_validated": (
+                    summary["metric_positive_claim_refuted"]
+                    + summary["metric_positive_claim_unstable"]
+                    + summary["metric_positive_claim_inconclusive"]
+                ),
+                "conditional_false_reassurance_rate": summary["conditional_false_reassurance_rate"],
+            }
+        )
+    return rows
+
+
+def _curate_leave_one_family_out(dataset: pd.DataFrame) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for family in sorted(dataset["algorithm_family"].unique()):
+        group_df = dataset[dataset["algorithm_family"] != family]
+        summary = _make_summary_row("leave_one_out", family, group_df)
+        rows.append(
+            {
+                "excluded_family": family,
+                "included_families": ", ".join(sorted(group_df["algorithm_family"].unique())),
+                "n_total": summary["n_total"],
+                "metric_positive": summary["metric_positive"],
+                "claim_validated": summary["claim_validated"],
+                "claim_refuted": summary["claim_refuted"],
+                "claim_unstable": summary["claim_unstable"],
+                "claim_inconclusive": summary["claim_inconclusive"],
+                "metric_positive_non_validated": (
+                    summary["metric_positive_claim_refuted"]
+                    + summary["metric_positive_claim_unstable"]
+                    + summary["metric_positive_claim_inconclusive"]
+                ),
+                "conditional_false_reassurance_rate": summary["conditional_false_reassurance_rate"],
+            }
+        )
+    return rows
+
+
+def _build_main_paper_structural_table(dataset: pd.DataFrame) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+
+    def add_row(dimension: str, slice_label: str, group_df: pd.DataFrame) -> None:
+        summary = _make_summary_row(dimension.lower(), slice_label, group_df)
+        metric_positive = int(summary["metric_positive"])
+        false_reassurance = int(
+            summary["metric_positive_claim_refuted"]
+            + summary["metric_positive_claim_unstable"]
+            + summary["metric_positive_claim_inconclusive"]
+        )
+        rows.append(
+            {
+                "dimension": dimension,
+                "slice": slice_label,
+                "metric_positive": metric_positive,
+                "false_reassurance": false_reassurance,
+                "conditional_false_reassurance_rate": summary["conditional_false_reassurance_rate"],
+            }
+        )
+
+    add_row("Overall", "All variants", dataset)
+    for family in ["MaxCut QAOA", "Max-2-SAT QAOA", "VQE/H2"]:
+        add_row("Family", family, dataset[dataset["algorithm_family"] == family])
+    for scope in SCOPE_ORDER:
+        add_row("Scope", scope, dataset[dataset["scope"] == scope])
+    for delta in sorted(dataset["delta"].unique()):
+        add_row("Delta", f"{float(delta):.2f}", dataset[dataset["delta"] == delta])
+    return rows
+
+
+def _render_metric_positive_headline_figure(dataset: pd.DataFrame, out_png: Path, out_pdf: Path) -> dict[str, Any]:
+    metric_positive_df = dataset[dataset["metric_verdict"] == "positive"].copy()
+    total = int(len(metric_positive_df))
+    segments = [
+        ("validated", int((metric_positive_df["claim_validation_outcome"] == "validated").sum()), "#2ca02c"),
+        ("unstable", int((metric_positive_df["claim_validation_outcome"] == "unstable").sum()), "#d62728"),
+        ("inconclusive", int((metric_positive_df["claim_validation_outcome"] == "inconclusive").sum()), "#7f7f7f"),
+        ("refuted", int((metric_positive_df["claim_validation_outcome"] == "refuted").sum()), "#9467bd"),
+    ]
+
+    plt.rcParams.update(
+        {
+            "font.family": "DejaVu Sans",
+            "font.size": 10,
+            "axes.titlesize": 12,
+            "axes.labelsize": 10,
+            "xtick.labelsize": 9,
+            "ytick.labelsize": 9,
+        }
+    )
+    fig, ax = plt.subplots(figsize=(8.0, 2.7))
+    left = 0
+    for label, count, color in segments:
+        if count <= 0:
+            continue
+        ax.barh(["metric-positive variants"], [count], left=left, color=color, edgecolor="white", height=0.6)
+        share = 100.0 * count / total if total else 0.0
+        ax.text(left + count / 2, 0, f"{label}\n{count} ({share:.1f}%)", ha="center", va="center", fontsize=10, color="white" if color != "#7f7f7f" else "black", fontweight="bold")
+        left += count
+
+    false_reassurance = total - int((metric_positive_df["claim_validation_outcome"] == "validated").sum())
+    false_rate = 100.0 * false_reassurance / total if total else 0.0
+    ax.set_xlim(0, total if total else 1)
+    ax.set_xlabel("count among metric-positive variants")
+    ax.set_title("Metric-Positive Outcomes Do Not Reliably Imply Claim Validation")
+    ax.grid(False)
+    for spine in ["top", "right", "left"]:
+        ax.spines[spine].set_visible(False)
+    ax.tick_params(axis="y", length=0)
+    ax.tick_params(axis="x", length=3, color="#666666")
+    fig.text(
+        0.5,
+        0.93,
+        f"Headline result: {false_reassurance}/{total} metric-positive variants are not claim-validated ({false_rate:.1f}%).",
+        ha="center",
+        va="center",
+        fontsize=10,
+        color="#444444",
+    )
+    fig.tight_layout(rect=(0.0, 0.0, 1.0, 0.88))
+    out_png.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out_png, dpi=240)
+    fig.savefig(out_pdf)
+    plt.close(fig)
+    return {
+        "figure_png": str(out_png.resolve()),
+        "figure_pdf": str(out_pdf.resolve()),
+        "metric_positive_total": total,
+        "false_reassurance_count": false_reassurance,
+        "false_reassurance_rate": false_rate / 100.0 if total else None,
+    }
+
+
 def _render_discrepancy_matrix(dataset: pd.DataFrame, out_png: Path, out_pdf: Path) -> dict[str, Any]:
     matrix = []
     total = len(dataset)
@@ -343,6 +574,8 @@ def _write_interpretation_note(path: Path, dataset: pd.DataFrame, summary_rows: 
         [row for row in summary_rows if row["group_kind"] == "scope"],
         key=lambda row: (row["conditional_false_reassurance_rate"] or -1.0),
     )
+    delta_rows = [_make_summary_row("delta", f"{delta:.2f}", dataset[dataset["delta"] == delta]) for delta in sorted(dataset["delta"].unique())]
+    maxcut_only = _make_summary_row("sensitivity", "primary_family_only", dataset[dataset["algorithm_family"] == "MaxCut QAOA"])
     refuted_false = int((dataset["false_reassurance_type"] == "metric_positive_claim_refuted").sum())
     unstable_false = int((dataset["false_reassurance_type"] == "metric_positive_claim_unstable").sum())
     inconclusive_false = int((dataset["false_reassurance_type"] == "metric_positive_claim_inconclusive").sum())
@@ -384,6 +617,29 @@ def _write_interpretation_note(path: Path, dataset: pd.DataFrame, summary_rows: 
                 f"The highest conditional false-reassurance rate appears in the `{best_scope['group']}` scope "
                 f"({100.0 * float(best_scope['conditional_false_reassurance_rate']):.1f}%), reinforcing that mismatch "
                 f"is structured by admissible perturbation scope rather than by one isolated claim."
+            ),
+            "",
+            "## Delta Signal",
+            "",
+        ]
+    )
+    for row in delta_rows:
+        lines.append(
+            f"- delta = {float(row['group']):.2f}: "
+            f"{row['metric_positive_claim_refuted'] + row['metric_positive_claim_unstable'] + row['metric_positive_claim_inconclusive']}/"
+            f"{row['metric_positive']} metric-positive variants are non-validated "
+            f"({100.0 * float(row['conditional_false_reassurance_rate']):.1f}%)."
+        )
+    lines.extend(
+        [
+            "",
+            "## Sensitivity",
+            "",
+            (
+                f"The primary MaxCut family alone remains sufficient to recover the core mismatch: "
+                f"{maxcut_only['metric_positive_claim_refuted'] + maxcut_only['metric_positive_claim_unstable'] + maxcut_only['metric_positive_claim_inconclusive']}/"
+                f"{maxcut_only['metric_positive']} metric-positive variants are non-validated "
+                f"({100.0 * float(maxcut_only['conditional_false_reassurance_rate']):.1f}%)."
             ),
             "",
             "These exports support the RQ1 main-text argument that metric-centric evaluation can statistically support outcomes while failing to validate conclusions.",
@@ -467,11 +723,22 @@ def main() -> None:
     summary_rows, breakdown_rows = _build_summary_tables(dataset)
     _write_csv(tables_dir / "tab_mismatch_summary.csv", summary_rows)
     _write_csv(tables_dir / "tab_false_reassurance_breakdown.csv", breakdown_rows)
+    _write_csv(tables_dir / "tab_rq1_family_breakdown.csv", _curate_family_breakdown(dataset))
+    _write_csv(tables_dir / "tab_rq1_scope_breakdown.csv", _curate_scope_breakdown(dataset))
+    _write_csv(tables_dir / "tab_rq1_delta_breakdown.csv", _curate_delta_breakdown(dataset))
+    _write_csv(tables_dir / "tab_rq1_primary_family_sensitivity.csv", _curate_primary_family_sensitivity(dataset))
+    _write_csv(tables_dir / "tab_rq1_leave_one_family_out_sensitivity.csv", _curate_leave_one_family_out(dataset))
+    _write_csv(tables_dir / "tab1_rq1_structural_breakdown.csv", _build_main_paper_structural_table(dataset))
 
     figure_meta = _render_discrepancy_matrix(
         dataset,
         figures_dir / "fig1_metric_claim_discrepancy_matrix.png",
         figures_dir / "fig1_metric_claim_discrepancy_matrix.pdf",
+    )
+    headline_figure_meta = _render_metric_positive_headline_figure(
+        dataset,
+        figures_dir / "fig1_metric_positive_validation_bar.png",
+        figures_dir / "fig1_metric_positive_validation_bar.pdf",
     )
 
     _write_interpretation_note(derived_dir / "metric_claim_interpretation.md", dataset, summary_rows)
@@ -482,8 +749,15 @@ def main() -> None:
             "dataset_json": str(dataset_json.resolve()),
             "summary_table": str((tables_dir / "tab_mismatch_summary.csv").resolve()),
             "breakdown_table": str((tables_dir / "tab_false_reassurance_breakdown.csv").resolve()),
+            "family_breakdown_table": str((tables_dir / "tab_rq1_family_breakdown.csv").resolve()),
+            "scope_breakdown_table": str((tables_dir / "tab_rq1_scope_breakdown.csv").resolve()),
+            "delta_breakdown_table": str((tables_dir / "tab_rq1_delta_breakdown.csv").resolve()),
+            "primary_family_sensitivity_table": str((tables_dir / "tab_rq1_primary_family_sensitivity.csv").resolve()),
+            "leave_one_family_out_table": str((tables_dir / "tab_rq1_leave_one_family_out_sensitivity.csv").resolve()),
+            "main_paper_table": str((tables_dir / "tab1_rq1_structural_breakdown.csv").resolve()),
             "overall": next(row for row in summary_rows if row["group_kind"] == "overall"),
             "figure": figure_meta,
+            "headline_figure": headline_figure_meta,
         },
     )
 

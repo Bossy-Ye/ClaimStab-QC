@@ -11,26 +11,27 @@ Purpose:
 - reports the main mismatch counts behind the `metric vs claim` result
 
 Generated source:
-- [tab_mismatch_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_mismatch_summary.csv)
+- [tab1_rq1_structural_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab1_rq1_structural_breakdown.csv)
 
 Expected paper role:
-- summarize overall mismatch
-- report family-level mismatch
-- report scope-level mismatch
+- summarize the headline mismatch and its key structural breakdowns in one compact table
+- report overall, family, scope, and delta structure without pushing detailed tables into the main text
 
 Current status:
 - `ready as source`
 - `needs final paper formatting`
 
+Structured supporting sources:
+- [tab_mismatch_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_mismatch_summary.csv)
+- [tab_rq1_family_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_family_breakdown.csv)
+- [tab_rq1_scope_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_scope_breakdown.csv)
+- [tab_rq1_delta_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_delta_breakdown.csv)
+
 Recommended columns:
-- `group_kind`
-- `group`
-- `n_total`
+- `dimension`
+- `slice`
 - `metric_positive`
-- `claim_validated`
-- `claim_refuted`
-- `claim_unstable`
-- `claim_inconclusive`
+- `false_reassurance`
 - `conditional_false_reassurance_rate`
 
 ### Tab 2. Baseline Capability Matrix
@@ -40,7 +41,10 @@ Purpose:
 - shows why conventional baselines do not substitute claim-level validation
 
 Generated source:
-- pending from `03_E2_BASELINE_COMPARISON`
+- [tab2_baseline_capability_matrix.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab2_baseline_capability_matrix.csv)
+
+Structured supporting source:
+- [tab_baseline_disagreement_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_baseline_disagreement_summary.csv)
 
 Expected paper role:
 - compare:
@@ -51,7 +55,8 @@ Expected paper role:
   - ClaimStab-QC
 
 Current status:
-- `pending`
+- `ready as source`
+- `main-paper use recommended together with Fig 2`
 
 ### Tab 3. Exact Witness Examples
 
@@ -93,6 +98,7 @@ Current status:
 
 If the paper needs to stay lean, keep only:
 - `Tab 1` in the main paper
-- move `Tab 2` or `Tab 4` to appendix if space becomes tight
+- keep `Tab 2` only if the baseline-comparison argument needs explicit capability dimensions
+- move `Tab 4` to appendix if space becomes tight
 
 `Tab 1` is the least negotiable main-paper table.
