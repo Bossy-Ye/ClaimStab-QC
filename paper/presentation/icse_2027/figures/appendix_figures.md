@@ -46,12 +46,43 @@ Purpose:
 - shows distributional properties of exact or approximate overturn witnesses
 
 Generated source:
-- pending final `E4 exact MOS` curation
+- [fig3_exact_witness_sizes.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig3_exact_witness_sizes.png)
+- [fig3_exact_witness_sizes.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig3_exact_witness_sizes.pdf)
 
 Current status:
-- `pending`
+- `ready as source`
 
-### Fig A4. Real-Hardware Slice Figure
+### Fig A4. Scope Transport Across Nearby Admissible Variants
+
+Purpose:
+- appendix support for `RQ3`
+- shows whether verdicts transport under nearby admissibility/protocol choices
+
+Generated source:
+- [fig4_scope_transport_map.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig4_scope_transport_map.png)
+- [fig4_scope_transport_map.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig4_scope_transport_map.pdf)
+
+Expected paper role:
+- support the claim that admissible scope must be explicit
+- distinguish robustly stable / robustly unstable / boundary-sensitive behavior through explicit transport classes
+
+Current status:
+- `ready as source`
+
+### Fig A5. Cross-Family Verdict Distribution
+
+Purpose:
+- appendix or overflow main-paper support for `RQ2`
+- shows that claim behavior differs across algorithm/task families
+
+Generated source:
+- [fig_a_cross_family_verdicts.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/pack/figures/main/fig_a_cross_family_verdicts.png)
+- [fig_a_cross_family_verdicts.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/pack/figures/main/fig_a_cross_family_verdicts.pdf)
+
+Current status:
+- `ready as source`
+
+### Fig A6. Real-Hardware Slice Figure
 
 Purpose:
 - appendix or light main-paper support for `RQ4`
@@ -63,7 +94,7 @@ Generated source:
 Current status:
 - `not started`
 
-### Fig A5. Primary-Family-Only Sensitivity
+### Fig A7. Primary-Family-Only Sensitivity
 
 Purpose:
 - show that the main `RQ1` signal survives when restricted to the strongest family
@@ -74,7 +105,7 @@ Generated source:
 Current status:
 - `not started`
 
-### Fig A6. Leave-One-Family-Out Sensitivity
+### Fig A8. Leave-One-Family-Out Sensitivity
 
 Purpose:
 - show that the main `RQ1` signal does not depend entirely on the weakest family
@@ -90,6 +121,6 @@ Current status:
 Most valuable appendix figures:
 - `Fig A1`
 - `Fig A2`
-- `Fig A5`
+- `Fig A4`
 
-`Fig A4` becomes important if the real-hardware slice lands in time.
+`Fig A6` becomes important if the real-hardware slice lands in time.

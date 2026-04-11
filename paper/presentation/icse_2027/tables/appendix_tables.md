@@ -46,7 +46,9 @@ Purpose:
 - document which experiments use exact MOS and which retain approximate fallback
 
 Generated source:
-- [tab_c_exact_vs_greedy_mos.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/pack/tables/tab_c_exact_vs_greedy_mos.csv)
+- [tab_rq3_exact_approx_status.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq3_exact_approx_status.csv)
+- supporting legacy comparison source:
+  - [tab_c_exact_vs_greedy_mos.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/pack/tables/tab_c_exact_vs_greedy_mos.csv)
 
 Current status:
 - `ready as source`

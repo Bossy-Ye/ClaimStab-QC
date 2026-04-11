@@ -65,16 +65,14 @@ Purpose:
 - shows exact minimal overturn sets for representative claims
 
 Generated source:
-- pending final curation from `E4 exact MOS`
-- current supporting source:
-  - [tab_c_exact_vs_greedy_mos.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/pack/tables/tab_c_exact_vs_greedy_mos.csv)
+- [tab3_exact_witness_examples.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab3_exact_witness_examples.csv)
 
 Expected paper role:
 - give 3-5 representative exact witness examples
 - show that failure can be explained by compact sufficient subsets
 
 Current status:
-- `partially ready`
+- `ready as source`
 
 ### Tab A-RQ3. Scope Transport Summary
 
@@ -88,6 +86,22 @@ Generated source:
 Expected paper role:
 - support the scope-transport figure with a compact textual summary
 - keep the main text focused while preserving explicit case taxonomy
+
+Current status:
+- `ready as source`
+
+### Tab A-RQ3b. Exact vs Approximate Status
+
+Purpose:
+- appendix-facing support table for `RQ3`
+- states which paper-facing runs use exact subset search and how often exact witnesses are found
+
+Generated source:
+- [tab_rq3_exact_approx_status.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq3_exact_approx_status.csv)
+
+Expected paper role:
+- make exact-default status explicit for tractable paper-facing spaces
+- keep approximate legacy diagnostics clearly out of the canonical main-paper evidence
 
 Current status:
 - `ready as source`

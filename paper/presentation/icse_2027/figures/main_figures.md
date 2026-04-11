@@ -44,43 +44,25 @@ Current status:
 - `ready as source`
 - `main-paper use recommended`
 
-### Fig 3. Cross-Family Verdict Distribution
-
-Purpose:
-- primary `RQ2` figure
-- shows that claim behavior differs across algorithm/task families
-
-Generated source:
-- [fig_a_cross_family_verdicts.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/pack/figures/main/fig_a_cross_family_verdicts.png)
-- [fig_a_cross_family_verdicts.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/pack/figures/main/fig_a_cross_family_verdicts.pdf)
-
-Expected paper role:
-- support semantic discrimination
-- keep the story population-dependent rather than universal
-
-Current status:
-- `ready as source`
-- `needs final caption and paper numbering`
-
-### Fig 4. Scope Transport Across Nearby Admissible Variants
+### Fig 3. Exact Witness Sizes
 
 Purpose:
 - primary `RQ3` figure
-- shows whether verdicts transport under nearby admissibility/protocol choices
+- shows that the exact witnesses found in tractable paper-facing spaces are compact sufficient subsets
 
 Generated source:
-- [fig4_scope_transport_map.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig4_scope_transport_map.png)
-- [fig4_scope_transport_map.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig4_scope_transport_map.pdf)
+- [fig3_exact_witness_sizes.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig3_exact_witness_sizes.png)
+- [fig3_exact_witness_sizes.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig3_exact_witness_sizes.pdf)
 
 Expected paper role:
-- support the claim that admissible scope must be explicit
-- distinguish robustly stable / robustly unstable / boundary-sensitive behavior through explicit transport classes
+- support explanatory adequacy
+- show that the witnesses found in the current exact-aware evidence surface are single-factor subsets
 
 Current status:
 - `ready as source`
-- `main-paper or appendix use both justified`
+- `main-paper use recommended`
 
-### Fig 5. Cost / Configuration Tradeoff
+### Fig 4. Cost / Configuration Tradeoff
 
 Purpose:
 - primary `RQ4` figure

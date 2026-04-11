@@ -100,6 +100,18 @@ Primary generated assets currently live in:
 Curated paper-facing note:
 - [rq3_scope_robustness_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq3_scope_robustness_note.md)
 
+### RQ3: Exact witnesses
+
+Primary generated assets currently live in:
+- [exact_witness_dataset.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/derived/RQ3/exact_witness_dataset.csv)
+- [tab_rq3_exact_approx_status.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq3_exact_approx_status.csv)
+- [tab3_exact_witness_examples.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab3_exact_witness_examples.csv)
+- [fig3_exact_witness_sizes.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig3_exact_witness_sizes.png)
+- [exact_witness_interpretation.md](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/derived/RQ3/exact_witness_interpretation.md)
+
+Curated paper-facing note:
+- [rq3_exact_witness_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq3_exact_witness_note.md)
+
 ### Hamiltonian correctness audit
 
 Current audit material lives in:

@@ -30,12 +30,12 @@ Default paper role:
 
 ## Acceptance Criteria
 
-- [ ] All tractable main-paper spaces use exact MOS by default.
-- [ ] Larger spaces are explicitly marked approximate.
-- [ ] At least one table shows concrete exact witness examples.
-- [ ] At least one figure summarizes witness-size behavior.
-- [ ] The canonical explanatory figure is generated only after the witness table and exact/approx status table are frozen.
-- [ ] Paper-facing wording uses “witness” / “compact sufficient subset”, not causal root-cause language.
+- [x] All tractable main-paper spaces use exact MOS by default.
+- [x] Larger spaces are explicitly marked approximate.
+- [x] At least one table shows concrete exact witness examples.
+- [x] At least one figure summarizes witness-size behavior.
+- [x] The canonical explanatory figure is generated only after the witness table and exact/approx status table are frozen.
+- [x] Paper-facing wording uses “witness” / “compact sufficient subset”, not causal root-cause language.
 
 ## Dependencies
 
@@ -45,7 +45,7 @@ Default paper role:
 
 - [ ] Not started
 - [ ] In progress
-- [ ] Done
+- [x] Done
 
 ## Notes
 
