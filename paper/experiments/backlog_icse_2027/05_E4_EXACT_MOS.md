@@ -16,12 +16,25 @@ Turn claim-failure diagnostics into explicit explanatory evidence via exact mini
 - exact/approx status table by experiment
 - MOS size distribution figure
 
+## Canonical Figure Timing
+
+The canonical figure for this task is generated only after:
+
+- exact vs approximate status is frozen per experiment
+- representative witness examples are curated
+- witness-size statistics are derived from the final exact-aware outputs
+
+Default paper role:
+
+- `Fig 3` main-paper explanatory figure
+
 ## Acceptance Criteria
 
 - [ ] All tractable main-paper spaces use exact MOS by default.
 - [ ] Larger spaces are explicitly marked approximate.
 - [ ] At least one table shows concrete exact witness examples.
 - [ ] At least one figure summarizes witness-size behavior.
+- [ ] The canonical explanatory figure is generated only after the witness table and exact/approx status table are frozen.
 - [ ] Paper-facing wording uses “witness” / “compact sufficient subset”, not causal root-cause language.
 
 ## Dependencies

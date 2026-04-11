@@ -26,12 +26,27 @@ Demonstrate that verdicts are evaluated relative to explicit admissibility choic
   - `robustly unstable`
   - `boundary-sensitive`
 
+## Canonical Figure Timing
+
+The canonical figure for this task is generated only after:
+
+- the representative archetype cases are frozen
+- the transport taxonomy is frozen
+- the summary table records all tested scope variants and verdicts
+
+Default paper role:
+
+- appendix rigor figure
+
+Main-paper promotion is allowed only if `RQ3` needs a dedicated visual and the full paper still remains visually lean.
+
 ## Acceptance Criteria
 
 - [x] Includes at least one robustly stable case.
 - [x] Includes at least one robustly unstable case.
 - [x] Includes at least one boundary-sensitive case.
 - [x] Uses explicit protocol variations, not ad-hoc prose only.
+- [x] The scope-transport figure is generated only after the archetype set and summary table are frozen.
 - [x] Interpretation note states what the results mean for methodological rigor.
 
 ## Dependencies

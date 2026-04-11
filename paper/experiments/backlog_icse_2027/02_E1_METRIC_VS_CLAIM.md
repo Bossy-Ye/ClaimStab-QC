@@ -87,6 +87,20 @@ Each row should represent one claim variant and include at least:
 - Short interpretation note for RQ1:
   - `output/paper/icse_pack/derived/RQ1/metric_claim_interpretation.md`
 
+## Canonical Figure Timing
+
+The canonical main-paper figure for this task is generated only after:
+
+- the row-level claim-variant dataset is frozen
+- the overall mismatch counts are verified against source summaries
+- the structural breakdown table is available for family / scope / delta checks
+
+The canonical figure role is:
+
+- `Fig 1` headline result for the full paper
+
+Appendix figures may be generated earlier, but they do not satisfy the main-paper acceptance condition.
+
 ## Execution Steps
 
 - [x] Freeze row schema and source scope.
@@ -141,6 +155,7 @@ Each row should include:
 - [x] The overall counts match the existing source summaries.
 - [x] Fig 1 can be generated from the dataset without ad-hoc patching.
 - [x] Fig 1 visually highlights `metric = positive` and `claim = unstable/inconclusive`.
+- [x] The canonical headline figure is generated only after the dataset and summary tables are frozen.
 - [x] The resulting figure and tables support direct citation in the RQ1 main-text subsection.
 
 ## Dependencies

@@ -110,6 +110,18 @@ The output note must state which baselines can abstain and which cannot.
 - Supporting note:
   - `output/paper/icse_pack/derived/RQ1/baseline_comparison_interpretation.md`
 
+## Canonical Figure Timing
+
+The canonical paper figure for this task is generated only after:
+
+- all baseline semantics are frozen in code
+- the comparison dataset is complete on the same claim variants as `02`
+- the disagreement summary table is stable
+
+The canonical figure role is:
+
+- `Fig 2` main-paper baseline comparison
+
 ## Execution Steps
 
 - [x] Freeze the baseline universe and verdict semantics.
@@ -127,6 +139,7 @@ The output note must state which baselines can abstain and which cannot.
 - [x] The resulting table/figure makes clear that the baselines do not replace claim validation.
 - [x] Capability dimensions are explicit, not narrative only.
 - [x] At least one baseline fails clearly on the current `RQ1` mismatch population.
+- [x] The canonical comparison figure is generated only after the baseline dataset and disagreement summary are frozen.
 - [x] The final figure and table can be cited directly in the paper without ad-hoc explanation.
 
 ## Dependencies

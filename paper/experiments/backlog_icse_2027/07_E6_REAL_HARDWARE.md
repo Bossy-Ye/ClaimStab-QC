@@ -22,12 +22,27 @@ Add one minimal real-hardware validation slice to show the methodology is not co
 - one small hardware-facing figure or table
 - one short interpretation note stating what the slice does and does not prove
 
+## Canonical Figure Timing
+
+The canonical hardware visual is generated only after:
+
+- at least one real-backend run completes successfully
+- the exact command path for reproduction is documented
+- the note explicitly constrains the claim to a minimal reality check
+
+Default paper role:
+
+- appendix by default
+
+Main-paper promotion is allowed only if the hardware slice materially sharpens `RQ4` rather than merely adding realism flavor.
+
 ## Acceptance Criteria
 
 - [ ] At least one real-backend run completes successfully.
 - [ ] The output package is reproducible with documented commands.
 - [ ] The paper-facing note states that this is a minimal slice, not a broad hardware benchmark.
 - [ ] The hardware evidence can be cited in main text or appendix without overclaiming.
+- [ ] Any canonical hardware figure or table is generated only after the run package and reproduction command are frozen.
 
 ## Dependencies
 
