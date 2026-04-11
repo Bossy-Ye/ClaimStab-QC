@@ -76,6 +76,22 @@ Expected paper role:
 Current status:
 - `partially ready`
 
+### Tab A-RQ3. Scope Transport Summary
+
+Purpose:
+- compact appendix-facing table for `RQ3`
+- summarizes which representative cases are robustly stable, robustly unstable, or boundary-sensitive
+
+Generated source:
+- [tab_rq3_scope_transport_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq3_scope_transport_summary.csv)
+
+Expected paper role:
+- support the scope-transport figure with a compact textual summary
+- keep the main text focused while preserving explicit case taxonomy
+
+Current status:
+- `ready as source`
+
 ### Tab 4. Cost / Policy Summary
 
 Purpose:

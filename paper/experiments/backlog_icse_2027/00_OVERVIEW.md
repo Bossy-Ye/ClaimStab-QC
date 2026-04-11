@@ -24,6 +24,19 @@ ClaimStab-QC is a claim-centric validation methodology for quantum software expe
 - broad platform redesign
 - new large algorithm families unless they directly strengthen a core paper claim
 
+## Deferred Strengthening
+
+The following line of work is explicitly deferred until after the core
+claim-centric ICSE evidence surface is stable:
+
+- benchmark-backed external validation using scalable circuit suites
+
+If pursued, this must remain:
+
+- an external validation layer
+- benchmark-family support for claim-centric analysis
+- not a replacement for `02_E1_METRIC_VS_CLAIM`
+
 ## Outputs
 
 - frozen thesis sentence

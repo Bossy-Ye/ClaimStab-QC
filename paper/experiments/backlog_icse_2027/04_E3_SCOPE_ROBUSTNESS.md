@@ -6,23 +6,33 @@ Demonstrate that verdicts are evaluated relative to explicit admissibility choic
 
 ## Inputs
 
-- admissibility checklist
-- scope-robustness analyses
-- selected clear-stable, clear-unstable, and near-boundary claims
+- existing scope-robustness source:
+  - `output/paper/evaluation_v4/derived_paper_evaluation/RQ2_semantics/scope_robustness.csv`
+- selected representative archetypes:
+  - one clear-stable case
+  - one clear-unstable case
+  - one near-boundary case
+- paper-facing presentation surface under:
+  - `paper/presentation/icse_2027/`
 
 ## Outputs
 
-- protocol/scope sensitivity table or heatmap
+- `output/paper/icse_pack/derived/RQ3/scope_transport_dataset.csv`
+- `output/paper/icse_pack/tables/tab_rq3_scope_transport_summary.csv`
+- `output/paper/icse_pack/figures/main/fig4_scope_transport_map.png`
 - short interpretation note
-- boundary-sensitive classification summary
+- explicit transport taxonomy:
+  - `robustly stable`
+  - `robustly unstable`
+  - `boundary-sensitive`
 
 ## Acceptance Criteria
 
-- [ ] Includes at least one robustly stable case.
-- [ ] Includes at least one robustly unstable case.
-- [ ] Includes at least one boundary-sensitive case.
-- [ ] Uses explicit protocol variations, not ad-hoc prose only.
-- [ ] Interpretation note states what the results mean for methodological rigor.
+- [x] Includes at least one robustly stable case.
+- [x] Includes at least one robustly unstable case.
+- [x] Includes at least one boundary-sensitive case.
+- [x] Uses explicit protocol variations, not ad-hoc prose only.
+- [x] Interpretation note states what the results mean for methodological rigor.
 
 ## Dependencies
 
@@ -33,8 +43,9 @@ Demonstrate that verdicts are evaluated relative to explicit admissibility choic
 
 - [ ] Not started
 - [ ] In progress
-- [ ] Done
+- [x] Done
 
 ## Notes
 
 This task strengthens rigor. It should read as method validation, not as scope apology.
+The paper-facing framing should emphasize scope transport, not arbitrary scope tweaking.

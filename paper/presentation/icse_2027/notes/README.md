@@ -16,6 +16,7 @@ These notes are designed to be reused when drafting:
 - [rq1_results_prose.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq1_results_prose.md)
 - [rq1_baseline_comparison_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq1_baseline_comparison_note.md)
 - [rq2_semantic_discrimination_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq2_semantic_discrimination_note.md)
+- [rq3_scope_robustness_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq3_scope_robustness_note.md)
 - [rq3_explanation_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq3_explanation_note.md)
 - [rq4_practicality_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq4_practicality_note.md)
 - [hamiltonian_correctness_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/hamiltonian_correctness_note.md)

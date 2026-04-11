@@ -27,6 +27,7 @@ Primary task files:
 - [08_FIGURES_AND_TABLES.md](./08_FIGURES_AND_TABLES.md)
 - [09_ICSE_PACK_AND_ARTIFACT.md](./09_ICSE_PACK_AND_ARTIFACT.md)
 - [10_PAPER_FRAMING.md](./10_PAPER_FRAMING.md)
+- [11_BENCHMARK_EXTERNAL_VALIDATION.md](./11_BENCHMARK_EXTERNAL_VALIDATION.md)
 
 Suggested execution order:
 
@@ -40,3 +41,9 @@ Suggested execution order:
 8. `08_FIGURES_AND_TABLES`
 9. `09_ICSE_PACK_AND_ARTIFACT`
 10. `10_PAPER_FRAMING`
+
+Deferred strengthening task:
+
+11. `11_BENCHMARK_EXTERNAL_VALIDATION`
+   - only after the core claim-centric evidence surface is stable
+   - use benchmark suites as an external validation layer, not as a replacement for `02`

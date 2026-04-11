@@ -405,53 +405,66 @@ def _build_main_paper_structural_table(dataset: pd.DataFrame) -> list[dict[str, 
 def _render_metric_positive_headline_figure(dataset: pd.DataFrame, out_png: Path, out_pdf: Path) -> dict[str, Any]:
     metric_positive_df = dataset[dataset["metric_verdict"] == "positive"].copy()
     total = int(len(metric_positive_df))
-    segments = [
-        ("validated", int((metric_positive_df["claim_validation_outcome"] == "validated").sum()), "#2ca02c"),
-        ("unstable", int((metric_positive_df["claim_validation_outcome"] == "unstable").sum()), "#d62728"),
-        ("inconclusive", int((metric_positive_df["claim_validation_outcome"] == "inconclusive").sum()), "#7f7f7f"),
-        ("refuted", int((metric_positive_df["claim_validation_outcome"] == "refuted").sum()), "#9467bd"),
-    ]
+    validated_count = int((metric_positive_df["claim_validation_outcome"] == "validated").sum())
+    not_validated_count = total - validated_count
+    validated_share = 100.0 * validated_count / total if total else 0.0
+    not_validated_share = 100.0 * not_validated_count / total if total else 0.0
 
     plt.rcParams.update(
         {
-            "font.family": "DejaVu Sans",
-            "font.size": 10,
-            "axes.titlesize": 12,
-            "axes.labelsize": 10,
-            "xtick.labelsize": 9,
-            "ytick.labelsize": 9,
+            "font.family": ["Times New Roman", "Times", "serif"],
+            "figure.facecolor": "white",
+            "axes.facecolor": "white",
+            "font.size": 12,
+            "axes.titlesize": 18,
+            "axes.labelsize": 12,
+            "xtick.labelsize": 11,
+            "ytick.labelsize": 11,
         }
     )
-    fig, ax = plt.subplots(figsize=(8.0, 2.7))
-    left = 0
-    for label, count, color in segments:
-        if count <= 0:
-            continue
-        ax.barh(["metric-positive variants"], [count], left=left, color=color, edgecolor="white", height=0.6)
-        share = 100.0 * count / total if total else 0.0
-        ax.text(left + count / 2, 0, f"{label}\n{count} ({share:.1f}%)", ha="center", va="center", fontsize=10, color="white" if color != "#7f7f7f" else "black", fontweight="bold")
-        left += count
+    fig, ax = plt.subplots(figsize=(8.6, 2.4))
+    ax.barh([0], [validated_count], left=0, color="#4f6b50", edgecolor="white", height=0.72)
+    ax.barh([0], [not_validated_count], left=validated_count, color="#a44d4d", edgecolor="white", height=0.72)
 
-    false_reassurance = total - int((metric_positive_df["claim_validation_outcome"] == "validated").sum())
-    false_rate = 100.0 * false_reassurance / total if total else 0.0
-    ax.set_xlim(0, total if total else 1)
-    ax.set_xlabel("count among metric-positive variants")
-    ax.set_title("Metric-Positive Outcomes Do Not Reliably Imply Claim Validation")
-    ax.grid(False)
-    for spine in ["top", "right", "left"]:
-        ax.spines[spine].set_visible(False)
-    ax.tick_params(axis="y", length=0)
-    ax.tick_params(axis="x", length=3, color="#666666")
-    fig.text(
-        0.5,
-        0.93,
-        f"Headline result: {false_reassurance}/{total} metric-positive variants are not claim-validated ({false_rate:.1f}%).",
+    ax.text(
+        validated_count / 2,
+        0,
+        f"Validated\n{validated_count}",
         ha="center",
         va="center",
-        fontsize=10,
-        color="#444444",
+        fontsize=12,
+        color="white",
+        fontweight="bold",
     )
-    fig.tight_layout(rect=(0.0, 0.0, 1.0, 0.88))
+    ax.text(
+        validated_count + not_validated_count / 2,
+        0,
+        f"Not validated\n{not_validated_count}",
+        ha="center",
+        va="center",
+        fontsize=12,
+        color="white",
+        fontweight="bold",
+    )
+    ax.text(
+        validated_count + not_validated_count / 2,
+        0.39,
+        f"{not_validated_count}/{total} ({not_validated_share:.1f}%) not validated",
+        ha="center",
+        va="bottom",
+        fontsize=12,
+        color="#222222",
+        fontweight="bold",
+    )
+
+    ax.set_xlim(0, total if total else 1)
+    ax.set_ylim(-0.55, 0.7)
+    ax.set_title("Over Half of Metric-Positive Results Are Not Claim-Validated", pad=16)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    fig.tight_layout()
     out_png.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_png, dpi=240)
     fig.savefig(out_pdf)
@@ -460,8 +473,8 @@ def _render_metric_positive_headline_figure(dataset: pd.DataFrame, out_png: Path
         "figure_png": str(out_png.resolve()),
         "figure_pdf": str(out_pdf.resolve()),
         "metric_positive_total": total,
-        "false_reassurance_count": false_reassurance,
-        "false_reassurance_rate": false_rate / 100.0 if total else None,
+        "false_reassurance_count": not_validated_count,
+        "false_reassurance_rate": not_validated_share / 100.0 if total else None,
     }
 
 
@@ -481,16 +494,18 @@ def _render_discrepancy_matrix(dataset: pd.DataFrame, out_png: Path, out_pdf: Pa
 
     plt.rcParams.update(
         {
-            "font.family": "DejaVu Sans",
-            "font.size": 10,
-            "axes.titlesize": 12,
-            "axes.labelsize": 10,
-            "xtick.labelsize": 9,
-            "ytick.labelsize": 9,
+            "font.family": ["Times New Roman", "Times", "serif"],
+            "figure.facecolor": "white",
+            "axes.facecolor": "white",
+            "font.size": 12,
+            "axes.titlesize": 16,
+            "axes.labelsize": 12,
+            "xtick.labelsize": 11,
+            "ytick.labelsize": 11,
         }
     )
-    fig, ax = plt.subplots(figsize=(7.4, 3.9))
-    image = ax.imshow(values, cmap="Blues", vmin=0.0, vmax=max(max(row) for row in values) if total else 1.0)
+    fig, ax = plt.subplots(figsize=(7.2, 4.3))
+    image = ax.imshow(values, cmap="Greys", vmin=0.0, vmax=max(max(row) for row in values) if total else 1.0, aspect="auto")
 
     for row_idx, metric in enumerate(METRIC_VERDICT_ORDER):
         for col_idx, claim in enumerate(CLAIM_OUTCOME_ORDER):
@@ -499,58 +514,48 @@ def _render_discrepancy_matrix(dataset: pd.DataFrame, out_png: Path, out_pdf: Pa
             ax.text(
                 col_idx,
                 row_idx,
-                f"n={count}\n{share:.1f}%",
+                f"{count}\n({share:.1f}%)",
                 ha="center",
                 va="center",
-                fontsize=10,
+                fontsize=11,
                 color="black",
                 fontweight="bold" if metric == "positive" and claim != "validated" else "normal",
             )
 
-    # Highlight false-reassurance cells.
-    for col_idx, claim in enumerate(CLAIM_OUTCOME_ORDER):
-        if claim == "validated":
-            continue
-        ax.add_patch(
-            Rectangle(
-                (col_idx - 0.5, 0 - 0.5),
-                1.0,
-                1.0,
-                fill=False,
-                linewidth=2.6,
-                edgecolor="#d62728",
-            )
-        )
-
     ax.set_xticks(range(len(CLAIM_OUTCOME_ORDER)))
-    ax.set_xticklabels(["claim\nvalidated", "claim\nrefuted", "claim\nunstable", "claim\ninconclusive"])
+    ax.set_xticklabels(["Validated", "Refuted", "Unstable", "Inconclusive"])
     ax.set_yticks(range(len(METRIC_VERDICT_ORDER)))
-    ax.set_yticklabels(["metric positive", "metric negative"])
-    ax.set_title("Metric vs Claim Discrepancy Matrix")
-    ax.set_xlabel("claim validation outcome")
-    ax.set_ylabel("metric-level verdict")
+    ax.set_yticklabels(["Metric positive", "Metric negative"])
+    ax.set_title("Metric Support vs Claim Validation")
+    ax.set_xlabel("Claim validation outcome")
+    ax.set_ylabel("Metric verdict")
 
     false_rows = dataset[dataset["false_reassurance_type"] != "none"]
     metric_positive = int((dataset["metric_verdict"] == "positive").sum())
     false_rate = _safe_rate(int(len(false_rows)), metric_positive)
     fig.text(
         0.5,
-        0.95,
-        (
-            f"False reassurance among metric-positive variants: "
-            f"{len(false_rows)}/{metric_positive} = {100.0 * false_rate:.1f}%"
-            if false_rate is not None
-            else "False reassurance among metric-positive variants: n/a"
-        ),
+        0.94,
+        "Distribution of claim outcomes conditioned on metric verdict",
         ha="center",
         va="center",
-        fontsize=10,
+        fontsize=11,
         color="#444444",
     )
-
-    cbar = fig.colorbar(image, ax=ax, fraction=0.046, pad=0.04)
-    cbar.set_label("share of all claim variants")
-
+    ax.annotate(
+        "metric-positive but not validated",
+        xy=(2.0, 0.0),
+        xytext=(3.35, -0.15),
+        arrowprops={"arrowstyle": "-", "color": "#666666", "lw": 1.2},
+        fontsize=10,
+        color="#555555",
+        ha="left",
+        va="center",
+    )
+    ax.set_xticks([x - 0.5 for x in range(1, len(CLAIM_OUTCOME_ORDER))], minor=True)
+    ax.set_yticks([y - 0.5 for y in range(1, len(METRIC_VERDICT_ORDER))], minor=True)
+    ax.grid(which="minor", color="white", linewidth=2.0)
+    ax.tick_params(which="minor", bottom=False, left=False)
     fig.tight_layout(rect=(0.0, 0.0, 1.0, 0.9))
     out_png.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_png, dpi=240)

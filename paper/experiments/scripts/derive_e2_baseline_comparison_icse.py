@@ -319,40 +319,42 @@ def _render_baseline_disagreement_figure(summary_rows: list[dict[str, Any]], out
 
     plt.rcParams.update(
         {
-            "font.family": "DejaVu Sans",
-            "font.size": 10,
-            "axes.titlesize": 12,
-            "axes.labelsize": 10,
-            "xtick.labelsize": 9,
-            "ytick.labelsize": 9,
+            "font.family": ["Times New Roman", "Times", "serif"],
+            "figure.facecolor": "white",
+            "axes.facecolor": "white",
+            "font.size": 12,
+            "axes.titlesize": 16,
+            "axes.labelsize": 12,
+            "xtick.labelsize": 11,
+            "ytick.labelsize": 11,
         }
     )
-    fig, ax = plt.subplots(figsize=(8.2, 4.1))
+    fig, ax = plt.subplots(figsize=(8.8, 3.9))
     ax.barh(
         y_positions,
         validated_counts,
-        color="#2d7f5e",
+        color="#4f6b50",
         edgecolor="white",
         height=0.66,
-        label="validated",
+        label="Validated",
     )
     ax.barh(
         y_positions,
         false_counts,
         left=validated_counts,
-        color="#b0413e",
+        color="#a44d4d",
         edgecolor="white",
         height=0.66,
-        label="false reassurance",
+        label="False reassurance",
     )
     ax.set_yticks(y_positions, labels=labels)
     ax.invert_yaxis()
     ax.set_xlim(0, max(supportive_counts + [1]) + 4)
-    ax.set_xlabel("baseline-supportive claim variants")
-    ax.set_title("Validated vs False Reassurance Among Baseline-Supportive Variants")
+    ax.set_xlabel("Number of claims marked supportive")
+    ax.set_title("Validated Claims vs False Reassurance")
     ax.grid(axis="x", color="#dddddd", linewidth=0.8, alpha=0.8)
     ax.set_axisbelow(True)
-    ax.legend(loc="upper right", frameon=False, ncol=2)
+    ax.legend(loc="center left", bbox_to_anchor=(1.01, 0.88), frameon=False, ncol=1, fontsize=10.5)
 
     for y, validated, false, supportive in zip(y_positions, validated_counts, false_counts, supportive_counts):
         rate = 0.0 if supportive == 0 else 100.0 * false / supportive
@@ -363,10 +365,10 @@ def _render_baseline_disagreement_figure(summary_rows: list[dict[str, Any]], out
                 f"{validated}",
                 ha="center",
                 va="center",
-                fontsize=9,
-                color="white",
-                fontweight="bold",
-            )
+            fontsize=8.5,
+            color="white",
+            fontweight="bold",
+        )
         if false > 0:
             ax.text(
                 validated + false / 2.0,
@@ -374,31 +376,21 @@ def _render_baseline_disagreement_figure(summary_rows: list[dict[str, Any]], out
                 f"{false}",
                 ha="center",
                 va="center",
-                fontsize=9,
+                fontsize=8.5,
                 color="white",
                 fontweight="bold",
             )
         ax.text(
             supportive + 0.18,
             y,
-            f"{false}/{supportive} ({rate:.1f}%)",
+            f"{false}/{supportive}",
             ha="left",
             va="center",
-            fontsize=9,
+            fontsize=8.5,
             fontweight="bold",
             color="#333333",
         )
-
-    fig.text(
-        0.5,
-        0.96,
-        "Each bar shows only variants that a method marked supportive; ClaimStab-QC has 0 false reassurance by construction.",
-        ha="center",
-        va="center",
-        fontsize=9,
-        color="#555555",
-    )
-    fig.tight_layout(rect=(0.0, 0.0, 1.0, 0.91))
+    fig.tight_layout(rect=(0.0, 0.0, 0.88, 1.0))
     out_png.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_png, dpi=240)
     fig.savefig(out_pdf)

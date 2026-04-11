@@ -89,6 +89,17 @@ Primary generated assets currently live in:
 Curated paper-facing note:
 - [rq1_baseline_comparison_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq1_baseline_comparison_note.md)
 
+### RQ3: Scope robustness
+
+Primary generated assets currently live in:
+- [scope_transport_dataset.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/derived/RQ3/scope_transport_dataset.csv)
+- [tab_rq3_scope_transport_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq3_scope_transport_summary.csv)
+- [fig4_scope_transport_map.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig4_scope_transport_map.png)
+- [scope_transport_interpretation.md](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/derived/RQ3/scope_transport_interpretation.md)
+
+Curated paper-facing note:
+- [rq3_scope_robustness_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq3_scope_robustness_note.md)
+
 ### Hamiltonian correctness audit
 
 Current audit material lives in:
@@ -102,7 +113,7 @@ Curated paper-facing note:
 - `RQ1` curated surface: active
 - `RQ1 baseline comparison`: active
 - `RQ2` curated surface: pending
-- `RQ3` curated surface: pending
+- `RQ3` curated surface: active
 - `RQ4` curated surface: pending
 
 ## Curation rule

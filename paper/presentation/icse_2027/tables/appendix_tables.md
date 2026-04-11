@@ -103,6 +103,19 @@ Current status:
 - `ready as source`
 - `appendix placement recommended if main paper keeps only the capability matrix`
 
+### Tab A7. Scope Transport Summary
+
+Purpose:
+- appendix support for `RQ3`
+- records the explicit case taxonomy behind the scope-transport figure
+
+Generated source:
+- [tab_rq3_scope_transport_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq3_scope_transport_summary.csv)
+
+Current status:
+- `ready as source`
+- `appendix placement recommended`
+
 ## Recommendation
 
 Appendix should definitely include:
@@ -110,4 +123,4 @@ Appendix should definitely include:
 - `Tab A3`
 - `Tab A4`
 
-`Tab A5` and `Tab A6` are valuable but optional if time becomes tight.
+`Tab A5`, `Tab A6`, and `Tab A7` are valuable but optional if time becomes tight.

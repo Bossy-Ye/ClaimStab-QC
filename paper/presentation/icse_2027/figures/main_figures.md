@@ -62,22 +62,23 @@ Current status:
 - `ready as source`
 - `needs final caption and paper numbering`
 
-### Fig 4. Scope Robustness / Protocol Sensitivity
+### Fig 4. Scope Transport Across Nearby Admissible Variants
 
 Purpose:
 - primary `RQ3` figure
 - shows whether verdicts transport under nearby admissibility/protocol choices
 
 Generated source:
-- [fig_b_scope_robustness.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/pack/figures/main/fig_b_scope_robustness.png)
+- [fig4_scope_transport_map.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig4_scope_transport_map.png)
+- [fig4_scope_transport_map.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig4_scope_transport_map.pdf)
 
 Expected paper role:
 - support the claim that admissible scope must be explicit
-- distinguish robustly stable / robustly unstable / boundary-sensitive behavior
+- distinguish robustly stable / robustly unstable / boundary-sensitive behavior through explicit transport classes
 
 Current status:
 - `ready as source`
-- `paper-facing wording needs final tightening`
+- `main-paper or appendix use both justified`
 
 ### Fig 5. Cost / Configuration Tradeoff
 
