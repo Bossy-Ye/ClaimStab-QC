@@ -112,6 +112,17 @@ Primary generated assets currently live in:
 Curated paper-facing note:
 - [rq3_exact_witness_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq3_exact_witness_note.md)
 
+### RQ4: Practicality and cost
+
+Primary generated assets currently live in:
+- [practicality_tradeoff_dataset.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/derived/RQ4/practicality_tradeoff_dataset.csv)
+- [tab4_rq4_practicality_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab4_rq4_practicality_summary.csv)
+- [fig4_cost_configuration_tradeoff.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig4_cost_configuration_tradeoff.png)
+- [practicality_interpretation.md](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/derived/RQ4/practicality_interpretation.md)
+
+Curated paper-facing note:
+- [rq4_practicality_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq4_practicality_note.md)
+
 ### Hamiltonian correctness audit
 
 Current audit material lives in:
@@ -126,7 +137,7 @@ Curated paper-facing note:
 - `RQ1 baseline comparison`: active
 - `RQ2` curated surface: pending
 - `RQ3` curated surface: active
-- `RQ4` curated surface: pending
+- `RQ4` curated surface: active
 
 ## Curation rule
 

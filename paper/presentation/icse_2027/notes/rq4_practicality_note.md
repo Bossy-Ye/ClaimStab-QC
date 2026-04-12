@@ -3,15 +3,16 @@
 `RQ4` asks whether the method is operationally usable, not whether it is always cheap.
 
 Primary generated sources:
-- [w5_policy_by_strategy.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v3/derived_paper_evaluation/RQ4_practicality/w5_policy_by_strategy.csv)
-- [fig_w5_near_boundary_tradeoff.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v3/pack/figures/main/fig_w5_near_boundary_tradeoff.png)
+- [practicality_tradeoff_dataset.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/derived/RQ4/practicality_tradeoff_dataset.csv)
+- [tab4_rq4_practicality_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab4_rq4_practicality_summary.csv)
+- [fig4_cost_configuration_tradeoff.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig4_cost_configuration_tradeoff.png)
 
 ## Main reading
 
 The current pattern is:
+- all current strategies preserve full-factorial decisions in the current clear-case and boundary-case packs
 - adaptive strategies save substantial effort on clear cases
-- near-boundary claims remain more expensive
-- agreement can remain high even when cost increases sharply
+- near-boundary claims remain more expensive even when decision agreement is preserved
 
 This should be framed as:
 - a conservative decision-theoretic tradeoff

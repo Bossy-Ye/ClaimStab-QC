@@ -68,16 +68,17 @@ Purpose:
 - primary `RQ4` figure
 - summarizes cost-efficiency under clear cases and near-boundary cases
 
-Generated source candidate:
-- [fig_w5_near_boundary_tradeoff.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v3/pack/figures/main/fig_w5_near_boundary_tradeoff.png)
+Generated source:
+- [fig4_cost_configuration_tradeoff.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig4_cost_configuration_tradeoff.png)
+- [fig4_cost_configuration_tradeoff.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig4_cost_configuration_tradeoff.pdf)
 
 Expected paper role:
 - show that adaptive strategies help in clear cases
 - show that boundary cases remain more expensive
 
 Current status:
-- `source data and candidate figure ready`
-- `final ICSE-style unified version pending`
+- `ready as source`
+- `main-paper use recommended`
 
 ## Recommendation
 

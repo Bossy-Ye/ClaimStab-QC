@@ -41,7 +41,7 @@ The default ICSE full-paper figure plan is:
    - role: shows that failures admit compact sufficient witness sets
 
 4. `Fig 4` `RQ4` practicality
-   - source task: `07_E6_REAL_HARDWARE` and/or cost-efficiency work reused in `RQ4`
+   - source task: `12_RQ4_PRACTICALITY`
    - figure: cost / configuration tradeoff
    - role: shows that validation is practical rather than merely correct
 
@@ -172,6 +172,7 @@ All canonical paper figures must satisfy:
 - [05_E4_EXACT_MOS.md](./05_E4_EXACT_MOS.md)
 - [06_E5_CROSS_FAMILY.md](./06_E5_CROSS_FAMILY.md)
 - [07_E6_REAL_HARDWARE.md](./07_E6_REAL_HARDWARE.md)
+- [12_RQ4_PRACTICALITY.md](./12_RQ4_PRACTICALITY.md)
 
 ## Status
 

@@ -112,17 +112,16 @@ Purpose:
 - `RQ4` practicality table
 - summarizes the cost-efficiency tradeoff across policy choices
 
-Generated source candidates:
-- [e5_policy_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v2/derived_paper_evaluation/RQ4_practicality/e5_policy_summary.csv)
-- [w5_policy_by_strategy.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v3/derived_paper_evaluation/RQ4_practicality/w5_policy_by_strategy.csv)
+Generated source:
+- [tab4_rq4_practicality_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab4_rq4_practicality_summary.csv)
 
 Expected paper role:
 - support the main cost/configuration tradeoff figure
 - state the clear-case vs near-boundary cost gap
 
 Current status:
-- `source data ready`
-- `final table design pending`
+- `ready as source`
+- `appendix placement recommended if main-paper space becomes tight`
 
 ## Current recommendation
 
