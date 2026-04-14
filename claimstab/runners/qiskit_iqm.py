@@ -14,9 +14,25 @@ from claimstab.devices.spec import DeviceProfile
 type Counts = dict[str, int]
 type MetricFn = Callable[[Counts], float]
 
+_FACADE_BACKENDS = (
+    "facade_adonis",
+    "facade_apollo",
+    "facade_aphrodite",
+    "facade_deneb",
+    "facade_garnet",
+)
+
+
+def _is_facade_backend_name(name: str | None) -> bool:
+    return bool(name and name in _FACADE_BACKENDS)
+
+
+def _is_mock_quantum_computer(name: str | None) -> bool:
+    return bool(name and str(name).endswith(":mock"))
+
 
 @dataclass(frozen=True, slots=True)
-class IBMRuntimeRunResult:
+class IQMRunResult:
     counts: Counts | None
     transpiled_depth: int
     transpiled_size: int
@@ -32,66 +48,72 @@ class IBMRuntimeRunResult:
     wall_time_ms: float | None = None
 
 
-def _load_runtime_types():
+def _load_iqm_provider_type():
     try:
-        from qiskit_ibm_runtime import QiskitRuntimeService, SamplerV2
+        from iqm.qiskit_iqm import IQMProvider
     except Exception as exc:  # pragma: no cover - import path depends on optional dep
         raise ImportError(
-            "IBM runtime support requires qiskit-ibm-runtime. Install with:\n"
-            "  pip install 'claimstab-qc[ibm]'"
+            "IQM hardware support requires iqm-client with Qiskit extras. Install with:\n"
+            "  pip install 'claimstab-qc[iqm]'"
         ) from exc
-    return QiskitRuntimeService, SamplerV2
+    return IQMProvider
 
 
-class QiskitIBMRuntimeRunner:
-    """Minimal real-hardware runner for small ClaimStab slices.
-
-    This runner intentionally targets small, explicit hardware slices rather than
-    the full paper matrix. It uses IBM Runtime SamplerV2 and converts measured
-    bit arrays back into counts so the existing claim-centric pipeline can be
-    reused without changing claim semantics.
-    """
+class QiskitIQMRunner:
+    """Minimal IQM/VTT hardware runner for small ClaimStab slices."""
 
     def __init__(
         self,
         engine: str | None = None,
         *,
+        server_url: str | None = None,
+        quantum_computer: str | None = None,
         backend_name: str | None = None,
-        channel: str | None = None,
-        instance: str | None = None,
         token: str | None = None,
-        token_env: str = "IBM_QUANTUM_TOKEN",
-        account_name: str | None = None,
+        token_env: str = "IQM_TOKEN",
+        calibration_set_id: str | None = None,
         cache_transpilation: bool = True,
         **_: Any,
     ) -> None:
         del engine  # kept for drop-in compatibility with the Aer runner constructor
-        self.backend_name = backend_name or os.getenv("CLAIMSTAB_IBM_BACKEND")
-        if not self.backend_name:
-            raise ValueError(
-                "IBM hardware execution requires a backend name. "
-                "Set CLAIMSTAB_IBM_BACKEND or pass backend_name explicitly."
-            )
-
-        self.channel = channel or os.getenv("CLAIMSTAB_IBM_CHANNEL", "ibm_quantum_platform")
-        self.instance = instance or os.getenv("CLAIMSTAB_IBM_INSTANCE")
+        self.server_url = server_url or os.getenv("CLAIMSTAB_IQM_SERVER_URL")
+        self.quantum_computer = quantum_computer or os.getenv("CLAIMSTAB_IQM_QUANTUM_COMPUTER")
+        self.backend_name = backend_name or os.getenv("CLAIMSTAB_IQM_BACKEND")
         self.token = token if token is not None else os.getenv(token_env)
-        self.account_name = account_name or os.getenv("CLAIMSTAB_IBM_ACCOUNT_NAME")
+        self.calibration_set_id = calibration_set_id or os.getenv("CLAIMSTAB_IQM_CALIBRATION_SET_ID")
         self.cache_transpilation = bool(cache_transpilation)
         self._transpile_cache: dict[tuple[object, ...], QuantumCircuit] = {}
 
-        service_cls, sampler_cls = _load_runtime_types()
-        service_kwargs: dict[str, Any] = {"channel": self.channel}
-        if self.token:
-            service_kwargs["token"] = self.token
-        if self.instance:
-            service_kwargs["instance"] = self.instance
-        if self.account_name:
-            service_kwargs["name"] = self.account_name
+        if not self.server_url:
+            raise ValueError(
+                "IQM hardware execution requires a server URL. "
+                "Set CLAIMSTAB_IQM_SERVER_URL or pass server_url explicitly."
+            )
+        if not self.quantum_computer:
+            raise ValueError(
+                "IQM hardware execution requires a quantum computer name. "
+                "Set CLAIMSTAB_IQM_QUANTUM_COMPUTER or pass quantum_computer explicitly."
+            )
+        if _is_facade_backend_name(self.backend_name) and not _is_mock_quantum_computer(self.quantum_computer):
+            raise ValueError(
+                "IQM facade backends must be used with a mock quantum computer name ending in ':mock'. "
+                "Using a facade backend against a real quantum computer can waste credits and time."
+            )
 
-        self.service = service_cls(**service_kwargs)
-        self.backend = self.service.backend(self.backend_name, instance=self.instance)
-        self.sampler = sampler_cls(mode=self.backend)
+        provider_cls = _load_iqm_provider_type()
+        provider_kwargs: dict[str, Any] = {"quantum_computer": self.quantum_computer}
+        if self.token:
+            provider_kwargs["token"] = self.token
+        self.provider = provider_cls(self.server_url, **provider_kwargs)
+
+        backend_kwargs: dict[str, Any] = {}
+        if self.calibration_set_id:
+            backend_kwargs["calibration_set_id"] = self.calibration_set_id
+
+        if self.backend_name:
+            self.backend = self.provider.get_backend(self.backend_name, **backend_kwargs)
+        else:
+            self.backend = self.provider.get_backend(**backend_kwargs)
 
         try:
             snap = snapshot_from_backend(self.backend)
@@ -99,49 +121,75 @@ class QiskitIBMRuntimeRunner:
             backend_name_attr = getattr(self.backend, "name", None)
             backend_name_value = backend_name_attr() if callable(backend_name_attr) else backend_name_attr
             snap = {
-                "backend_name": str(backend_name_value or self.backend_name),
+                "backend_name": str(backend_name_value or self.backend_name or self.quantum_computer),
                 "backend_class": type(self.backend).__name__,
                 "num_qubits": int(getattr(self.backend, "num_qubits", 0) or 0),
             }
         self.snapshot = snap
         self.snapshot_fingerprint = fingerprint(snap)
+        if _is_facade_backend_name(self.backend_name):
+            self.device_mode = "facade"
+        elif _is_mock_quantum_computer(self.quantum_computer):
+            self.device_mode = "mock_hardware"
+        else:
+            self.device_mode = "hardware"
 
-    @staticmethod
+    @classmethod
     def available_backends(
+        cls,
         *,
-        channel: str | None = None,
-        instance: str | None = None,
+        server_url: str | None = None,
+        quantum_computer: str | None = None,
         token: str | None = None,
-        token_env: str = "IBM_QUANTUM_TOKEN",
-        account_name: str | None = None,
-        min_num_qubits: int | None = None,
+        token_env: str = "IQM_TOKEN",
+        calibration_set_id: str | None = None,
+        include_facades: bool = True,
     ) -> list[dict[str, Any]]:
-        service_cls, _ = _load_runtime_types()
-        service_kwargs: dict[str, Any] = {
-            "channel": channel or os.getenv("CLAIMSTAB_IBM_CHANNEL", "ibm_quantum_platform")
-        }
+        resolved_server_url = server_url or os.getenv("CLAIMSTAB_IQM_SERVER_URL")
+        resolved_quantum_computer = quantum_computer or os.getenv("CLAIMSTAB_IQM_QUANTUM_COMPUTER")
+        if not resolved_server_url or not resolved_quantum_computer:
+            raise ValueError(
+                "Listing IQM backends requires both server_url and quantum_computer. "
+                "Set CLAIMSTAB_IQM_SERVER_URL / CLAIMSTAB_IQM_QUANTUM_COMPUTER or pass them explicitly."
+            )
+
+        provider_cls = _load_iqm_provider_type()
+        provider_kwargs: dict[str, Any] = {"quantum_computer": resolved_quantum_computer}
         resolved_token = token if token is not None else os.getenv(token_env)
-        resolved_instance = instance or os.getenv("CLAIMSTAB_IBM_INSTANCE")
-        resolved_name = account_name or os.getenv("CLAIMSTAB_IBM_ACCOUNT_NAME")
         if resolved_token:
-            service_kwargs["token"] = resolved_token
-        if resolved_instance:
-            service_kwargs["instance"] = resolved_instance
-        if resolved_name:
-            service_kwargs["name"] = resolved_name
-        service = service_cls(**service_kwargs)
-        backends = service.backends(instance=resolved_instance, min_num_qubits=min_num_qubits)
+            provider_kwargs["token"] = resolved_token
+        provider = provider_cls(resolved_server_url, **provider_kwargs)
+
+        backend_kwargs: dict[str, Any] = {}
+        resolved_calibration = calibration_set_id or os.getenv("CLAIMSTAB_IQM_CALIBRATION_SET_ID")
+        if resolved_calibration:
+            backend_kwargs["calibration_set_id"] = resolved_calibration
+
         rows: list[dict[str, Any]] = []
-        for backend in backends:
-            name_attr = getattr(backend, "name", None)
-            name_value = name_attr() if callable(name_attr) else name_attr
+
+        def _append_row(name: str | None, backend: Any, mode: str) -> None:
+            backend_name_attr = getattr(backend, "name", None)
+            backend_name_value = backend_name_attr() if callable(backend_name_attr) else backend_name_attr
             rows.append(
                 {
-                    "name": str(name_value),
+                    "name": str(backend_name_value or name or resolved_quantum_computer),
+                    "mode": mode,
                     "num_qubits": int(getattr(backend, "num_qubits", 0) or 0),
-                    "status": str(getattr(backend, "status", lambda: "unknown")()),
                 }
             )
+
+        default_backend = provider.get_backend(**backend_kwargs)
+        default_mode = "mock_hardware" if _is_mock_quantum_computer(resolved_quantum_computer) else "hardware"
+        _append_row(None, default_backend, default_mode)
+
+        if include_facades:
+            for facade_name in _FACADE_BACKENDS:
+                try:
+                    facade_backend = provider.get_backend(facade_name, **backend_kwargs)
+                except Exception:
+                    continue
+                _append_row(facade_name, facade_backend, "facade")
+
         return rows
 
     @staticmethod
@@ -162,40 +210,29 @@ class QiskitIBMRuntimeRunner:
         return two_qubit_count, swap_count
 
     @staticmethod
-    def _counts_from_pub_result(pub_result: Any) -> Counts:
-        join_data = getattr(pub_result, "join_data", None)
-        if callable(join_data):
-            joined = join_data()
-            get_counts = getattr(joined, "get_counts", None)
-            if callable(get_counts):
-                return {str(k): int(v) for k, v in dict(get_counts()).items()}
-
-        data = getattr(pub_result, "data", None)
-        if data is not None:
-            for name in dir(data):
-                if name.startswith("_"):
-                    continue
-                try:
-                    slot = getattr(data, name)
-                except Exception:
-                    continue
-                get_counts = getattr(slot, "get_counts", None)
-                if callable(get_counts):
-                    return {str(k): int(v) for k, v in dict(get_counts()).items()}
-
-        raise ValueError("Sampler result does not expose measurable counts.")
+    def _counts_from_job_result(job_result: Any) -> Counts:
+        get_counts = getattr(job_result, "get_counts", None)
+        if callable(get_counts):
+            counts = get_counts()
+            if isinstance(counts, list):
+                if not counts:
+                    raise ValueError("IQM job result returned an empty counts list.")
+                counts = counts[0]
+            return {str(k): int(v) for k, v in dict(counts).items()}
+        raise ValueError("IQM job result does not expose get_counts().")
 
     def _transpile_cache_key(self, circuit: QuantumCircuit, cfg: Any) -> tuple[object, ...]:
-        qasm = None
         try:
             from qiskit import qasm2
 
             qasm = qasm2.dumps(circuit)
         except Exception:
             qasm = repr(circuit)
+        backend_name_attr = getattr(self.backend, "name", None)
+        backend_name_value = backend_name_attr() if callable(backend_name_attr) else backend_name_attr
         return (
             qasm,
-            str(self.backend_name),
+            str(backend_name_value or self.backend_name or self.quantum_computer),
             int(getattr(cfg, "optimization_level", 0)),
             getattr(cfg, "seed_transpiler", None),
             getattr(cfg, "layout_method", None),
@@ -227,10 +264,10 @@ class QiskitIBMRuntimeRunner:
         noise_model_mode: str = "none",
         device_snapshot_fingerprint: str | None = None,
         device_snapshot_summary: dict[str, object] | None = None,
-    ) -> IBMRuntimeRunResult:
+    ) -> IQMRunResult:
         del device_profile, device_backend
         if noise_model_mode != "none":
-            raise ValueError("IBM hardware runner does not support simulator noise-model injection.")
+            raise ValueError("IQM hardware runner does not support simulator noise-model injection.")
 
         wall_start = perf_counter()
         transpile_start = perf_counter()
@@ -238,24 +275,23 @@ class QiskitIBMRuntimeRunner:
         transpile_ms = (perf_counter() - transpile_start) * 1000.0
 
         execute_start = perf_counter()
-        job = self.sampler.run([transpiled], shots=int(getattr(cfg, "shots", 1024)))
-        pub_result = job.result()[0]
-        counts = self._counts_from_pub_result(pub_result)
+        job = self.backend.run(transpiled, shots=int(getattr(cfg, "shots", 1024)))
+        counts = self._counts_from_job_result(job.result())
         execute_ms = (perf_counter() - execute_start) * 1000.0
         wall_ms = (perf_counter() - wall_start) * 1000.0
 
         two_qubit_count, swap_count = self._transpiled_stats(transpiled)
         backend_name_attr = getattr(self.backend, "name", None)
         backend_name_value = backend_name_attr() if callable(backend_name_attr) else backend_name_attr
-        return IBMRuntimeRunResult(
+        return IQMRunResult(
             counts=counts,
             transpiled_depth=int(transpiled.depth()),
             transpiled_size=int(transpiled.size()),
             two_qubit_count=int(two_qubit_count),
             swap_count=int(swap_count),
-            device_provider="ibm_runtime",
-            device_name=str(backend_name_value or self.backend_name),
-            device_mode="hardware",
+            device_provider="iqm",
+            device_name=str(backend_name_value or self.backend_name or self.quantum_computer),
+            device_mode=self.device_mode,
             device_snapshot_fingerprint=device_snapshot_fingerprint or self.snapshot_fingerprint,
             device_snapshot_summary=device_snapshot_summary or self.snapshot,
             transpile_time_ms=transpile_ms,

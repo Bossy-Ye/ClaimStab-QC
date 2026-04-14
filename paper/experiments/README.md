@@ -30,6 +30,7 @@ Revision checklist:
 - `scripts/reproduce_evaluation_v3.py`
 - `scripts/derive_icse_strengthening_v4.py`
 - `scripts/run_real_hardware_slice_v1.py`
+- `scripts/run_real_hardware_slice_iqm.py`
 
 ## Active Specs
 
