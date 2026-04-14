@@ -14,6 +14,11 @@ The current pattern is:
 - adaptive strategies save substantial effort on clear cases
 - near-boundary claims remain more expensive even when decision agreement is preserved
 
+Important scope limit:
+- this is a same-agreement, different-cost comparison
+- it should not be described as a general cost-accuracy frontier
+- the current `RQ4` evidence is limited to the clear-case `E5` pack and the near-boundary `W5` pack
+
 This should be framed as:
 - a conservative decision-theoretic tradeoff
 - not a failure of the method
@@ -22,4 +27,5 @@ This should be framed as:
 
 Claim-level validation is practical for many clear cases, but difficult
 boundary cases still require more evidence. This is expected behavior for a
-conservative validation method.
+conservative validation method. The current evidence shows an operational
+budget gap under matched agreement, not a universal cost-accuracy law.

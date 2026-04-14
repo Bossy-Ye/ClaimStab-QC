@@ -4,15 +4,18 @@
 not merely a thin wrapper around generic sensitivity analysis.
 
 Primary generated sources:
-- [fig_a_cross_family_verdicts.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/pack/figures/main/fig_a_cross_family_verdicts.png)
-- [tab_a_cross_family_false_reassurance.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/pack/tables/tab_a_cross_family_false_reassurance.csv)
+- [cross_family_dataset.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/derived/RQ2/cross_family_dataset.csv)
+- [tab_rq2_cross_family_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq2_cross_family_summary.csv)
+- [fig5_cross_family_outcomes.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig5_cross_family_outcomes.png)
 
 ## Main reading
 
-The verdict distribution is heterogeneous across families:
+This note covers comparative / ranking claims only.
+
+The outcome distribution is heterogeneous across algorithm families:
 - `MaxCut QAOA` is dominated by unstable comparative claims
-- `Max-2-SAT QAOA` is mixed, with many validated and some unstable claims
-- `VQE/H2` is mostly stable on the ClaimStab decision layer, but often stably refuted on the baseline claim truth layer
+- `Max-2-SAT QAOA` is mixed, with many validated and some unstable / inconclusive claims
+- `VQE/H2` is mostly refuted rather than unstable
 
 This heterogeneity matters because it shows that:
 - the framework does not simply classify everything as unstable
@@ -21,5 +24,6 @@ This heterogeneity matters because it shows that:
 
 ## Safe paper-facing takeaway
 
-The method is semantically discriminative across claim populations rather than
-uniformly pessimistic.
+The method is semantically discriminative across comparative claim populations
+rather than uniformly pessimistic. Hardware / execution-family expansion remains
+outside the current `06` scope.

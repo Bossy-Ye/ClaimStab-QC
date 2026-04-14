@@ -76,8 +76,8 @@ Purpose:
 - shows that claim behavior differs across algorithm/task families
 
 Generated source:
-- [fig_a_cross_family_verdicts.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/pack/figures/main/fig_a_cross_family_verdicts.png)
-- [fig_a_cross_family_verdicts.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/pack/figures/main/fig_a_cross_family_verdicts.pdf)
+- [fig5_cross_family_outcomes.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig5_cross_family_outcomes.png)
+- [fig5_cross_family_outcomes.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig5_cross_family_outcomes.pdf)
 
 Current status:
 - `ready as source`

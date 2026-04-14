@@ -118,6 +118,19 @@ Current status:
 - `ready as source`
 - `appendix placement recommended`
 
+### Tab A8. Cross-Family Outcome Summary
+
+Purpose:
+- appendix support for `RQ2`
+- records the comparative-claim outcome mix across algorithm families
+
+Generated source:
+- [tab_rq2_cross_family_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq2_cross_family_summary.csv)
+
+Current status:
+- `ready as source`
+- `appendix placement recommended`
+
 ## Recommendation
 
 Appendix should definitely include:
