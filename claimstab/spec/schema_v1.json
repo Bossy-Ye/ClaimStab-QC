@@ -232,7 +232,7 @@
       "type": "object",
       "properties": {
         "enabled": {"type": "boolean"},
-        "provider": {"type": "string", "enum": ["none", "ibm_fake", "generic"]},
+        "provider": {"type": "string", "enum": ["none", "ibm_fake", "iqm_fake", "generic"]},
         "name": {"type": ["string", "null"]},
         "mode": {"type": "string", "enum": ["transpile_only", "noisy_sim"]},
         "basis_gates": {

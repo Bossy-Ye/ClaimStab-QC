@@ -8,18 +8,22 @@ Add one minimal IQM/VTT real-hardware validation slice to show the methodology i
 
 - IQM-first, not IBM-first
 - BV only in the first wave
+- local IQM fake rehearsal before facade or real backend
 - facade/mock path first, real backend second
 - appendix by default
 
 ## Priority Order
 
-1. BV
-2. Grover (only if BV is already stable)
-3. VQE (only if BV and Grover are already stable)
+1. BV local rehearsal (`IQMFakeAphrodite` noisy simulation)
+2. BV facade/mock run
+3. BV real backend
+4. Grover (only if BV is already stable)
+5. VQE (only if BV and Grover are already stable)
 
 ## Inputs
 
 - IQM runner and hardware-slice script
+- local IQM fake-backend rehearsal spec
 - hardware slice specs
 - IQM server URL, quantum-computer name, and token
 - optional facade backend for dry runs (e.g. `facade_aphrodite`)
@@ -27,6 +31,7 @@ Add one minimal IQM/VTT real-hardware validation slice to show the methodology i
 ## Outputs
 
 - one real-hardware result package
+- one local fake-backend rehearsal package
 - one small hardware-facing figure or table
 - one short interpretation note stating what the slice does and does not prove
 
@@ -34,6 +39,7 @@ Add one minimal IQM/VTT real-hardware validation slice to show the methodology i
 
 The canonical hardware visual is generated only after:
 
+- the local IQM fake rehearsal succeeds on the same BV slice
 - the IQM facade or mock path runs end-to-end
 - at least one real-backend run completes successfully
 - the exact command path for reproduction is documented
@@ -48,6 +54,7 @@ Main-paper promotion is allowed only if the hardware slice materially sharpens `
 ## Acceptance Criteria
 
 - [ ] An IQM facade or mock run completes successfully through the same ClaimStab pipeline used for hardware.
+- [ ] A local IQM fake-backend rehearsal completes successfully on the BV slice with `backend.noise_model=from_device_profile`.
 - [ ] At least one real IQM/VTT backend run completes successfully on the BV slice.
 - [ ] The output package is reproducible with documented commands and environment variables.
 - [ ] The paper-facing note states that this is a minimal slice, not a broad hardware benchmark.
@@ -74,10 +81,15 @@ Do not try to use all 54 qubits. The value of this task is a direct hardware pat
 Suggested command path:
 
 ```bash
+./venv/bin/python -m claimstab.cli run \
+  --spec paper/experiments/specs/evaluation_v4/d0_bv_iqm_fake_rehearsal.yml \
+  --out-dir output/paper/evaluation_v4/runs/D0_bv_iqm_fake_rehearsal \
+  --report
+
 ./venv/bin/python paper/experiments/scripts/run_real_hardware_slice_iqm.py \
   --list-backends \
   --server-url "$CLAIMSTAB_IQM_SERVER_URL" \
-  --quantum-computer "$CLAIMSTAB_IQM_QUANTUM_COMPUTER" \
+  --quantum-computer "$CLAIMSTAB_IQM_QUANTUM_COMPUTER_MOCK" \
   --include-facades
 
 ./venv/bin/python paper/experiments/scripts/run_real_hardware_slice_iqm.py \

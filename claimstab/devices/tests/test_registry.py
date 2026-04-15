@@ -28,7 +28,34 @@ class TestDeviceRegistry(unittest.TestCase):
                 resolve_device_profile(profile)
         self.assertIn("qiskit-ibm-runtime", str(ctx.exception))
 
+    def test_iqm_fake_provider_is_accepted(self) -> None:
+        profile = parse_device_profile(
+            {
+                "enabled": True,
+                "provider": "iqm_fake",
+                "name": "IQMFakeAphrodite",
+                "mode": "noisy_sim",
+            }
+        )
+        self.assertTrue(profile.enabled)
+        self.assertEqual(profile.provider, "iqm_fake")
+        self.assertEqual(profile.name, "IQMFakeAphrodite")
+        self.assertEqual(profile.mode, "noisy_sim")
+
+    def test_iqm_fake_missing_dependency_raises_clean_error(self) -> None:
+        profile = parse_device_profile(
+            {
+                "enabled": True,
+                "provider": "iqm_fake",
+                "name": "IQMFakeAphrodite",
+                "mode": "noisy_sim",
+            }
+        )
+        with patch("claimstab.devices.iqm_fake.importlib.import_module", side_effect=ImportError("missing")):
+            with self.assertRaises(ImportError) as ctx:
+                resolve_device_profile(profile)
+        self.assertIn("iqm-client", str(ctx.exception))
+
 
 if __name__ == "__main__":
     unittest.main()
-

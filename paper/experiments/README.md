@@ -51,6 +51,7 @@ Revision checklist:
 
 ### evaluation_v4
 
+- `d0_bv_iqm_fake_rehearsal.yml`
 - `d1_bv_hardware_slice.yml`
 - `d1_grover_hardware_slice.yml`
 - `d1_vqe_hardware_slice.yml`
@@ -58,4 +59,5 @@ Revision checklist:
 ## Notes
 
 - `S1` is a controlled structural portability study, not a full noisy-device rerun.
+- `D0` is the local IQM fake-backend rehearsal. It should be run before any facade or real IQM/VTT execution.
 - `W4` should only report inter-rater agreement after real labels are placed under `paper/experiments/data/admissibility_v1/ratings/`.
