@@ -3,9 +3,9 @@
 `RQ4` asks whether the method is operationally usable, not whether it is always cheap.
 
 Primary generated sources:
-- [practicality_tradeoff_dataset.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/derived/RQ4/practicality_tradeoff_dataset.csv)
-- [tab4_rq4_practicality_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab4_rq4_practicality_summary.csv)
-- [fig4_cost_configuration_tradeoff.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig4_cost_configuration_tradeoff.png)
+- [practicality_tradeoff_dataset.csv](../../../../output/paper/icse_pack/derived/RQ4/practicality_tradeoff_dataset.csv)
+- [tab4_rq4_practicality_summary.csv](../../../../output/paper/icse_pack/tables/tab4_rq4_practicality_summary.csv)
+- [fig4_cost_configuration_tradeoff.png](../../../../output/paper/icse_pack/figures/main/fig4_cost_configuration_tradeoff.png)
 
 ## Main reading
 

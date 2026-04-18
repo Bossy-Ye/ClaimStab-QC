@@ -16,6 +16,8 @@ Core verdicts:
 - `unstable`
 - `inconclusive`
 
+The verdicts are reported relative to the author-declared admissible perturbation scope and a stability threshold `tau` with a Wilson confidence interval. They are not statements about absolute scientific correctness; see [paper/PAPER_SCOPE.md](./paper/PAPER_SCOPE.md).
+
 ## Start Here
 
 Choose one entry point:
@@ -92,7 +94,7 @@ If you want the evidence index first, start with:
 - [docs/results/figures.md](./docs/results/figures.md)
 - [docs/experiment_matrix.md](./docs/experiment_matrix.md)
 
-## ICSE 2027 Sprint Lock
+## Current Paper Lock
 
 For the current paper sprint, the contribution boundary is fixed to:
 
@@ -120,3 +122,4 @@ These are kept, but they are not the first-run path:
 
 - [paper/PAPER_SCOPE.md](./paper/PAPER_SCOPE.md)
 - [docs/compatibility_contract.md](./docs/compatibility_contract.md)
+- [docs/repo_layout.md](./docs/repo_layout.md)

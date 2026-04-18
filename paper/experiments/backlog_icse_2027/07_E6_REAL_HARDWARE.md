@@ -38,6 +38,8 @@ Add one minimal IQM/VTT real-hardware validation slice to show the methodology i
 - one local fake-backend rehearsal package
 - one small hardware-facing figure or table
 - one short interpretation note stating what the slice does and does not prove
+- optional supporting non-target hardware note when a minimal real run lands on
+  a different provider family before the target IQM/VTT path
 
 ## Canonical Figure Timing
 
@@ -92,6 +94,15 @@ Current pre-hardware evidence:
 - within the frozen IQM fake family, both BV decision claims were `profile_robust`
 - therefore a minimal real-IQM BV slice is worth attempting
 
+Additional supporting evidence already available:
+
+- one minimal `BVOracle`-only real run completed on `IBM Open Plan`
+- this run is recorded as a supporting reality check in:
+  - `paper/presentation/icse_2027/notes/hardware_reality_check_note.md`
+- it does not satisfy the target IQM/VTT acceptance criterion for this task
+- it does show that the frozen minimal slice survives a real-backend path on a
+  non-target provider family
+
 Current recommendation:
 
 - proceed to IQM facade/mock first
@@ -106,13 +117,13 @@ Suggested command path:
   --out-dir output/paper/evaluation_v4/runs/D0_bv_iqm_fake_rehearsal \
   --report
 
-./venv/bin/python paper/experiments/scripts/run_real_hardware_slice_iqm.py \
+./venv/bin/python paper/experiments/scripts/run_hardware_slice_iqm.py \
   --list-backends \
   --server-url "$CLAIMSTAB_IQM_SERVER_URL" \
   --quantum-computer "$CLAIMSTAB_IQM_QUANTUM_COMPUTER_MOCK" \
   --include-facades
 
-./venv/bin/python paper/experiments/scripts/run_real_hardware_slice_iqm.py \
+./venv/bin/python paper/experiments/scripts/run_hardware_slice_iqm.py \
   --spec paper/experiments/specs/evaluation_v4/d1_bv_hardware_slice.yml \
   --out-dir output/paper/evaluation_v4/runs/D1_bv_hardware_slice_iqm_facade \
   --server-url "$CLAIMSTAB_IQM_SERVER_URL" \

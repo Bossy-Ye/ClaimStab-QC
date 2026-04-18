@@ -4,13 +4,13 @@ This note records the structured `RQ1` breakdowns that should accompany the main
 metric-vs-claim result.
 
 Primary source tables:
-- [tab_mismatch_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_mismatch_summary.csv)
-- [tab_false_reassurance_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_false_reassurance_breakdown.csv)
-- [tab_rq1_family_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_family_breakdown.csv)
-- [tab_rq1_scope_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_scope_breakdown.csv)
-- [tab_rq1_delta_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_delta_breakdown.csv)
-- [tab_rq1_primary_family_sensitivity.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_primary_family_sensitivity.csv)
-- [tab_rq1_leave_one_family_out_sensitivity.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_leave_one_family_out_sensitivity.csv)
+- [tab_mismatch_summary.csv](../../../../output/paper/icse_pack/tables/tab_mismatch_summary.csv)
+- [tab_false_reassurance_breakdown.csv](../../../../output/paper/icse_pack/tables/tab_false_reassurance_breakdown.csv)
+- [tab_rq1_family_breakdown.csv](../../../../output/paper/icse_pack/tables/tab_rq1_family_breakdown.csv)
+- [tab_rq1_scope_breakdown.csv](../../../../output/paper/icse_pack/tables/tab_rq1_scope_breakdown.csv)
+- [tab_rq1_delta_breakdown.csv](../../../../output/paper/icse_pack/tables/tab_rq1_delta_breakdown.csv)
+- [tab_rq1_primary_family_sensitivity.csv](../../../../output/paper/icse_pack/tables/tab_rq1_primary_family_sensitivity.csv)
+- [tab_rq1_leave_one_family_out_sensitivity.csv](../../../../output/paper/icse_pack/tables/tab_rq1_leave_one_family_out_sensitivity.csv)
 
 ## Why these breakdowns matter
 
@@ -38,7 +38,7 @@ So the current conditional false-reassurance rate is:
 
 ## Breakdown by algorithm family
 
-From [tab_rq1_family_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_family_breakdown.csv):
+From [tab_rq1_family_breakdown.csv](../../../../output/paper/icse_pack/tables/tab_rq1_family_breakdown.csv):
 
 - `MaxCut QAOA`
   - `27` variants total
@@ -64,7 +64,7 @@ Interpretation:
 
 ## Breakdown by perturbation scope
 
-From [tab_rq1_scope_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_scope_breakdown.csv):
+From [tab_rq1_scope_breakdown.csv](../../../../output/paper/icse_pack/tables/tab_rq1_scope_breakdown.csv):
 
 - `compilation_only_exact`
   - `27` variants
@@ -91,7 +91,7 @@ Interpretation:
 
 ## Breakdown by delta
 
-From [tab_rq1_delta_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_delta_breakdown.csv):
+From [tab_rq1_delta_breakdown.csv](../../../../output/paper/icse_pack/tables/tab_rq1_delta_breakdown.csv):
 
 - `delta = 0.00`
   - `21` variants
@@ -117,7 +117,7 @@ Interpretation:
 
 ## Sensitivity checks
 
-From [tab_rq1_primary_family_sensitivity.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_primary_family_sensitivity.csv):
+From [tab_rq1_primary_family_sensitivity.csv](../../../../output/paper/icse_pack/tables/tab_rq1_primary_family_sensitivity.csv):
 
 - `MaxCut` primary-family-only:
   - `27` variants
@@ -125,7 +125,7 @@ From [tab_rq1_primary_family_sensitivity.csv](/Users/mac/Documents/GitHub/ClaimS
   - `9` false-reassurance cases
   - conditional false-reassurance rate = `100.0%`
 
-From [tab_rq1_leave_one_family_out_sensitivity.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_leave_one_family_out_sensitivity.csv):
+From [tab_rq1_leave_one_family_out_sensitivity.csv](../../../../output/paper/icse_pack/tables/tab_rq1_leave_one_family_out_sensitivity.csv):
 
 - leave out `VQE/H2`
   - `45` variants

@@ -2,6 +2,10 @@
 
 Updated: 2026-03-19
 
+This page is a public readiness summary. It should not be treated as the
+canonical manuscript-facing interpretation surface; that role belongs to
+`paper/presentation/icse_2027/`.
+
 ## Active Bundle Status
 
 The active paper-facing bundle is:
@@ -41,14 +45,15 @@ The current bundle contains completed outputs for:
 
 ## Readiness Assessment
 
-The current bundle is strong enough to support the main ICSE-style narrative, provided the writing reflects the actual rerun rather than the earlier plan.
+The current bundle is strong enough to support the current paper narrative,
+provided the writing reflects the actual rerun rather than the earlier plan.
 
 What is strong now:
 
-- `E1` clearly supports the main fragility-prevalence claim.
-- The metric-based baseline mismatch is strong (`9/9` false reassurance under the fixed 5-run metric summary).
-- Claim-family discrimination is visible across ranking, decision, and distribution claims.
-- `E5` now supports a real cost/agreement tradeoff claim.
+- `E1` clearly supports the main fragility-prevalence claim on the MaxCut `E1` population.
+- The metric-based baseline mismatch is strong on MaxCut `E1` (`9/9` false-reassurance under the fixed 5-run metric summary); on the unified cross-family mismatch surface the conditional rate is `14/27 = 51.9%`, confirming the phenomenon is structural but population-dependent.
+- Claim-family discrimination is visible across ranking, decision, and distribution claims (`E3` is a clean stable control; `E4` is a clean unstable control).
+- `E5` now supports a real cost/agreement tradeoff claim on clear cases; `W5` near-boundary evidence shows that adaptive policies remain correct but consume much more budget on borderline claims.
 
 What must still be written carefully:
 

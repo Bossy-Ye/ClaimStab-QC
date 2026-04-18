@@ -56,17 +56,17 @@ Reference method:
 
 ## Inputs
 
-- `/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/derived/RQ1/metric_claim_comparison_dataset.csv`
+- `../../../output/paper/icse_pack/derived/RQ1/metric_claim_comparison_dataset.csv`
 - existing `W3` analyses and sensitivity outputs under:
-  - `/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v3/derived_paper_evaluation/RQ1_necessity/`
+  - `../../../output/paper/evaluation_v3/derived_paper_evaluation/RQ1_necessity`
 - existing comparative runs:
   - `E1 MaxCut`
   - `W1 Max-2-SAT`
   - `W1 VQE/H2`
 - current script base:
-  - `/Users/mac/Documents/GitHub/ClaimStab-QC/paper/experiments/scripts/derive_rq1_metric_baselines_v3.py`
-  - `/Users/mac/Documents/GitHub/ClaimStab-QC/paper/experiments/scripts/derive_e1_metric_vs_claim_icse.py`
-  - `/Users/mac/Documents/GitHub/ClaimStab-QC/claimstab/figures/baseline_compare.py`
+  - `../scripts/derive_rq1_metric_baselines_v3.py`
+  - `../scripts/export_rq1_metric_vs_claim.py`
+  - `../../../claimstab/figures/baseline_compare.py`
 
 ## Required Dataset Schema
 

@@ -88,7 +88,7 @@ def _mutate_payload_for_hardware(bundle, runner: QiskitIBMRuntimeRunner, args: a
         "channel": runner.channel,
         "instance": runner.instance,
         "list_backends_command_ready": True,
-        "script": "paper/experiments/scripts/run_real_hardware_slice_v1.py",
+        "script": "paper/experiments/scripts/run_hardware_slice_ibm.py",
     }
     for exp in payload.get("experiments", []):
         if isinstance(exp, dict):

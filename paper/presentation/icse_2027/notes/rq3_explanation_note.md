@@ -5,9 +5,9 @@
 - show that claim failure can be explained by compact sufficient perturbation subsets
 
 Primary generated sources:
-- [scope_robustness.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/derived_paper_evaluation/RQ2_semantics/scope_robustness.csv)
-- [fig_b_scope_robustness.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/pack/figures/main/fig_b_scope_robustness.png)
-- [tab_c_exact_vs_greedy_mos.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/pack/tables/tab_c_exact_vs_greedy_mos.csv)
+- [scope_robustness.csv](../../../../output/paper/evaluation_v4/derived_paper_evaluation/RQ2_semantics/scope_robustness.csv)
+- [fig_b_scope_robustness.png](../../../../output/paper/evaluation_v4/pack/figures/main/fig_b_scope_robustness.png)
+- [tab_c_exact_vs_greedy_mos.csv](../../../../output/paper/evaluation_v4/pack/tables/tab_c_exact_vs_greedy_mos.csv)
 
 ## Main reading
 

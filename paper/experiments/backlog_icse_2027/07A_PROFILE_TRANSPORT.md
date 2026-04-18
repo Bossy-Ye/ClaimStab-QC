@@ -62,14 +62,14 @@ The study should first establish **within-family profile transport**, and only t
 ## Inputs
 
 - `BV` decision-claim task surface from:
-  - `/Users/mac/Documents/GitHub/ClaimStab-QC/paper/experiments/specs/evaluation_v2/e3_bv_decision.yml`
+  - `../specs/evaluation_v2/e3_bv_decision.yml`
 - local IQM fake rehearsal surface from:
-  - `/Users/mac/Documents/GitHub/ClaimStab-QC/paper/experiments/specs/evaluation_v4/d0_bv_iqm_fake_rehearsal.yml`
+  - `../specs/evaluation_v4/d0_bv_iqm_fake_rehearsal.yml`
 - device-profile support in:
-  - `/Users/mac/Documents/GitHub/ClaimStab-QC/claimstab/devices/registry.py`
-  - `/Users/mac/Documents/GitHub/ClaimStab-QC/claimstab/devices/iqm_fake.py`
+  - `../../../claimstab/devices/registry.py`
+  - `../../../claimstab/devices/iqm_fake.py`
 - existing IBM fake support in:
-  - `/Users/mac/Documents/GitHub/ClaimStab-QC/claimstab/devices/ibm_fake.py`
+  - `../../../claimstab/devices/ibm_fake.py`
 
 ## Outputs
 
@@ -173,7 +173,7 @@ Observed result on the frozen five-profile set:
 
 Canonical outputs:
 
-- `/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/derived/HW/profile_transport_dataset.csv`
-- `/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_profile_transport_summary.csv`
-- `/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/appendix/fig_profile_transport_map.png`
-- `/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/derived/HW/profile_transport_interpretation.md`
+- `../../../output/paper/icse_pack/derived/HW/profile_transport_dataset.csv`
+- `../../../output/paper/icse_pack/tables/tab_profile_transport_summary.csv`
+- `../../../output/paper/icse_pack/figures/appendix/fig_profile_transport_map.png`
+- `../../../output/paper/icse_pack/derived/HW/profile_transport_interpretation.md`

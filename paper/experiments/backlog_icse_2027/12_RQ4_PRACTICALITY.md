@@ -8,9 +8,9 @@ cheap and when conservative validation still requires larger budgets.
 
 ## Inputs
 
-- `/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v2/derived_paper_evaluation/RQ4_practicality/e5_policy_summary.csv`
-- `/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v3/derived_paper_evaluation/RQ4_practicality/w5_policy_by_strategy.csv`
-- `/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v3/derived_paper_evaluation/RQ4_practicality/w5_policy_by_variant.csv`
+- `../../../output/paper/evaluation_v2/derived_paper_evaluation/RQ4_practicality/e5_policy_summary.csv`
+- `../../../output/paper/evaluation_v3/derived_paper_evaluation/RQ4_practicality/w5_policy_by_strategy.csv`
+- `../../../output/paper/evaluation_v3/derived_paper_evaluation/RQ4_practicality/w5_policy_by_variant.csv`
 
 ## Outputs
 

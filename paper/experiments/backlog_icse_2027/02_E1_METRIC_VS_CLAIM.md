@@ -9,10 +9,10 @@ This task supports the main RQ1 claim:
 
 ## Inputs
 
-- `/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v3/derived_paper_evaluation/RQ1_necessity/e1_metric_matched_scope_table.csv`
-- `/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v4/derived_paper_evaluation/RQ1_necessity/cross_family_metric_baselines.csv`
+- `../../../output/paper/evaluation_v3/derived_paper_evaluation/RQ1_necessity/e1_metric_matched_scope_table.csv`
+- `../../../output/paper/evaluation_v4/derived_paper_evaluation/RQ1_necessity/cross_family_metric_baselines.csv`
 - Optional appendix/supporting source:
-  - `/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/evaluation_v3/derived_paper_evaluation/RQ1_necessity/e5_metric_fullgrid_table.csv`
+  - `../../../output/paper/evaluation_v3/derived_paper_evaluation/RQ1_necessity/e5_metric_fullgrid_table.csv`
 
 ## Scope Freeze
 
@@ -175,7 +175,7 @@ This is the main experimental strike. If this task is weak, the paper is weak.
 
 Implementation completed via:
 
-- `/Users/mac/Documents/GitHub/ClaimStab-QC/paper/experiments/scripts/derive_e1_metric_vs_claim_icse.py`
+- `../scripts/export_rq1_metric_vs_claim.py`
 - `output/paper/icse_pack/derived/RQ1/metric_claim_comparison_dataset.csv`
 - `output/paper/icse_pack/tables/tab_mismatch_summary.csv`
 - `output/paper/icse_pack/tables/tab_false_reassurance_breakdown.csv`

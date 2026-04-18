@@ -4,7 +4,7 @@ This note summarizes how the algorithm families used in the paper should be
 treated from a reviewer-risk perspective.
 
 Primary audit source:
-- [audit_report.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/experiments/audits/hamiltonian_correctness/audit_report.md)
+- [audit_report.md](../../../experiments/audits/hamiltonian_correctness/audit_report.md)
 
 ## Evidence grading
 

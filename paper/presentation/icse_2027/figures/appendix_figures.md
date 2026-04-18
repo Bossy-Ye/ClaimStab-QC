@@ -12,8 +12,8 @@ Purpose:
 - shows the full `metric verdict × claim validation outcome` surface
 
 Generated source:
-- [fig1_metric_claim_discrepancy_matrix.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig1_metric_claim_discrepancy_matrix.png)
-- [fig1_metric_claim_discrepancy_matrix.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig1_metric_claim_discrepancy_matrix.pdf)
+- [fig1_metric_claim_discrepancy_matrix.png](../../../../output/paper/icse_pack/figures/main/fig1_metric_claim_discrepancy_matrix.png)
+- [fig1_metric_claim_discrepancy_matrix.pdf](../../../../output/paper/icse_pack/figures/main/fig1_metric_claim_discrepancy_matrix.pdf)
 
 Expected paper role:
 - appendix support for the `RQ1` headline figure
@@ -30,7 +30,7 @@ Purpose:
 
 Generated source:
 - pending final promotion from:
-  - [tab_false_reassurance_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_false_reassurance_breakdown.csv)
+  - [tab_false_reassurance_breakdown.csv](../../../../output/paper/icse_pack/tables/tab_false_reassurance_breakdown.csv)
 
 Expected paper role:
 - show that mismatch is not a single aggregate artifact
@@ -46,8 +46,8 @@ Purpose:
 - shows distributional properties of exact or approximate overturn witnesses
 
 Generated source:
-- [fig3_exact_witness_sizes.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig3_exact_witness_sizes.png)
-- [fig3_exact_witness_sizes.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig3_exact_witness_sizes.pdf)
+- [fig3_exact_witness_sizes.png](../../../../output/paper/icse_pack/figures/main/fig3_exact_witness_sizes.png)
+- [fig3_exact_witness_sizes.pdf](../../../../output/paper/icse_pack/figures/main/fig3_exact_witness_sizes.pdf)
 
 Current status:
 - `ready as source`
@@ -59,8 +59,8 @@ Purpose:
 - shows whether verdicts transport under nearby admissibility/protocol choices
 
 Generated source:
-- [fig4_scope_transport_map.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig4_scope_transport_map.png)
-- [fig4_scope_transport_map.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig4_scope_transport_map.pdf)
+- [fig4_scope_transport_map.png](../../../../output/paper/icse_pack/figures/main/fig4_scope_transport_map.png)
+- [fig4_scope_transport_map.pdf](../../../../output/paper/icse_pack/figures/main/fig4_scope_transport_map.pdf)
 
 Expected paper role:
 - support the claim that admissible scope must be explicit
@@ -76,8 +76,8 @@ Purpose:
 - shows that claim behavior differs across algorithm/task families
 
 Generated source:
-- [fig5_cross_family_outcomes.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig5_cross_family_outcomes.png)
-- [fig5_cross_family_outcomes.pdf](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig5_cross_family_outcomes.pdf)
+- [fig5_cross_family_outcomes.png](../../../../output/paper/icse_pack/figures/main/fig5_cross_family_outcomes.png)
+- [fig5_cross_family_outcomes.pdf](../../../../output/paper/icse_pack/figures/main/fig5_cross_family_outcomes.pdf)
 
 Current status:
 - `ready as source`

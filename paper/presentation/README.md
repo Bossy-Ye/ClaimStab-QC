@@ -9,5 +9,5 @@ It is a lightweight editorial layer that organizes:
 - figure/table inventories,
 - and manuscript-ready wording.
 
-Current active surface:
-- [icse_2027](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/README.md)
+Current active submission surface:
+- [icse_2027](icse_2027/README.md)

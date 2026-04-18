@@ -88,7 +88,7 @@ def _mutate_payload_for_hardware(bundle, runner: QiskitIQMRunner, args: argparse
         "backend_name": runner.backend_name,
         "calibration_set_id": runner.calibration_set_id,
         "execution_mode": runner.device_mode,
-        "script": "paper/experiments/scripts/run_real_hardware_slice_iqm.py",
+        "script": "paper/experiments/scripts/run_hardware_slice_iqm.py",
         "spec": str(args.spec),
     }
 

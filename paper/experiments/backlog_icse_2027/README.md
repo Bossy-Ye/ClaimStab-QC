@@ -1,6 +1,27 @@
 # ICSE 2027 Sprint Backlog
 
-This directory is the execution surface for the ICSE 2027 Research Track push.
+This directory is the execution and work-tracking surface for the ICSE 2027
+Research Track push.
+
+It is not the canonical manuscript prose surface.
+
+Use this directory for:
+
+- task goals
+- acceptance criteria
+- task status
+- dependencies
+- pointers to canonical outputs
+
+Do not treat backlog files as the source of truth for:
+
+- abstract or introduction wording
+- final result paragraphs
+- caption-ready manuscript prose
+
+Those belong under:
+
+- [`../../presentation/icse_2027/`](../../presentation/icse_2027/)
 
 The paper target is fixed:
 
@@ -13,6 +34,8 @@ Execution rules:
 2. Do not mark a task done until its acceptance criteria are satisfied.
 3. Do not expand the project into a full workflow platform during this sprint.
 4. Keep the GitHub website and docs surface, but avoid adding new public clutter.
+5. If a wording conflict exists between a backlog file and the submission-facing
+   definitions or notes, the submission-facing surface wins.
 
 Primary task files:
 

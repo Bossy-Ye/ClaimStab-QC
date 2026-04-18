@@ -9,18 +9,23 @@ These notes are designed to be reused when drafting:
 - appendix explanations,
 - artifact summaries.
 
+They are the preferred manuscript-facing interpretation layer. If a note here
+conflicts with wording in a backlog file or public summary page, this directory
+takes precedence for the paper draft.
+
 ## Inventory
 
-- [rq1_metric_claim_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq1_metric_claim_note.md)
-- [rq1_breakdowns_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq1_breakdowns_note.md)
-- [rq1_results_prose.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq1_results_prose.md)
-- [rq1_baseline_comparison_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq1_baseline_comparison_note.md)
-- [rq2_semantic_discrimination_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq2_semantic_discrimination_note.md)
-- [rq3_scope_robustness_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq3_scope_robustness_note.md)
-- [rq3_explanation_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq3_explanation_note.md)
-- [rq3_exact_witness_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq3_exact_witness_note.md)
-- [rq4_practicality_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/rq4_practicality_note.md)
-- [hamiltonian_correctness_note.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/notes/hamiltonian_correctness_note.md)
+- [rq1_metric_claim_note.md](rq1_metric_claim_note.md)
+- [rq1_breakdowns_note.md](rq1_breakdowns_note.md)
+- [rq1_results_prose.md](rq1_results_prose.md)
+- [rq1_baseline_comparison_note.md](rq1_baseline_comparison_note.md)
+- [rq2_semantic_discrimination_note.md](rq2_semantic_discrimination_note.md)
+- [rq3_scope_robustness_note.md](rq3_scope_robustness_note.md)
+- [rq3_explanation_note.md](rq3_explanation_note.md)
+- [rq3_exact_witness_note.md](rq3_exact_witness_note.md)
+- [rq4_practicality_note.md](rq4_practicality_note.md)
+- [hamiltonian_correctness_note.md](hamiltonian_correctness_note.md)
+- [hardware_reality_check_note.md](hardware_reality_check_note.md)
 
 ## Rule
 

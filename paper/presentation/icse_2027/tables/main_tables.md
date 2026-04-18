@@ -11,7 +11,7 @@ Purpose:
 - reports the main mismatch counts behind the `metric vs claim` result
 
 Generated source:
-- [tab1_rq1_structural_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab1_rq1_structural_breakdown.csv)
+- [tab1_rq1_structural_breakdown.csv](../../../../output/paper/icse_pack/tables/tab1_rq1_structural_breakdown.csv)
 
 Expected paper role:
 - summarize the headline mismatch and its key structural breakdowns in one compact table
@@ -22,10 +22,10 @@ Current status:
 - `needs final paper formatting`
 
 Structured supporting sources:
-- [tab_mismatch_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_mismatch_summary.csv)
-- [tab_rq1_family_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_family_breakdown.csv)
-- [tab_rq1_scope_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_scope_breakdown.csv)
-- [tab_rq1_delta_breakdown.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq1_delta_breakdown.csv)
+- [tab_mismatch_summary.csv](../../../../output/paper/icse_pack/tables/tab_mismatch_summary.csv)
+- [tab_rq1_family_breakdown.csv](../../../../output/paper/icse_pack/tables/tab_rq1_family_breakdown.csv)
+- [tab_rq1_scope_breakdown.csv](../../../../output/paper/icse_pack/tables/tab_rq1_scope_breakdown.csv)
+- [tab_rq1_delta_breakdown.csv](../../../../output/paper/icse_pack/tables/tab_rq1_delta_breakdown.csv)
 
 Recommended columns:
 - `dimension`
@@ -41,10 +41,10 @@ Purpose:
 - shows why conventional baselines do not substitute claim-level validation
 
 Generated source:
-- [tab2_baseline_capability_matrix.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab2_baseline_capability_matrix.csv)
+- [tab2_baseline_capability_matrix.csv](../../../../output/paper/icse_pack/tables/tab2_baseline_capability_matrix.csv)
 
 Structured supporting source:
-- [tab_baseline_disagreement_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_baseline_disagreement_summary.csv)
+- [tab_baseline_disagreement_summary.csv](../../../../output/paper/icse_pack/tables/tab_baseline_disagreement_summary.csv)
 
 Expected paper role:
 - compare:
@@ -65,7 +65,7 @@ Purpose:
 - shows exact minimal overturn sets for representative claims
 
 Generated source:
-- [tab3_exact_witness_examples.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab3_exact_witness_examples.csv)
+- [tab3_exact_witness_examples.csv](../../../../output/paper/icse_pack/tables/tab3_exact_witness_examples.csv)
 
 Expected paper role:
 - give 3-5 representative exact witness examples
@@ -81,7 +81,7 @@ Purpose:
 - summarizes which representative cases are robustly stable, robustly unstable, or boundary-sensitive
 
 Generated source:
-- [tab_rq3_scope_transport_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq3_scope_transport_summary.csv)
+- [tab_rq3_scope_transport_summary.csv](../../../../output/paper/icse_pack/tables/tab_rq3_scope_transport_summary.csv)
 
 Expected paper role:
 - support the scope-transport figure with a compact textual summary
@@ -97,7 +97,7 @@ Purpose:
 - states which paper-facing runs use exact subset search and how often exact witnesses are found
 
 Generated source:
-- [tab_rq3_exact_approx_status.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq3_exact_approx_status.csv)
+- [tab_rq3_exact_approx_status.csv](../../../../output/paper/icse_pack/tables/tab_rq3_exact_approx_status.csv)
 
 Expected paper role:
 - make exact-default status explicit for tractable paper-facing spaces
@@ -113,7 +113,7 @@ Purpose:
 - summarizes the cost-efficiency tradeoff across policy choices
 
 Generated source:
-- [tab4_rq4_practicality_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab4_rq4_practicality_summary.csv)
+- [tab4_rq4_practicality_summary.csv](../../../../output/paper/icse_pack/tables/tab4_rq4_practicality_summary.csv)
 
 Expected paper role:
 - support the main cost/configuration tradeoff figure

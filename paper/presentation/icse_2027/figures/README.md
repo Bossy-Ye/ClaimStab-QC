@@ -1,6 +1,6 @@
 # Figures Surface
 
-This directory tracks the figure inventory intended for the ICSE 2027 paper.
+This directory tracks the figure inventory intended for the current submission.
 
 It is a curated presentation layer, not a duplicate of generated image files in
 `output/paper/...`.
@@ -13,8 +13,8 @@ The purpose of this directory is to record:
 
 ## Inventory
 
-- [main_figures.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/figures/main_figures.md)
-- [appendix_figures.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/figures/appendix_figures.md)
+- [main_figures.md](main_figures.md)
+- [appendix_figures.md](appendix_figures.md)
 
 ## Curation rule
 

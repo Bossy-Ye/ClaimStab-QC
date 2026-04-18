@@ -1,6 +1,6 @@
 # Tables Surface
 
-This directory tracks the table inventory intended for the ICSE 2027 paper.
+This directory tracks the table inventory intended for the current submission.
 
 The goal is not to duplicate generated CSV files. Instead, this directory
 provides a curated presentation layer that answers:
@@ -11,8 +11,8 @@ provides a curated presentation layer that answers:
 
 ## Inventory
 
-- [main_tables.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/tables/main_tables.md)
-- [appendix_tables.md](/Users/mac/Documents/GitHub/ClaimStab-QC/paper/presentation/icse_2027/tables/appendix_tables.md)
+- [main_tables.md](main_tables.md)
+- [appendix_tables.md](appendix_tables.md)
 
 ## Curation rule
 

@@ -10,7 +10,7 @@ Core reading:
 
 Primary generated assets:
 
-- [exact_witness_dataset.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/derived/RQ3/exact_witness_dataset.csv)
-- [tab_rq3_exact_approx_status.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq3_exact_approx_status.csv)
-- [tab3_exact_witness_examples.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab3_exact_witness_examples.csv)
-- [fig3_exact_witness_sizes.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig3_exact_witness_sizes.png)
+- [exact_witness_dataset.csv](../../../../output/paper/icse_pack/derived/RQ3/exact_witness_dataset.csv)
+- [tab_rq3_exact_approx_status.csv](../../../../output/paper/icse_pack/tables/tab_rq3_exact_approx_status.csv)
+- [tab3_exact_witness_examples.csv](../../../../output/paper/icse_pack/tables/tab3_exact_witness_examples.csv)
+- [fig3_exact_witness_sizes.png](../../../../output/paper/icse_pack/figures/main/fig3_exact_witness_sizes.png)

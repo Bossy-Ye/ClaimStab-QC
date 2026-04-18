@@ -114,7 +114,7 @@ Examples:
 
 - `paper/experiments/scripts/derive_rq1_metric_baselines_v3.py`
 - `paper/experiments/scripts/summarize_admissibility_v3.py`
-- `paper/experiments/scripts/run_real_hardware_slice_v1.py`
+- `paper/experiments/scripts/run_hardware_slice_ibm.py`
 
 ## Recommended Starting Points
 

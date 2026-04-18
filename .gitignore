@@ -32,6 +32,9 @@ site/
 # OS cruft
 .DS_Store
 
+# Local archive for exploratory / submission-specific scratch material
+.local_archive/
+
 # Ad-hoc generated documentation snapshots
 docs/generated/repo_summary.md
 docs/generated/repo_summary.html

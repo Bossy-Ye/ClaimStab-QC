@@ -4,9 +4,9 @@
 not merely a thin wrapper around generic sensitivity analysis.
 
 Primary generated sources:
-- [cross_family_dataset.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/derived/RQ2/cross_family_dataset.csv)
-- [tab_rq2_cross_family_summary.csv](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/tables/tab_rq2_cross_family_summary.csv)
-- [fig5_cross_family_outcomes.png](/Users/mac/Documents/GitHub/ClaimStab-QC/output/paper/icse_pack/figures/main/fig5_cross_family_outcomes.png)
+- [cross_family_dataset.csv](../../../../output/paper/icse_pack/derived/RQ2/cross_family_dataset.csv)
+- [tab_rq2_cross_family_summary.csv](../../../../output/paper/icse_pack/tables/tab_rq2_cross_family_summary.csv)
+- [fig5_cross_family_outcomes.png](../../../../output/paper/icse_pack/figures/main/fig5_cross_family_outcomes.png)
 
 ## Main reading
 

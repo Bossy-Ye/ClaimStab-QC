@@ -67,7 +67,7 @@ Do not broaden for breadth alone. Only include families that sharpen the paperâ€
 
 Implementation completed via:
 
-- `/Users/mac/Documents/GitHub/ClaimStab-QC/paper/experiments/scripts/derive_rq2_cross_family_icse.py`
+- `../scripts/export_rq2_cross_family.py`
 - `output/paper/icse_pack/derived/RQ2/cross_family_dataset.csv`
 - `output/paper/icse_pack/tables/tab_rq2_cross_family_summary.csv`
 - `output/paper/icse_pack/figures/main/fig5_cross_family_outcomes.png`
