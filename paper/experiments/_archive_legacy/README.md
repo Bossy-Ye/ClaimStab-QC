@@ -1,5 +1,17 @@
 # Legacy Archive
 
-This folder is reserved for paper-experiment assets that are no longer active but should be retained for traceability.
+This directory stores historical paper-planning material that remains useful
+for provenance but should not be treated as the current submission surface.
 
-Current status: no active legacy files are required after the examples/experiments split.
+Archived files may still contain:
+
+- older script names
+- venue-specific wording
+- superseded task breakdowns
+
+Do not use this directory as the source of truth for the current paper.
+Prefer:
+
+- `paper/experiments/README.md`
+- `paper/experiments/backlog_icse_2027/README.md`
+- `paper/presentation/icse_2027/README.md`

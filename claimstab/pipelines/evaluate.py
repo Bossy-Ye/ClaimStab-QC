@@ -327,6 +327,8 @@ def evaluate_claim_on_rows(
                     "layout_method": key[2],
                     "shots": int(key[3]),
                     "seed_simulator": int(key[4]) if key[4] is not None else None,
+                    "init_strategy": key[5],
+                    "init_seed": int(key[6]) if key[6] is not None else None,
                     "baseline_relation": baseline_relation.value,
                     "perturbed_relation": perturbed_relation.value,
                     "is_flip": perturbed_relation != baseline_relation,

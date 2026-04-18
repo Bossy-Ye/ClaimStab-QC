@@ -1,10 +1,11 @@
-# Examples & Example Outputs
+# Examples & Outputs
 
-This page lists the examples that are aligned with the current repository state.
+Use [Design Your Own Case](design_your_own_case.md) for the canonical authoring guide.
+This page only lists the active examples worth copying.
 
-## Example A — Lightweight ClaimStab Demo
+## Community Examples
 
-Command:
+### Lightweight demo
 
 ```bash
 python examples/community/claim_stability_demo.py \
@@ -14,14 +15,24 @@ python examples/community/claim_stability_demo.py \
   --sample-seed 1
 ```
 
-Default output:
+Output:
 
-- `output/examples/claim_stability_demo/claim_stability.json`
-- `output/examples/claim_stability_demo/stability_report.html`
+- `output/examples/claim_stability_demo/`
 
-## Example B — QEC Portability Demo
+### Custom external task demo
 
-Command:
+```bash
+python -m claimstab.cli run \
+  --spec examples/community/custom_task_demo/spec_toy.yml \
+  --out-dir output/examples/toy_task_demo \
+  --report
+```
+
+Output:
+
+- `output/examples/toy_task_demo/`
+
+### QEC pilot demo
 
 ```bash
 python -m claimstab.cli run \
@@ -30,34 +41,25 @@ python -m claimstab.cli run \
   --report
 ```
 
-What it evaluates:
-
-- repetition-code-style decoder comparison
-- `GlobalMajority > SingleReadout`
-- metric: `logical_error_rate`
-
-Representative outputs:
-
-- `output/examples/qec_pilot_demo/claim_stability.json`
-- `output/examples/qec_pilot_demo/stability_report.html`
-
-## Example C — Backend-conditioned Structural Portability
-
-Command:
+### VQE pilot demo
 
 ```bash
-python examples/community/multidevice_demo.py --run transpile_only --suite standard
+python -m claimstab.cli run \
+  --spec examples/community/vqe_pilot_demo/spec_vqe_h2.yml \
+  --out-dir output/examples/vqe_pilot_demo \
+  --report
 ```
 
-Default output:
+### Max-2-SAT pilot demo
 
-- `output/examples/multidevice_demo/`
+```bash
+python -m claimstab.cli run \
+  --spec examples/community/max2sat_pilot_demo/spec_max2sat.yml \
+  --out-dir output/examples/max2sat_pilot_demo \
+  --report
+```
 
-This is a controlled structural portability demo, not a full noisy-device claim-centric rerun.
-
-## Example D — Main Paper Battleground
-
-Command:
+## Paper Example
 
 ```bash
 python -m claimstab.cli run \
@@ -65,37 +67,3 @@ python -m claimstab.cli run \
   --out-dir output/paper/evaluation_v2/runs/E1_maxcut_main \
   --report
 ```
-
-Representative outputs:
-
-- `output/paper/evaluation_v2/runs/E1_maxcut_main/claim_stability.json`
-- `output/paper/evaluation_v2/runs/E1_maxcut_main/rq_summary.json`
-- `output/paper/evaluation_v2/runs/E1_maxcut_main/robustness_map.json`
-- `output/paper/evaluation_v2/runs/E1_maxcut_main/stability_report.html`
-
-## Example E — Paper-facing Derived Summaries
-
-Command:
-
-```bash
-python paper/experiments/scripts/derive_paper_evaluation.py --root output/paper/evaluation_v2
-```
-
-Representative outputs:
-
-- `output/paper/evaluation_v2/derived_paper_evaluation/RQ1_necessity/`
-- `output/paper/evaluation_v2/derived_paper_evaluation/RQ2_semantics/`
-- `output/paper/evaluation_v2/derived_paper_evaluation/RQ3_diagnostics/`
-- `output/paper/evaluation_v2/derived_paper_evaluation/RQ4_practicality/`
-
-## Typical Artifacts
-
-- `claim_stability.json`
-- `rq_summary.json`
-- `robustness_map.json`
-- `scores.csv`
-- `stability_report.html`
-
-## Note on Older Examples
-
-Some historical Atlas and external-task examples are still present in the repository for reference, but the examples on this page are the ones that match the current active workflow and output layout.

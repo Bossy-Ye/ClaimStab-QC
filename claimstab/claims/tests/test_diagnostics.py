@@ -147,6 +147,52 @@ class TestDiagnostics(unittest.TestCase):
         self.assertEqual(lockdown["conditions"]["shots_bucket"], "high")
         self.assertEqual(lockdown["decision"], "stable")
 
+        exact = summary["exact_mos_by_delta"]["0.0"]["best"]
+        self.assertIsNotNone(exact)
+        self.assertEqual(exact["lock_dimensions"], ["shots_bucket"])
+        self.assertEqual(exact["conditions"]["shots_bucket"], "high")
+        self.assertEqual(exact["decision"], "stable")
+
+    def test_exact_mos_can_use_full_depth_when_bounded_search_cannot(self) -> None:
+        observations = []
+        for seed_transpiler in (0, 1):
+            for layout_method in ("trivial", "sabre"):
+                for seed_simulator in (0, 1):
+                    is_flip = not (
+                        seed_transpiler == 0
+                        and layout_method == "trivial"
+                        and seed_simulator == 0
+                    )
+                    for _ in range(200):
+                        observations.append(
+                            {
+                                "seed_transpiler": seed_transpiler,
+                                "layout_method": layout_method,
+                                "seed_simulator": seed_simulator,
+                                "is_flip": is_flip,
+                            }
+                        )
+
+        summary = build_conditional_robustness_summary(
+            observations_by_delta={"0.0": observations},
+            stability_threshold=0.95,
+            confidence_level=0.95,
+            context_conditions={"space_preset": "combined_light_exact"},
+            cell_dimensions=("seed_transpiler", "layout_method", "seed_simulator"),
+            max_lock_dims=2,
+        )
+
+        bounded = summary["minimal_lockdown_set_by_delta"]["0.0"]["best"]
+        self.assertIsNone(bounded)
+
+        exact = summary["exact_mos_by_delta"]["0.0"]["best"]
+        self.assertIsNotNone(exact)
+        self.assertEqual(
+            exact["lock_dimensions"],
+            ["seed_transpiler", "layout_method", "seed_simulator"],
+        )
+        self.assertEqual(exact["decision"], "stable")
+
     def test_effect_diagnostics_highlights_shots_bucket(self) -> None:
         observations = []
         for seed in (0, 1):

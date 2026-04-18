@@ -3,7 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Mapping
 
-from .ibm_fake import fingerprint, load_fake_backend, snapshot_from_backend
+from .backend_snapshot import fingerprint, snapshot_from_backend
+from .ibm_fake import load_fake_backend as load_ibm_fake_backend
+from .iqm_fake import load_fake_backend as load_iqm_fake_backend
 from .spec import DeviceProfile
 
 
@@ -26,8 +28,10 @@ def parse_device_profile(raw: Mapping[str, Any] | None) -> DeviceProfile:
     basis_gates = raw.get("basis_gates")
     coupling_map = raw.get("coupling_map")
 
-    if provider not in {"none", "ibm_fake", "generic"}:
-        raise ValueError(f"Unsupported device provider '{provider}'. Use one of: none, ibm_fake, generic.")
+    if provider not in {"none", "ibm_fake", "iqm_fake", "generic"}:
+        raise ValueError(
+            f"Unsupported device provider '{provider}'. Use one of: none, ibm_fake, iqm_fake, generic."
+        )
     if mode not in {"transpile_only", "noisy_sim"}:
         raise ValueError(f"Unsupported device mode '{mode}'. Use one of: transpile_only, noisy_sim.")
 
@@ -64,7 +68,20 @@ def resolve_device_profile(profile: DeviceProfile) -> ResolvedDeviceProfile:
     if profile.provider == "ibm_fake":
         if not profile.name:
             raise ValueError("device_profile.name is required when provider=ibm_fake.")
-        backend = load_fake_backend(profile.name)
+        backend = load_ibm_fake_backend(profile.name)
+        snap = snapshot_from_backend(backend)
+        fp = fingerprint(snap)
+        return ResolvedDeviceProfile(
+            profile=profile,
+            backend=backend,
+            snapshot=snap,
+            snapshot_fingerprint=fp,
+        )
+
+    if profile.provider == "iqm_fake":
+        if not profile.name:
+            raise ValueError("device_profile.name is required when provider=iqm_fake.")
+        backend = load_iqm_fake_backend(profile.name)
         snap = snapshot_from_backend(backend)
         fp = fingerprint(snap)
         return ResolvedDeviceProfile(
@@ -92,4 +109,3 @@ def resolve_device_profile(profile: DeviceProfile) -> ResolvedDeviceProfile:
         )
 
     raise ValueError(f"Unsupported device provider '{profile.provider}'.")
-

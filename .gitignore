@@ -14,6 +14,7 @@ dist/
 # Virtual envs
 .venv/
 venv/
+venv.pre_restore_*/
 
 # IDE/editor files
 .idea/
@@ -30,6 +31,9 @@ site/
 
 # OS cruft
 .DS_Store
+
+# Local archive for exploratory / submission-specific scratch material
+.local_archive/
 
 # Ad-hoc generated documentation snapshots
 docs/generated/repo_summary.md

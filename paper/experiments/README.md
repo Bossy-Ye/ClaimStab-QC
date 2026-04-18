@@ -1,79 +1,83 @@
 # Paper Experiments
 
-This directory is the paper-only experiment bundle used to reproduce evaluation artifacts.
-It is intentionally separate from community onboarding examples.
-The active paper rerun scaffold is split into:
+This directory is the paper-only surface. It is intentionally separate from community onboarding.
 
-- `specs/evaluation_v2/` -> core evaluation bundle in `output/paper/evaluation_v2/`
-- `specs/evaluation_v3/` -> strengthening bundle in `output/paper/evaluation_v3/`
+It contains two different roles:
 
-## Layout
+- historical experiment provenance and execution inputs
+- work-tracking material for the current submission
 
-- `specs/`: canonical paper specs.
-- `scripts/`: canonical experiment batch scripts.
-- core paper-facing generated outputs are stored under `output/paper/evaluation_v2/`.
-- strengthening outputs are stored under `output/paper/evaluation_v3/`.
-- `_archive_legacy/`: archived legacy experiment artifacts/scripts.
+It is not the canonical manuscript prose surface. For curated paper-facing
+definitions, notes, figures, and tables, use:
 
-## Active Evaluation v2
+- [`../presentation/icse_2027/`](../presentation/icse_2027/)
 
-- E1: MaxCut main battleground  
-  Spec: `specs/evaluation_v2/e1_maxcut_main.yml`
-- E2: GHZ structural calibration  
-  Spec: `specs/evaluation_v2/e2_ghz_structural.yml`
-- E3: BV decision calibration  
-  Spec: `specs/evaluation_v2/e3_bv_decision.yml`
-- E4: Grover distribution fragility case  
-  Spec: `specs/evaluation_v2/e4_grover_distribution.yml`
-- S2: Boundary challenge  
-  Spec: `specs/evaluation_v2/s2_boundary.yml`
-- QEC: supporting portability illustration  
-  Spec: `specs/evaluation_v2/qec_portability.yml`
-- E5: policy comparison on the expanded 495-configuration grid  
-  Script: `scripts/exp_rq4_evaluation_v2.py`
-- S1: backend-conditioned transpile-only structural portability  
-  Spec: `specs/evaluation_v2/s1_multidevice_portability.yml`
+Current paper target:
 
-Scope note:
-- `S1` is intentionally narrower than a full noisy-device rerun and should be written as controlled structural portability.
+- ClaimStab-QC is a software-engineering methodology paper instantiated in quantum software experiments.
+- The core thesis is that empirical evaluation often validates outcomes, but not conclusions.
 
-## Active Evaluation v3
+## Active Bundles
 
-- W1-VQE: chemistry-flavored second-family pilot  
-  Spec: `specs/evaluation_v3/w1_vqe_pilot.yml`
-- W1-Max-2-SAT: counts-based second-family variational experiment  
-  Spec: `specs/evaluation_v3/w1_max2sat_second_family.yml`
-- W3: stronger metric-centric baselines  
-  Script: `scripts/derive_rq1_metric_baselines_v3.py`
-- W4: admissibility-study checklist and human-rating summary scaffold  
-  Script: `scripts/summarize_admissibility_v3.py`
-- W5: near-boundary policy comparison  
-  Script: `scripts/exp_rq4_near_boundary_v3.py`
+- `specs/evaluation_v2/`
+  - core paper evaluation
+  - outputs under `output/paper/evaluation_v2/`
+- `specs/evaluation_v3/`
+  - strengthening studies `W1/W3/W4/W5`
+  - outputs under `output/paper/evaluation_v3/`
+- `specs/evaluation_v4/`
+  - ICSE-strengthening analyses and hardware slices
+  - outputs under `output/paper/evaluation_v4/`
 
-## Supporting / Legacy Scripts
+Current worklog:
 
-- E5 legacy adaptive study: `scripts/exp_rq4_adaptive.py`
-- S4 synthetic calibration: `claimstab.analysis.synthetic_truth`
-- S5 mutation sanity check: `scripts/exp_mutation_sanity.py`
+- [ICSE 2027 sprint backlog](./backlog_icse_2027/README.md)
+- archived strengthening checklist:
+  - [`_archive_legacy/ICSE_STRENGTHENING_TODO.md`](./_archive_legacy/ICSE_STRENGTHENING_TODO.md)
 
-S3 methodset batch is optional and currently not part of core evidence.
-It is treated as non-evidence and can be left empty.
+## Core Entry Points
 
-## Reproduction Entry
+- `scripts/reproduce_evaluation_v2.py`
+- `scripts/reproduce_evaluation_v3.py`
+- `scripts/README.md`
+- `scripts/export_rq1_metric_vs_claim.py`
+- `scripts/export_rq1_baseline_comparison.py`
+- `scripts/export_rq2_cross_family.py`
+- `scripts/export_rq3_scope_transport.py`
+- `scripts/export_rq3_exact_witness.py`
+- `scripts/export_rq4_practicality.py`
+- `scripts/run_hardware_slice_ibm.py`
+- `scripts/run_hardware_slice_iqm.py`
 
-```bash
-python paper/experiments/scripts/reproduce_evaluation_v2.py --layout-only
-python paper/experiments/scripts/reproduce_evaluation_v2.py
-python paper/experiments/scripts/reproduce_evaluation_v3.py --layout-only
-```
+## Active Specs
 
-For individual runs, invoke the specs in both `paper/experiments/specs/evaluation_v2/` and `paper/experiments/specs/evaluation_v3/`.
+### evaluation_v2
 
-W4 note:
-- `paper/experiments/data/admissibility_v1/admissibility_items_v1.csv` includes admissible, non-admissible, and borderline items such as noise scaling and 10x shot budgets
-- no rater CSVs are bundled as paper evidence; place real human labels under `paper/experiments/data/admissibility_v1/ratings/` before reporting kappa
+- `e1_maxcut_main.yml`
+- `e2_ghz_structural.yml`
+- `e3_bv_decision.yml`
+- `e4_grover_distribution.yml`
+- `s1_multidevice_portability.yml`
+- `s2_boundary.yml`
+- `qec_portability.yml`
 
-Output conventions:
-- core experiment outputs: `output/paper/evaluation_v2/runs/...`
-- strengthening experiment outputs: `output/paper/evaluation_v3/runs/...`
-- derived RQ tables/figures: `output/paper/evaluation_v2/{derived_paper_evaluation,pack}/...` and `output/paper/evaluation_v3/{derived_paper_evaluation,pack}/...`
+### evaluation_v3
+
+- `w1_vqe_pilot.yml`
+- `w1_max2sat_second_family.yml`
+
+### evaluation_v4
+
+- `d0_bv_iqm_fake_rehearsal.yml`
+- `d0_bv_oracle_only_iqm_fake_rehearsal.yml`
+- `d1_bv_hardware_slice.yml`
+- `d1_bv_oracle_only_hardware_slice.yml`
+- `d1_grover_hardware_slice.yml`
+- `d1_vqe_hardware_slice.yml`
+
+## Notes
+
+- `S1` is a controlled structural portability study, not a full noisy-device rerun.
+- `D0` is the local IQM fake-backend rehearsal. It should be run before any facade or real IQM/VTT execution.
+- `W4` should only report inter-rater agreement after real labels are placed under `paper/experiments/data/admissibility_v1/ratings/`.
+- canonical paper-facing exporters now use `export_rq*` naming rather than venue-coded names

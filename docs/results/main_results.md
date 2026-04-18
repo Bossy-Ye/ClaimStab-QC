@@ -1,5 +1,9 @@
 # Main Results
 
+This page is a public results summary, not the canonical manuscript source of
+truth. The current paper-facing narrative is curated under
+`paper/presentation/icse_2027/`.
+
 This page summarizes the current paper evaluation state:
 
 - `evaluation_v2` core bundle under `output/paper/evaluation_v2/`
@@ -59,7 +63,7 @@ By delta, the distribution is:
 - `delta = 0.01`: `1 stable / 8 unstable`
 - `delta = 0.05`: `0 stable / 9 unstable`
 
-The strongest baseline mismatch in the current rerun comes from conventional metric reporting rather than from the stored single-run baseline. Using a fixed 5-run metric summary, `9/9` apparently consistent advantages are still classified as unstable by ClaimStab-QC, yielding a metric-based false-reassurance rate of `1.0`.
+The strongest baseline mismatch in the current rerun comes from conventional metric reporting rather than from the stored single-run baseline. On the MaxCut `E1` population, using a fixed 5-run metric summary, `9/9` apparently consistent advantages are still classified as unstable by ClaimStab-QC, yielding a population-conditional false-reassurance rate of `1.0` on MaxCut `E1`. On the unified cross-family comparative mismatch surface that also includes Max-2-SAT and VQE/H2, the conditional false-reassurance rate is `14/27 = 51.9%`, confirming that the phenomenon is structural but population-dependent rather than universal.
 
 The representative mismatch case is:
 
@@ -104,12 +108,13 @@ Driver explanations are reasonably consistent across neighboring unstable varian
 - `E1` top-driver consistency: `0.8333`
 - `S2` top-driver consistency: `0.9444`
 
-The current artifact does not materialize exact MOS objects, so the derived package reports a conservative explanation-compression proxy instead of exact MOS size:
+The current repository now materializes exact MOS objects on the main-paper exact spaces (`compilation_only_exact`, `sampling_only_exact`, `combined_light_exact`).
 
-- `E1` median proxy constraint count: `1`
-- `S2` median proxy constraint count: `1`
+Supplementary comparison outputs live under:
 
-These are useful as compact explanatory witnesses, but they should not be overstated as exact minimal sufficient sets.
+- `output/paper/evaluation_v4/pack/tables/tab_c_exact_vs_greedy_mos.csv`
+
+These should still be written as compact sufficient perturbation subsets / explanatory witnesses, not as causal root-cause claims.
 
 ## RQ4: Cost-efficiency and Practicality
 
@@ -127,7 +132,10 @@ All five strategies agree with the `full_factorial` reference on every evaluated
 
 The strongest practical result is therefore:
 
-- `adaptive_ci_tuned` preserves all reference decisions at a fraction of the cost
+- on clear cases, `adaptive_ci_tuned` preserves all reference decisions at a fraction of the cost
+- on near-boundary cases (see `W5` under the strengthening bundle), the same adaptive policies remain correct but consume much more budget: `adaptive_ci` moves from `57` to `257` configurations and `adaptive_ci_tuned` moves from `17` to `65` configurations
+
+Adaptive policies therefore help most on clear cases, while near-boundary claims remain expensive under a conservative decision rule. This is a same-agreement, different-cost comparison and should not be described as a universal cost-accuracy frontier.
 
 `S1` should be described carefully. The current completed output is a backend-conditioned transpile-only structural portability study, not a full noisy-device claim-centric rerun. Within that controlled scope it is fully stable:
 
@@ -140,7 +148,7 @@ The strongest practical result is therefore:
 - `W1 VQE/H2 pilot`: `15 stable / 2 unstable / 1 inconclusive`
 - `W1 Max-2-SAT`: `13 stable / 4 unstable / 1 inconclusive`
 - `W3 matched-scope metric baseline`: `9/9` metric-supportive E1 variants remain false reassurance
-- `W3 sensitivity`: the metric false-reassurance rate stays at `1.0` from `10` through `495` sampled configurations on the expanded grid
+- `W3 sensitivity`: on the MaxCut `E1` population, the metric-conditional false-reassurance rate stays at `1.0` from `10` through `495` sampled configurations on the expanded grid
 - `W5 near-boundary`: adaptive policies remain correct but consume much more budget (`adaptive_ci`: `57 -> 257`; `adaptive_ci_tuned`: `17 -> 65`)
 - `W4`: the repository now includes an 18-item admissibility checklist with author-side reference labels and explicit Q1/Q2/Q3 trigger rules for borderline cases such as noise scaling and 10x shot budgets, plus a human-rating summary pipeline
 

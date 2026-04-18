@@ -21,21 +21,23 @@ theme:
 nav:
   - Start Here:
       - Overview: index.md
-      - Quickstart: quickstart.md
+      - Design Your Own Case: design_your_own_case.md
       - Examples & Outputs: examples.md
-      - Reproduce: reproduce.md
-      - Output Map: output_map.md
-      - Experiment Matrix: experiment_matrix.md
-  - Paper Reproducibility:
+      - Quickstart: quickstart.md
+  - Paper Evidence:
       - Main Results: results/main_results.md
       - Evaluation Readiness: results/evaluation_readiness.md
       - Figures: results/figures.md
-      - Reproduction Contract: reproduction_contract.md
-      - Compatibility Contract: compatibility_contract.md
+      - Experiment Matrix: experiment_matrix.md
+      - Reproduce: reproduce.md
   - Concepts:
       - Claims: concepts/claims.md
+      - Formal Definitions: concepts/formal_definitions.md
       - Perturbations: concepts/perturbations.md
-  - Advanced & Community:
+  - Advanced:
+      - Output Map: output_map.md
+      - Reproduction Contract: reproduction_contract.md
+      - Compatibility Contract: compatibility_contract.md
       - ClaimAtlas Guide (Advanced): atlas.md
       - Live Claim Explorer: explorer.md
       - Dataset Registry (Advanced): dataset_registry.md

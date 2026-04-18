@@ -11,7 +11,7 @@ from claimstab.perturbations.sampling import normalize_repeats_to_seed_simulator
 ALLOWED_SAMPLING_MODES = {"full_factorial", "random_k", "adaptive_ci"}
 ALLOWED_BACKEND_ENGINES = {"auto", "basic", "aer"}
 ALLOWED_NOISE_MODES = {"none", "from_device_profile"}
-ALLOWED_PROVIDERS = {"none", "ibm_fake", "generic"}
+ALLOWED_PROVIDERS = {"none", "ibm_fake", "iqm_fake", "generic"}
 ALLOWED_DEVICE_MODES = {"transpile_only", "noisy_sim"}
 ALLOWED_SPACE_PRESETS = {
     "baseline",

@@ -41,6 +41,10 @@ Expected outputs:
 - `output/examples/claim_stability_demo/robustness_map.json`
 - `output/examples/claim_stability_demo/stability_report.html`
 
+If you want to design your own case rather than copy the demo, use:
+
+- [Design Your Own Case](design_your_own_case.md)
+
 ## Canonical Paper Run
 
 Run the active E1 battleground:

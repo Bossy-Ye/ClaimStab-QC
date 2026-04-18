@@ -141,6 +141,31 @@ class TestSpecValidation(unittest.TestCase):
         }
         validate_spec(spec)
 
+    def test_validate_accepts_iqm_fake_device_profile(self) -> None:
+        spec = {
+            "spec_version": 1,
+            "suite": "core",
+            "task": {"kind": "bv", "suite": "core"},
+            "methods": [
+                {"name": "BVOracle", "kind": "bv"},
+                {"name": "RandomBaseline", "kind": "random_baseline"},
+            ],
+            "claims": [
+                {"type": "decision", "method": "BVOracle", "top_k": 1, "label_meta_key": "target_label"}
+            ],
+            "perturbations": {"presets": ["compilation_only_exact"]},
+            "sampling": {"mode": "full_factorial", "seed": 0},
+            "decision_rule": {"threshold": 0.95, "confidence_level": 0.95},
+            "backend": {"engine": "aer", "noise_model": "from_device_profile"},
+            "device_profile": {
+                "enabled": True,
+                "provider": "iqm_fake",
+                "name": "IQMFakeAphrodite",
+                "mode": "noisy_sim",
+            },
+        }
+        validate_spec(spec)
+
 
 if __name__ == "__main__":
     unittest.main()
