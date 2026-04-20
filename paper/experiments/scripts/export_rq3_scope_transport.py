@@ -12,9 +12,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib.colors import ListedColormap
-
-
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SOURCE_CSV = (
     REPO_ROOT
@@ -45,6 +42,12 @@ TRANSPORT_LABELS = {
     "abstention_under_scope_change": "abstention-sensitive",
 }
 
+CLAIM_PAIR_DISPLAY = {
+    "GHZ_Linear>GHZ_Star": "GHZ Linear > GHZ Star",
+    "QAOA_p2>QAOA_p1": "QAOA p2 > QAOA p1",
+    "VQE_HEA>VQE_HF": "VQE HEA > VQE HF",
+}
+
 
 def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -62,6 +65,10 @@ def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
 def _write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def _display_claim_pair(claim_pair: str) -> str:
+    return CLAIM_PAIR_DISPLAY.get(claim_pair, claim_pair.replace("_", " "))
 
 
 def _write_note(path: Path, summary_rows: list[dict[str, Any]]) -> None:
@@ -144,79 +151,149 @@ def _summary_rows(frame: pd.DataFrame) -> list[dict[str, Any]]:
 
 
 def _render_transport_map(frame: pd.DataFrame, summary_rows: list[dict[str, Any]], out_png: Path, out_pdf: Path) -> None:
-    short_case_labels = {
-        "clear_stable": "Clear stable",
-        "clear_unstable": "Clear unstable",
-        "near_boundary": "Near-boundary",
-    }
-    case_labels = [short_case_labels.get(str(row["case_id"]), str(row["label"])) for row in summary_rows]
-    matrix = np.full((len(case_labels), len(SCOPE_ORDER)), -1, dtype=int)
-    for i, row in enumerate(summary_rows):
-        case = frame[frame["case_id"] == row["case_id"]]
-        for _, case_row in case.iterrows():
-            scope = str(case_row["scope_label"])
-            if scope not in SCOPE_ORDER:
-                continue
-            j = SCOPE_ORDER.index(scope)
-            decision = str(case_row["decision"])
-            matrix[i, j] = VERDICT_TO_VALUE[decision]
-
-    cmap = ListedColormap(["#7f7f7f", "#b7b7b7", "#4a4a4a", "#ededed"])
-    display_matrix = matrix.copy()
-    display_matrix = np.where(display_matrix == -1, 3, display_matrix)
-
     plt.rcParams.update(
         {
-            "font.family": ["Times New Roman", "Times", "serif"],
+            "font.family": "serif",
+            "font.serif": ["Computer Modern Roman", "CMU Serif", "DejaVu Serif"],
+            "mathtext.fontset": "cm",
             "figure.facecolor": "white",
             "axes.facecolor": "white",
-            "font.size": 12,
-            "axes.titlesize": 16,
-            "axes.labelsize": 12,
-            "xtick.labelsize": 11,
-            "ytick.labelsize": 11,
+            "font.size": 11,
+            "axes.titlesize": 14,
+            "axes.labelsize": 11,
+            "xtick.labelsize": 10,
+            "ytick.labelsize": 10,
         }
     )
 
-    fig, ax = plt.subplots(figsize=(8.8, 3.4))
-    ax.imshow(display_matrix, cmap=cmap, aspect="auto", vmin=0, vmax=3)
-    ax.set_xticks(range(len(SCOPE_ORDER)), labels=["Compilation", "Sampling", "Combined"])
-    ax.set_yticks(range(len(case_labels)), labels=["Stable claim", "Unstable claim", "Boundary claim"])
-    ax.set_title("Scope Transport")
-    ax.set_ylabel("Representative claim")
+    case_title_map = {
+        "clear_stable": "Robust stable",
+        "clear_unstable": "Robust unstable",
+        "near_boundary": "Boundary-sensitive",
+    }
+    decision_colors = {
+        "stable": "#365c4a",
+        "unstable": "#9f3d2f",
+        "inconclusive": "#8a7d68",
+    }
 
-    ax.set_xticks(np.arange(-0.5, len(SCOPE_ORDER), 1), minor=True)
-    ax.set_yticks(np.arange(-0.5, len(case_labels), 1), minor=True)
-    ax.grid(which="minor", color="white", linewidth=1.2)
-    ax.tick_params(which="minor", bottom=False, left=False)
+    plot_rows: list[dict[str, Any]] = []
+    group_midpoints: list[tuple[float, str, str]] = []
+    sampling_note_y: float | None = None
+    y_cursor = 8.0
+    for row in summary_rows:
+        case_id = str(row["case_id"])
+        case = frame[frame["case_id"] == case_id].copy()
+        case["scope_order"] = case["scope_label"].map({scope: idx for idx, scope in enumerate(SCOPE_ORDER)})
+        case = case.sort_values("scope_order")
+        group_y_positions: list[float] = []
+        for _, case_row in case.iterrows():
+            plot_rows.append(
+                {
+                    "y": y_cursor,
+                    "case_id": case_id,
+                    "scope_label": str(case_row["scope_label"]),
+                    "stability_hat": float(case_row["stability_hat"]),
+                    "stability_ci_low": float(case_row["stability_ci_low"]),
+                    "stability_ci_high": float(case_row["stability_ci_high"]),
+                    "decision": str(case_row["decision"]),
+                }
+            )
+            if case_id == "clear_unstable" and str(case_row["scope_label"]) == "Sampling":
+                sampling_note_y = y_cursor
+            group_y_positions.append(y_cursor)
+            y_cursor -= 1.0
+        group_midpoints.append(
+            (
+                float(np.mean(group_y_positions)),
+                case_title_map[case_id],
+                _display_claim_pair(str(row["claim_pair"])),
+            )
+        )
+        y_cursor -= 0.7
 
-    fig.text(
-        0.5,
-        0.96,
-        "Claim stability across admissible perturbation scopes",
-        ha="center",
-        va="center",
-        fontsize=11,
-        color="#555555",
-    )
-    legend_handles = [
-        plt.Rectangle((0, 0), 1, 1, color="#4a4a4a"),
-        plt.Rectangle((0, 0), 1, 1, color="#b7b7b7"),
-        plt.Rectangle((0, 0), 1, 1, color="#7f7f7f"),
-        plt.Rectangle((0, 0), 1, 1, color="#ededed"),
-    ]
-    ax.legend(
-        legend_handles,
-        ["Stable", "Unstable", "Inconclusive", "Not tested"],
-        loc="center left",
-        bbox_to_anchor=(1.01, 0.5),
-        ncol=1,
-        frameon=False,
-        fontsize=9.0,
-    )
-    fig.tight_layout(rect=(0.0, 0.0, 0.84, 0.9))
+    fig, ax = plt.subplots(figsize=(9.2, 4.6))
+    tau = 0.95
+    ax.axvline(tau, color="#444444", linestyle="--", linewidth=1.1)
+    ax.text(tau, 8.7, "τ = .95", ha="center", va="bottom", fontsize=9.5, color="#444444")
+
+    for record in plot_rows:
+        lower_err = record["stability_hat"] - record["stability_ci_low"]
+        upper_err = record["stability_ci_high"] - record["stability_hat"]
+        color = decision_colors[record["decision"]]
+        ax.errorbar(
+            record["stability_hat"],
+            record["y"],
+            xerr=[[lower_err], [upper_err]],
+            fmt="o",
+            color=color,
+            ecolor="#333333",
+            elinewidth=1.2,
+            capsize=3.0,
+            markersize=5.8,
+            zorder=3,
+        )
+        label_x = min(record["stability_hat"] + 0.02, 1.01)
+        ax.text(
+            label_x,
+            record["y"],
+            f"ŝ={record['stability_hat']:.2f}",
+            ha="left",
+            va="center",
+            fontsize=9.0,
+            color=color,
+        )
+
+    ax.set_xlim(0.50, 1.04)
+    ax.set_ylim(0.2, 8.9)
+    ax.set_xlabel("Preservation rate")
+    y_tick_labels: list[str] = []
+    for row in plot_rows:
+        label = row["scope_label"]
+        if row["case_id"] == "clear_unstable" and label == "Sampling":
+            label = "Sampling†"
+        y_tick_labels.append(label)
+    ax.set_yticks([row["y"] for row in plot_rows], labels=y_tick_labels)
+    ax.grid(axis="x", color="#dddddd", linewidth=0.8)
+    ax.grid(axis="y", visible=False)
+    ax.set_axisbelow(True)
+    for spine in ["top", "right"]:
+        ax.spines[spine].set_visible(False)
+
+    for midpoint, case_title, claim_pair in group_midpoints:
+        ax.text(
+            0.505,
+            midpoint + 0.28,
+            case_title,
+            ha="left",
+            va="center",
+            fontsize=11.5,
+            fontweight="bold",
+            color="#222222",
+        )
+        ax.text(
+            0.505,
+            midpoint - 0.18,
+            claim_pair.replace(">", " > "),
+            ha="left",
+            va="center",
+            fontsize=9.2,
+            color="#555555",
+        )
+
+    if sampling_note_y is not None:
+        ax.text(
+            0.505,
+            sampling_note_y - 0.42,
+            "† only representative case with a sampling-only preset",
+            ha="left",
+            va="center",
+            fontsize=8.6,
+            color="#555555",
+        )
+    fig.tight_layout()
     out_png.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_png, dpi=240)
+    fig.savefig(out_png, dpi=300)
     fig.savefig(out_pdf)
     plt.close(fig)
 

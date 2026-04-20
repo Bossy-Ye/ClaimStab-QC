@@ -83,7 +83,9 @@ def _write_json(path: Path, payload: Any) -> None:
 def _set_style() -> None:
     plt.rcParams.update(
         {
-            "font.family": "Times New Roman",
+            "font.family": "serif",
+            "font.serif": ["Computer Modern Roman", "CMU Serif", "DejaVu Serif"],
+            "mathtext.fontset": "cm",
             "font.size": 11,
             "axes.titlesize": 13,
             "axes.labelsize": 11,
@@ -172,39 +174,86 @@ def _make_summary(df: pd.DataFrame) -> list[dict[str, Any]]:
 
 def _plot_tradeoff(df: pd.DataFrame, out_png: Path, out_pdf: Path) -> None:
     _set_style()
-    fig, ax = plt.subplots(figsize=(8.6, 3.8), constrained_layout=False)
-    fig.subplots_adjust(left=0.24, right=0.97, top=0.84, bottom=0.20)
+    fig, ax = plt.subplots(figsize=(8.8, 4.0), constrained_layout=False)
+    fig.subplots_adjust(left=0.24, right=0.97, top=0.84, bottom=0.18)
 
     y = list(range(len(STRATEGY_ORDER)))
-    bar_h = 0.34
-    for offset, scenario in [(-bar_h / 2, "Clear cases"), (bar_h / 2, "Boundary cases")]:
-        scenario_df = (
-            df[df["scenario"] == scenario]
-            .set_index("strategy")
-            .reindex(STRATEGY_ORDER)
-            .reset_index()
+    clear_df = (
+        df[df["scenario"] == "Clear cases"]
+        .set_index("strategy")
+        .reindex(STRATEGY_ORDER)
+        .reset_index()
+    )
+    boundary_df = (
+        df[df["scenario"] == "Boundary cases"]
+        .set_index("strategy")
+        .reindex(STRATEGY_ORDER)
+        .reset_index()
+    )
+
+    for idx, strategy in enumerate(STRATEGY_ORDER):
+        clear_row = clear_df.iloc[idx]
+        boundary_row = boundary_df.iloc[idx]
+        clear_value = float(clear_row["configuration_fraction"])
+        boundary_value = float(boundary_row["configuration_fraction"])
+        same_value = abs(clear_value - boundary_value) < 1e-9
+
+        ax.plot(
+            [clear_value, boundary_value],
+            [idx, idx],
+            color="#999999",
+            linewidth=2.2,
+            zorder=1,
         )
-        values = scenario_df["configuration_fraction"].astype(float).tolist()
-        ax.barh(
-            [v + offset for v in y],
-            values,
-            height=bar_h,
-            color=SCENARIO_COLORS[scenario],
+        ax.scatter(
+            clear_value,
+            idx,
+            s=86,
+            color=SCENARIO_COLORS["Clear cases"],
             edgecolor="white",
-            linewidth=0.8,
-            label=scenario,
+            linewidth=0.9,
             zorder=3,
+            label="Clear cases" if idx == 0 else None,
         )
-        for idx, row in scenario_df.iterrows():
-            label = f'{int(row["k_used"])} ({row["configuration_fraction_pct"]:.1f}%)'
+        ax.scatter(
+            boundary_value,
+            idx,
+            s=86,
+            color=SCENARIO_COLORS["Boundary cases"],
+            edgecolor="white",
+            linewidth=0.9,
+            zorder=3,
+            label="Boundary cases" if idx == 0 else None,
+        )
+
+        if same_value:
             ax.text(
-                float(row["configuration_fraction"]) + 0.015,
-                y[idx] + offset,
-                label,
+                clear_value + 0.018,
+                idx,
+                f'{int(clear_row["k_used"])} ({clear_row["configuration_fraction_pct"]:.1f}%)',
                 va="center",
                 ha="left",
-                fontsize=9,
-                color="#222222",
+                fontsize=8.6,
+                color="#444444",
+            )
+        else:
+            ax.text(
+                clear_value + 0.018,
+                idx - 0.14,
+                f'{int(clear_row["k_used"])} ({clear_row["configuration_fraction_pct"]:.1f}%)',
+                va="center",
+                ha="left",
+                fontsize=8.6,
+                color=SCENARIO_COLORS["Clear cases"],
+            )
+            ax.text(
+                boundary_value + 0.018,
+                idx + 0.14,
+                f'{int(boundary_row["k_used"])} ({boundary_row["configuration_fraction_pct"]:.1f}%)',
+                va="center",
+                ha="left",
+                fontsize=8.6,
+                color=SCENARIO_COLORS["Boundary cases"],
             )
 
     ax.set_yticks(y, [STRATEGY_LABELS[key] for key in STRATEGY_ORDER])
@@ -215,7 +264,10 @@ def _plot_tradeoff(df: pd.DataFrame, out_png: Path, out_pdf: Path) -> None:
     ax.grid(axis="x", color="#dddddd", linewidth=0.6)
     ax.grid(axis="y", visible=False)
     ax.legend(frameon=False, loc="lower right")
-    ax.set_title("Boundary Claims Require Larger Evaluation Budgets", pad=10)
+    ax.set_title(
+        "Clear cases resolve cheaply;\nboundary cases consume disproportionate budget",
+        pad=10,
+    )
     for spine in ["top", "right"]:
         ax.spines[spine].set_visible(False)
 

@@ -402,82 +402,6 @@ def _build_main_paper_structural_table(dataset: pd.DataFrame) -> list[dict[str, 
     return rows
 
 
-def _render_metric_positive_headline_figure(dataset: pd.DataFrame, out_png: Path, out_pdf: Path) -> dict[str, Any]:
-    metric_positive_df = dataset[dataset["metric_verdict"] == "positive"].copy()
-    total = int(len(metric_positive_df))
-    validated_count = int((metric_positive_df["claim_validation_outcome"] == "validated").sum())
-    not_validated_count = total - validated_count
-    validated_share = 100.0 * validated_count / total if total else 0.0
-    not_validated_share = 100.0 * not_validated_count / total if total else 0.0
-
-    plt.rcParams.update(
-        {
-            "font.family": ["Times New Roman", "Times", "serif"],
-            "figure.facecolor": "white",
-            "axes.facecolor": "white",
-            "font.size": 12,
-            "axes.titlesize": 18,
-            "axes.labelsize": 12,
-            "xtick.labelsize": 11,
-            "ytick.labelsize": 11,
-        }
-    )
-    fig, ax = plt.subplots(figsize=(8.6, 2.4))
-    ax.barh([0], [validated_count], left=0, color="#4f6b50", edgecolor="white", height=0.72)
-    ax.barh([0], [not_validated_count], left=validated_count, color="#a44d4d", edgecolor="white", height=0.72)
-
-    ax.text(
-        validated_count / 2,
-        0,
-        f"Validated\n{validated_count}",
-        ha="center",
-        va="center",
-        fontsize=12,
-        color="white",
-        fontweight="bold",
-    )
-    ax.text(
-        validated_count + not_validated_count / 2,
-        0,
-        f"Not validated\n{not_validated_count}",
-        ha="center",
-        va="center",
-        fontsize=12,
-        color="white",
-        fontweight="bold",
-    )
-    ax.text(
-        validated_count + not_validated_count / 2,
-        0.39,
-        f"{not_validated_count}/{total} ({not_validated_share:.1f}%) not validated",
-        ha="center",
-        va="bottom",
-        fontsize=12,
-        color="#222222",
-        fontweight="bold",
-    )
-
-    ax.set_xlim(0, total if total else 1)
-    ax.set_ylim(-0.55, 0.7)
-    ax.set_title("Over Half of Metric-Positive Results Are Not Claim-Validated", pad=16)
-    ax.set_xticks([])
-    ax.set_yticks([])
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-    fig.tight_layout()
-    out_png.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_png, dpi=240)
-    fig.savefig(out_pdf)
-    plt.close(fig)
-    return {
-        "figure_png": str(out_png.resolve()),
-        "figure_pdf": str(out_pdf.resolve()),
-        "metric_positive_total": total,
-        "false_reassurance_count": not_validated_count,
-        "false_reassurance_rate": not_validated_share / 100.0 if total else None,
-    }
-
-
 def _render_discrepancy_matrix(dataset: pd.DataFrame, out_png: Path, out_pdf: Path) -> dict[str, Any]:
     matrix = []
     total = len(dataset)
@@ -494,31 +418,34 @@ def _render_discrepancy_matrix(dataset: pd.DataFrame, out_png: Path, out_pdf: Pa
 
     plt.rcParams.update(
         {
-            "font.family": ["Times New Roman", "Times", "serif"],
+            "font.family": "serif",
+            "font.serif": ["Computer Modern Roman", "CMU Serif", "DejaVu Serif"],
+            "mathtext.fontset": "cm",
             "figure.facecolor": "white",
             "axes.facecolor": "white",
-            "font.size": 12,
-            "axes.titlesize": 16,
-            "axes.labelsize": 12,
-            "xtick.labelsize": 11,
-            "ytick.labelsize": 11,
+            "font.size": 11,
+            "axes.titlesize": 13,
+            "axes.labelsize": 11,
+            "xtick.labelsize": 10,
+            "ytick.labelsize": 10,
         }
     )
-    fig, ax = plt.subplots(figsize=(7.2, 4.3))
+    fig, ax = plt.subplots(figsize=(6.8, 3.9))
     image = ax.imshow(values, cmap="Greys", vmin=0.0, vmax=max(max(row) for row in values) if total else 1.0, aspect="auto")
 
     for row_idx, metric in enumerate(METRIC_VERDICT_ORDER):
         for col_idx, claim in enumerate(CLAIM_OUTCOME_ORDER):
             count = counts_by_cell[(metric, claim)]
             share = (100.0 * count / total) if total else 0.0
+            cell_value = values[row_idx][col_idx]
             ax.text(
                 col_idx,
                 row_idx,
                 f"{count}\n({share:.1f}%)",
                 ha="center",
                 va="center",
-                fontsize=11,
-                color="black",
+                fontsize=10.5,
+                color="white" if cell_value >= 0.22 else "#111111",
                 fontweight="bold" if metric == "positive" and claim != "validated" else "normal",
             )
 
@@ -526,39 +453,16 @@ def _render_discrepancy_matrix(dataset: pd.DataFrame, out_png: Path, out_pdf: Pa
     ax.set_xticklabels(["Validated", "Refuted", "Unstable", "Inconclusive"])
     ax.set_yticks(range(len(METRIC_VERDICT_ORDER)))
     ax.set_yticklabels(["Metric positive", "Metric negative"])
-    ax.set_title("Metric Support vs Claim Validation")
     ax.set_xlabel("Claim validation outcome")
     ax.set_ylabel("Metric verdict")
 
-    false_rows = dataset[dataset["false_reassurance_type"] != "none"]
-    metric_positive = int((dataset["metric_verdict"] == "positive").sum())
-    false_rate = _safe_rate(int(len(false_rows)), metric_positive)
-    fig.text(
-        0.5,
-        0.94,
-        "Distribution of claim outcomes conditioned on metric verdict",
-        ha="center",
-        va="center",
-        fontsize=11,
-        color="#444444",
-    )
-    ax.annotate(
-        "metric-positive but not validated",
-        xy=(2.0, 0.0),
-        xytext=(3.35, -0.15),
-        arrowprops={"arrowstyle": "-", "color": "#666666", "lw": 1.2},
-        fontsize=10,
-        color="#555555",
-        ha="left",
-        va="center",
-    )
     ax.set_xticks([x - 0.5 for x in range(1, len(CLAIM_OUTCOME_ORDER))], minor=True)
     ax.set_yticks([y - 0.5 for y in range(1, len(METRIC_VERDICT_ORDER))], minor=True)
     ax.grid(which="minor", color="white", linewidth=2.0)
     ax.tick_params(which="minor", bottom=False, left=False)
-    fig.tight_layout(rect=(0.0, 0.0, 1.0, 0.9))
+    fig.tight_layout()
     out_png.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_png, dpi=240)
+    fig.savefig(out_png, dpi=300)
     fig.savefig(out_pdf)
     plt.close(fig)
 
@@ -740,12 +644,6 @@ def main() -> None:
         figures_dir / "fig1_metric_claim_discrepancy_matrix.png",
         figures_dir / "fig1_metric_claim_discrepancy_matrix.pdf",
     )
-    headline_figure_meta = _render_metric_positive_headline_figure(
-        dataset,
-        figures_dir / "fig1_metric_positive_validation_bar.png",
-        figures_dir / "fig1_metric_positive_validation_bar.pdf",
-    )
-
     _write_interpretation_note(derived_dir / "metric_claim_interpretation.md", dataset, summary_rows)
     _write_json(
         derived_dir / "metric_claim_comparison_summary.json",
@@ -762,7 +660,6 @@ def main() -> None:
             "main_paper_table": str((tables_dir / "tab1_rq1_structural_breakdown.csv").resolve()),
             "overall": next(row for row in summary_rows if row["group_kind"] == "overall"),
             "figure": figure_meta,
-            "headline_figure": headline_figure_meta,
         },
     )
 
