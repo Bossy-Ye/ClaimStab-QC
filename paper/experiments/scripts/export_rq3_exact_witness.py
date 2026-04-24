@@ -83,14 +83,16 @@ def _render_witness_size_figure(
 
     plt.rcParams.update(
         {
-            "font.family": ["Times New Roman", "Times", "serif"],
+            "font.family": "serif",
+            "font.serif": ["Computer Modern Roman", "CMU Serif", "DejaVu Serif"],
+            "mathtext.fontset": "cm",
             "figure.facecolor": "white",
             "axes.facecolor": "white",
-            "font.size": 12,
-            "axes.titlesize": 16,
-            "axes.labelsize": 12,
-            "xtick.labelsize": 11,
-            "ytick.labelsize": 11,
+            "font.size": 11,
+            "axes.titlesize": 13,
+            "axes.labelsize": 11,
+            "xtick.labelsize": 10,
+            "ytick.labelsize": 10,
         }
     )
 
@@ -100,7 +102,6 @@ def _render_witness_size_figure(
 
     fig, ax = plt.subplots(figsize=(7.6, 3.2))
     bars = ax.bar(labels, heights, color="#4a4a4a", width=0.58)
-    ax.set_title("Exact Witnesses Are Single-Factor Subsets", pad=10)
     ax.set_ylabel("Exact witness size")
     ax.set_ylim(0, 1.25)
     ax.set_yticks([0, 1])
@@ -121,7 +122,7 @@ def _render_witness_size_figure(
 
     fig.tight_layout()
     out_png.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_png, dpi=240)
+    fig.savefig(out_png, dpi=300)
     fig.savefig(out_pdf)
     plt.close(fig)
 

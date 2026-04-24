@@ -77,7 +77,6 @@ Primary generated assets currently live in:
 - [tab_rq1_delta_breakdown.csv](../../../output/paper/icse_pack/tables/tab_rq1_delta_breakdown.csv)
 - [tab_rq1_primary_family_sensitivity.csv](../../../output/paper/icse_pack/tables/tab_rq1_primary_family_sensitivity.csv)
 - [tab_rq1_leave_one_family_out_sensitivity.csv](../../../output/paper/icse_pack/tables/tab_rq1_leave_one_family_out_sensitivity.csv)
-- [fig1_metric_positive_validation_bar.png](../../../output/paper/icse_pack/figures/main/fig1_metric_positive_validation_bar.png)
 - [fig1_metric_claim_discrepancy_matrix.png](../../../output/paper/icse_pack/figures/main/fig1_metric_claim_discrepancy_matrix.png)
 - [metric_claim_interpretation.md](../../../output/paper/icse_pack/derived/RQ1/metric_claim_interpretation.md)
 

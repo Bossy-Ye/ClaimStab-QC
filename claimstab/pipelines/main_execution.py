@@ -509,13 +509,12 @@ def execute_main_plan(plan: MainPlan) -> MainExecutionResult:
     sampled_configs_by_space: dict[str, list[PerturbationConfig]] = {}
     hybrid_init_strategies: list[str] | None = None
     hybrid_init_seeds: list[int] | None = None
-    if task_kind == "maxcut":
-        axes_fn = getattr(task_plugin, "hybrid_space_axes", None)
-        if callable(axes_fn):
-            raw_strategies, raw_seeds = axes_fn()
-            if isinstance(raw_strategies, list) and isinstance(raw_seeds, list) and raw_strategies and raw_seeds:
-                hybrid_init_strategies = [str(v) for v in raw_strategies]
-                hybrid_init_seeds = [int(v) for v in raw_seeds]
+    axes_fn = getattr(task_plugin, "hybrid_space_axes", None)
+    if callable(axes_fn):
+        raw_strategies, raw_seeds = axes_fn()
+        if isinstance(raw_strategies, list) and isinstance(raw_seeds, list) and raw_strategies and raw_seeds:
+            hybrid_init_strategies = [str(v) for v in raw_strategies]
+            hybrid_init_seeds = [int(v) for v in raw_seeds]
 
     if args.replay_trace:
         replay_path = Path(args.replay_trace)
