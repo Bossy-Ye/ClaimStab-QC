@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import math
+import random
 from dataclasses import dataclass
 
 from qiskit import QuantumCircuit
 
 from claimstab.methods.spec import MethodSpec
+from claimstab.perturbations.space import PerturbationConfig
 from claimstab.tasks.base import BuiltWorkflow, TaskSpecError
 from claimstab.tasks.instances import ProblemInstance
 
@@ -21,6 +24,17 @@ class Clause:
 class Max2SATPayload:
     num_vars: int
     clauses: tuple[Clause, ...]
+
+
+@dataclass(frozen=True)
+class Max2SATHybridInitPolicy:
+    enabled: bool = False
+    init_strategies: tuple[str, ...] = ("fixed",)
+    init_seeds: tuple[int, ...] = (0,)
+
+    @staticmethod
+    def disabled() -> "Max2SATHybridInitPolicy":
+        return Max2SATHybridInitPolicy(enabled=False, init_strategies=("fixed",), init_seeds=(0,))
 
 
 def _core_instances() -> list[Max2SATPayload]:
@@ -102,10 +116,55 @@ class Max2SATQAOAPilotTask:
 
     name = "max2sat_qaoa_pilot"
 
-    def __init__(self, num_instances: int = 6) -> None:
+    def __init__(self, num_instances: int = 6, hybrid_optimization: dict[str, object] | None = None) -> None:
         self.num_instances = int(num_instances)
         if self.num_instances <= 0:
             raise TaskSpecError("num_instances must be >= 1")
+        self.hybrid_init_policy = self._parse_hybrid_init_policy(hybrid_optimization)
+
+    @staticmethod
+    def _parse_hybrid_init_policy(raw: dict[str, object] | None) -> Max2SATHybridInitPolicy:
+        if not isinstance(raw, dict):
+            return Max2SATHybridInitPolicy.disabled()
+
+        enabled = bool(raw.get("enabled", False))
+        if not enabled:
+            return Max2SATHybridInitPolicy.disabled()
+
+        raw_strategies = raw.get("init_strategies", ["fixed", "random"])
+        if isinstance(raw_strategies, (str, bytes)):
+            raw_strategies = [raw_strategies]
+        if not isinstance(raw_strategies, list) or not raw_strategies:
+            raise TaskSpecError("max2sat.task.params.hybrid_optimization.init_strategies must be a non-empty list.")
+        init_strategies = tuple(str(v).strip().lower() for v in raw_strategies if str(v).strip())
+        if not init_strategies:
+            raise TaskSpecError("max2sat hybrid init strategies cannot be empty.")
+        for strategy in init_strategies:
+            if strategy not in {"fixed", "random"}:
+                raise TaskSpecError(
+                    f"Unsupported max2sat hybrid init strategy '{strategy}'. Use one of: fixed, random."
+                )
+
+        raw_seeds = raw.get("init_seeds", list(range(10)))
+        if isinstance(raw_seeds, int):
+            raw_seeds = [raw_seeds]
+        if not isinstance(raw_seeds, list) or not raw_seeds:
+            raise TaskSpecError("max2sat.task.params.hybrid_optimization.init_seeds must be a non-empty list.")
+        try:
+            init_seeds = tuple(int(v) for v in raw_seeds)
+        except Exception as exc:
+            raise TaskSpecError("max2sat hybrid init seeds must be integers.") from exc
+
+        return Max2SATHybridInitPolicy(
+            enabled=True,
+            init_strategies=init_strategies,
+            init_seeds=init_seeds,
+        )
+
+    def hybrid_space_axes(self) -> tuple[list[str] | None, list[int] | None]:
+        if not self.hybrid_init_policy.enabled:
+            return None, None
+        return list(self.hybrid_init_policy.init_strategies), list(self.hybrid_init_policy.init_seeds)
 
     def instances(self, suite: str) -> list[ProblemInstance]:
         library = _core_instances()
@@ -139,6 +198,41 @@ class Max2SATQAOAPilotTask:
         for qubit in reversed(flipped):
             qc.x(qubit)
 
+    def _resolve_qaoa_initialization(
+        self,
+        *,
+        perturbation: PerturbationConfig | None,
+    ) -> tuple[str, int]:
+        if not self.hybrid_init_policy.enabled:
+            return "fixed", 0
+
+        if perturbation is not None and perturbation.hybrid_opt is not None:
+            strategy = str(perturbation.hybrid_opt.init_strategy).strip().lower()
+            seed = int(perturbation.hybrid_opt.init_seed)
+        else:
+            strategy = str(self.hybrid_init_policy.init_strategies[0]).strip().lower()
+            seed = int(self.hybrid_init_policy.init_seeds[0])
+
+        if strategy not in {"fixed", "random"}:
+            raise TaskSpecError(
+                f"Unsupported max2sat hybrid init strategy '{strategy}'. Use one of: fixed, random."
+            )
+        return strategy, seed
+
+    @staticmethod
+    def _resolved_angles(p: int, *, init_strategy: str, init_seed: int) -> tuple[tuple[float, ...], tuple[float, ...]]:
+        if init_strategy == "fixed":
+            if p == 1:
+                return (0.82,), (0.42,)
+            if p == 2:
+                return (0.76, 0.58), (0.40, 0.28)
+            raise TaskSpecError("Max2SATQAOAPilotTask supports only p in {1, 2}.")
+
+        rng = random.Random(int(init_seed))
+        gammas = tuple(rng.uniform(0.0, math.pi) for _ in range(p))
+        betas = tuple(rng.uniform(0.0, math.pi / 2.0) for _ in range(p))
+        return gammas, betas
+
     def _build_qaoa(self, payload: Max2SATPayload, gammas: tuple[float, ...], betas: tuple[float, ...]) -> QuantumCircuit:
         qc = QuantumCircuit(payload.num_vars)
         qc.h(range(payload.num_vars))
@@ -149,19 +243,22 @@ class Max2SATQAOAPilotTask:
         qc.measure_all()
         return qc
 
-    def build(self, instance: ProblemInstance, method: MethodSpec) -> BuiltWorkflow:
+    def build(
+        self,
+        instance: ProblemInstance,
+        method: MethodSpec,
+        *,
+        perturbation: PerturbationConfig | None = None,
+    ) -> BuiltWorkflow:
         payload = instance.payload
         if not isinstance(payload, Max2SATPayload):
             raise TaskSpecError("Max2SATQAOAPilotTask got unsupported payload.")
 
         if method.kind == "qaoa":
             p = int(method.params.get("p", method.p or 1))
-            if p == 1:
-                qc = self._build_qaoa(payload, gammas=(0.82,), betas=(0.42,))
-            elif p == 2:
-                qc = self._build_qaoa(payload, gammas=(0.76, 0.58), betas=(0.40, 0.28))
-            else:
-                raise TaskSpecError("Max2SATQAOAPilotTask supports only p in {1, 2}.")
+            init_strategy, init_seed = self._resolve_qaoa_initialization(perturbation=perturbation)
+            gammas, betas = self._resolved_angles(p, init_strategy=init_strategy, init_seed=init_seed)
+            qc = self._build_qaoa(payload, gammas=gammas, betas=betas)
         elif method.kind in {"random_baseline", "random"}:
             qc = QuantumCircuit(payload.num_vars)
             qc.h(range(payload.num_vars))
@@ -188,5 +285,5 @@ class Max2SATQAOAPilotTask:
 
         return BuiltWorkflow(circuit=qc, metric_fn=metric_fn)
 
-    def build_with_config(self, instance: ProblemInstance, method: MethodSpec, _config) -> BuiltWorkflow:
-        return self.build(instance, method)
+    def build_with_config(self, instance: ProblemInstance, method: MethodSpec, config: PerturbationConfig) -> BuiltWorkflow:
+        return self.build(instance, method, perturbation=config)

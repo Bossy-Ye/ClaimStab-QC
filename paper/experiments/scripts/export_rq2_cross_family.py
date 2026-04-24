@@ -20,7 +20,6 @@ DERIVED_DIR = OUT_ROOT / "derived" / "RQ2"
 TABLE_DIR = OUT_ROOT / "tables"
 FIG_DIR = OUT_ROOT / "figures" / "main"
 
-FAMILY_ORDER = ["MaxCut QAOA", "Max-2-SAT QAOA", "VQE/H2"]
 OUTCOME_ORDER = ["validated", "refuted", "unstable", "inconclusive"]
 OUTCOME_LABELS = {
     "validated": "Validated",
@@ -103,11 +102,14 @@ def _load_dataset() -> pd.DataFrame:
 
 def _make_summary(df: pd.DataFrame) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    for family in FAMILY_ORDER:
+    family_order = sorted(df["algorithm_family"].astype(str).unique().tolist())
+    for family in family_order:
         family_df = df[df["algorithm_family"] == family].copy()
         rows.append(
             {
                 "algorithm_family": family,
+                "slice_class": str(family_df["slice_class"].iloc[0]) if not family_df.empty and "slice_class" in family_df.columns else "",
+                "benchmark_family": str(family_df["benchmark_family"].iloc[0]) if not family_df.empty and "benchmark_family" in family_df.columns else "",
                 "claim_family_surface": "comparative/ranking only",
                 "total_variants": int(len(family_df)),
                 "metric_positive_count": int((family_df["metric_verdict"] == "positive").sum()),
@@ -159,12 +161,13 @@ def _plot_outcomes(df: pd.DataFrame, mismatch_rows: list[dict[str, Any]], out_pn
     )
     fig.subplots_adjust(left=0.18, right=0.97, top=0.82, bottom=0.18, wspace=0.26)
 
-    y_positions = list(range(len(FAMILY_ORDER)))
-    lefts = [0.0] * len(FAMILY_ORDER)
+    family_order = sorted(df["algorithm_family"].astype(str).unique().tolist())
+    y_positions = list(range(len(family_order)))
+    lefts = [0.0] * len(family_order)
     for outcome in OUTCOME_ORDER:
         shares = []
         counts = []
-        for family in FAMILY_ORDER:
+        for family in family_order:
             family_df = df[df["algorithm_family"] == family]
             total = max(1, len(family_df))
             count = int((family_df["claim_validation_outcome"] == outcome).sum())
@@ -196,7 +199,7 @@ def _plot_outcomes(df: pd.DataFrame, mismatch_rows: list[dict[str, Any]], out_pn
             lefts[idx] += share
 
     family_tick_labels = []
-    for family in FAMILY_ORDER:
+    for family in family_order:
         total = int(len(df[df["algorithm_family"] == family]))
         family_tick_labels.append(f"{family} (n={total})")
 
@@ -254,24 +257,24 @@ def _plot_outcomes(df: pd.DataFrame, mismatch_rows: list[dict[str, Any]], out_pn
 
 
 def _write_note(path: Path, summary_rows: list[dict[str, Any]]) -> None:
-    maxcut = next(row for row in summary_rows if row["algorithm_family"] == "MaxCut QAOA")
-    max2sat = next(row for row in summary_rows if row["algorithm_family"] == "Max-2-SAT QAOA")
-    vqe = next(row for row in summary_rows if row["algorithm_family"] == "VQE/H2")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         "\n".join(
             [
                 "# RQ2 Interpretation: Cross-Family Heterogeneity",
                 "",
-                "This RQ2 surface covers comparative/ranking claims only. It should be read as cross-algorithm-family evidence, not as full claim-family coverage.",
+                "This RQ2 surface covers comparative/ranking claims only on the strengthened internal main denominator.",
                 "",
                 "Current pattern:",
-                f"- MaxCut QAOA is dominated by unstable outcomes ({maxcut['outcome_unstable_count']}/{maxcut['total_variants']})",
-                f"- Max-2-SAT QAOA contains many validated variants ({max2sat['validated_count']}/{max2sat['total_variants']}) together with unstable and inconclusive cases",
-                f"- VQE/H2 is mostly refuted rather than unstable ({vqe['refuted_count']}/{vqe['total_variants']} refuted)",
+                *[
+                    f"- {row['algorithm_family']} ({row.get('slice_class', '')}/{row.get('benchmark_family', '')}): "
+                    f"validated={row['validated_count']}, refuted={row['refuted_count']}, "
+                    f"unstable={row['outcome_unstable_count']}, inconclusive={row['outcome_inconclusive_count']}"
+                    for row in summary_rows
+                ],
                 "",
                 "Safe paper-facing takeaway:",
-                "ClaimStab-QC is not uniformly pessimistic. Across comparative claims, the outcome mix differs substantially by algorithm family, so the main RQ1 mismatch is structural but population-dependent.",
+                "ClaimStab-QC is not uniformly pessimistic. Across the strengthened main denominator, the outcome mix differs by family and slice class, so the RQ1 mismatch remains structural but population-dependent.",
             ]
         )
         + "\n",
@@ -287,6 +290,8 @@ def main() -> None:
         [
             "claim_id",
             "algorithm_family",
+            "slice_class",
+            "benchmark_family",
             "claim_family",
             "scope",
             "delta",

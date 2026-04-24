@@ -11,6 +11,7 @@ from .policies import (
     estimate_stability_from_outcomes,
     wilson_interval,
 )
+from .status_remap import remap_status
 
 __all__ = [
     "InferencePolicy",
@@ -24,4 +25,5 @@ __all__ = [
     "estimate_stability_from_outcomes",
     "conservative_stability_decision",
     "ci_width",
+    "remap_status",
 ]
