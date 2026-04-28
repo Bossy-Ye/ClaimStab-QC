@@ -10,6 +10,7 @@ from .policies import (
     estimate_binomial_rate,
     estimate_stability_from_outcomes,
     wilson_interval,
+    wilson_ci_proportion,
 )
 from .status_remap import remap_status
 
@@ -25,5 +26,6 @@ __all__ = [
     "estimate_stability_from_outcomes",
     "conservative_stability_decision",
     "ci_width",
+    "wilson_ci_proportion",
     "remap_status",
 ]

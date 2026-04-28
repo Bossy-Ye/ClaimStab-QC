@@ -157,6 +157,32 @@ def estimate_binomial_rate(successes: int, total: int, confidence: float = 0.95)
     )
 
 
+def wilson_ci_proportion(k: int, n: int, z: float = 1.96) -> dict[str, float | int]:
+    """
+    Repository mapping note:
+    - revision instructions referenced `audit/inference/wilson_ci.py`
+    - this repository centralizes Wilson helpers in `claimstab/inference/policies.py`
+
+    Compute a Wilson confidence interval for a proportion k / n.
+    """
+    if n <= 0:
+        raise ValueError("n must be > 0")
+    if k < 0 or k > n:
+        raise ValueError(f"k must satisfy 0 <= k <= n, got {k}/{n}")
+    p_hat = k / n
+    denominator = 1.0 + z**2 / n
+    center = (p_hat + z**2 / (2.0 * n)) / denominator
+    margin = (z * sqrt((p_hat * (1.0 - p_hat) / n) + (z**2 / (4.0 * n**2)))) / denominator
+    return {
+        "point_estimate": round(p_hat, 4),
+        "ci_low": round(center - margin, 4),
+        "ci_high": round(center + margin, 4),
+        "ci_width": round(2.0 * margin, 4),
+        "n": n,
+        "k": k,
+    }
+
+
 def estimate_stability_from_outcomes(outcomes: Sequence[bool], confidence: float = 0.95) -> BinomialEstimate:
     successes = sum(1 for x in outcomes if x)
     total = len(outcomes)

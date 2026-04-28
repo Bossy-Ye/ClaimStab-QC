@@ -98,8 +98,11 @@ def canonical_suite_name(name: str) -> str:
     key = str(name).strip().lower()
     canonical = SUITE_ALIASES.get(key)
     if canonical is None:
+        dynamic_suite = Path(__file__).resolve().parents[2] / "data" / "suites" / f"{key}.json"
+        if dynamic_suite.exists():
+            return key
         valid = ", ".join(sorted({k for k in SUITE_ALIASES if not k.startswith("day")}))
-        raise ValueError(f"Unknown suite '{name}'. Use one of: {valid}.")
+        raise ValueError(f"Unknown suite '{name}'. Use one of: {valid}, or add data/suites/{key}.json.")
     if key in LEGACY_SUITE_ALIASES:
         print(f"[WARN] Suite alias '{name}' is deprecated; using '{canonical}'.")
     return canonical
